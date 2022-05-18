@@ -1,0 +1,16 @@
+{
+  "name": "dashboardsMaps",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "yarn plugin-helpers build",
+    "plugin-helpers": "node ../../scripts/plugin_helpers",
+    "osd": "node ../../scripts/osd",
+    "lint": "node ../../scripts/eslint .",
+    "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js"
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+  }
+}
