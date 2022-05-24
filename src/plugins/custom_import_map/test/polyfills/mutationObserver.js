@@ -625,8 +625,4 @@ var MutationNotifier = /** @class */ (function (_super) {
   MutationNotifier._instance = null;
   return MutationNotifier;
 })(EventEmitter);
-<<<<<<< HEAD
 module.exports.MutationNotifier = MutationNotifier;
-=======
-module.exports.MutationNotifier = MutationNotifier;
->>>>>>> 547bf1d11a78e52750403217a71489fc94f72320
