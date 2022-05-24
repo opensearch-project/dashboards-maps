@@ -1,0 +1,59 @@
+name: Unit tests workflow
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - main
+
+env:
+  OPENSEARCH_DASHBOARDS_VERSION: '2.0'
+jobs:
+  tests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Plugin
+        uses: actions/checkout@v1
+
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@v2
+        with:
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          path: OpenSearch-Dashboards
+
+      - name: Get node and yarn versions
+        id: versions_step
+        run: |
+          echo "::set-output name=node_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.node).match(/[.0-9]+/)[0]")"
+          echo "::set-output name=yarn_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.yarn).match(/[.0-9]+/)[0]")"
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ steps.versions_step.outputs.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install correct yarn version for OpenSearch Dashboards
+        run: |
+          npm uninstall -g yarn
+          echo "Installing yarn ${{ steps.versions_step.outputs.yarn_version }}"
+          npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
+
+      - name: Move customImportMap to Plugins Dir
+        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
+
+      - name: Bootstrap plugin/opensearch-dashboards
+        run: |
+          cd OpenSearch-Dashboards/plugins/custom_import_map
+          yarn osd bootstrap
+
+      - name: Run tests
+        run: |
+          cd OpenSearch-Dashboards/plugins/custom_import_map
+          yarn run test:jest --coverage
+
+      - name: Uploads coverage
+        uses: codecov/codecov-action@v1
