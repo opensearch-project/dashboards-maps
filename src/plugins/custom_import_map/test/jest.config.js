@@ -43,3 +43,4 @@ module.exports = {
     modulePathIgnorePatterns: ['alertingDashboards'],
     testEnvironment: 'jest-environment-jsdom',
   };
+  

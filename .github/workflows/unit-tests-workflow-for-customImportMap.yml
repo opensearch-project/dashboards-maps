@@ -2,7 +2,7 @@ name: Unit tests workflow
 on:
   push:
     branches:
-      - "*"
+      - main
   pull_request:
     branches:
       - main
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Plugin
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Checkout OpenSearch Dashboards
         uses: actions/checkout@v2
