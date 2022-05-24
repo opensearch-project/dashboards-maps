@@ -1,0 +1,10 @@
+{
+    "id": "customImportMap",
+    "version": "2.0.0",
+    "opensearchDashboardsVersion": "opensearchDashboards",
+    "server": true,
+    "ui": true,
+    "requiredPlugins": ["regionMap", "opensearchDashboardsReact"],
+    "optionalPlugins": []
+  }
+  
