@@ -116,7 +116,8 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       );
       setLoading(false);
       return false;
-    } else if (files[0].size === 0) {
+    } 
+    if (files[0].size === 0) {
       notifications.toasts.addDanger(
         'Error. File does not contain valid features. Check your json format.'
       );
@@ -130,6 +131,14 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     fetchElementByName('customIndex').value = '';
   };
 
+  const getFileData = async (files) => {
+    let fileData;
+    if (files && validateFileSize(files)) {
+      fileData = await files[0].text();
+    }
+    return fileData;
+  }
+
   const handleSubmit = async () => {
     // show import button as loading
     setLoading(true);
@@ -140,13 +149,8 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     const files = fileContent;
     let fileData;
     if (isValidIndexName) {
-      if (files[0] && validateFileSize(files)) {
-        const [file] = files;
-        if (file) {
-          fileData = await fileContent[0].text();
-        }
-        await handleUploadGeojson(newIndexName, fileData);
-      }
+      fileData = await getFileData(files);
+      await handleUploadGeojson(newIndexName, fileData);
     }
 
     // removes loading symbol from import button
@@ -163,52 +167,55 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     }
   };
 
+  const parsePostGeojsonResult = (result: object, indexName: string) => {
+    const successfullyIndexedRecordCount = result.resp.success;
+    const failedToIndexRecordCount = result.resp.failure;
+    const totalRecords = result.resp.total;
+    if (successfullyIndexedRecordCount === totalRecords) {
+      notifications.toasts.addSuccess(
+        'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
+      );
+      return;
+    }
+
+    if (successfullyIndexedRecordCount > 0 && failedToIndexRecordCount > 0) {
+      const title = 'Partially indexed ' + successfullyIndexedRecordCount + ' of ' + 
+                    totalRecords + ' features in ' + indexName;
+      notifications.toasts.addDanger({
+        title: title,
+        iconType: 'alert',
+        text: toMountPoint(
+          <div>
+            <p>There were {failedToIndexRecordCount} errors processing the custom map.</p>
+            <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+              <EuiFlexItem grow={false}>
+                <EuiButton size="s">View error details</EuiButton>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </div>
+        ),
+      });
+    }
+
+    if (successfullyIndexedRecordCount === 0) {
+      notifications.toasts.addDanger(
+        'Error. File does not contain valid features. Check your json format.'
+      );
+    }
+  }
+
   const uploadGeojson = async (indexName: string, fileData: object) => {
     const bodyData = {
       index: indexName,
       field: 'location',
       type: fetchElementByName('selectGeoShape').value,
-      data: [JSON.parse(fileData)],
+      data: [JSON.parse(fileData || null)],
     };
     const result = await postGeojson(JSON.stringify(bodyData), props.vis.http);
 
     // error handling logic that displays correct toasts for the end users
-    if (result.ok) {
-      const successfullyIndexedRecordCount = result.resp.success;
-      const failedToIndexRecordCount = result.resp.failure;
-      const totalRecords = result.resp.total;
-      if (successfullyIndexedRecordCount === totalRecords) {
-        notifications.toasts.addSuccess(
-          'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
-        );
-      } else {
-        if (successfullyIndexedRecordCount > 0) {
-          notifications.toasts.addDanger({
-            title:
-              'Partially indexed ' +
-              successfullyIndexedRecordCount +
-              ' of ' +
-              totalRecords +
-              ' features in ' +
-              indexName,
-            iconType: 'alert',
-            text: toMountPoint(
-              <div>
-                <p>There were {failedToIndexRecordCount} errors processing the custom map.</p>
-                <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
-                  <EuiFlexItem grow={false}>
-                    <EuiButton size="s">View error details</EuiButton>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </div>
-            ),
-          });
-        } else if (successfullyIndexedRecordCount === 0) {
-          notifications.toasts.addDanger(
-            'Error. File does not contain valid features. Check your json format.'
-          );
-        }
-      }
+    if (result?.ok) {
+      parsePostGeojsonResult(result, indexName);
     } else {
       notifications.toasts.addDanger('Error connecting to geospatial plugin.');
     }
