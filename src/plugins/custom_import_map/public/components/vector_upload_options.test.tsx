@@ -110,7 +110,7 @@ describe('vector_upload_options', () => {
   const addUserInputToDOM = async () => {    
     const jsonData = {
       type: 'FeatureCollection',
-      name: 'india_china',
+      name: 'sample',
       features: [
         {
           type: 'Feature',
@@ -286,7 +286,7 @@ describe('vector_upload_options', () => {
     const uploader = getByTestId('filePicker');
     const jsonData = {
       type: 'FeatureCollection',
-      name: 'india_china',
+      name: 'sample',
       features: [
         {
           type: 'Feature',
