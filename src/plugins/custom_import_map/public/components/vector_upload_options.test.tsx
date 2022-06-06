@@ -132,11 +132,6 @@ describe('vector_upload_options', () => {
       target: { files: [file] },
     });
     await expect(uploader.files[0].name).toBe('sample.json');
-    const selectOption = screen.getByRole('option', { name: 'Geo shape' });
-    await fireEvent.change(selectOption, {
-      target: { value: 'geo_shape' },
-    });
-    await expect(selectOption.value).toBe('geo_shape');
   };
 
   it('renders the VectorUploadOptions based on props provided', () => {
@@ -262,11 +257,6 @@ describe('vector_upload_options', () => {
       target: { files: [file] },
     });
     await expect(uploader.files[0].name).toBe('sample.json');
-    const selectOption = screen.getByRole('option', { name: 'Geo shape' });
-    await fireEvent.change(selectOption, {
-      target: { value: 'geo_shape' },
-    });
-    await expect(selectOption.value).toBe('geo_shape');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);

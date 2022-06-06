@@ -32,19 +32,10 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   const INDEX_NAME_BEGINS_WITH_CHECK = /^[a-z]/;
   const INDEX_NAME_NOT_ENDS_WITH_CHECK = /.*-map$/;
   const MAX_LENGTH_OF_INDEX_NAME = 250;
-
-  const options = [
-    { value: 'geo_shape', text: 'Geo shape', name: 'geo_shape' },
-    { value: 'geo_point', text: 'Geo point', name: 'geo_point' },
-  ];
+  const GEO_SHAPE_TYPE = 'geo_shape';
 
   const [value, setValue] = useState('');
   const [isLoading, setLoading] = useState(false);
-  const onSelectChange = (e) => {
-    setSelectValue(e.target.value);
-  };
-
-  const [selectValue, setSelectValue] = useState('');
   const [fileContent, setFileContent] = useState();
 
   const onTextChange = (e) => {
@@ -208,7 +199,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     const bodyData = {
       index: indexName,
       field: 'location',
-      type: fetchElementByName('selectGeoShape').value,
+      type: GEO_SHAPE_TYPE,
       data: [JSON.parse(fileData || null)],
     };
     const result = await postGeojson(JSON.stringify(bodyData), props.vis.http);
@@ -307,22 +298,6 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             <p name="errorIndexName" />
           </EuiTextColor>
         </EuiText>
-        <EuiSpacer size="m" aria-label="medium-spacer" />
-
-        <EuiText size="s" aria-label="geodata-type-text">
-          Select a geo datatype
-        </EuiText>
-        <EuiSpacer size="m" aria-label="medium-spacer" />
-
-        <EuiSelect
-          id="selectGeoShape"
-          name="selectGeoShape"
-          options={options}
-          value={selectValue}
-          onChange={(e) => onSelectChange(e)}
-          required={true}
-          aria-label="geo-datatype-selector"
-        />
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', padding: 0 }}>

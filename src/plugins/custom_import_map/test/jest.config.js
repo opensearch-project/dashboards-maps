@@ -20,7 +20,7 @@ module.exports = {
     },
     snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
     coverageReporters: ['lcov', 'text', 'cobertura'],
-    testMatch: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx'],
+    testMatch: ['**/*.test.js', '**/*.test.ts', '**/*.test.tsx'],
     coveragePathIgnorePatterns: [
       '<rootDir>/build/',
       '<rootDir>/node_modules/',

@@ -183,59 +183,6 @@ Object {
                 class="euiSpacer euiSpacer--m"
               />
               <div
-                aria-label="geodata-type-text"
-                class="euiText euiText--small"
-              >
-                Select a geo datatype
-              </div>
-              <div
-                aria-label="medium-spacer"
-                class="euiSpacer euiSpacer--m"
-              />
-              <div
-                class="euiFormControlLayout"
-              >
-                <div
-                  class="euiFormControlLayout__childrenWrapper"
-                >
-                  <select
-                    aria-label="geo-datatype-selector"
-                    class="euiSelect"
-                    id="selectGeoShape"
-                    name="selectGeoShape"
-                    required=""
-                  >
-                    <option
-                      name="geo_shape"
-                      value="geo_shape"
-                    >
-                      Geo shape
-                    </option>
-                    <option
-                      name="geo_point"
-                      value="geo_point"
-                    >
-                      Geo point
-                    </option>
-                  </select>
-                  <div
-                    class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
-                  >
-                    <span
-                      class="euiFormControlLayoutCustomIcon"
-                    >
-                      <div>
-                        EuiIconMock
-                      </div>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div
-                aria-label="medium-spacer"
-                class="euiSpacer euiSpacer--m"
-              />
-              <div
                 style="display: flex; justify-content: flex-end; width: 100%; padding: 0px;"
               >
                 <button
@@ -434,59 +381,6 @@ Object {
                   name="errorIndexName"
                 />
               </span>
-            </div>
-            <div
-              aria-label="medium-spacer"
-              class="euiSpacer euiSpacer--m"
-            />
-            <div
-              aria-label="geodata-type-text"
-              class="euiText euiText--small"
-            >
-              Select a geo datatype
-            </div>
-            <div
-              aria-label="medium-spacer"
-              class="euiSpacer euiSpacer--m"
-            />
-            <div
-              class="euiFormControlLayout"
-            >
-              <div
-                class="euiFormControlLayout__childrenWrapper"
-              >
-                <select
-                  aria-label="geo-datatype-selector"
-                  class="euiSelect"
-                  id="selectGeoShape"
-                  name="selectGeoShape"
-                  required=""
-                >
-                  <option
-                    name="geo_shape"
-                    value="geo_shape"
-                  >
-                    Geo shape
-                  </option>
-                  <option
-                    name="geo_point"
-                    value="geo_point"
-                  >
-                    Geo point
-                  </option>
-                </select>
-                <div
-                  class="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
-                >
-                  <span
-                    class="euiFormControlLayoutCustomIcon"
-                  >
-                    <div>
-                      EuiIconMock
-                    </div>
-                  </span>
-                </div>
-              </div>
             </div>
             <div
               aria-label="medium-spacer"

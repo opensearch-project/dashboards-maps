@@ -249,62 +249,6 @@ exports[`custom vector upload component renders the upload customer div if geosp
             className="euiSpacer euiSpacer--m"
           />
           <div
-            aria-label="geodata-type-text"
-            className="euiText euiText--small"
-          >
-            Select a geo datatype
-          </div>
-          <div
-            aria-label="medium-spacer"
-            className="euiSpacer euiSpacer--m"
-          />
-          <div
-            className="euiFormControlLayout"
-          >
-            <div
-              className="euiFormControlLayout__childrenWrapper"
-            >
-              <select
-                aria-label="geo-datatype-selector"
-                className="euiSelect"
-                id="selectGeoShape"
-                name="selectGeoShape"
-                onChange={[Function]}
-                onMouseUp={[Function]}
-                required={true}
-                value=""
-              >
-                <option
-                  name="geo_shape"
-                  value="geo_shape"
-                >
-                  Geo shape
-                </option>
-                <option
-                  name="geo_point"
-                  value="geo_point"
-                >
-                  Geo point
-                </option>
-              </select>
-              <div
-                className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
-              >
-                <span
-                  className="euiFormControlLayoutCustomIcon"
-                >
-                  <div>
-                    EuiIconMock
-                  </div>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div
-            aria-label="medium-spacer"
-            className="euiSpacer euiSpacer--m"
-          />
-          <div
             style={
               Object {
                 "display": "flex",
