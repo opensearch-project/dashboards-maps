@@ -154,13 +154,23 @@ exports[`custom vector upload component renders the upload customer div if geosp
             <div
               className="euiTextColor euiTextColor--subdued"
             >
-              <span>
-                Formats accepted: .json, .geojson
-                <br />
-                Max size: 25 MB
-                <br />
-                Coordinates must be in EPSG:4326 coordinate reference system.
-              </span>
+              <p>
+                <span
+                  className="formattedSpan"
+                >
+                  Formats accepted: .json, .geojson
+                </span>
+                <span
+                  className="formattedSpan"
+                >
+                  Max size: 25 MB
+                </span>
+                <span
+                  className="formattedSpan"
+                >
+                  Coordinates must be in EPSG:4326 coordinate reference system.
+                </span>
+              </p>
             </div>
           </div>
           <div
@@ -224,9 +234,7 @@ exports[`custom vector upload component renders the upload customer div if geosp
                    Valid characters are a-z, 0-9, - and _ .
                 </li>
                 <li>
-                   
                   The final map name will be the entered prefix here followed by -map as the suffix.
-                   
                 </li>
               </ul>
             </div>
@@ -249,14 +257,7 @@ exports[`custom vector upload component renders the upload customer div if geosp
             className="euiSpacer euiSpacer--m"
           />
           <div
-            style={
-              Object {
-                "display": "flex",
-                "justifyContent": "flex-end",
-                "padding": 0,
-                "width": "100%",
-              }
-            }
+            className="importFileButton"
           >
             <button
               aria-label="import-file-button"

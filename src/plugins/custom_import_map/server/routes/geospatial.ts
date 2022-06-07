@@ -4,7 +4,7 @@
  */
 
 import { schema } from '@osd/config-schema';
-import { FILE_PAYLOAD_SIZE } from '../../common/constants/shared';
+import { MAX_FILE_PAYLOAD_SIZE } from '../../common';
 
 // eslint-disable-next-line import/no-default-export
 export default function (services, router) {
@@ -17,7 +17,7 @@ export default function (services, router) {
       options: {
         body: {
           accepts: 'application/json',
-          maxBytes: FILE_PAYLOAD_SIZE, // 25 MB payload limit for custom geoJSON feature
+          maxBytes: MAX_FILE_PAYLOAD_SIZE, // 25 MB payload limit for custom geoJSON feature
         },
       },
     },

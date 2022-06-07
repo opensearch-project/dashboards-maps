@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { UPLOAD_GEOJSON_API } from '../../common/constants/shared';
+import { UPLOAD_GEOJSON_API_PATH } from '../../common/constants/shared';
 
 // eslint-disable-next-line import/no-default-export
 export default function GeospatialPlugin(Client, config, components) {
@@ -13,7 +13,7 @@ export default function GeospatialPlugin(Client, config, components) {
 
   geospatial.geospatialQuery = ca({
     url: {
-      fmt: `${UPLOAD_GEOJSON_API}`,
+      fmt: `${UPLOAD_GEOJSON_API_PATH}`,
     },
     method: 'POST',
   });

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import './vector_upload_options.scss';
 import React, { useState } from 'react';
 import {
   EuiButton,
@@ -13,12 +14,11 @@ import {
   EuiSpacer,
   EuiCard,
   EuiFieldText,
-  EuiSelect,
   EuiTextColor,
   EuiFormRow,
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
-import { FILE_PAYLOAD_SIZE, FILE_PAYLOAD_SIZE_IN_MB } from '../../common/constants/shared';
+import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB } from '../../common';
 import { toMountPoint } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { RegionMapOptionsProps } from '../../../../src/plugins/region_map/public';
 
@@ -54,26 +54,26 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   };
 
   const validateIndexName = (typedIndexName: string, isIndexNameWithSuffix: boolean) => {
-    let error = '';
+    let error = [];
     const errorIndexNameDiv = fetchElementByName('errorIndexName');
 
     // check for presence of index name entered by the user
     if (!typedIndexName) {
-      error = 'Required';
+      error.push('Required');
     } else {
       // check for restriction on length of the index name
       if (MAX_LENGTH_OF_INDEX_NAME < typedIndexName.length) {
-        error += ' Map name should be less than ' + MAX_LENGTH_OF_INDEX_NAME + ' characters.\n';
+        error.push('Map name should be less than ' + MAX_LENGTH_OF_INDEX_NAME + ' characters.\n');
       }
 
       // check for restriction on the usage of upper case characters in the index name
       if (INDEX_NAME_UPPERCASE_CHECK.test(typedIndexName)) {
-        error += ' Upper case letters are not allowed.\n';
+        error.push('Upper case letters are not allowed.\n');
       }
 
       // check for restriction on the usage of special characters in the index name
       if (INDEX_NAME_SPECIAL_CHARACTERS_CHECK.test(typedIndexName)) {
-        error += ' Special characters are not allowed.\n';
+        error.push('Special characters are not allowed.\n');
       }
 
       // check for restriction on the usage of characters at the beginning in the index name
@@ -81,17 +81,17 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         INDEX_NAME_NOT_BEGINS_WITH_CHECK.test(typedIndexName) ||
         !INDEX_NAME_BEGINS_WITH_CHECK.test(typedIndexName)
       ) {
-        error += " Map name can't start with + , _ , - or . It should start with a-z.\n";
+        error.push("Map name can't start with + , _ , - or . It should start with a-z.\n");
       }
 
       // check for restriction on the usage of -map in map name if entered by the user
       if (!isIndexNameWithSuffix && INDEX_NAME_NOT_ENDS_WITH_CHECK.test(typedIndexName)) {
-        error += " Map name can't end with -map.\n";
+        error.push("Map name can't end with -map.\n");
       }
     }
 
-    if (error) {
-      errorIndexNameDiv.textContent = error;
+    if (error.length > 0) {
+      errorIndexNameDiv.textContent = error.join(' ');
       setLoading(false);
       return false;
     }
@@ -101,9 +101,9 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
 
   const validateFileSize = async (files) => {
     // check if the file size is permitted
-    if (FILE_PAYLOAD_SIZE < files[0].size) {
+    if (MAX_FILE_PAYLOAD_SIZE < files[0].size) {
       notifications.toasts.addDanger(
-        'File size should be less than ' + FILE_PAYLOAD_SIZE_IN_MB + ' MB.'
+        'File size should be less than ' + MAX_FILE_PAYLOAD_SIZE_IN_MB + ' MB.'
       );
       setLoading(false);
       return false;
@@ -119,7 +119,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   };
 
   const clearUserInput = () => {
-    fetchElementByName('customIndex').value = '';
+    setValue('');
   };
 
   const getFileData = async (files) => {
@@ -250,13 +250,17 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <EuiText size="xs" color="subdued" aria-label="geojson-file-format-text">
-          <span>
-            Formats accepted: .json, .geojson
-            <br />
-            Max size: 25 MB
-            <br />
-            Coordinates must be in EPSG:4326 coordinate reference system.
-          </span>
+          <p>
+            <span className="formattedSpan">
+              Formats accepted: .json, .geojson
+            </span>
+            <span className="formattedSpan">
+              Max size: 25 MB
+            </span>
+            <span className="formattedSpan">
+              Coordinates must be in EPSG:4326 coordinate reference system.
+            </span>
+          </p>
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
@@ -288,8 +292,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             <li> Map name prefix must start with a-z.</li>
             <li> Valid characters are a-z, 0-9, - and _ .</li>
             <li>
-              {' '}
-              The final map name will be the entered prefix here followed by -map as the suffix.{' '}
+              The final map name will be the entered prefix here followed by -map as the suffix.
             </li>
           </ul>
         </EuiText>
@@ -300,7 +303,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', padding: 0 }}>
+        <div className="importFileButton">
           <EuiButton
             id="submitButton"
             type="submit"
@@ -317,5 +320,4 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   );
 };
 
-// eslint-disable-next-line import/no-default-export
-export default VectorUploadOptions;
+export { VectorUploadOptions };

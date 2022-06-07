@@ -29,4 +29,4 @@ const EmptyPrompt = (props: EmptyPromptProps) => {
   );
 };
 
-export default EmptyPrompt;
+export { EmptyPrompt };

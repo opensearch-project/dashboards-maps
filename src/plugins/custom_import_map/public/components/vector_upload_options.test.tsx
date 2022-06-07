@@ -4,7 +4,7 @@
  */
 
 import * as React from 'react';
-import VectorUploadOptions from './vector_upload_options';
+import { VectorUploadOptions } from './vector_upload_options';
 import { screen, render, waitFor } from '@testing-library/react';
 import { fireEvent } from '@testing-library/dom';
 import '@testing-library/jest-dom';

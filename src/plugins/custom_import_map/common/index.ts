@@ -4,8 +4,6 @@
  */
 
 import { fromMBtoBytes } from "./util";
+import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB, PLUGIN_ID, PLUGIN_NAME } from "./constants/shared";
 
-export const PLUGIN_ID = 'customImportMap';
-export const PLUGIN_NAME = 'customImportMap';
-
-export { fromMBtoBytes };
+export { fromMBtoBytes, MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB, PLUGIN_ID, PLUGIN_NAME };

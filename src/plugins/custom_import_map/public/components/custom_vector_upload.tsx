@@ -6,8 +6,8 @@
 import React, { useEffect } from 'react';
 import { EuiButton } from '@elastic/eui';
 import { getPlugins } from '../services';
-import EmptyPrompt from './empty_prompt';
-import VectorUploadOptions from './vector_upload_options';
+import { EmptyPrompt } from './empty_prompt';
+import { VectorUploadOptions } from './vector_upload_options';
 import { RegionMapOptionsProps } from '../../../../src/plugins/region_map/public';
 
 function CustomVectorUpload(props: RegionMapOptionsProps) {

@@ -90,13 +90,23 @@ Object {
                 <div
                   class="euiTextColor euiTextColor--subdued"
                 >
-                  <span>
-                    Formats accepted: .json, .geojson
-                    <br />
-                    Max size: 25 MB
-                    <br />
-                    Coordinates must be in EPSG:4326 coordinate reference system.
-                  </span>
+                  <p>
+                    <span
+                      class="formattedSpan"
+                    >
+                      Formats accepted: .json, .geojson
+                    </span>
+                    <span
+                      class="formattedSpan"
+                    >
+                      Max size: 25 MB
+                    </span>
+                    <span
+                      class="formattedSpan"
+                    >
+                      Coordinates must be in EPSG:4326 coordinate reference system.
+                    </span>
+                  </p>
                 </div>
               </div>
               <div
@@ -158,9 +168,7 @@ Object {
                        Valid characters are a-z, 0-9, - and _ .
                     </li>
                     <li>
-                       
                       The final map name will be the entered prefix here followed by -map as the suffix.
-                       
                     </li>
                   </ul>
                 </div>
@@ -183,7 +191,7 @@ Object {
                 class="euiSpacer euiSpacer--m"
               />
               <div
-                style="display: flex; justify-content: flex-end; width: 100%; padding: 0px;"
+                class="importFileButton"
               >
                 <button
                   aria-label="import-file-button"
@@ -294,13 +302,23 @@ Object {
               <div
                 class="euiTextColor euiTextColor--subdued"
               >
-                <span>
-                  Formats accepted: .json, .geojson
-                  <br />
-                  Max size: 25 MB
-                  <br />
-                  Coordinates must be in EPSG:4326 coordinate reference system.
-                </span>
+                <p>
+                  <span
+                    class="formattedSpan"
+                  >
+                    Formats accepted: .json, .geojson
+                  </span>
+                  <span
+                    class="formattedSpan"
+                  >
+                    Max size: 25 MB
+                  </span>
+                  <span
+                    class="formattedSpan"
+                  >
+                    Coordinates must be in EPSG:4326 coordinate reference system.
+                  </span>
+                </p>
               </div>
             </div>
             <div
@@ -362,9 +380,7 @@ Object {
                      Valid characters are a-z, 0-9, - and _ .
                   </li>
                   <li>
-                     
                     The final map name will be the entered prefix here followed by -map as the suffix.
-                     
                   </li>
                 </ul>
               </div>
@@ -387,7 +403,7 @@ Object {
               class="euiSpacer euiSpacer--m"
             />
             <div
-              style="display: flex; justify-content: flex-end; width: 100%; padding: 0px;"
+              class="importFileButton"
             >
               <button
                 aria-label="import-file-button"
