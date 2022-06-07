@@ -16,6 +16,7 @@ export interface EmptyPromptProps {
 const EmptyPrompt = (props: EmptyPromptProps) => {
   return (
     <EuiEmptyPrompt
+      testId="empty-prompt-id"
       iconType={props.iconType}
       title={<h2>{props.title}</h2>}
       body={
@@ -28,4 +29,4 @@ const EmptyPrompt = (props: EmptyPromptProps) => {
   );
 };
 
-export default EmptyPrompt;
+export { EmptyPrompt };

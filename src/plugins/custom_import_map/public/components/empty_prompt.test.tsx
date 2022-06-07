@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { shallow } from 'enzyme';
 import toJson from 'enzyme-to-json';
-import EmptyPrompt from './empty_prompt';
+import { EmptyPrompt } from './empty_prompt';
 
 describe('empty_prompt', () => {
   it('renders the Empty Prompt based on props provided', () => {

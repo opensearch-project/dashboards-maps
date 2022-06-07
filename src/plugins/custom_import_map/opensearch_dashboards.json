@@ -7,4 +7,3 @@
     "requiredPlugins": ["regionMap", "opensearchDashboardsReact"],
     "optionalPlugins": []
   }
-  

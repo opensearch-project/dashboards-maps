@@ -16,4 +16,3 @@ module.exports = {
       [require('@babel/plugin-transform-runtime'), { regenerator: true }],
     ],
   };
-  

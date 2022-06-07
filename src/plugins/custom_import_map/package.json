@@ -8,6 +8,11 @@
     "lint": "node ../../scripts/eslint .",
     "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "devDependencies": {
   },
   "dependencies": {
