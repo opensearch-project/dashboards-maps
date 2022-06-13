@@ -11,6 +11,7 @@ exports[`empty_prompt renders the Empty Prompt based on props provided 1`] = `
     </React.Fragment>
   }
   iconType="test"
+  testId="empty-prompt-id"
   title={
     <h2>
       test
