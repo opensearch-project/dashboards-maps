@@ -1,3 +1,8 @@
+[![Unit tests](https://github.com/opensearch-project/dashboards-maps/workflows/Unit%20tests%20workflow/badge.svg)](https://github.com/opensearch-project/dashboards-maps/actions?query=workflow%3A%22Unit+tests+workflow%22)
+[![codecov](https://codecov.io/gh/opensearch-project/dashboards-maps/branch/main/graph/badge.svg)](https://codecov.io/gh/opensearch-project/dashboards-maps)
+[![Forum](https://img.shields.io/badge/chat-on%20forums-blue)](https://forum.opensearch.org/)
+![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
+
 ![OpenSearch logo](OpenSearch.svg)
 
 - [Welcome!](#welcome)
