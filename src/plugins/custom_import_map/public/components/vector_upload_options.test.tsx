@@ -10,22 +10,19 @@ import { fireEvent } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import * as serviceApiCalls from '../services';
 
+jest.mock('../../../../src/plugins/opensearch_dashboards_react/public', () => ({
+  useOpenSearchDashboards: jest.fn().mockReturnValue({
+    services: {
+      http: { post: () => {Promise.resolve({});} },
+      notifications: { toasts: { addSuccess: jest.fn(), addDanger: jest.fn(), addWarning: jest.fn() } },
+    },
+  }),
+  toMountPoint: jest.fn().mockReturnValue({}),
+}));
+
+
 describe('vector_upload_options', () => {
   const props = {
-    vis: {
-      http: {
-        post: () => {
-          Promise.resolve({});
-        },
-      },
-      notifications: {
-        toasts: {
-          addDanger: (message: string) => jest.fn(),
-          addSuccess: (message: string) => jest.fn(),
-          addWarning: (message: string) => jest.fn(),
-        },
-      },
-    },
   };
 
   const getIndexResponseWhenIndexIsNotPresent = {

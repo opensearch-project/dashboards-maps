@@ -26,12 +26,3 @@ export const getIndex = async (indexName: string, http: any) => {
     return e;
   }
 };
-
-export const getPlugins = async (http: any) => {
-  try {
-    const response = await http.post('../api/custom_import_map/_plugins', {});
-    return response;
-  } catch (e) {
-    return e;
-  }
-};
