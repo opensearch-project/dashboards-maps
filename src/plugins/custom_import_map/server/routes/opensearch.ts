@@ -18,12 +18,4 @@ export default function (services, router) {
     },
     services.getIndex
   );
-
-  router.post(
-    {
-      path: '/api/custom_import_map/_plugins',
-      validate: false,
-    },
-    services.getPlugins
-  );
 }

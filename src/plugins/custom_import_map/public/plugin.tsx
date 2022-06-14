@@ -6,8 +6,8 @@ import {
   CustomImportMapPluginStart,
   AppPluginSetupDependencies
 } from './types';
-import { CustomVectorUpload } from './components/custom_vector_upload';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
+import { VectorUploadOptions } from './components/vector_upload_options';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
@@ -22,7 +22,7 @@ export class CustomImportMapPlugin
         }
       ),
       editor: (props : RegionMapVisualizationDependencies) => (
-        <CustomVectorUpload {...props} />
+        <VectorUploadOptions {...props} />
       ),
     })
     

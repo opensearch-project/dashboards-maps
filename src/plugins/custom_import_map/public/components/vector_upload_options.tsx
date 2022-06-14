@@ -19,11 +19,13 @@ import {
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
 import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB } from '../../common';
-import { toMountPoint } from '../../../../src/plugins/opensearch_dashboards_react/public';
+import { toMountPoint, useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { RegionMapOptionsProps } from '../../../../src/plugins/region_map/public';
 
 const VectorUploadOptions = (props: RegionMapOptionsProps) => {
-  const notifications = props.vis.notifications;
+  const opensearchDashboards = useOpenSearchDashboards();
+  const notifications = opensearchDashboards.services.notifications;
+  const http = opensearchDashboards.services.http;
 
   const INDEX_NAME_SUFFIX = '-map';
   const INDEX_NAME_UPPERCASE_CHECK = /[A-Z]+/;
@@ -151,7 +153,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
 
   const checkIfIndexExists = async (indexName: string) => {
     try {
-      const result = await getIndex(indexName, props.vis.http);
+      const result = await getIndex(indexName, http);
       return result.ok;
     } catch (e) {
       return false;
@@ -202,7 +204,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       type: GEO_SHAPE_TYPE,
       data: [JSON.parse(fileData || null)],
     };
-    const result = await postGeojson(JSON.stringify(bodyData), props.vis.http);
+    const result = await postGeojson(JSON.stringify(bodyData), http);
 
     // error handling logic that displays correct toasts for the end users
     if (result?.ok) {
