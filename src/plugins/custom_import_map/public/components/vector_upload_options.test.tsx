@@ -283,7 +283,7 @@ describe('vector_upload_options', () => {
       ],
     };
     const jsonDataArray = [];
-    const max = 500000;
+    const max = 100000;
     for (; jsonDataArray.push(jsonData) < max; );
     const str = JSON.stringify(jsonDataArray);
     const blob = new Blob([str]);
