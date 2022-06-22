@@ -1,10 +1,15 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import {
   PluginInitializerContext,
   CoreSetup,
   CoreStart,
   Plugin,
   Logger,
-} from '../../../src/core/server';
+} from '../../../../../src/core/server';
 
 import { CustomImportMapPluginSetup, CustomImportMapPluginStart } from './types';
 import { first } from 'rxjs/operators';

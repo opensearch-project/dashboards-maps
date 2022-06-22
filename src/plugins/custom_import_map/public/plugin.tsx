@@ -1,19 +1,24 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { i18n } from '@osd/i18n';
-import { CoreSetup, CoreStart, Plugin } from '../../../src/core/public';
+import { CoreSetup, CoreStart, Plugin } from '../../../../../src/core/public';
 import {
   CustomImportMapPluginSetup,
   CustomImportMapPluginStart,
   AppPluginSetupDependencies
 } from './types';
-import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
+import { RegionMapVisualizationDependencies } from '../../../../../src/plugins/region_map/public';
 import { VectorUploadOptions } from './components/vector_upload_options';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
   public setup(core: CoreSetup, { regionMap }: AppPluginSetupDependencies): CustomImportMapPluginSetup {
 
-    regionMap.addOptionsTab({
+    regionMap.addOptionTab({
       name: 'controls',
       title: i18n.translate(
         'regionMap.mapVis.regionMapEditorConfig.controlTabs.controlsTitle',
