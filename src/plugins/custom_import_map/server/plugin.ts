@@ -9,7 +9,7 @@ import {
   CoreStart,
   Plugin,
   Logger,
-} from '../../../src/core/server';
+} from '../../../../../src/core/server';
 
 import { CustomImportMapPluginSetup, CustomImportMapPluginStart } from './types';
 import { first } from 'rxjs/operators';

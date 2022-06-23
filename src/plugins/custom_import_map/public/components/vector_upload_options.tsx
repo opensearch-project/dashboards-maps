@@ -19,8 +19,8 @@ import {
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
 import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB } from '../../common';
-import { toMountPoint, useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
-import { RegionMapOptionsProps } from '../../../../src/plugins/region_map/public';
+import { toMountPoint, useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { RegionMapOptionsProps } from '../../../../../../src/plugins/region_map/public';
 
 const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   const opensearchDashboards = useOpenSearchDashboards();
