@@ -10,7 +10,7 @@ import { fireEvent } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import * as serviceApiCalls from '../services';
 
-jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', () => ({
+jest.mock('../../../../src/plugins/opensearch_dashboards_react/public', () => ({
   useOpenSearchDashboards: jest.fn().mockReturnValue({
     services: {
       http: { post: () => {Promise.resolve({});} },
@@ -283,7 +283,7 @@ describe('vector_upload_options', () => {
       ],
     };
     const jsonDataArray = [];
-    const max = 500000;
+    const max = 100000;
     for (; jsonDataArray.push(jsonData) < max; );
     const str = JSON.stringify(jsonDataArray);
     const blob = new Blob([str]);

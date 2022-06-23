@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CoreStart } from "../../../../../src/core/public";
+import { CoreStart } from "../../../src/core/public";
 
 export const postGeojson = async (requestBody: any, http: CoreStart['http']) => {
   try {
