@@ -20,6 +20,7 @@ Dashboards-maps is a frontend plugin that helps you in uploading custom GeoJSON 
 * [Project Website](https://opensearch.org/)
 * [Downloads](https://opensearch.org/downloads.html)
 * [Documentation](https://opensearch.org/docs/latest/)
+* [Developer Guide](DEVELOPER_GUIDE.md)
 * Need help? Try [Forums](https://discuss.opendistrocommunity.dev/)
 * [Project Principles](https://opensearch.org/#principles)
 * [Contributing to OpenSearch](CONTRIBUTING.md)

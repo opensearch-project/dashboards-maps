@@ -33,7 +33,7 @@ echo 'src/plugins/custom_import_map/*' >> .git/info/sparse-checkout
 git config core.sparseCheckout true
 git checkout main
 ```
-6. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/custom_import_map`.
+6. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/src/plugins/custom_import_map`.
 
 Ultimately, your directory structure should look like this:
 
