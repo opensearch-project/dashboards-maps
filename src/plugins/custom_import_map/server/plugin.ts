@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { first } from 'rxjs/operators';
 import {
   PluginInitializerContext,
   CoreSetup,
@@ -12,7 +13,6 @@ import {
 } from '../../../../../src/core/server';
 
 import { CustomImportMapPluginSetup, CustomImportMapPluginStart } from './types';
-import { first } from 'rxjs/operators';
 import { createGeospatialCluster } from './clusters';
 import { GeospatialService, OpensearchService } from './services';
 import { geospatial, opensearch } from '../server/routes';

@@ -18,8 +18,12 @@ import {
   EuiFormRow,
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
+import { ShowErrorModal } from './show_error_modal';
 import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB } from '../../common';
-import { toMountPoint, useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import {
+  toMountPoint,
+  useOpenSearchDashboards,
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { RegionMapOptionsProps } from '../../../../../../src/plugins/region_map/public';
 
 const VectorUploadOptions = (props: RegionMapOptionsProps) => {
@@ -56,7 +60,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   };
 
   const validateIndexName = (typedIndexName: string, isIndexNameWithSuffix: boolean) => {
-    let error = [];
+    const error = [];
     const errorIndexNameDiv = fetchElementByName('errorIndexName');
 
     // check for presence of index name entered by the user
@@ -109,7 +113,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       );
       setLoading(false);
       return false;
-    } 
+    }
     if (files[0].size === 0) {
       notifications.toasts.addDanger(
         'Error. File does not contain valid features. Check your json format.'
@@ -130,7 +134,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       fileData = await files[0].text();
     }
     return fileData;
-  }
+  };
 
   const handleSubmit = async () => {
     // show import button as loading
@@ -164,6 +168,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     const successfullyIndexedRecordCount = result.resp.success;
     const failedToIndexRecordCount = result.resp.failure;
     const totalRecords = result.resp.total;
+
     if (successfullyIndexedRecordCount === totalRecords) {
       notifications.toasts.addSuccess(
         'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
@@ -172,17 +177,27 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     }
 
     if (successfullyIndexedRecordCount > 0 && failedToIndexRecordCount > 0) {
-      const title = 'Partially indexed ' + successfullyIndexedRecordCount + ' of ' + 
-                    totalRecords + ' features in ' + indexName;
+      const title =
+        'Partially indexed ' +
+        successfullyIndexedRecordCount +
+        ' of ' +
+        totalRecords +
+        ' features in ' +
+        indexName;
+      const showModalProps = {
+        modalTitle: 'Error Details',
+        modalBody: JSON.stringify(result.resp.failures),
+        buttonText: 'View error details',
+      };
       notifications.toasts.addDanger({
-        title: title,
+        title,
         iconType: 'alert',
         text: toMountPoint(
           <div>
             <p>There were {failedToIndexRecordCount} errors processing the custom map.</p>
             <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiButton size="s">View error details</EuiButton>
+                <ShowErrorModal {...showModalProps} />
               </EuiFlexItem>
             </EuiFlexGroup>
           </div>
@@ -195,7 +210,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         'Error. File does not contain valid features. Check your json format.'
       );
     }
-  }
+  };
 
   const uploadGeojson = async (indexName: string, fileData: object) => {
     const bodyData = {
@@ -253,12 +268,8 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
 
         <EuiText size="xs" color="subdued" aria-label="geojson-file-format-text">
           <p>
-            <span className="formattedSpan">
-              Formats accepted: .json, .geojson
-            </span>
-            <span className="formattedSpan">
-              Max size: 25 MB
-            </span>
+            <span className="formattedSpan">Formats accepted: .json, .geojson</span>
+            <span className="formattedSpan">Max size: 25 MB</span>
             <span className="formattedSpan">
               Coordinates must be in EPSG:4326 coordinate reference system.
             </span>
