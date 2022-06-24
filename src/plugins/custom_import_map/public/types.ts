@@ -13,9 +13,9 @@ export interface CustomImportMapPluginSetup {}
 export interface CustomImportMapPluginStart {}
 
 export interface AppPluginStartDependencies {
-  navigation: NavigationPublicPluginStart; 
+  navigation: NavigationPublicPluginStart;
 }
 
 export interface AppPluginSetupDependencies {
-  regionMap: RegionMapPluginSetup; 
+  regionMap: RegionMapPluginSetup;
 }

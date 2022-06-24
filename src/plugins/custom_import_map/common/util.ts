@@ -4,5 +4,5 @@
  */
 
 export const fromMBtoBytes = (sizeInMB: number) => {
-    return sizeInMB * 1024 * 1024;
-}
+  return sizeInMB * 1024 * 1024;
+};

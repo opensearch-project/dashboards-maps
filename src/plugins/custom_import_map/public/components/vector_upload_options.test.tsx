@@ -13,17 +13,21 @@ import * as serviceApiCalls from '../services';
 jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', () => ({
   useOpenSearchDashboards: jest.fn().mockReturnValue({
     services: {
-      http: { post: () => {Promise.resolve({});} },
-      notifications: { toasts: { addSuccess: jest.fn(), addDanger: jest.fn(), addWarning: jest.fn() } },
+      http: {
+        post: () => {
+          Promise.resolve({});
+        },
+      },
+      notifications: {
+        toasts: { addSuccess: jest.fn(), addDanger: jest.fn(), addWarning: jest.fn() },
+      },
     },
   }),
   toMountPoint: jest.fn().mockReturnValue({}),
 }));
 
-
 describe('vector_upload_options', () => {
-  const props = {
-  };
+  const props = {};
 
   const getIndexResponseWhenIndexIsNotPresent = {
     ok: false,
@@ -104,7 +108,7 @@ describe('vector_upload_options', () => {
     await expect(tree.findAllByText(message)).toBeTruthy();
   };
 
-  const addUserInputToDOM = async () => {    
+  const addUserInputToDOM = async () => {
     const jsonData = {
       type: 'FeatureCollection',
       name: 'sample',
@@ -120,7 +124,7 @@ describe('vector_upload_options', () => {
     const indexName = screen.getByTestId('customIndex');
     fireEvent.change(indexName, { target: { value: 'sample' } });
     const uploader = getByTestId('filePicker');
-    
+
     const str = JSON.stringify([jsonData]);
     const blob = new Blob([str]);
     const file = new File([blob], 'sample.json', { type: 'application/JSON' });
@@ -152,25 +156,34 @@ describe('vector_upload_options', () => {
 
   it('renders the VectorUploadOptions component with error message when index name has upper case letters', async () => {
     try {
-      await vectorUploadOptionsWithIndexNameRendererUtil('ABC', 'Upper case letters are not allowed');
+      await vectorUploadOptionsWithIndexNameRendererUtil(
+        'ABC',
+        'Upper case letters are not allowed'
+      );
     } catch (err) {}
   });
 
   it('renders the VectorUploadOptions component with error message when index name has special characters', async () => {
     try {
-      await vectorUploadOptionsWithIndexNameRendererUtil('a#bc', 'Special characters are not allowed.');
+      await vectorUploadOptionsWithIndexNameRendererUtil(
+        'a#bc',
+        'Special characters are not allowed.'
+      );
     } catch (err) {}
   });
 
   it('renders the VectorUploadOptions component with error message when index name has -map as suffix', async () => {
     try {
-      await vectorUploadOptionsWithIndexNameRendererUtil('sample-map', "Map name can't end with -map.");
+      await vectorUploadOptionsWithIndexNameRendererUtil(
+        'sample-map',
+        "Map name can't end with -map."
+      );
     } catch (err) {}
   });
 
   it('renders the VectorUploadOptions component when we have successfully indexed all the data', async () => {
     addUserInputToDOM();
-    console.log("test case for successfully indexed file data");
+    console.log('test case for successfully indexed file data');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
@@ -185,7 +198,7 @@ describe('vector_upload_options', () => {
 
   it('renders the VectorUploadOptions component when we have partial failures during indexing', async () => {
     addUserInputToDOM();
-    console.log("test case for partial failures during indexing");
+    console.log('test case for partial failures during indexing');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
@@ -200,7 +213,7 @@ describe('vector_upload_options', () => {
 
   it('renders the VectorUploadOptions component when all the documents fail to index', async () => {
     addUserInputToDOM();
-    console.log("test case for failed documents");
+    console.log('test case for failed documents');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
@@ -215,7 +228,7 @@ describe('vector_upload_options', () => {
 
   it('renders the VectorUploadOptions component when postGeojson call fails', async () => {
     addUserInputToDOM();
-    console.log("test case for call failure to postGeojson");
+    console.log('test case for call failure to postGeojson');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
@@ -230,7 +243,7 @@ describe('vector_upload_options', () => {
 
   it('renders the VectorUploadOptions component when getIndex returns a duplicate index', async () => {
     addUserInputToDOM();
-    console.log("test case for duplicate index check");
+    console.log('test case for duplicate index check');
     const button = screen.getByRole('button', { name: 'import-file-button' });
     jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
       return Promise.resolve(getIndexResponseWhenIndexIsPresent);
