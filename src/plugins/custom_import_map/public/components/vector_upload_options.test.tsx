@@ -194,8 +194,6 @@ describe('vector_upload_options', () => {
     await waitFor(() => {
       fireEvent.click(button);
     });
-    const customerCalloutDiv = screen.getByTestId('customerCallout');
-    expect(customerCalloutDiv).toBeTruthy();
   });
 
   it('renders the VectorUploadOptions component when we have partial failures during indexing', async () => {
@@ -211,8 +209,6 @@ describe('vector_upload_options', () => {
     await waitFor(() => {
       fireEvent.click(button);
     });
-    const customerCalloutDiv = screen.getByTestId('customerCallout');
-    expect(customerCalloutDiv).toBeTruthy();
   });
 
   it('renders the VectorUploadOptions component when all the documents fail to index', async () => {

@@ -210,11 +210,6 @@ Object {
                   </span>
                 </button>
               </div>
-              <div
-                aria-label="medium-spacer"
-                class="euiSpacer euiSpacer--m"
-              />
-              <div />
             </div>
           </div>
         </div>
@@ -427,11 +422,6 @@ Object {
                 </span>
               </button>
             </div>
-            <div
-              aria-label="medium-spacer"
-              class="euiSpacer euiSpacer--m"
-            />
-            <div />
           </div>
         </div>
       </div>

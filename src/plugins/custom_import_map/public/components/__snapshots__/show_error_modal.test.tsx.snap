@@ -7,7 +7,7 @@ exports[`display error modal renders the error modal based on the props passed 1
   id="showModalOption"
 >
   <button
-    className="euiButton euiButton--primary"
+    className="euiButton euiButton--primary euiButton--small"
     disabled={false}
     onClick={[Function]}
     style={

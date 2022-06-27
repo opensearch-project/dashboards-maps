@@ -7,7 +7,6 @@ import './vector_upload_options.scss';
 import React, { useState } from 'react';
 import {
   EuiButton,
-  EuiCallOut,
   EuiFilePicker,
   EuiFlexItem,
   EuiFlexGroup,
@@ -44,7 +43,6 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   const [value, setValue] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [fileContent, setFileContent] = useState();
-  const [showCustomerCallout, setCustomerCallout] = useState(false);
 
   const onTextChange = (e) => {
     setValue(e.target.value);
@@ -166,47 +164,88 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     }
   };
 
+  const formatSuccessToast = (indexName: string, totalRecords: number) => {
+    const textContent =
+      totalRecords > 1
+        ? 'Successfully added ' + totalRecords + ' features to ' + indexName + '.'
+        : 'Successfully added 1 feature to ' + indexName + '.';
+    notifications.toasts.addSuccess({
+      text: toMountPoint(
+        <div>
+          <p>{textContent} Refresh before selecting a custom map.</p>
+          <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+            <EuiFlexItem grow={false}>
+              <EuiButton size="s" onClick={refresh}>
+                Refresh
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </div>
+      ),
+    });
+  };
+
+  const formatWarningToast = (
+    indexName: string,
+    successfullyIndexedRecordCount: number,
+    failedToIndexRecordCount: number,
+    totalRecords: number,
+    failures: object
+  ) => {
+    const title =
+      'Partially indexed ' +
+      successfullyIndexedRecordCount +
+      ' of ' +
+      totalRecords +
+      ' features in ' +
+      indexName;
+    const showModalProps = {
+      modalTitle: 'Error Details',
+      modalBody: JSON.stringify(failures),
+      buttonText: 'View error details',
+    };
+    const textContent =
+      failedToIndexRecordCount > 1
+        ? 'There were' + failedToIndexRecordCount + ' errors processing the custom map.'
+        : 'There was 1 error processing the custom map.';
+    notifications.toasts.addDanger({
+      title,
+      iconType: 'alert',
+      text: toMountPoint(
+        <div>
+          <p>{textContent} Refresh before selecting a custom map.</p>
+          <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+            <EuiFlexItem grow={false}>
+              <ShowErrorModal {...showModalProps} />
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiButton size="s" onClick={refresh}>
+                Refresh
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </div>
+      ),
+    });
+  };
+
   const parsePostGeojsonResult = (result: object, indexName: string) => {
     const successfullyIndexedRecordCount = result.resp.success;
     const failedToIndexRecordCount = result.resp.failure;
     const totalRecords = result.resp.total;
 
     if (successfullyIndexedRecordCount === totalRecords) {
-      notifications.toasts.addSuccess(
-        'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
-      );
-      setCustomerCallout(true);
-      return;
+      formatSuccessToast(indexName, totalRecords);
     }
 
     if (successfullyIndexedRecordCount > 0 && failedToIndexRecordCount > 0) {
-      const title =
-        'Partially indexed ' +
-        successfullyIndexedRecordCount +
-        ' of ' +
-        totalRecords +
-        ' features in ' +
-        indexName;
-      const showModalProps = {
-        modalTitle: 'Error Details',
-        modalBody: JSON.stringify(result.resp.failures),
-        buttonText: 'View error details',
-      };
-      notifications.toasts.addDanger({
-        title,
-        iconType: 'alert',
-        text: toMountPoint(
-          <div>
-            <p>There were {failedToIndexRecordCount} errors processing the custom map.</p>
-            <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
-              <EuiFlexItem grow={false}>
-                <ShowErrorModal {...showModalProps} />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </div>
-        ),
-      });
-      setCustomerCallout(true);
+      formatWarningToast(
+        indexName,
+        successfullyIndexedRecordCount,
+        failedToIndexRecordCount,
+        totalRecords,
+        result.resp.failures
+      );
     }
 
     if (successfullyIndexedRecordCount === 0) {
@@ -336,25 +375,6 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             Import file
           </EuiButton>
         </div>
-        <EuiSpacer size="m" aria-label="medium-spacer" />
-
-        {showCustomerCallout ? (
-          <div
-            className="customerCallout"
-            id="customerCallout"
-            aria-label="hit-refresh-div"
-            data-testid="customerCallout"
-          >
-            <EuiCallOut title="Proceed with caution!" color="warning" iconType="help">
-              <p>Hit refresh before moving to custom map visualization.</p>
-              <EuiButton onClick={refresh} color="warning">
-                Refresh
-              </EuiButton>
-            </EuiCallOut>
-          </div>
-        ) : (
-          <div />
-        )}
       </EuiCard>
     </div>
   );
