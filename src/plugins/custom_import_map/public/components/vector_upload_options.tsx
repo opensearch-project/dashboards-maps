@@ -7,6 +7,7 @@ import './vector_upload_options.scss';
 import React, { useState } from 'react';
 import {
   EuiButton,
+  EuiCallOut,
   EuiFilePicker,
   EuiFlexItem,
   EuiFlexGroup,
@@ -43,6 +44,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   const [value, setValue] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [fileContent, setFileContent] = useState();
+  const [showCustomerCallout, setCustomerCallout] = useState(false);
 
   const onTextChange = (e) => {
     setValue(e.target.value);
@@ -173,6 +175,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       notifications.toasts.addSuccess(
         'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
       );
+      setCustomerCallout(true);
       return;
     }
 
@@ -203,6 +206,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
           </div>
         ),
       });
+      setCustomerCallout(true);
     }
 
     if (successfullyIndexedRecordCount === 0) {
@@ -237,6 +241,10 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     } else {
       notifications.toasts.addWarning('Map name ' + indexName + ' already exists.');
     }
+  };
+
+  const refresh = () => {
+    window.location.reload();
   };
 
   return (
@@ -328,6 +336,25 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             Import file
           </EuiButton>
         </div>
+        <EuiSpacer size="m" aria-label="medium-spacer" />
+
+        {showCustomerCallout ? (
+          <div
+            className="customerCallout"
+            id="customerCallout"
+            aria-label="hit-refresh-div"
+            data-testid="customerCallout"
+          >
+            <EuiCallOut title="Proceed with caution!" color="warning" iconType="help">
+              <p>Hit refresh before moving to custom map visualization.</p>
+              <EuiButton onClick={refresh} color="warning">
+                Refresh
+              </EuiButton>
+            </EuiCallOut>
+          </div>
+        ) : (
+          <div />
+        )}
       </EuiCard>
     </div>
   );
