@@ -50,7 +50,7 @@ describe('vector_upload_options', () => {
     resp: {},
   };
 
-  const partialFailuresPostGeojsonResponse = {
+  const singlePartialFailuresPostGeojsonResponse = {
     ok: true,
     resp: {
       took: 1969,
@@ -58,6 +58,18 @@ describe('vector_upload_options', () => {
       total: 3220,
       success: 3219,
       failure: 1,
+      failures: [],
+    },
+  };
+
+  const multiplePartialFailuresPostGeojsonResponse = {
+    ok: true,
+    resp: {
+      took: 1969,
+      errors: true,
+      total: 3220,
+      success: 3218,
+      failure: 2,
       failures: [],
     },
   };
@@ -74,13 +86,25 @@ describe('vector_upload_options', () => {
     },
   };
 
-  const successfulPostGeojsonResponse = {
+  const multipleSuccessfulPostGeojsonResponse = {
     ok: true,
     resp: {
       took: 1969,
       errors: true,
       total: 3220,
       success: 3220,
+      failure: 0,
+      failures: [],
+    },
+  };
+
+  const singleSuccessfulPostGeojsonResponse = {
+    ok: true,
+    resp: {
+      took: 1969,
+      errors: true,
+      total: 1,
+      success: 1,
       failure: 0,
       failures: [],
     },
@@ -181,7 +205,7 @@ describe('vector_upload_options', () => {
     } catch (err) {}
   });
 
-  it('renders the VectorUploadOptions component when we have successfully indexed all the data', async () => {
+  it('renders the VectorUploadOptions component when we have successfully indexed all the data having multiple features', async () => {
     addUserInputToDOM();
     console.log('test case for successfully indexed file data');
     const button = screen.getByRole('button', { name: 'import-file-button' });
@@ -189,14 +213,29 @@ describe('vector_upload_options', () => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
     });
     jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
-      return Promise.resolve(successfulPostGeojsonResponse);
+      return Promise.resolve(multipleSuccessfulPostGeojsonResponse);
     });
     await waitFor(() => {
       fireEvent.click(button);
     });
   });
 
-  it('renders the VectorUploadOptions component when we have partial failures during indexing', async () => {
+  it('renders the VectorUploadOptions component when we have successfully indexed the data having single feature', async () => {
+    addUserInputToDOM();
+    console.log('test case for successfully indexed file data');
+    const button = screen.getByRole('button', { name: 'import-file-button' });
+    jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
+      return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
+    });
+    jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
+      return Promise.resolve(singleSuccessfulPostGeojsonResponse);
+    });
+    await waitFor(() => {
+      fireEvent.click(button);
+    });
+  });
+
+  it('renders the VectorUploadOptions component when we have a single failure during indexing', async () => {
     addUserInputToDOM();
     console.log('test case for partial failures during indexing');
     const button = screen.getByRole('button', { name: 'import-file-button' });
@@ -204,7 +243,22 @@ describe('vector_upload_options', () => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
     });
     jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
-      return Promise.resolve(partialFailuresPostGeojsonResponse);
+      return Promise.resolve(singlePartialFailuresPostGeojsonResponse);
+    });
+    await waitFor(() => {
+      fireEvent.click(button);
+    });
+  });
+
+  it('renders the VectorUploadOptions component when we have multiple partial failures during indexing', async () => {
+    addUserInputToDOM();
+    console.log('test case for partial failures during indexing');
+    const button = screen.getByRole('button', { name: 'import-file-button' });
+    jest.spyOn(serviceApiCalls, 'getIndex').mockImplementation(() => {
+      return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
+    });
+    jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
+      return Promise.resolve(multiplePartialFailuresPostGeojsonResponse);
     });
     await waitFor(() => {
       fireEvent.click(button);
@@ -258,9 +312,6 @@ describe('vector_upload_options', () => {
     const indexName = screen.getByTestId('customIndex');
     fireEvent.change(indexName, { target: { value: 'sample' } });
     const uploader = getByTestId('filePicker');
-    const jsonData = {};
-    const str = JSON.stringify([]);
-    const blob = new Blob([str]);
     const file = new File([], 'sample.json', { type: 'application/JSON' });
     File.prototype.text = jest.fn().mockResolvedValueOnce(JSON.stringify([]));
     await fireEvent.change(uploader, {
@@ -272,7 +323,7 @@ describe('vector_upload_options', () => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
     });
     jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
-      return Promise.resolve(successfulPostGeojsonResponse);
+      return Promise.resolve(multipleSuccessfulPostGeojsonResponse);
     });
     await waitFor(() => {
       fireEvent.click(button);
