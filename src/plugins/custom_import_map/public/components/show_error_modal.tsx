@@ -58,7 +58,9 @@ const ShowErrorModal = (props: ShowErrorModalProps) => {
 
   return (
     <div id="showModalOption" aria-label="showModalOption" data-testid="showModalOption">
-      <EuiButton onClick={showModal}>{props.buttonText}</EuiButton>
+      <EuiButton onClick={showModal} size="s">
+        {props.buttonText}
+      </EuiButton>
       {modal}
     </div>
   );

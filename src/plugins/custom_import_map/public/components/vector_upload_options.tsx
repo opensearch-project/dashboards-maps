@@ -164,45 +164,88 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     }
   };
 
+  const formatSuccessToast = (indexName: string, totalRecords: number) => {
+    const textContent =
+      totalRecords > 1
+        ? 'Successfully added ' + totalRecords + ' features to ' + indexName + '.'
+        : 'Successfully added 1 feature to ' + indexName + '.';
+    notifications.toasts.addSuccess({
+      text: toMountPoint(
+        <div>
+          <p>{textContent} Refresh to visualize the uploaded map.</p>
+          <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+            <EuiFlexItem grow={false}>
+              <EuiButton size="s" onClick={refresh}>
+                Refresh
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </div>
+      ),
+    });
+  };
+
+  const formatWarningToast = (
+    indexName: string,
+    successfullyIndexedRecordCount: number,
+    failedToIndexRecordCount: number,
+    totalRecords: number,
+    failures: object
+  ) => {
+    const title =
+      'Partially indexed ' +
+      successfullyIndexedRecordCount +
+      ' of ' +
+      totalRecords +
+      ' features in ' +
+      indexName;
+    const showModalProps = {
+      modalTitle: 'Error Details',
+      modalBody: JSON.stringify(failures),
+      buttonText: 'View error details',
+    };
+    const textContent =
+      failedToIndexRecordCount > 1
+        ? 'There were' + failedToIndexRecordCount + ' errors processing the custom map.'
+        : 'There was 1 error processing the custom map.';
+    notifications.toasts.addDanger({
+      title,
+      iconType: 'alert',
+      text: toMountPoint(
+        <div>
+          <p>{textContent} Refresh to visualize the uploaded map.</p>
+          <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
+            <EuiFlexItem grow={false}>
+              <ShowErrorModal {...showModalProps} />
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiButton size="s" onClick={refresh}>
+                Refresh
+              </EuiButton>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </div>
+      ),
+    });
+  };
+
   const parsePostGeojsonResult = (result: object, indexName: string) => {
     const successfullyIndexedRecordCount = result.resp.success;
     const failedToIndexRecordCount = result.resp.failure;
     const totalRecords = result.resp.total;
 
     if (successfullyIndexedRecordCount === totalRecords) {
-      notifications.toasts.addSuccess(
-        'Successfully added ' + successfullyIndexedRecordCount + ' features to ' + indexName
-      );
-      return;
+      formatSuccessToast(indexName, totalRecords);
     }
 
     if (successfullyIndexedRecordCount > 0 && failedToIndexRecordCount > 0) {
-      const title =
-        'Partially indexed ' +
-        successfullyIndexedRecordCount +
-        ' of ' +
-        totalRecords +
-        ' features in ' +
-        indexName;
-      const showModalProps = {
-        modalTitle: 'Error Details',
-        modalBody: JSON.stringify(result.resp.failures),
-        buttonText: 'View error details',
-      };
-      notifications.toasts.addDanger({
-        title,
-        iconType: 'alert',
-        text: toMountPoint(
-          <div>
-            <p>There were {failedToIndexRecordCount} errors processing the custom map.</p>
-            <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
-              <EuiFlexItem grow={false}>
-                <ShowErrorModal {...showModalProps} />
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </div>
-        ),
-      });
+      formatWarningToast(
+        indexName,
+        successfullyIndexedRecordCount,
+        failedToIndexRecordCount,
+        totalRecords,
+        result.resp.failures
+      );
     }
 
     if (successfullyIndexedRecordCount === 0) {
@@ -237,6 +280,10 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     } else {
       notifications.toasts.addWarning('Map name ' + indexName + ' already exists.');
     }
+  };
+
+  const refresh = () => {
+    window.location.reload();
   };
 
   return (
