@@ -172,7 +172,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     notifications.toasts.addSuccess({
       text: toMountPoint(
         <div>
-          <p>{textContent} Refresh before selecting a custom map.</p>
+          <p>{textContent} Refresh to visualize the uploaded map.</p>
           <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
             <EuiFlexItem grow={false}>
               <EuiButton size="s" onClick={refresh}>
@@ -213,7 +213,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       iconType: 'alert',
       text: toMountPoint(
         <div>
-          <p>{textContent} Refresh before selecting a custom map.</p>
+          <p>{textContent} Refresh to visualize the uploaded map.</p>
           <EuiFlexGroup justifyContent="flexEnd" gutterSize="s">
             <EuiFlexItem grow={false}>
               <ShowErrorModal {...showModalProps} />

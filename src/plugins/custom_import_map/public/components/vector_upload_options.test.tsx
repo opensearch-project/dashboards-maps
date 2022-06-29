@@ -50,7 +50,7 @@ describe('vector_upload_options', () => {
     resp: {},
   };
 
-  const singlePartialFailuresPostGeojsonResponse = {
+  const singlePartialFailurePostGeojsonResponse = {
     ok: true,
     resp: {
       took: 1969,
@@ -243,7 +243,7 @@ describe('vector_upload_options', () => {
       return Promise.resolve(getIndexResponseWhenIndexIsNotPresent);
     });
     jest.spyOn(serviceApiCalls, 'postGeojson').mockImplementation(() => {
-      return Promise.resolve(singlePartialFailuresPostGeojsonResponse);
+      return Promise.resolve(singlePartialFailurePostGeojsonResponse);
     });
     await waitFor(() => {
       fireEvent.click(button);
