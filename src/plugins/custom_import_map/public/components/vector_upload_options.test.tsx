@@ -330,6 +330,19 @@ describe('vector_upload_options', () => {
     });
   });
 
+  it('renders danger toast as file format is not geojson or json', async () => {
+    const { getByTestId } = render(<VectorUploadOptions {...props} />);
+    const indexName = screen.getByTestId('customIndex');
+    fireEvent.change(indexName, { target: { value: 'sample' } });
+    const uploader = getByTestId('filePicker');
+    const file = new File([], 'sample.txt', { type: 'text/plain' });
+    File.prototype.text = jest.fn().mockResolvedValueOnce(JSON.stringify([]));
+    await fireEvent.change(uploader, {
+      target: { files: [file] },
+    });
+    await expect(uploader.files[0].name).toBe('sample.txt');
+  });
+
   it('renders the VectorUploadOptions component when uploaded file size is >25 MB', async () => {
     const { getByTestId } = render(<VectorUploadOptions {...props} />);
     const indexName = screen.getByTestId('customIndex');
