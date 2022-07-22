@@ -197,7 +197,7 @@ Object {
                   aria-label="import-file-button"
                   class="euiButton euiButton--primary euiButton--fill"
                   id="submitButton"
-                  type="submit"
+                  type="button"
                 >
                   <span
                     class="euiButtonContent euiButton__content"
@@ -409,7 +409,7 @@ Object {
                 aria-label="import-file-button"
                 class="euiButton euiButton--primary euiButton--fill"
                 id="submitButton"
-                type="submit"
+                type="button"
               >
                 <span
                   class="euiButtonContent euiButton__content"

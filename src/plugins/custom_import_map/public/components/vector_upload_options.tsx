@@ -5,6 +5,7 @@
 
 import './vector_upload_options.scss';
 import React, { useState } from 'react';
+import path from 'path';
 import {
   EuiButton,
   EuiFilePicker,
@@ -16,10 +17,15 @@ import {
   EuiFieldText,
   EuiTextColor,
   EuiFormRow,
+  EuiCodeBlock,
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
 import { ShowErrorModal } from './show_error_modal';
-import { MAX_FILE_PAYLOAD_SIZE, MAX_FILE_PAYLOAD_SIZE_IN_MB } from '../../common';
+import {
+  ALLOWED_FILE_EXTENSIONS,
+  MAX_FILE_PAYLOAD_SIZE,
+  MAX_FILE_PAYLOAD_SIZE_IN_MB,
+} from '../../common';
 import {
   toMountPoint,
   useOpenSearchDashboards,
@@ -50,8 +56,21 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
 
   const onChange = (files) => {
     if (files[0]) {
+      validateGeojsonFileFormat(files);
       validateFileSize(files);
       setFileContent(files);
+    }
+  };
+
+  const validateGeojsonFileFormat = (files) => {
+    const uploadedFileExtension = path.extname(files[0].name);
+    if (ALLOWED_FILE_EXTENSIONS.includes(uploadedFileExtension.toLowerCase())) {
+      return true;
+    } else {
+      notifications.toasts.addDanger(
+        'Error. File format is incorrect. It should be either json or geojson file.'
+      );
+      return;
     }
   };
 
@@ -129,10 +148,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   };
 
   const getFileData = async (files) => {
-    let fileData;
-    if (files && validateFileSize(files)) {
-      fileData = await files[0].text();
-    }
+    const fileData = await files[0].text();
     return fileData;
   };
 
@@ -146,8 +162,10 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     const files = fileContent;
     let fileData;
     if (isValidIndexName) {
-      fileData = await getFileData(files);
-      await handleUploadGeojson(newIndexName, fileData);
+      if (files && validateGeojsonFileFormat(files) && validateFileSize(files)) {
+        fileData = await getFileData(files);
+        await handleUploadGeojson(newIndexName, fileData);
+      }
     }
 
     // removes loading symbol from import button
@@ -263,12 +281,19 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       data: [JSON.parse(fileData || null)],
     };
     const result = await postGeojson(JSON.stringify(bodyData), http);
-
     // error handling logic that displays correct toasts for the end users
     if (result?.ok) {
       parsePostGeojsonResult(result, indexName);
     } else {
-      notifications.toasts.addDanger('Error connecting to geospatial plugin.');
+      if (result?.resp) {
+        notifications.toasts.addDanger({
+          text: toMountPoint(
+            <div>
+              <EuiCodeBlock isCopyable>{result.resp}</EuiCodeBlock>
+            </div>
+          ),
+        });
+      }
     }
   };
 
@@ -283,7 +308,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   };
 
   const refresh = () => {
-    window.location.reload();
+    location.reload(true);
   };
 
   return (
@@ -366,7 +391,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <div className="importFileButton">
           <EuiButton
             id="submitButton"
-            type="submit"
+            type="button"
             fill
             onClick={handleSubmit}
             isLoading={isLoading}
