@@ -3,12 +3,12 @@
   "version": "2.2.0.0",
   "scripts": {
     "build": "yarn plugin-helpers build",
-    "plugin-helpers": "node ../../../../scripts/plugin_helpers",
-    "osd": "node ../../../../scripts/osd",
+    "plugin-helpers": "node ../../scripts/plugin_helpers",
+    "osd": "node ../../scripts/osd",
     "lint": "yarn run lint:es && yarn run lint:style",
-    "lint:es": "node ../../../../scripts/eslint",
-    "lint:style": "node ../../../../scripts/stylelint",
-    "test:jest": "TZ=UTC ../../../../node_modules/.bin/jest --config ./test/jest.config.js"
+    "lint:es": "node ../../scripts/eslint",
+    "lint:style": "node ../../scripts/stylelint",
+    "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js"
   },
   "husky": {
     "hooks": {

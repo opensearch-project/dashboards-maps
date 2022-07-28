@@ -2,10 +2,10 @@ name: Unit tests workflow
 on:
   push:
     branches:
-      - main
+      - 2.x
   pull_request:
     branches:
-      - main
+      - 2.x
 
 env:
   OPENSEARCH_DASHBOARDS_VERSION: '2.0'
@@ -29,7 +29,6 @@ jobs:
         run: |
           echo "::set-output name=node_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.node).match(/[.0-9]+/)[0]")"
           echo "::set-output name=yarn_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.yarn).match(/[.0-9]+/)[0]")"
-
       - name: Setup node
         uses: actions/setup-node@v1
         with:
@@ -41,19 +40,16 @@ jobs:
           npm uninstall -g yarn
           echo "Installing yarn ${{ steps.versions_step.outputs.yarn_version }}"
           npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
-
-      - name: Move src/plugins/custom_import_map to Plugins Dir
-        run: mv src/ OpenSearch-Dashboards/plugins/
+      - name: Move custom_import_map to Plugins Dir
+        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
 
       - name: Bootstrap plugin/opensearch-dashboards
         run: |
-          cd OpenSearch-Dashboards/plugins/src/plugins/custom_import_map
+          cd OpenSearch-Dashboards/plugins/custom_import_map
           yarn osd bootstrap
-
       - name: Run tests
         run: |
-          cd OpenSearch-Dashboards/plugins/src/plugins/custom_import_map
+          cd OpenSearch-Dashboards/plugins/custom_import_map
           yarn run test:jest --coverage
-
       - name: Uploads coverage
         uses: codecov/codecov-action@v1

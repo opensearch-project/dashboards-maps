@@ -19,7 +19,7 @@ module.exports = {
     '\\.(css|less|scss)$': '<rootDir>/test/mocks/styleMock.js',
     '^ui/(.*)': '<rootDir>/../../src/legacy/ui/public/$1/',
   },
-  snapshotSerializers: ['../../../../node_modules/enzyme-to-json/serializer'],
+  snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
   coverageReporters: ['lcov', 'text', 'cobertura'],
   testMatch: ['**/*.test.js', '**/*.test.ts', '**/*.test.tsx'],
   coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/test/'],
