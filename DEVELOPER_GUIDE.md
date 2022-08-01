@@ -33,7 +33,8 @@ echo 'src/plugins/custom_import_map/*' >> .git/info/sparse-checkout
 git config core.sparseCheckout true
 git checkout main
 ```
-6. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/src/plugins/custom_import_map`.
+6. Retain only `custom_import_map` directory within plugins and remove `src/plugins` from the path.
+6. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/custom_import_map`.
 
 Ultimately, your directory structure should look like this:
 
@@ -41,12 +42,12 @@ Ultimately, your directory structure should look like this:
 .
 ├── OpenSearch-Dashboards
 │   └── plugins
-│       └── src/plugins/custom_import_map
+│       └── custom_import_map
 ```
 
 ### Run
 
-From OpenSearch-Dashbaords repo (root folder), run the following command -
+From OpenSearch-Dashboards repo (root folder), run the following command -
 - `yarn start`
 
   Starts OpenSearch Dashboards and includes this plugin. OpenSearch Dashboards will be available on `localhost:5601`.
