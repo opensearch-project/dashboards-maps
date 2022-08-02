@@ -6,10 +6,6 @@ Compatible with OpenSearch and OpenSearch Dashboards Version 2.2.0
 * Add error modal and lint fixes([#13](https://github.com/opensearch-project/dashboards-maps/pull/13))
 * Introduce refresh option to update the custom vector map list ([#14](https://github.com/opensearch-project/dashboards-maps/pull/14))
 
-### Bug Fixes
-* Fix failing tests and updates license headers in files([#11](https://github.com/opensearch-project/dashboards-maps/pull/11))
-* Fix issue with file validation and danger toast messages ([#16](https://github.com/opensearch-project/dashboards-maps/pull/16))
-
 ### Infrastructure
 * Add basic template files related to OpenSearch guidelines([#2](https://github.com/opensearch-project/dashboards-maps/pull/2))
 * Add GitHub workflow for running unit tests([#6](https://github.com/opensearch-project/dashboards-maps/pull/6))
