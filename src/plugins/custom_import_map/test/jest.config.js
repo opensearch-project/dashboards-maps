@@ -25,6 +25,6 @@ module.exports = {
   coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/test/'],
   clearMocks: true,
   testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
-  modulePathIgnorePatterns: [],
+  modulePathIgnorePatterns: ['customImportMapDashboards'],
   testEnvironment: 'jest-environment-jsdom',
 };
