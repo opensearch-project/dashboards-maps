@@ -1,0 +1,16 @@
+ .layerControl__buttons {
+
+   .euiButton,
+   .euiButtonEmpty {
+     height: 24px;
+     line-height: 24px;
+
+     font-size: 12px;
+     min-width: 80px;
+
+     .euiIcon--medium {
+       width: 12px;
+       height: 12px;
+     }
+   }
+ }

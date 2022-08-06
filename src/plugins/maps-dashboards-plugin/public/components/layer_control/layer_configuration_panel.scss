@@ -1,0 +1,10 @@
+.visEditorSidebar__nav {
+  flex: 0 0 auto;
+}
+
+.visEditorSidebar__config {
+  overflow-y: scroll;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}

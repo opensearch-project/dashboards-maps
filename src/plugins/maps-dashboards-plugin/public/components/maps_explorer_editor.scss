@@ -1,0 +1,16 @@
+.visEditor__canvas {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.layerPanel__container {
+  display: flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  margin-right: 18px;
+  margin-top: 18px;
+
+  z-index: 1500;
+}

@@ -1,0 +1,27 @@
+.layer-panel {
+  display: flex;
+  width: 20rem;
+
+  .layer-panel-title {
+    padding-left: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .euiFormRow {
+    margin-top: 6px;
+  }
+
+  .euiTab {
+    height: 24px;
+    line-height: 24px;
+
+    font-size: 12px;
+    padding: 0px 8px 0px 8px;
+  }
+
+  .visEditorSidebar__form {
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+  }
+}
