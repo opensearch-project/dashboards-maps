@@ -22,7 +22,7 @@ module.exports = {
   snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
   coverageReporters: ['lcov', 'text', 'cobertura'],
   testMatch: ['**/*.test.js', '**/*.test.ts', '**/*.test.tsx'],
-  coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/test/'],
+  coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/test/', '<rootDir>/cypress/**',],
   clearMocks: true,
   testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
   modulePathIgnorePatterns: ['customImportMapDashboards'],

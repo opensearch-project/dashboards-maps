@@ -15,14 +15,19 @@
     "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js",
     "postbuild": "echo Renaming build artifact to [$npm_package_config_id-$npm_package_version.zip] && mv build/$npm_package_config_id*.zip build/$npm_package_config_id-$npm_package_version.zip",
     "opensearch": "node ../../scripts/opensearch"
-},
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
   },
   "devDependencies": {
+    "cypress": "9.5.4",
+    "cypress-multi-reporters": "^1.5.0"
   },
   "dependencies": {
+    "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
+    "@cypress/skip-test": "^2.6.1",
+    "cypress-file-upload": "^5.0.8"
   }
 }

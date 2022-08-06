@@ -1,0 +1,94 @@
+name: E2E Cypress tests
+on:
+  pull_request:
+    branches:
+      - main
+      - 2.*
+  push:
+    branches:
+      - main
+      - 2.*
+env:
+  OPENSEARCH_DASHBOARDS_VERSION: '2.x'
+  OPENSEARCH_VERSION: '2.1.0-SNAPSHOT'
+jobs:
+  tests:
+    name: Run Cypress E2E tests
+    runs-on: ubuntu-latest
+    env:
+      # prevents extra Cypress installation progress messages
+      CI: 1
+      # avoid warnings like "tput: No value for $TERM and no -T specified"
+      TERM: xterm
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          # TODO: Parse this from alerting plugin
+          java-version: 14
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: geospatial
+          repository: opensearch-project/geospatial
+          ref: 'main'
+      - name: Run Opensearch with plugin
+        run: |
+          cd geospatial
+          ./gradlew run -Dopensearch.version=${{ env.OPENSEARCH_VERSION }} &
+          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@v2
+        with:
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          path: OpenSearch-Dashboards
+      - name: Checkout customImportMapDashboards plugin
+        uses: actions/checkout@v2
+        with:
+          path: OpenSearch-Dashboards/plugins/dashboards-maps
+      - name: Get node and yarn versions
+        id: versions
+        run: |
+          echo "::set-output name=node_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.node).match(/[.0-9]+/)[0]")"
+          echo "::set-output name=yarn_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.yarn).match(/[.0-9]+/)[0]")"
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ steps.versions.outputs.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install correct yarn version for OpenSearch Dashboards
+        run: |
+          npm uninstall -g yarn
+          echo "Installing yarn ${{ steps.versions_step.outputs.yarn_version }}"
+          npm i -g yarn@${{ steps.versions.outputs.yarn_version }}
+      - name: Move custom_import_map to Plugins Dir
+        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
+      - name: Bootstrap OpenSearch Dashboards with plugin
+        run: |
+          cd OpenSearch-Dashboards/plugins/custom_import_map
+          yarn osd bootstrap
+      - name: Run OpenSearch Dashboards server
+        run: |
+          cd OpenSearch-Dashboards
+          yarn start --no-base-path --no-watch &
+          sleep 300
+        # timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:5601/api/status)" != "200" ]]; do sleep 5; done'
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: OpenSearch-Dashboards/plugins/custom_import_map
+          command: yarn run cypress run
+
+      # Screenshots are only captured on failure, will change this once we do visual regression tests
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: OpenSearch-Dashboards/plugins/custom_import_map/cypress/screenshots
+      # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: cypress-videos
+          path: OpenSearch-Dashboards/plugins/custom_import_map/cypress/videos
