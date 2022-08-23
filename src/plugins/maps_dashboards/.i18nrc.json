@@ -1,0 +1,7 @@
+{
+  "prefix": "mapsDashboards",
+  "paths": {
+    "mapsDashboards": "."
+  },
+  "translations": ["translations/ja-JP.json"]
+}
