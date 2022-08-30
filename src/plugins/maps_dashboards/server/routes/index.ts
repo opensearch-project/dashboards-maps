@@ -10,16 +10,26 @@
 
 import { IRouter } from '../../../../src/core/server';
 
+const SAMPLE_NUMBER = 3;
+
 export function defineRoutes(router: IRouter) {
-  router.get(
+  router.post(
     {
       path: '/api/maps_dashboards/example',
-      validate: false,
+      validate: false
     },
     async (context, request, response) => {
+      const hits = [];
+      for (let i = 0; i < SAMPLE_NUMBER; i++) {
+        hits.push({
+          id: `map ${i}`,
+          title: `Map ${i}`,
+          description: `Sample Map ${i} description`,
+        });
+      }
       return response.ok({
         body: {
-          time: new Date().toISOString(),
+          hits: hits,
         },
       });
     }
