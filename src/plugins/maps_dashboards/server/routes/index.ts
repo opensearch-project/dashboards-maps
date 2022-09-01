@@ -5,7 +5,7 @@
 
 /*
  * This is temporary API code for plugin to work, will be
- * removed in the future. 
+ * removed in the future.
  */
 
 import { IRouter } from '../../../../src/core/server';
@@ -15,8 +15,8 @@ const SAMPLE_NUMBER = 3;
 export function defineRoutes(router: IRouter) {
   router.post(
     {
-      path: '/api/maps_dashboards/example',
-      validate: false
+      path: '/api/maps-dashboards/example',
+      validate: false,
     },
     async (context, request, response) => {
       const hits = [];
@@ -29,7 +29,7 @@ export function defineRoutes(router: IRouter) {
       }
       return response.ok({
         body: {
-          hits: hits,
+          hits,
         },
       });
     }
