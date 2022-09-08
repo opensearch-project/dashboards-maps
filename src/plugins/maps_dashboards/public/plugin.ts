@@ -4,26 +4,26 @@
  */
 
 import { i18n } from '@osd/i18n';
-import { 
+import {
   AppMountParameters,
   CoreSetup,
   CoreStart,
   DEFAULT_APP_CATEGORIES,
-  Plugin 
+  Plugin,
 } from '../../../src/core/public';
 import {
   MapsDashboardsPluginSetup,
   MapsDashboardsPluginStart,
   AppPluginStartDependencies,
 } from './types';
-import { PLUGIN_NAME } from '../common';
+import { PLUGIN_NAME, PLUGIN_ID } from '../common';
 
 export class MapsDashboardsPlugin
   implements Plugin<MapsDashboardsPluginSetup, MapsDashboardsPluginStart> {
   public setup(core: CoreSetup): MapsDashboardsPluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
-      id: 'mapsDashboards',
+      id: PLUGIN_ID,
       title: PLUGIN_NAME,
       category: DEFAULT_APP_CATEGORIES.opensearchDashboards,
       async mount(params: AppMountParameters) {
