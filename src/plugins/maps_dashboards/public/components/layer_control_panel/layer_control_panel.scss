@@ -1,7 +1,14 @@
-.maplibre-control-layer {
-  min-width: 15rem;
+.layerControlPanel {
+  pointer-events: auto;
 
-  .maplibre-control-layer-title {
-    padding-left: 0.5rem;
+  width: $euiSizeL * 10;
+
+  .layerControlPanel__title {
+    padding: $euiSizeM $euiSizeM
+  }
+
+  .layerControlPanel__layerFunctionButton {
+    height: $euiSizeL;
+    width: $euiSizeL;
   }
 }
