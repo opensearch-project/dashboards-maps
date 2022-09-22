@@ -1,6 +1,6 @@
 {
     "id": "customImportMapDashboards",
-    "version": "2.3.0.0",
+    "version": "2.3.1.0",
     "opensearchDashboardsVersion": "2.3.0",
     "server": true,
     "ui": true,
