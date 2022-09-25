@@ -11,11 +11,7 @@
   min-height: calc(100vh - 98px);
 }
 
-.mapboxgl-ctrl-top-left, .maplibregl-ctrl-top-left {
-  left: 10px;
-  top: 10px;
-}
-
-.maplibre-control-layer{
-  pointer-events: auto;
+.maplibregl-ctrl-top-left {
+  left: $euiSizeS;
+  top: $euiSizeS;
 }
