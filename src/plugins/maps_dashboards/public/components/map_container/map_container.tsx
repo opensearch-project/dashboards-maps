@@ -4,12 +4,12 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { Map as Maplibre } from 'maplibre-gl';
+import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { MaplibreLayersPanelControl } from '../../components/layer_control_panel';
 import '../../index.scss';
 import { MAP_VECTOR_TILE_URL, MAP_INITIAL_STATE } from '../../../common/index';
 
-export const Map = () => {
+export const MapContainer = () => {
   const mapContainer = useRef(null);
 
   useEffect(() => {
@@ -23,9 +23,11 @@ export const Map = () => {
       style: `${mapStyle}`,
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
+      logoPosition: 'bottom-left',
     });
 
     map.addControl(new MaplibreLayersPanelControl(), 'top-left');
+    map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
   }, []);
 
   // render the map DOM
