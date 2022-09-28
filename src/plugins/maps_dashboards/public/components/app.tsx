@@ -6,7 +6,8 @@
 import React from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import { I18nProvider } from '@osd/i18n/react';
-import { MapsList, Map } from '../pages/';
+import { MapsList } from './maps_list';
+import { MapContainer } from './map_container';
 import { CoreStart } from '../../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
 import { APP_PATH } from '../../common/index';
@@ -25,7 +26,7 @@ export const MapsDashboardsApp = ({ basename, notifications, http }: MapsDashboa
       <I18nProvider>
         <div>
           <Switch>
-            <Route path={APP_PATH.CREATE_MAP} render={(props) => <Map />} />
+            <Route path={APP_PATH.CREATE_MAP} render={(props) => <MapContainer />} />
             <Route
               exact
               path="/"

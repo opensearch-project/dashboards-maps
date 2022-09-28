@@ -19,25 +19,35 @@ import {
   EuiKeyPadMenuItem,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
+import { LAYER_TYPE } from '../../../common';
 
-export const AddLayerPanel = () => {
-  // TODO: replace it once layers model ready
-  const layers = ['Base maps', 'Region', 'Coordinate', 'WMS'];
+interface Props {
+  setIsLayerConfigVisible: Function;
+}
 
-  const selectLayers = layers.map((layerItem, index) => {
+export const AddLayerPanel = ({ setIsLayerConfigVisible }: Props) => {
+  const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
+
+  const availableLayers = Object.values(LAYER_TYPE).map((layerItem, index) => {
     return (
       <EuiFlexItem key={index}>
         <EuiKeyPadMenuItem label={`${layerItem}`} aria-label={`${layerItem}`}>
-          <EuiIcon type="visMapRegion" size="xxl" color="primary" />
+          <EuiIcon
+            type="visMapRegion"
+            size="xxl"
+            color="primary"
+            onClick={() => {
+              setIsAddNewLayerModalVisible(false);
+              setIsLayerConfigVisible(true);
+            }}
+          />
         </EuiKeyPadMenuItem>
       </EuiFlexItem>
     );
   });
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const closeModal = () => setIsModalVisible(false);
-  const showModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsAddNewLayerModalVisible(false);
+  const showModal = () => setIsAddNewLayerModalVisible(true);
 
   const tabs = [
     {
@@ -46,7 +56,7 @@ export const AddLayerPanel = () => {
       content: (
         <Fragment>
           <EuiSpacer />
-          <EuiFlexGroup gutterSize="l">{selectLayers}</EuiFlexGroup>
+          <EuiFlexGroup gutterSize="l">{availableLayers}</EuiFlexGroup>
         </Fragment>
       ),
     },
@@ -71,7 +81,7 @@ export const AddLayerPanel = () => {
           + Add layer
         </EuiButton>
       </EuiFlexItem>
-      {isModalVisible && (
+      {isAddNewLayerModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
             <EuiModalHeaderTitle>

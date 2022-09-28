@@ -1,6 +1,5 @@
-.layerControlPanel {
+.layerControlPanel--show {
   pointer-events: auto;
-
   width: $euiSizeL * 10;
 
   .layerControlPanel__title {
@@ -10,5 +9,15 @@
   .layerControlPanel__layerFunctionButton {
     height: $euiSizeL;
     width: $euiSizeL;
+  }
+}
+
+.layerControlPanel--hide {
+  pointer-events: auto;
+
+  .layerControlPanel__visButton {
+    background-color: $euiColorEmptyShade;
+    color: $euiTextColor;
+    border-color: $euiColorLightShade;
   }
 }
