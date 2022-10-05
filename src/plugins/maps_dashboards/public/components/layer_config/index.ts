@@ -3,6 +3,4 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-.addLayer__button {
-  padding: $euiSizeM $euiSizeM
-}
+export { LayerConfigPanel } from './layer_config_panel';

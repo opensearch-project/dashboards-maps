@@ -3,6 +3,4 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-.addLayer__button {
-  padding: $euiSizeM $euiSizeM
-}
+export { MapContainer } from './map_container';
