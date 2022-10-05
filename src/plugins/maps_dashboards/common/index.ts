@@ -6,9 +6,7 @@
 export const PLUGIN_ID = 'maps-dashboards';
 export const PLUGIN_NAME = 'Maps';
 
-// This style URL is only used for development, will replace with production vector tile service url.
-export const MAP_VECTOR_TILE_URL =
-  'https://dldbnqfps17cd.cloudfront.net/styles/basic-preview/compressedstyle.json';
+export const MAP_VECTOR_TILE_URL = 'https://tiles.maps.opensearch.org/styles/basic.json';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
