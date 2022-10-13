@@ -19,9 +19,11 @@ export const APP_PATH = {
   CREATE_MAP: '/create-map',
 };
 
-export enum LAYER_TYPE {
-  BASE_MAP = 'base map',
-  CLUSTER_MAP = 'cluster',
-  CHOROPLETH_MAP = 'choropleth',
-  WEB_MAP_SERVICE = 'wms',
+export enum DASHBOARDS_MAPS_LAYER_TYPE {
+  OPENSEARCH_MAP = 'OpenSearch Map',
 }
+
+export const LAYER_VISIBILITY = {
+  NONE: 'none',
+  VISIBLE: 'visible',
+};
