@@ -2,16 +2,3 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
-
-@import "maplibre-gl/dist/maplibre-gl.css";
-
-/* stylelint-disable no-empty-source */
-.map-container {
-  width: 100%;
-  min-height: calc(100vh - 98px);
-}
-
-.maplibregl-ctrl-top-left {
-  left: $euiSizeS;
-  top: $euiSizeS;
-}

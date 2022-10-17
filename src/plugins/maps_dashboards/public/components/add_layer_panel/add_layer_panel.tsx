@@ -19,16 +19,24 @@ import {
   EuiKeyPadMenuItem,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
-import { LAYER_TYPE } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 
 interface Props {
   setIsLayerConfigVisible: Function;
+  setSelectedLayerConfig: Function;
+  addNewLayerToList: Function;
 }
 
-export const AddLayerPanel = ({ setIsLayerConfigVisible }: Props) => {
+export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
-  const availableLayers = Object.values(LAYER_TYPE).map((layerItem, index) => {
+  function onClickAddNewLayer(layerItem: string) {
+    // Will add new layer logic
+    setIsAddNewLayerModalVisible(false);
+    setIsLayerConfigVisible(true);
+  }
+
+  const availableLayers = Object.values(DASHBOARDS_MAPS_LAYER_TYPE).map((layerItem, index) => {
     return (
       <EuiFlexItem key={index}>
         <EuiKeyPadMenuItem label={`${layerItem}`} aria-label={`${layerItem}`}>
@@ -37,8 +45,7 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible }: Props) => {
             size="xxl"
             color="primary"
             onClick={() => {
-              setIsAddNewLayerModalVisible(false);
-              setIsLayerConfigVisible(true);
+              onClickAddNewLayer(layerItem);
             }}
           />
         </EuiKeyPadMenuItem>
@@ -88,7 +95,6 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible }: Props) => {
               <h1>Add layer</h1>
             </EuiModalHeaderTitle>
           </EuiModalHeader>
-
           <EuiModalBody>
             <EuiTabbedContent
               tabs={tabs}

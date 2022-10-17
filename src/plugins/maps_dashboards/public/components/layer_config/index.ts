@@ -4,3 +4,4 @@
  */
 
 export { LayerConfigPanel } from './layer_config_panel';
+export { BaseMapLayerConfigPanel } from './base_map_layer_config_panel';
