@@ -4,10 +4,16 @@ on:
     branches:
       - "*"
       - "feature/**"
+    paths:
+      - src/plugins/custom_import_map/**
+      - .github/workflows/unit-tests-workflow-for-customImportMap.yml
   pull_request:
     branches:
       - "*"
       - "feature/**"
+    paths:
+      - src/plugins/custom_import_map/**
+      - .github/workflows/unit-tests-workflow-for-customImportMap.yml
 
 env:
   OPENSEARCH_DASHBOARDS_VERSION: '2.0'
