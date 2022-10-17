@@ -8,7 +8,7 @@
     "lint": "yarn run lint:es && yarn run lint:style",
     "lint:es": "node ../../../../scripts/eslint",
     "lint:style": "node ../../../../scripts/stylelint",
-    "test:jest": "TZ=UTC ../../../../node_modules/.bin/jest --config ./test/jest.config.js"
+    "test:jest": "../../../../node_modules/.bin/jest --config ./test/jest.config.js"
   },
   "husky": {
     "hooks": {
