@@ -39,7 +39,6 @@ export const LayerConfigPanel = ({
   };
   const onUpdate = () => {
     updateLayer();
-    selectedLayerConfig.update?.();
     onClose();
   };
 

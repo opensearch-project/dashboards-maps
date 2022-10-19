@@ -17,10 +17,12 @@ import {
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
+import { v4 as uuidv4 } from 'uuid';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { ILayerConfig } from '../../model/ILayerConfig';
-import { DASHBOARDS_MAPS_LAYER_TYPE, MAP_VECTOR_TILE_URL, LAYER_VISIBILITY } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../common';
+import { layersFunctionMap } from '../../model/layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -47,65 +49,22 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
   const [layers, setLayers] = useState<ILayerConfig[]>([
     {
       iconType: 'visMapRegion',
-      id: 'example_id_1',
+      id: 'initial' + uuidv4(),
       type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-      name: 'Base Map Layer',
-      zoomRange: [0, 12],
+      name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+      zoomRange: [0, 22],
       opacity: 1,
       visibility: LAYER_VISIBILITY.VISIBLE,
-      update() {
-        const maplibreInstance = maplibreRef.current;
-        if (maplibreInstance) {
-          const baseMapJson = maplibreInstance.getStyle().layers;
-          if (baseMapJson) {
-            baseMapJson.forEach((mbLayer) => {
-              maplibreInstance.setLayerZoomRange(mbLayer.id, this.zoomRange[0], this.zoomRange[1]);
-              // it will catch error when update opacity in symbol type layer, need figure out later
-              if (mbLayer.type === 'symbol') {
-                return;
-              }
-              maplibreInstance.setPaintProperty(
-                mbLayer.id,
-                `${mbLayer.type}-opacity`,
-                this.opacity
-              );
-              maplibreInstance.setLayoutProperty(mbLayer.id, 'visibility', this.visibility);
-            });
-          } else {
-            maplibreInstance.setStyle(MAP_VECTOR_TILE_URL);
-          }
-        }
-      },
-      hide() {
-        const maplibreInstance = maplibreRef.current;
-        if (maplibreInstance) {
-          const baseMapJson = maplibreInstance.getStyle().layers;
-          if (baseMapJson) {
-            baseMapJson.forEach((mbLayer) => {
-              maplibreInstance.setLayoutProperty(mbLayer.id, 'visibility', this.visibility);
-            });
-          }
-        }
-      },
-      remove() {
-        const maplibreInstance = maplibreRef.current;
-        if (maplibreInstance) {
-          const baseMapJson = maplibreInstance.getStyle().layers;
-          if (baseMapJson) {
-            baseMapJson.forEach((mbLayer) => {
-              maplibreInstance.removeLayer(mbLayer.id);
-            });
-          }
-        }
-      },
-    },
+    }
   ]);
 
   useEffect(() => {
-    layers.forEach((layer) => {
-      layer.update?.();
-    });
-  }, [layers]);
+    maplibreRef.current.on('style.load', function () {
+      layers.forEach((layer) => {
+        layersFunctionMap[layer.type]?.update(maplibreRef, layer);
+      });
+    })
+  }, []);
 
   const updateLayers = () => {
     const layersClone = [...layers];
@@ -119,6 +78,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
       layersClone.push(selectedLayerConfig);
     }
     setLayers(layersClone);
+    layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
   };
 
   const removeLayer = (index: number) => {
@@ -196,7 +156,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                             } else {
                               layer.visibility = LAYER_VISIBILITY.VISIBLE;
                             }
-                            layer.hide(index);
+                            layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
                           }}
                           aria-label="Hide or show layer"
                           color="text"
@@ -208,7 +168,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                           size="s"
                           iconType="trash"
                           onClick={() => {
-                            layer.remove(index);
+                            layersFunctionMap[layer.type]?.remove(maplibreRef, layer);
                             removeLayer(index);
                           }}
                           aria-label="Delete layer"

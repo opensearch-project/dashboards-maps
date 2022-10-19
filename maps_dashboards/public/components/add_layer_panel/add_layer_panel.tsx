@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import {
   EuiFlexGroup,
   EuiFlexItem,
@@ -11,15 +11,15 @@ import {
   EuiModalBody,
   EuiModalHeader,
   EuiModalHeaderTitle,
-  EuiSpacer,
-  EuiTabbedContent,
+  EuiHorizontalRule,
   EuiTitle,
   EuiButton,
   EuiIcon,
   EuiKeyPadMenuItem,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
-import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { v4 as uuidv4 } from 'uuid';
+import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../common';
 
 interface Props {
   setIsLayerConfigVisible: Function;
@@ -31,7 +31,17 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
   function onClickAddNewLayer(layerItem: string) {
-    // Will add new layer logic
+    if (layerItem === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+      setSelectedLayerConfig({
+        iconType: 'visMapRegion',
+        name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+        type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+        id: uuidv4(),
+        zoomRange: [0, 22],
+        opacity: 1,
+        visibility: LAYER_VISIBILITY.VISIBLE,
+      });
+    }
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
   }
@@ -56,31 +66,6 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
   const closeModal = () => setIsAddNewLayerModalVisible(false);
   const showModal = () => setIsAddNewLayerModalVisible(true);
 
-  const tabs = [
-    {
-      id: 'select-layer-id',
-      name: 'Select layer',
-      content: (
-        <Fragment>
-          <EuiSpacer />
-          <EuiFlexGroup gutterSize="l">{availableLayers}</EuiFlexGroup>
-        </Fragment>
-      ),
-    },
-    {
-      id: 'import-id',
-      name: 'Import',
-      content: (
-        <Fragment>
-          <EuiSpacer />
-          <EuiTitle>
-            <h3>Import GeoJSON or JSON</h3>
-          </EuiTitle>
-        </Fragment>
-      ),
-    },
-  ];
-
   return (
     <div className="addLayer">
       <EuiFlexItem className="addLayer__button">
@@ -96,12 +81,11 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
             </EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody>
-            <EuiTabbedContent
-              tabs={tabs}
-              initialSelectedTab={tabs[0]}
-              autoFocus="selected"
-              aria-label="Add layer tabs"
-            />
+            <EuiHorizontalRule />
+            <EuiTitle size="s">
+              <h4>Reference layer</h4>
+            </EuiTitle>
+            <EuiFlexGroup gutterSize="l">{availableLayers}</EuiFlexGroup>
           </EuiModalBody>
         </EuiModal>
       )}

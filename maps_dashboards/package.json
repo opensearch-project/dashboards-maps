@@ -8,6 +8,8 @@
     "osd": "node ../../scripts/osd"
   },
   "dependencies": {
-    "maplibre-gl": "^2.4.0"
+    "maplibre-gl": "^2.4.0",
+    "uuid": "3.3.2",
+    "prettier": "^2.1.1"
   }
 }
