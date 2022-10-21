@@ -23,7 +23,6 @@ interface Props {
   setIsLayerConfigVisible: Function;
   selectedLayerConfig: ILayerConfig;
   setSelectedLayerConfig: Function;
-  addNewLayerFunction: Function;
   updateLayer: Function;
 }
 

@@ -21,7 +21,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { ILayerConfig } from '../../model/ILayerConfig';
-import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../common';
+import {
+  DASHBOARDS_MAPS_LAYER_TYPE,
+  LAYER_VISIBILITY,
+  MAP_VECTOR_TILE_BASIC_STYLE,
+} from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
 
 interface MaplibreRef {
@@ -46,39 +50,45 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
     visibility: '',
   });
 
-  const [layers, setLayers] = useState<ILayerConfig[]>([
-    {
-      iconType: 'visMapRegion',
-      id: 'initial' + uuidv4(),
-      type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-      name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-      zoomRange: [0, 22],
-      opacity: 1,
-      visibility: LAYER_VISIBILITY.VISIBLE,
-    }
-  ]);
+  const initialLoadLayer: ILayerConfig = {
+    iconType: 'visMapRegion',
+    id: uuidv4(),
+    type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+    name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+    zoomRange: [0, 22],
+    opacity: 1,
+    visibility: LAYER_VISIBILITY.VISIBLE,
+    layerSpec: {
+      OSMUrl: MAP_VECTOR_TILE_BASIC_STYLE,
+    },
+  };
+
+  const [layers, setLayers] = useState<ILayerConfig[]>([initialLoadLayer]);
 
   useEffect(() => {
-    maplibreRef.current.on('style.load', function () {
+    maplibreRef.current?.on('load', function () {
       layers.forEach((layer) => {
-        layersFunctionMap[layer.type]?.update(maplibreRef, layer);
+        layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
       });
-    })
+    });
   }, []);
 
-  const updateLayers = () => {
+  const updateLayer = () => {
     const layersClone = [...layers];
     const index = layersClone.findIndex((layer) => layer.id === selectedLayerConfig.id);
-    if (index > -1) {
+    if (index <= -1) {
+      layersClone.push(selectedLayerConfig);
+      layersFunctionMap[selectedLayerConfig.type]?.addNewLayer(maplibreRef, selectedLayerConfig);
+    } else {
       layersClone[index] = {
         ...layersClone[index],
         ...selectedLayerConfig,
       };
-    } else {
-      layersClone.push(selectedLayerConfig);
     }
     setLayers(layersClone);
-    layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
+    setTimeout(function () {
+      layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
+    }, 50);
   };
 
   const removeLayer = (index: number) => {
@@ -148,7 +158,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
                         <EuiButtonEmpty
-                          iconType="eyeClosed"
+                          iconType='eyeClosed'
                           size="s"
                           onClick={() => {
                             if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
@@ -186,14 +196,13 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
               <LayerConfigPanel
                 setIsLayerConfigVisible={setIsLayerConfigVisible}
                 selectedLayerConfig={selectedLayerConfig}
-                updateLayer={updateLayers}
+                updateLayer={updateLayer}
                 setSelectedLayerConfig={setSelectedLayerConfig}
               />
             )}
             <AddLayerPanel
               setIsLayerConfigVisible={setIsLayerConfigVisible}
               setSelectedLayerConfig={setSelectedLayerConfig}
-              addNewLayerFunction={updateLayers}
             />
           </EuiFlexGroup>
         </EuiPanel>

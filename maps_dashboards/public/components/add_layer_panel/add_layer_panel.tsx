@@ -24,7 +24,6 @@ import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../common';
 interface Props {
   setIsLayerConfigVisible: Function;
   setSelectedLayerConfig: Function;
-  addNewLayerToList: Function;
 }
 
 export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig }: Props) => {

@@ -4,7 +4,6 @@
  */
 
 export interface ILayerConfig {
-  isNewLayer: boolean;
   name: string;
   id: string;
   type: string;
@@ -12,4 +11,5 @@ export interface ILayerConfig {
   zoomRange: number[];
   opacity: number;
   visibility: string;
+  layerSpec?: any;
 }
