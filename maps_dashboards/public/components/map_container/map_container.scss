@@ -22,3 +22,10 @@
   left: $euiSizeS;
   top: $euiSizeS;
 }
+
+.zoombar {
+  z-index: 1;
+  position: absolute;
+  bottom: $euiSizeM;
+  right: $euiSizeS;
+}

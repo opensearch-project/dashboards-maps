@@ -11,7 +11,5 @@ export interface ILayerConfig {
   zoomRange: number[];
   opacity: number;
   visibility: string;
-  update: any;
-  remove: any;
-  hide: any;
+  layerSpec?: any;
 }

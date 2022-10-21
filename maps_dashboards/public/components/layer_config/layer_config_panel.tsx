@@ -23,7 +23,6 @@ interface Props {
   setIsLayerConfigVisible: Function;
   selectedLayerConfig: ILayerConfig;
   setSelectedLayerConfig: Function;
-  addNewLayerFunction: Function;
   updateLayer: Function;
 }
 
@@ -39,7 +38,6 @@ export const LayerConfigPanel = ({
   };
   const onUpdate = () => {
     updateLayer();
-    selectedLayerConfig.update?.();
     onClose();
   };
 
