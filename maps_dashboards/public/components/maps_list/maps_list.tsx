@@ -7,32 +7,32 @@ import { i18n } from '@osd/i18n';
 import React, { useCallback } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import { EuiPage, EuiPageBody, EuiPageContentBody } from '@elastic/eui';
-import { CoreStart } from 'opensearch-dashboards/public';
-import { TableListView } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import {
+  TableListView,
+  useOpenSearchDashboards,
+} from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
+import { MapServices } from '../../types';
 
-export const MapsList = (props: {
-  notifications: CoreStart['notifications'];
-  http: CoreStart['http'];
-}) => {
-  const { http } = props;
-  const find = async (num: number) => {
-    const res = await http.post('/api/maps-dashboards/example');
-    return {
-      total: num,
-      hits: res.hits,
-    };
-  };
-
+export const MapsList = () => {
+  const {
+    services: {
+      notifications: { toasts },
+      http: { basePath },
+      savedObjects: { client: savedObjectsClient },
+      application: { navigateToUrl },
+    },
+  } = useOpenSearchDashboards<MapServices>();
   const tableColumns = [
     {
-      field: 'title',
+      field: 'attributes.title',
       name: i18n.translate('maps.listing.table.titleColumnName', {
         defaultMessage: 'Title',
       }),
       sortable: true,
     },
     {
-      field: 'description',
+      field: 'attributes.description',
       name: i18n.translate('maps.listing.table.descriptionColumnName', {
         defaultMessage: 'Description',
       }),
@@ -40,15 +40,38 @@ export const MapsList = (props: {
     },
   ];
 
-  const createItem = useCallback(() => {
-    window.location.href = http.basePath.prepend('/app/maps-dashboards/#/create-map');
-  }, [http.basePath]);
-
-  const findItem = find.bind(null, 3);
-
-  const deleteItems = async () => {
-    await Promise.all([]);
+  const createMap = () => {
+    navigateToUrl(basePath.prepend('/app/maps-dashboards/create-map'));
   };
+
+  const fetchMaps = useCallback(async (): Promise<{
+    total: number;
+    hits: object[];
+  }> => {
+    const res = await savedObjectsClient.find<MapSavedObjectAttributes>({
+      type: 'map',
+      fields: ['description', 'title'],
+    });
+    return {
+      total: res.total,
+      hits: res.savedObjects,
+    };
+  }, [savedObjectsClient]);
+
+  const deleteMaps = useCallback(
+    async (selectedItems: object[]) => {
+      await Promise.all(
+        selectedItems.map((item: any) => savedObjectsClient.delete(item.type, item.id))
+      ).catch((error) => {
+        toasts.addError(error, {
+          title: i18n.translate('map.mapListingDeleteErrorTitle', {
+            defaultMessage: 'Error deleting map',
+          }),
+        });
+      });
+    },
+    [savedObjectsClient, toasts]
+  );
 
   const editItem = useCallback(() => {}, []);
 
@@ -61,9 +84,9 @@ export const MapsList = (props: {
             <EuiPageContentBody>
               <TableListView
                 headingId="mapsListingHeading"
-                createItem={createItem}
-                findItems={findItem}
-                deleteItems={deleteItems}
+                createItem={createMap}
+                findItems={fetchMaps}
+                deleteItems={deleteMaps}
                 editItem={editItem}
                 tableColumns={tableColumns}
                 listingLimit={10}
@@ -79,7 +102,7 @@ export const MapsList = (props: {
                 tableListTitle={i18n.translate('maps.listing.table.listTitle', {
                   defaultMessage: 'Maps',
                 })}
-                toastNotifications={props.notifications.toasts}
+                toastNotifications={toasts}
               />
             </EuiPageContentBody>
           </EuiPageBody>

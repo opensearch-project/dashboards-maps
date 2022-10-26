@@ -4,34 +4,26 @@
  */
 
 import React from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
 import { I18nProvider } from '@osd/i18n/react';
 import { MapsList } from './maps_list';
-import { MapContainer } from './map_container';
-import { CoreStart } from '../../../../src/core/public';
-import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { APP_PATH } from '../../common/index';
+import { MapPage } from './map_page';
+import { APP_PATH } from '../../common';
+import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../types';
 
-interface MapsDashboardsAppDeps {
-  basename: string;
-  notifications: CoreStart['notifications'];
-  http: CoreStart['http'];
-  navigation: NavigationPublicPluginStart;
-}
-
-export const MapsDashboardsApp = ({ basename, notifications, http }: MapsDashboardsAppDeps) => {
+export const MapsDashboardsApp = () => {
+  const {
+    services: { appBasePath },
+  } = useOpenSearchDashboards<MapServices>();
   // Render the application DOM.
   return (
-    <Router basename={basename}>
+    <Router history={appBasePath}>
       <I18nProvider>
         <div>
           <Switch>
-            <Route path={APP_PATH.CREATE_MAP} render={(props) => <MapContainer />} />
-            <Route
-              exact
-              path="/"
-              render={() => <MapsList http={http} notifications={notifications} />}
-            />
+            <Route path={APP_PATH.CREATE_MAP} render={() => <MapPage />} />
+            <Route exact path="/" render={() => <MapsList />} />
           </Switch>
         </div>
       </I18nProvider>

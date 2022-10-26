@@ -15,6 +15,7 @@ import {
   MapsDashboardsPluginSetup,
   MapsDashboardsPluginStart,
   AppPluginStartDependencies,
+  MapServices,
 } from './types';
 import { PLUGIN_NAME, PLUGIN_ID } from '../common';
 
@@ -31,8 +32,17 @@ export class MapsDashboardsPlugin
         const { renderApp } = await import('./application');
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
+        const { navigation } = depsStart as AppPluginStartDependencies;
+        const services: MapServices = {
+          ...coreStart,
+          setHeaderActionMenu: params.setHeaderActionMenu,
+          appBasePath: params.history,
+          element: params.element,
+          navigation,
+          toastNotifications: coreStart.notifications.toasts,
+        };
         // Render the application
-        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params);
+        return renderApp(params, services);
       },
     });
 
