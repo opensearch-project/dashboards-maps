@@ -10,9 +10,9 @@ import {
   Plugin,
   Logger,
 } from '../../../src/core/server';
-
+import { capabilitiesProvider } from './saved_objects/capabilities_provider';
 import { MapsDashboardsPluginSetup, MapsDashboardsPluginStart } from './types';
-import { defineRoutes } from './routes';
+import { mapSavedObjectsType } from './saved_objects';
 
 export class MapsDashboardsPlugin
   implements Plugin<MapsDashboardsPluginSetup, MapsDashboardsPluginStart> {
@@ -22,12 +22,14 @@ export class MapsDashboardsPlugin
     this.logger = initializerContext.logger.get();
   }
 
-  public setup(core: CoreSetup) {
+  public setup({ capabilities, http, savedObjects }: CoreSetup) {
     this.logger.debug('mapsDashboards: Setup');
-    const router = core.http.createRouter();
 
-    // Register server side APIs
-    defineRoutes(router);
+    // Register saved object types
+    savedObjects.registerType(mapSavedObjectsType);
+
+    // Register capabilities
+    capabilities.registerProvider(capabilitiesProvider);
 
     return {};
   }

@@ -5,22 +5,16 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppMountParameters, CoreStart } from '../../../src/core/public';
-import { AppPluginStartDependencies } from './types';
+import { AppMountParameters } from '../../../src/core/public';
+import { MapServices } from './types';
 import { MapsDashboardsApp } from './components/app';
+import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opensearch_dashboards_react/public';
 
-export const renderApp = (
-  { notifications, http }: CoreStart,
-  { navigation }: AppPluginStartDependencies,
-  { appBasePath, element }: AppMountParameters
-) => {
+export const renderApp = ({ element }: AppMountParameters, services: MapServices) => {
   ReactDOM.render(
-    <MapsDashboardsApp
-      basename={appBasePath}
-      notifications={notifications}
-      http={http}
-      navigation={navigation}
-    />,
+    <OpenSearchDashboardsContextProvider services={services}>
+      <MapsDashboardsApp />
+    </OpenSearchDashboardsContextProvider>,
     element
   );
 
