@@ -2,7 +2,7 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
-
+process.env.TZ = 'UTC';
 module.exports = {
   rootDir: '../',
   setupFiles: [

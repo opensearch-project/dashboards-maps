@@ -12,7 +12,7 @@
     "lint": "yarn run lint:es && yarn run lint:style",
     "lint:es": "node ../../scripts/eslint",
     "lint:style": "node ../../scripts/stylelint",
-    "test:jest": "TZ=UTC ../../node_modules/.bin/jest --config ./test/jest.config.js",
+    "test:jest": "../../node_modules/.bin/jest --config ./test/jest.config.js",
     "postbuild": "echo Renaming build artifact to [$npm_package_config_id-$npm_package_version.zip] && mv build/$npm_package_config_id*.zip build/$npm_package_config_id-$npm_package_version.zip",
     "opensearch": "node ../../scripts/opensearch"
   },
