@@ -17,19 +17,17 @@ import {
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
-import { v4 as uuidv4 } from 'uuid';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { ILayerConfig } from '../../model/ILayerConfig';
-import {
-  DASHBOARDS_MAPS_LAYER_TYPE,
-  LAYER_VISIBILITY,
-  MAP_VECTOR_TILE_BASIC_STYLE,
-  MAP_DEFAULT_OPACITY,
-  MAP_DEFAULT_MAX_ZOOM,
-  MAP_DEFAULT_MIN_ZOOM,
-} from '../../../common';
+import { LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../../types';
+import {
+  IOpenSearchDashboardsSearchResponse,
+  isCompleteResponse,
+} from '../../../../../src/plugins/data/common';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -37,42 +35,77 @@ interface MaplibreRef {
 
 interface Props {
   maplibreRef: MaplibreRef;
-  mapIdFromUrl: string;
   setLayers: (layers: ILayerConfig[]) => void;
   layers: ILayerConfig[];
 }
 
-const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }: Props) => {
+const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
+  const {
+    services: {
+      data: { search },
+      notifications,
+    },
+  } = useOpenSearchDashboards<MapServices>();
+
   const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
   const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
   const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig | undefined>();
-
-  const initialDefaultLayer: ILayerConfig = {
-    iconType: 'visMapRegion',
-    id: uuidv4(),
-    type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-    name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-    zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
-    opacity: MAP_DEFAULT_OPACITY,
-    visibility: LAYER_VISIBILITY.VISIBLE,
-    layerSpec: {
-      OSMUrl: MAP_VECTOR_TILE_BASIC_STYLE,
-    },
-  };
+  const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
 
   // Initially load the layers from the saved object
   useEffect(() => {
-    if (layers && mapIdFromUrl) {
-      layers.forEach((layer) => {
-        layersFunctionMap[layer.type]?.initialize(maplibreRef, layer);
+    if (layers.length <= 0) {
+      return;
+    }
+    const doDataLayerRender = async (layer: ILayerConfig) => {
+      const sourceConfig = layer.source;
+      const indexPatternRefName = sourceConfig.indexPatternRefName;
+      const geoField = sourceConfig.geoField;
+      const request = {
+        params: {
+          index: indexPatternRefName,
+          // TODO: update size after adding query bar
+          size: 100,
+          body: {
+            _source: geoField,
+          },
+        },
+      };
+      const search$ = search.search(request).subscribe({
+        next: (response: IOpenSearchDashboardsSearchResponse) => {
+          if (isCompleteResponse(response)) {
+            const dataSource = response.rawResponse.hits.hits;
+            layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
+            search$.unsubscribe();
+          } else {
+            notifications.toasts.addWarning('An error has occurred when query dataSource');
+            search$.unsubscribe();
+          }
+        },
+        error: (e: Error) => {
+          search.showError(e);
+        },
       });
+    };
+    if (initialLayersLoaded) {
+      if (!selectedLayerConfig) {
+        return;
+      }
+      if (selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+        layersFunctionMap[selectedLayerConfig.type].render(maplibreRef, selectedLayerConfig);
+      } else {
+        doDataLayerRender(selectedLayerConfig);
+      }
+      setSelectedLayerConfig(undefined);
     } else {
-      maplibreRef.current?.on('load', function () {
-        if (!mapIdFromUrl) {
-          layersFunctionMap[initialDefaultLayer.type]?.initialize(maplibreRef, initialDefaultLayer);
-          setLayers([initialDefaultLayer]);
+      layers.forEach((layer) => {
+        if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+          layersFunctionMap[layer.type].render(maplibreRef, layer);
+        } else {
+          doDataLayerRender(layer);
         }
       });
+      setInitialLayersLoaded(true);
     }
   }, [layers]);
 
@@ -84,7 +117,6 @@ const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }
     const index = layersClone.findIndex((layer) => layer.id === selectedLayerConfig.id);
     if (index <= -1) {
       layersClone.push(selectedLayerConfig);
-      layersFunctionMap[selectedLayerConfig.type]?.addNewLayer(maplibreRef, selectedLayerConfig);
     } else {
       layersClone[index] = {
         ...layersClone[index],
@@ -92,7 +124,6 @@ const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }
       };
     }
     setLayers(layersClone);
-    layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
   };
 
   const removeLayer = (index: number) => {
@@ -134,16 +165,7 @@ const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }
                 isLayerConfigVisible && selectedLayerConfig && selectedLayerConfig.id === layer.id;
               return (
                 <div key={layer.id}>
-                  <EuiFlexGroup
-                    alignItems="center"
-                    gutterSize="none"
-                    direction="row"
-                    onClick={() => {
-                      if (!isLayerConfigVisible) {
-                        setSelectedLayerConfig(layer);
-                      }
-                    }}
-                  >
+                  <EuiFlexGroup alignItems="center" gutterSize="none" direction="row">
                     <EuiFlexItem>
                       <EuiListGroupItem
                         key={layer.id}

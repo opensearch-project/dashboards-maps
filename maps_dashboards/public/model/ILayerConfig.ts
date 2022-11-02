@@ -12,4 +12,6 @@ export interface ILayerConfig {
   opacity: number;
   visibility: string;
   layerSpec?: any;
+  source?: any;
+  style?: any;
 }

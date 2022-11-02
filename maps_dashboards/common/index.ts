@@ -28,6 +28,7 @@ export const APP_PATH = {
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
   OPENSEARCH_MAP = 'OpenSearch Map',
+  DOCUMENT_LAYER = 'Document Layer',
 }
 
 export const LAYER_VISIBILITY = {

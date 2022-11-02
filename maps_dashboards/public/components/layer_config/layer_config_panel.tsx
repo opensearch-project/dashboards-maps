@@ -18,6 +18,7 @@ import {
 import { ILayerConfig } from '../../model/ILayerConfig';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { DocumentLayerConfigPanel } from './document_layer_config_panel';
 
 interface Props {
   setIsLayerConfigVisible: Function;
@@ -34,11 +35,12 @@ export const LayerConfigPanel = ({
 }: Props) => {
   const onClose = () => {
     setIsLayerConfigVisible(false);
-    setSelectedLayerConfig({});
+    setSelectedLayerConfig(undefined);
   };
   const onUpdate = () => {
+    console.log(selectedLayerConfig, 'Print-----selectedLayerConfig-----onUpdate');
     updateLayer();
-    onClose();
+    setIsLayerConfigVisible(false);
   };
 
   return (
@@ -56,14 +58,15 @@ export const LayerConfigPanel = ({
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiFlexGroup className="layerBasicSettings" direction="column">
-          <EuiFlexItem className="layerBasicSettings__header">
-            <EuiTitle size="xs">
-              <h2>Layer settings</h2>
-            </EuiTitle>
-          </EuiFlexItem>
           <EuiFlexItem>
             {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP && (
               <BaseMapLayerConfigPanel
+                selectedLayerConfig={selectedLayerConfig}
+                setSelectedLayerConfig={setSelectedLayerConfig}
+              />
+            )}
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER && (
+              <DocumentLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
               />

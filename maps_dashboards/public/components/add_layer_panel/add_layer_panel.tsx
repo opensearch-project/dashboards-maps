@@ -40,23 +40,45 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
         opacity: 1,
         visibility: LAYER_VISIBILITY.VISIBLE,
       });
+    } else if (layerItem === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER) {
+      setSelectedLayerConfig({
+        iconType: 'document',
+        name: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER,
+        type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER,
+        id: uuidv4(),
+        zoomRange: [0, 22],
+        opacity: 0.5,
+        visibility: LAYER_VISIBILITY.VISIBLE,
+        source: null,
+      });
     }
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
   }
 
-  const availableLayers = Object.values(DASHBOARDS_MAPS_LAYER_TYPE).map((layerItem, index) => {
+  const dataLayers = [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER];
+  const dataLayerItems = dataLayers.map((layerItem) => {
+    return (
+      <EuiKeyPadMenuItem
+        key={layerItem}
+        label={layerItem}
+        onClick={() => onClickAddNewLayer(layerItem)}
+      >
+        <EuiIcon type="visMapRegion" size="xxl" color="primary" />
+      </EuiKeyPadMenuItem>
+    );
+  });
+
+  const referenceLayers = [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP];
+  const referenceLayersItems = Object.values(referenceLayers).map((layerItem, index) => {
     return (
       <EuiFlexItem key={index}>
-        <EuiKeyPadMenuItem label={`${layerItem}`} aria-label={`${layerItem}`}>
-          <EuiIcon
-            type="visMapRegion"
-            size="xxl"
-            color="primary"
-            onClick={() => {
-              onClickAddNewLayer(layerItem);
-            }}
-          />
+        <EuiKeyPadMenuItem
+          label={layerItem}
+          aria-label={layerItem}
+          onClick={() => onClickAddNewLayer(layerItem)}
+        >
+          <EuiIcon type="visMapRegion" size="xxl" color="primary" />
         </EuiKeyPadMenuItem>
       </EuiFlexItem>
     );
@@ -80,11 +102,15 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
             </EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody>
+            <EuiTitle size="s">
+              <h4>Data layer</h4>
+            </EuiTitle>
+            <EuiFlexGroup gutterSize="l">{dataLayerItems}</EuiFlexGroup>
             <EuiHorizontalRule />
             <EuiTitle size="s">
               <h4>Reference layer</h4>
             </EuiTitle>
-            <EuiFlexGroup gutterSize="l">{availableLayers}</EuiFlexGroup>
+            <EuiFlexGroup gutterSize="l">{referenceLayersItems}</EuiFlexGroup>
           </EuiModalBody>
         </EuiModal>
       )}

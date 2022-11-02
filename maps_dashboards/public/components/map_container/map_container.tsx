@@ -60,12 +60,7 @@ export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerPr
       </EuiPanel>
       <div className="layerControlPanel-container">
         {mounted && (
-          <LayerControlPanel
-            maplibreRef={maplibreRef}
-            mapIdFromUrl={mapIdFromUrl}
-            layers={layers}
-            setLayers={setLayers}
-          />
+          <LayerControlPanel maplibreRef={maplibreRef} layers={layers} setLayers={setLayers} />
         )}
       </div>
       <div className="map-container" ref={mapContainer} />

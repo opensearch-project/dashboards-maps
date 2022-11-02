@@ -20,7 +20,8 @@ import {
 import { PLUGIN_NAME, PLUGIN_ID } from '../common';
 
 export class MapsDashboardsPlugin
-  implements Plugin<MapsDashboardsPluginSetup, MapsDashboardsPluginStart> {
+  implements Plugin<MapsDashboardsPluginSetup, MapsDashboardsPluginStart>
+{
   public setup(core: CoreSetup): MapsDashboardsPluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
@@ -32,7 +33,7 @@ export class MapsDashboardsPlugin
         const { renderApp } = await import('./application');
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
-        const { navigation } = depsStart as AppPluginStartDependencies;
+        const { navigation, data } = depsStart as AppPluginStartDependencies;
         const services: MapServices = {
           ...coreStart,
           setHeaderActionMenu: params.setHeaderActionMenu,
@@ -41,6 +42,7 @@ export class MapsDashboardsPlugin
           navigation,
           toastNotifications: coreStart.notifications.toasts,
           history: params.history,
+          data,
         };
         // Render the application
         return renderApp(params, services);

@@ -6,6 +6,7 @@ interface MaplibreRef {
   current: Maplibre | null;
 }
 
+// Fetch style layers from OpenSearch vector tile service
 const fetchStyleLayers = () => {
   return fetch(MAP_VECTOR_TILE_BASIC_STYLE)
     .then((res) => res.json())
@@ -42,37 +43,57 @@ const handleStyleLayers = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) 
   });
 };
 
+const layerExistInMbSource = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfig.id)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const updateLayerConfig = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) => {
+  if (maplibreRef.current) {
+    handleStyleLayers(layerConfig, maplibreRef);
+  }
+};
+
+const addNewLayer = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) => {
+  if (maplibreRef.current) {
+    fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
+      styleLayers.forEach((styleLayer) => {
+        styleLayer.id = styleLayer.id + '_' + layerConfig.id;
+        maplibreRef.current?.addLayer(styleLayer);
+        maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
+        maplibreRef.current?.setLayerZoomRange(
+          styleLayer.id,
+          layerConfig.zoomRange[0],
+          layerConfig.zoomRange[1]
+        );
+        // TODO: figure out error reason
+        if (styleLayer.type === 'symbol') {
+          return;
+        }
+        maplibreRef.current?.setPaintProperty(
+          styleLayer.id,
+          `${styleLayer.type}-opacity`,
+          layerConfig.opacity
+        );
+      });
+    });
+  }
+};
+
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  initialize: async (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
-        styleLayers.forEach((styleLayer) => {
-          styleLayer.id = styleLayer.id + '_' + layerConfig.id;
-          maplibreRef.current?.addLayer(styleLayer);
-          maplibreRef.current?.setLayoutProperty(
-            styleLayer.id,
-            'visibility',
-            layerConfig.visibility
-          );
-        });
-        handleStyleLayers(layerConfig, maplibreRef);
-      });
-    }
-  },
-  update: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      handleStyleLayers(layerConfig, maplibreRef);
-    }
-  },
-  addNewLayer: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
-        styleLayers.forEach((styleLayer) => {
-          styleLayer.id = styleLayer.id + '_' + layerConfig.id;
-          maplibreRef.current?.addLayer(styleLayer);
-        });
-      });
+  render: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+    // If layer already exist in maplibre source, update layer config
+    // else add new layer.
+    if (layerExistInMbSource(layerConfig, maplibreRef)) {
+      updateLayerConfig(layerConfig, maplibreRef);
+    } else {
+      addNewLayer(layerConfig, maplibreRef);
     }
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
