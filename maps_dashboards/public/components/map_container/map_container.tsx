@@ -9,12 +9,19 @@ import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, MAP_GLYPHS, MAP_VECTOR_TILE_DATA_SOURCE } from '../../../common';
+import { ILayerConfig } from '../../model/ILayerConfig';
 
-export const MapContainer = () => {
+interface MapContainerProps {
+  mapIdFromUrl: string;
+  setLayers: (layers: ILayerConfig[]) => void;
+  layers: ILayerConfig[];
+}
+
+export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerProps) => {
   const maplibreRef = useRef<Maplibre | null>(null);
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
-  const [zoom, setZoom] = useState(MAP_INITIAL_STATE.zoom);
+  const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
 
   useEffect(() => {
     const mbStyle = {
@@ -25,8 +32,7 @@ export const MapContainer = () => {
     };
 
     maplibreRef.current = new Maplibre({
-      // @ts-ignore
-      container: mapContainer.current,
+      container: mapContainer.current!,
       center: [MAP_INITIAL_STATE.lng, MAP_INITIAL_STATE.lat],
       zoom,
       style: mbStyle,
@@ -34,8 +40,7 @@ export const MapContainer = () => {
 
     maplibreRef.current.addControl(new NavigationControl({ showCompass: false }), 'top-right');
     maplibreRef.current.on('style.load', function () {
-      // @ts-ignore
-      maplibreRef.current.addSource('openmaptiles', {
+      maplibreRef.current!.addSource('openmaptiles', {
         type: 'vector',
         url: MAP_VECTOR_TILE_DATA_SOURCE,
       });
@@ -44,14 +49,10 @@ export const MapContainer = () => {
   }, []);
 
   useEffect(() => {
-    // @ts-ignore
-    maplibreRef.current.on('move', () => {
-      // @ts-ignore
-      return setZoom(maplibreRef.current.getZoom().toFixed(2));
+    maplibreRef.current!.on('move', () => {
+      return setZoom(Number(maplibreRef.current!.getZoom().toFixed(2)));
     });
   }, [zoom]);
-
-  useEffect(() => {}, []);
 
   return (
     <div>
@@ -59,7 +60,14 @@ export const MapContainer = () => {
         <p> Zoom: {zoom} </p>
       </EuiPanel>
       <div className="layerControlPanel-container">
-        {mounted && <LayerControlPanel maplibreRef={maplibreRef} />}
+        {mounted && (
+          <LayerControlPanel
+            maplibreRef={maplibreRef}
+            mapIdFromUrl={mapIdFromUrl}
+            layers={layers}
+            setLayers={setLayers}
+          />
+        )}
       </div>
       <div className="map-container" ref={mapContainer} />
     </div>

@@ -4,7 +4,7 @@
  */
 
 import { i18n } from '@osd/i18n';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import { EuiPage, EuiPageBody, EuiPageContentBody } from '@elastic/eui';
 import {
@@ -13,16 +13,24 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 import { MapServices } from '../../types';
+import { getMapsLandingBreadcrumbs } from '../../utils/breadcrumbs';
+import { PLUGIN_ID, APP_PATH } from '../../../common';
 
 export const MapsList = () => {
   const {
     services: {
       notifications: { toasts },
-      http: { basePath },
       savedObjects: { client: savedObjectsClient },
-      application: { navigateToUrl },
+      application: { navigateToApp },
+      chrome: { docTitle, setBreadcrumbs },
     },
   } = useOpenSearchDashboards<MapServices>();
+
+  useEffect(() => {
+    setBreadcrumbs(getMapsLandingBreadcrumbs(navigateToApp));
+    docTitle.change(i18n.translate('maps.listing.pageTitle', { defaultMessage: 'Maps' }));
+  }, [docTitle, navigateToApp, setBreadcrumbs]);
+
   const tableColumns = [
     {
       field: 'attributes.title',
@@ -41,7 +49,7 @@ export const MapsList = () => {
   ];
 
   const createMap = () => {
-    navigateToUrl(basePath.prepend('/app/maps-dashboards/create-map'));
+    navigateToApp(PLUGIN_ID, { path: APP_PATH.CREATE_MAP });
   };
 
   const fetchMaps = useCallback(async (): Promise<{
@@ -73,7 +81,15 @@ export const MapsList = () => {
     [savedObjectsClient, toasts]
   );
 
-  const editItem = useCallback(() => {}, []);
+  const editMap = useCallback(
+    ({ id }) => {
+      if (id) {
+        navigateToApp(PLUGIN_ID, { path: `/${id}` });
+        return;
+      }
+    },
+    [navigateToApp]
+  );
 
   // Render the map list DOM.
   return (
@@ -87,7 +103,7 @@ export const MapsList = () => {
                 createItem={createMap}
                 findItems={fetchMaps}
                 deleteItems={deleteMaps}
-                editItem={editItem}
+                editItem={editMap}
                 tableColumns={tableColumns}
                 listingLimit={10}
                 initialPageSize={10}

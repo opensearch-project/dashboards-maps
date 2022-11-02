@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   EuiPanel,
   EuiTitle,
@@ -27,6 +27,9 @@ import {
   MAP_VECTOR_TILE_BASIC_STYLE,
 } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../../types';
+import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -34,11 +37,32 @@ interface MaplibreRef {
 
 interface Props {
   maplibreRef: MaplibreRef;
+  mapIdFromUrl: string;
+  setLayers: (layers: ILayerConfig[]) => void;
+  layers: ILayerConfig[];
 }
 
-const LayerControlPanel = ({ maplibreRef }: Props) => {
+const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Props) => {
   const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
   const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
+  const {
+    services: {
+      savedObjects: { client: savedObjectsClient },
+    },
+  } = useOpenSearchDashboards<MapServices>();
+
+  const fetchLayers = useCallback(async (): Promise<{
+    layers: ILayerConfig[];
+  }> => {
+    const savedMapObject = await savedObjectsClient.get<MapSavedObjectAttributes>(
+      'map',
+      mapIdFromUrl
+    );
+    const SavedLayers = JSON.parse(savedMapObject.attributes.layerList as string);
+    return {
+      layers: SavedLayers,
+    };
+  }, [savedObjectsClient, mapIdFromUrl]);
 
   const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig>({
     iconType: '',
@@ -50,7 +74,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
     visibility: '',
   });
 
-  const initialLoadLayer: ILayerConfig = {
+  const initialDefaultLayer: ILayerConfig = {
     iconType: 'visMapRegion',
     id: uuidv4(),
     type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
@@ -63,13 +87,21 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
     },
   };
 
-  const [layers, setLayers] = useState<ILayerConfig[]>([initialLoadLayer]);
-
+  // Initially load the layers from the saved object
   useEffect(() => {
     maplibreRef.current?.on('load', function () {
-      layers.forEach((layer) => {
-        layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
-      });
+      if (!!mapIdFromUrl) {
+        fetchLayers().then((res) => {
+          const layersFromSavedMap = res.layers;
+          layersFromSavedMap.forEach((layer) => {
+            layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
+          });
+          setLayers(res.layers);
+        });
+      } else {
+        layersFunctionMap[initialDefaultLayer.type]?.initial(maplibreRef, initialDefaultLayer);
+        setLayers([initialDefaultLayer]);
+      }
     });
   }, []);
 
@@ -158,7 +190,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
                         <EuiButtonEmpty
-                          iconType='eyeClosed'
+                          iconType="eyeClosed"
                           size="s"
                           onClick={() => {
                             if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {

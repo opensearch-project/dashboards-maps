@@ -18,7 +18,9 @@ export const MAP_INITIAL_STATE = {
 };
 
 export const APP_PATH = {
-  CREATE_MAP: '/create-map',
+  LANDING_PAGE_PATH: '/',
+  CREATE_MAP: '/create',
+  SAVED_MAP: '/:id',
 };
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
