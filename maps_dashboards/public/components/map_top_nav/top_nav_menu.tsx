@@ -44,15 +44,13 @@ export const MapTopNavMenu = ({ mapIdFromUrl, layers }: MapTopNavMenuProps) => {
         setTitle(object.attributes.title);
         setDescription(object.attributes.description!);
       });
+      chrome.setBreadcrumbs(getSavedMapBreadcrumbs(title, navigateToApp));
+      chrome.docTitle.change(title);
+    } else {
+      chrome.setBreadcrumbs(getCreateBreadcrumbs(navigateToApp));
+      chrome.docTitle.change('Create');
     }
-  }, [fetchMapObject, mapIdFromUrl]);
-
-  if (mapIdFromUrl) {
-    chrome.setBreadcrumbs(getSavedMapBreadcrumbs(title, navigateToApp));
-    chrome.docTitle.change(title);
-  } else {
-    chrome.setBreadcrumbs(getCreateBreadcrumbs(navigateToApp));
-  }
+  }, [chrome, fetchMapObject, mapIdFromUrl, navigateToApp, title]);
 
   return (
     <TopNavMenu
@@ -62,6 +60,8 @@ export const MapTopNavMenu = ({ mapIdFromUrl, layers }: MapTopNavMenuProps) => {
         layers,
         title,
         description,
+        setTitle,
+        setDescription,
       })}
       setMenuMountPoint={setHeaderActionMenu}
     />

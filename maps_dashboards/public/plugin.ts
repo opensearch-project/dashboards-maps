@@ -40,6 +40,7 @@ export class MapsDashboardsPlugin
           element: params.element,
           navigation,
           toastNotifications: coreStart.notifications.toasts,
+          history: params.history,
         };
         // Render the application
         return renderApp(params, services);
