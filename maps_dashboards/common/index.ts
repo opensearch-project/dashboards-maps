@@ -20,7 +20,7 @@ export const MAP_INITIAL_STATE = {
 export const APP_PATH = {
   LANDING_PAGE_PATH: '/',
   CREATE_MAP: '/create',
-  SAVED_MAP: '/:id',
+  EDIT_MAP: '/:id',
 };
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
