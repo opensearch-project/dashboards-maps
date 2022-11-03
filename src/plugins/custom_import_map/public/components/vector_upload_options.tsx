@@ -29,8 +29,8 @@ import {
 import {
   toMountPoint,
   useOpenSearchDashboards,
-} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { RegionMapOptionsProps } from '../../../../../../src/plugins/region_map/public';
+} from '../../../../src/plugins/opensearch_dashboards_react/public';
+import { RegionMapOptionsProps } from '../../../../src/plugins/region_map/public';
 
 const VectorUploadOptions = (props: RegionMapOptionsProps) => {
   const opensearchDashboards = useOpenSearchDashboards();

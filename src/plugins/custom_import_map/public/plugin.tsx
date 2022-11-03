@@ -5,13 +5,13 @@
 
 import React from 'react';
 import { i18n } from '@osd/i18n';
-import { CoreSetup, CoreStart, Plugin } from '../../../../../src/core/public';
+import { CoreSetup, CoreStart, Plugin } from '../../../src/core/public';
 import {
   CustomImportMapPluginSetup,
   CustomImportMapPluginStart,
   AppPluginSetupDependencies,
 } from './types';
-import { RegionMapVisualizationDependencies } from '../../../../../src/plugins/region_map/public';
+import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
 import { VectorUploadOptions } from './components/vector_upload_options';
 
 export class CustomImportMapPlugin

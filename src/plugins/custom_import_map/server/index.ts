@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { PluginInitializerContext } from '../../../../../src/core/server';
+import { PluginInitializerContext } from '../../../src/core/server';
 import { CustomImportMapPlugin } from './plugin';
 
 // This exports static code and TypeScript types,
