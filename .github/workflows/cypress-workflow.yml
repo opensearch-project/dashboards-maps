@@ -9,8 +9,8 @@ on:
       - main
       - 2.*
 env:
-  OPENSEARCH_DASHBOARDS_VERSION: '2.3'
-  OPENSEARCH_VERSION: '2.3.0-SNAPSHOT'
+  OPENSEARCH_DASHBOARDS_VERSION: '2.4'
+  OPENSEARCH_VERSION: '2.4.0-SNAPSHOT'
 jobs:
   tests:
     name: Run Cypress E2E tests
@@ -30,7 +30,7 @@ jobs:
         with:
           path: geospatial
           repository: opensearch-project/geospatial
-          ref: '2.3'
+          ref: '2.4'
       - name: Run Opensearch with plugin
         run: |
           cd geospatial
