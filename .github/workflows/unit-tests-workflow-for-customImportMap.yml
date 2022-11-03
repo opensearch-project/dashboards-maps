@@ -60,16 +60,16 @@ jobs:
           npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
 
       - name: Move src/plugins/custom_import_map to Plugins Dir
-        run: mv src/ OpenSearch-Dashboards/plugins/
+        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
 
       - name: Bootstrap plugin/opensearch-dashboards
         run: |
-          cd OpenSearch-Dashboards/plugins/src/plugins/custom_import_map
+          cd OpenSearch-Dashboards/plugins/custom_import_map
           yarn osd bootstrap
 
       - name: Run tests with coverage
         run: |
-          cd OpenSearch-Dashboards/plugins/src/plugins/custom_import_map
+          cd OpenSearch-Dashboards/plugins/custom_import_map
           yarn run test:jest --coverage
 
       - name: Uploads coverage
