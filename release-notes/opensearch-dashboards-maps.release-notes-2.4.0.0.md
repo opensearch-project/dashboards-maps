@@ -5,4 +5,5 @@ Compatible with OpenSearch and OpenSearch Dashboards Version 2.4.0
 * Add windows and mac platform to run unit test  ([#74](https://github.com/opensearch-project/dashboards-maps/pull/74))
 
 ### Maintenance
+* Version bump to 2.4 for dependent packages ([#86](https://github.com/opensearch-project/dashboards-maps/pull/86))
 * Bump version to 2.4.0.0 ([#70](https://github.com/opensearch-project/dashboards-maps/pull/70))
