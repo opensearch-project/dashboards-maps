@@ -6,7 +6,7 @@
 import { i18n } from '@osd/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
-import { EuiPage, EuiPageBody, EuiPageContentBody } from '@elastic/eui';
+import { EuiPage, EuiPageBody, EuiPageContentBody, EuiLink } from '@elastic/eui';
 import {
   TableListView,
   useOpenSearchDashboards,
@@ -31,6 +31,10 @@ export const MapsList = () => {
     docTitle.change(i18n.translate('maps.listing.pageTitle', { defaultMessage: 'Maps' }));
   }, [docTitle, navigateToApp, setBreadcrumbs]);
 
+  const navigateToSavedMapPage = (id: string) => {
+    navigateToApp(PLUGIN_ID, { path: `/${id}` });
+  };
+
   const tableColumns = [
     {
       field: 'attributes.title',
@@ -38,6 +42,9 @@ export const MapsList = () => {
         defaultMessage: 'Title',
       }),
       sortable: true,
+      render: (title, record) => (
+        <EuiLink onClick={() => navigateToSavedMapPage(record.id)}>{title}</EuiLink>
+      ),
     },
     {
       field: 'attributes.description',
@@ -46,9 +53,16 @@ export const MapsList = () => {
       }),
       sortable: true,
     },
+    {
+      field: 'updated_at',
+      name: i18n.translate('maps.listing.table.updatedTimeColumnName', {
+        defaultMessage: 'Last updated',
+      }),
+      sortable: true,
+    },
   ];
 
-  const createMap = () => {
+  const navigateToCreateMapPage = () => {
     navigateToApp(PLUGIN_ID, { path: APP_PATH.CREATE_MAP });
   };
 
@@ -81,16 +95,6 @@ export const MapsList = () => {
     [savedObjectsClient, toasts]
   );
 
-  const editMap = useCallback(
-    ({ id }) => {
-      if (id) {
-        navigateToApp(PLUGIN_ID, { path: `/${id}` });
-        return;
-      }
-    },
-    [navigateToApp]
-  );
-
   // Render the map list DOM.
   return (
     <I18nProvider>
@@ -100,10 +104,9 @@ export const MapsList = () => {
             <EuiPageContentBody>
               <TableListView
                 headingId="mapsListingHeading"
-                createItem={createMap}
+                createItem={navigateToCreateMapPage}
                 findItems={fetchMaps}
                 deleteItems={deleteMaps}
-                editItem={editMap}
                 tableColumns={tableColumns}
                 listingLimit={10}
                 initialPageSize={10}

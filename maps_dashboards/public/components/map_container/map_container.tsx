@@ -24,6 +24,7 @@ export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerPr
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
 
   useEffect(() => {
+    if (!mapContainer.current) return;
     const mbStyle = {
       version: 8 as 8,
       sources: {},
@@ -38,21 +39,19 @@ export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerPr
       style: mbStyle,
     });
 
-    maplibreRef.current.addControl(new NavigationControl({ showCompass: false }), 'top-right');
-    maplibreRef.current.on('style.load', function () {
-      maplibreRef.current!.addSource('openmaptiles', {
+    const maplibreInstance = maplibreRef.current!;
+    maplibreInstance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
+    maplibreInstance.on('style.load', function () {
+      maplibreInstance.addSource('openmaptiles', {
         type: 'vector',
         url: MAP_VECTOR_TILE_DATA_SOURCE,
       });
       setMounted(true);
     });
-  }, []);
-
-  useEffect(() => {
-    maplibreRef.current!.on('move', () => {
-      return setZoom(Number(maplibreRef.current!.getZoom().toFixed(2)));
+    maplibreInstance.on('move', () => {
+      return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
     });
-  }, [zoom]);
+  }, []);
 
   return (
     <div>

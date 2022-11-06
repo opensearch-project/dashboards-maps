@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   EuiPanel,
   EuiTitle,
@@ -25,11 +25,11 @@ import {
   DASHBOARDS_MAPS_LAYER_TYPE,
   LAYER_VISIBILITY,
   MAP_VECTOR_TILE_BASIC_STYLE,
+  MAP_DEFAULT_OPACITY,
+  MAP_DEFAULT_MAX_ZOOM,
+  MAP_DEFAULT_MIN_ZOOM,
 } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
-import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { MapServices } from '../../types';
-import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -42,45 +42,18 @@ interface Props {
   layers: ILayerConfig[];
 }
 
-const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Props) => {
+const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }: Props) => {
   const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
   const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
-  const {
-    services: {
-      savedObjects: { client: savedObjectsClient },
-    },
-  } = useOpenSearchDashboards<MapServices>();
-
-  const fetchLayers = useCallback(async (): Promise<{
-    layers: ILayerConfig[];
-  }> => {
-    const savedMapObject = await savedObjectsClient.get<MapSavedObjectAttributes>(
-      'map',
-      mapIdFromUrl
-    );
-    const SavedLayers = JSON.parse(savedMapObject.attributes.layerList as string);
-    return {
-      layers: SavedLayers,
-    };
-  }, [savedObjectsClient, mapIdFromUrl]);
-
-  const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig>({
-    iconType: '',
-    name: '',
-    type: '',
-    id: '',
-    zoomRange: [],
-    opacity: 1,
-    visibility: '',
-  });
+  const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig | undefined>();
 
   const initialDefaultLayer: ILayerConfig = {
     iconType: 'visMapRegion',
     id: uuidv4(),
     type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
     name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-    zoomRange: [0, 22],
-    opacity: 1,
+    zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+    opacity: MAP_DEFAULT_OPACITY,
     visibility: LAYER_VISIBILITY.VISIBLE,
     layerSpec: {
       OSMUrl: MAP_VECTOR_TILE_BASIC_STYLE,
@@ -89,23 +62,24 @@ const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Pro
 
   // Initially load the layers from the saved object
   useEffect(() => {
-    maplibreRef.current?.on('load', function () {
-      if (!!mapIdFromUrl) {
-        fetchLayers().then((res) => {
-          const layersFromSavedMap = res.layers;
-          layersFromSavedMap.forEach((layer) => {
-            layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
-          });
-          setLayers(res.layers);
-        });
-      } else {
-        layersFunctionMap[initialDefaultLayer.type]?.initial(maplibreRef, initialDefaultLayer);
-        setLayers([initialDefaultLayer]);
-      }
-    });
-  }, []);
+    if (layers && mapIdFromUrl) {
+      layers.forEach((layer) => {
+        layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
+      });
+    } else {
+      maplibreRef.current?.on('load', function () {
+        if (!mapIdFromUrl) {
+          layersFunctionMap[initialDefaultLayer.type]?.initial(maplibreRef, initialDefaultLayer);
+          setLayers([initialDefaultLayer]);
+        }
+      });
+    }
+  }, [layers]);
 
   const updateLayer = () => {
+    if (!selectedLayerConfig) {
+      return;
+    }
     const layersClone = [...layers];
     const index = layersClone.findIndex((layer) => layer.id === selectedLayerConfig.id);
     if (index <= -1) {
@@ -118,9 +92,7 @@ const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Pro
       };
     }
     setLayers(layersClone);
-    setTimeout(function () {
-      layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
-    }, 50);
+    layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
   };
 
   const removeLayer = (index: number) => {
@@ -181,7 +153,12 @@ const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Pro
                         aria-label="layer in the map layers list"
                         isDisabled={isDisabled}
                         onClick={() => {
-                          if (selectedLayerConfig.id === layer.id && !isLayerConfigVisible) {
+                          setSelectedLayerConfig(layer);
+                          if (
+                            selectedLayerConfig &&
+                            selectedLayerConfig.id === layer.id &&
+                            !isLayerConfigVisible
+                          ) {
                             setIsLayerConfigVisible(true);
                           }
                         }}
@@ -224,7 +201,7 @@ const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Pro
                 </div>
               );
             })}
-            {isLayerConfigVisible && (
+            {isLayerConfigVisible && selectedLayerConfig && (
               <LayerConfigPanel
                 setIsLayerConfigVisible={setIsLayerConfigVisible}
                 selectedLayerConfig={selectedLayerConfig}
@@ -256,6 +233,6 @@ const LayerControlPanel = ({ maplibreRef, mapIdFromUrl, setLayers, layers }: Pro
       </EuiButton>
     </EuiFlexItem>
   );
-};
+});
 
 export { LayerControlPanel };

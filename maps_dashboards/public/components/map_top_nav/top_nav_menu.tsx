@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SimpleSavedObject } from 'opensearch-dashboards/public';
 import { PLUGIN_ID } from '../../../common';
 import { getTopNavConfig } from './get_top_nav_config';
@@ -15,16 +15,16 @@ import { getSavedMapBreadcrumbs, getCreateBreadcrumbs } from '../../utils/breadc
 interface MapTopNavMenuProps {
   mapIdFromUrl: string;
   layers: any;
+  savedMapObject: SimpleSavedObject<MapSavedObjectAttributes> | null | undefined;
 }
 
-export const MapTopNavMenu = ({ mapIdFromUrl, layers }: MapTopNavMenuProps) => {
+export const MapTopNavMenu = ({ mapIdFromUrl, savedMapObject, layers }: MapTopNavMenuProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     setHeaderActionMenu,
     navigation: {
       ui: { TopNavMenu },
     },
-    savedObjects: { client: savedObjectsClient },
     chrome,
     application: { navigateToApp },
   } = services;
@@ -32,25 +32,17 @@ export const MapTopNavMenu = ({ mapIdFromUrl, layers }: MapTopNavMenuProps) => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
 
-  const fetchMapObject = useCallback(async (): Promise<
-    SimpleSavedObject<MapSavedObjectAttributes>
-  > => {
-    return await savedObjectsClient.get<MapSavedObjectAttributes>('map', mapIdFromUrl);
-  }, [savedObjectsClient, mapIdFromUrl]);
-
   useEffect(() => {
-    if (mapIdFromUrl) {
-      fetchMapObject().then((object) => {
-        setTitle(object.attributes.title);
-        setDescription(object.attributes.description!);
-      });
+    if (savedMapObject) {
+      setTitle(savedMapObject.attributes.title);
+      setDescription(savedMapObject.attributes.description!);
       chrome.setBreadcrumbs(getSavedMapBreadcrumbs(title, navigateToApp));
       chrome.docTitle.change(title);
     } else {
       chrome.setBreadcrumbs(getCreateBreadcrumbs(navigateToApp));
       chrome.docTitle.change('Create');
     }
-  }, [chrome, fetchMapObject, mapIdFromUrl, navigateToApp, title]);
+  }, [chrome, savedMapObject, mapIdFromUrl, navigateToApp, title]);
 
   return (
     <TopNavMenu
