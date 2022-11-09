@@ -44,7 +44,7 @@ const handleStyleLayers = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) 
 
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  initial: async (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+  initialize: async (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
     if (maplibreRef.current) {
       fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
         styleLayers.forEach((styleLayer) => {

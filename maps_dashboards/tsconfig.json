@@ -2,9 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./target",
-    "skipLibCheck": true,
-    // adding global typings
-    "noImplicitAny": false,
+    "skipLibCheck": true
   },
   "include": [
     "index.ts",

@@ -64,12 +64,12 @@ const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }
   useEffect(() => {
     if (layers && mapIdFromUrl) {
       layers.forEach((layer) => {
-        layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
+        layersFunctionMap[layer.type]?.initialize(maplibreRef, layer);
       });
     } else {
       maplibreRef.current?.on('load', function () {
         if (!mapIdFromUrl) {
-          layersFunctionMap[initialDefaultLayer.type]?.initial(maplibreRef, initialDefaultLayer);
+          layersFunctionMap[initialDefaultLayer.type]?.initialize(maplibreRef, initialDefaultLayer);
           setLayers([initialDefaultLayer]);
         }
       });
