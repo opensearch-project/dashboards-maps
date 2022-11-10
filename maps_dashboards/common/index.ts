@@ -9,6 +9,9 @@ export const PLUGIN_NAME = 'Maps';
 export const MAP_VECTOR_TILE_BASIC_STYLE = 'https://tiles.maps.opensearch.org/styles/basic.json';
 export const MAP_GLYPHS = 'https://tiles.maps.opensearch.org/fonts/{fontstack}/{range}.pbf';
 export const MAP_VECTOR_TILE_DATA_SOURCE = 'https://tiles.maps.opensearch.org/data/v1.json';
+export const MAP_DEFAULT_MIN_ZOOM = 0;
+export const MAP_DEFAULT_MAX_ZOOM = 22;
+export const MAP_DEFAULT_OPACITY = 1;
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
@@ -18,7 +21,9 @@ export const MAP_INITIAL_STATE = {
 };
 
 export const APP_PATH = {
-  CREATE_MAP: '/create-map',
+  LANDING_PAGE_PATH: '/',
+  CREATE_MAP: '/create',
+  EDIT_MAP: '/:id',
 };
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {

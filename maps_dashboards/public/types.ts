@@ -28,4 +28,5 @@ export interface MapServices extends CoreStart {
   element: AppMountParameters['element'];
   navigation: NavigationPublicPluginStart;
   toastNotifications: ToastsStart;
+  history: AppMountParameters['history'];
 }

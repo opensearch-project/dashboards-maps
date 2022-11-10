@@ -13,13 +13,24 @@ import {
 } from '../../../../../src/plugins/saved_objects/public';
 import { MapServices } from '../../types';
 
-export const getTopNavConfig = (services: MapServices) => {
-  const {
+interface GetTopNavConfigParams {
+  mapIdFromUrl: string;
+  layers: any;
+  title: string;
+  description: string;
+  setTitle: (title: string) => void;
+  setDescription: (description: string) => void;
+}
+
+export const getTopNavConfig = (
+  {
     notifications: { toasts },
     i18n: { Context: I18nContext },
     savedObjects: { client: savedObjectsClient },
-  } = services;
-
+    history,
+  }: MapServices,
+  { mapIdFromUrl, layers, title, description, setTitle, setDescription }: GetTopNavConfigParams
+) => {
   const topNavConfig: TopNavMenuData[] = [
     {
       iconType: 'save',
@@ -29,19 +40,36 @@ export const getTopNavConfig = (services: MapServices) => {
         defaultMessage: `Save`,
       }),
       run: (_anchorElement) => {
-        const onModalSave = async (onSaveProps: OnSaveProps) => {
-          const savedMap = await savedObjectsClient.create('map', {
-            title: onSaveProps.newTitle,
-            description: onSaveProps.newDescription,
-            // TODO: Integrate other attributes to saved object
-          });
-          const id = savedMap.id;
+        const onModalSave = async ({ newTitle, newDescription }: OnSaveProps) => {
+          let newlySavedMap;
+          if (mapIdFromUrl) {
+            // edit existing map
+            newlySavedMap = await savedObjectsClient.update('map', mapIdFromUrl, {
+              title: newTitle,
+              description: newDescription,
+              layerList: JSON.stringify(layers),
+            });
+          } else {
+            // save new map
+            newlySavedMap = await savedObjectsClient.create('map', {
+              title: newTitle,
+              description: newDescription,
+              layerList: JSON.stringify(layers),
+            });
+          }
+          const id = newlySavedMap.id;
           if (id) {
+            history.push({
+              ...history.location,
+              pathname: `${id}`,
+            });
+            setTitle(newTitle);
+            setDescription(newDescription);
             toasts.addSuccess({
               title: i18n.translate('map.topNavMenu.saveMap.successNotificationText', {
-                defaultMessage: `Saved ${onSaveProps.newTitle}`,
+                defaultMessage: `Saved ${newTitle}`,
                 values: {
-                  visTitle: savedMap.attributes.title,
+                  visTitle: newTitle,
                 },
               }),
             });
@@ -50,9 +78,10 @@ export const getTopNavConfig = (services: MapServices) => {
         };
 
         const documentInfo = {
-          title: '',
-          description: '',
+          title,
+          description,
         };
+
         const saveModal = (
           <SavedObjectSaveModalOrigin
             documentInfo={documentInfo}

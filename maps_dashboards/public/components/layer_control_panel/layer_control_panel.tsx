@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   EuiPanel,
   EuiTitle,
@@ -25,6 +25,9 @@ import {
   DASHBOARDS_MAPS_LAYER_TYPE,
   LAYER_VISIBILITY,
   MAP_VECTOR_TILE_BASIC_STYLE,
+  MAP_DEFAULT_OPACITY,
+  MAP_DEFAULT_MAX_ZOOM,
+  MAP_DEFAULT_MIN_ZOOM,
 } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
 
@@ -34,46 +37,49 @@ interface MaplibreRef {
 
 interface Props {
   maplibreRef: MaplibreRef;
+  mapIdFromUrl: string;
+  setLayers: (layers: ILayerConfig[]) => void;
+  layers: ILayerConfig[];
 }
 
-const LayerControlPanel = ({ maplibreRef }: Props) => {
+const LayerControlPanel = memo(({ maplibreRef, mapIdFromUrl, setLayers, layers }: Props) => {
   const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
   const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
+  const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig | undefined>();
 
-  const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig>({
-    iconType: '',
-    name: '',
-    type: '',
-    id: '',
-    zoomRange: [],
-    opacity: 1,
-    visibility: '',
-  });
-
-  const initialLoadLayer: ILayerConfig = {
+  const initialDefaultLayer: ILayerConfig = {
     iconType: 'visMapRegion',
     id: uuidv4(),
     type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
     name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-    zoomRange: [0, 22],
-    opacity: 1,
+    zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+    opacity: MAP_DEFAULT_OPACITY,
     visibility: LAYER_VISIBILITY.VISIBLE,
     layerSpec: {
       OSMUrl: MAP_VECTOR_TILE_BASIC_STYLE,
     },
   };
 
-  const [layers, setLayers] = useState<ILayerConfig[]>([initialLoadLayer]);
-
+  // Initially load the layers from the saved object
   useEffect(() => {
-    maplibreRef.current?.on('load', function () {
+    if (layers && mapIdFromUrl) {
       layers.forEach((layer) => {
-        layersFunctionMap[layer.type]?.initial(maplibreRef, layer);
+        layersFunctionMap[layer.type]?.initialize(maplibreRef, layer);
       });
-    });
-  }, []);
+    } else {
+      maplibreRef.current?.on('load', function () {
+        if (!mapIdFromUrl) {
+          layersFunctionMap[initialDefaultLayer.type]?.initialize(maplibreRef, initialDefaultLayer);
+          setLayers([initialDefaultLayer]);
+        }
+      });
+    }
+  }, [layers]);
 
   const updateLayer = () => {
+    if (!selectedLayerConfig) {
+      return;
+    }
     const layersClone = [...layers];
     const index = layersClone.findIndex((layer) => layer.id === selectedLayerConfig.id);
     if (index <= -1) {
@@ -86,9 +92,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
       };
     }
     setLayers(layersClone);
-    setTimeout(function () {
-      layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
-    }, 50);
+    layersFunctionMap[selectedLayerConfig.type]?.update(maplibreRef, selectedLayerConfig);
   };
 
   const removeLayer = (index: number) => {
@@ -149,7 +153,12 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                         aria-label="layer in the map layers list"
                         isDisabled={isDisabled}
                         onClick={() => {
-                          if (selectedLayerConfig.id === layer.id && !isLayerConfigVisible) {
+                          setSelectedLayerConfig(layer);
+                          if (
+                            selectedLayerConfig &&
+                            selectedLayerConfig.id === layer.id &&
+                            !isLayerConfigVisible
+                          ) {
                             setIsLayerConfigVisible(true);
                           }
                         }}
@@ -158,7 +167,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
                         <EuiButtonEmpty
-                          iconType='eyeClosed'
+                          iconType="eyeClosed"
                           size="s"
                           onClick={() => {
                             if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
@@ -192,7 +201,7 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
                 </div>
               );
             })}
-            {isLayerConfigVisible && (
+            {isLayerConfigVisible && selectedLayerConfig && (
               <LayerConfigPanel
                 setIsLayerConfigVisible={setIsLayerConfigVisible}
                 selectedLayerConfig={selectedLayerConfig}
@@ -224,6 +233,6 @@ const LayerControlPanel = ({ maplibreRef }: Props) => {
       </EuiButton>
     </EuiFlexItem>
   );
-};
+});
 
 export { LayerControlPanel };

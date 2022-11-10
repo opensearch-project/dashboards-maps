@@ -4,25 +4,37 @@
  */
 
 import { i18n } from '@osd/i18n';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
-import { EuiPage, EuiPageBody, EuiPageContentBody } from '@elastic/eui';
+import { EuiPage, EuiPageBody, EuiPageContentBody, EuiLink } from '@elastic/eui';
 import {
   TableListView,
   useOpenSearchDashboards,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 import { MapServices } from '../../types';
+import { getMapsLandingBreadcrumbs } from '../../utils/breadcrumbs';
+import { PLUGIN_ID, APP_PATH } from '../../../common';
 
 export const MapsList = () => {
   const {
     services: {
       notifications: { toasts },
-      http: { basePath },
       savedObjects: { client: savedObjectsClient },
-      application: { navigateToUrl },
+      application: { navigateToApp },
+      chrome: { docTitle, setBreadcrumbs },
     },
   } = useOpenSearchDashboards<MapServices>();
+
+  useEffect(() => {
+    setBreadcrumbs(getMapsLandingBreadcrumbs(navigateToApp));
+    docTitle.change(i18n.translate('maps.listing.pageTitle', { defaultMessage: 'Maps' }));
+  }, [docTitle, navigateToApp, setBreadcrumbs]);
+
+  const navigateToSavedMapPage = (id: string) => {
+    navigateToApp(PLUGIN_ID, { path: `/${id}` });
+  };
+
   const tableColumns = [
     {
       field: 'attributes.title',
@@ -30,6 +42,9 @@ export const MapsList = () => {
         defaultMessage: 'Title',
       }),
       sortable: true,
+      render: (title, record) => (
+        <EuiLink onClick={() => navigateToSavedMapPage(record.id)}>{title}</EuiLink>
+      ),
     },
     {
       field: 'attributes.description',
@@ -38,10 +53,17 @@ export const MapsList = () => {
       }),
       sortable: true,
     },
+    {
+      field: 'updated_at',
+      name: i18n.translate('maps.listing.table.updatedTimeColumnName', {
+        defaultMessage: 'Last updated',
+      }),
+      sortable: true,
+    },
   ];
 
-  const createMap = () => {
-    navigateToUrl(basePath.prepend('/app/maps-dashboards/create-map'));
+  const navigateToCreateMapPage = () => {
+    navigateToApp(PLUGIN_ID, { path: APP_PATH.CREATE_MAP });
   };
 
   const fetchMaps = useCallback(async (): Promise<{
@@ -73,8 +95,6 @@ export const MapsList = () => {
     [savedObjectsClient, toasts]
   );
 
-  const editItem = useCallback(() => {}, []);
-
   // Render the map list DOM.
   return (
     <I18nProvider>
@@ -84,10 +104,9 @@ export const MapsList = () => {
             <EuiPageContentBody>
               <TableListView
                 headingId="mapsListingHeading"
-                createItem={createMap}
+                createItem={navigateToCreateMapPage}
                 findItems={fetchMaps}
                 deleteItems={deleteMaps}
-                editItem={editItem}
                 tableColumns={tableColumns}
                 listingLimit={10}
                 initialPageSize={10}
