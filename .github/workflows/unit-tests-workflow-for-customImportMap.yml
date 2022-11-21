@@ -60,7 +60,7 @@ jobs:
           npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
 
       - name: Move custom_import_map to Plugins Dir
-        run: mv custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
+        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
 
       - name: Bootstrap plugin/opensearch-dashboards
         run: |
@@ -74,5 +74,3 @@ jobs:
 
       - name: Uploads coverage
         uses: codecov/codecov-action@v1
-
-
