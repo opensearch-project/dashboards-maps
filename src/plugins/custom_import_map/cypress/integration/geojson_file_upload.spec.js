@@ -12,14 +12,14 @@ describe('Verify successful custom geojson file upload', () => {
   before(() => {
     cy.visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`);
     // Click on "Sample data" tab
-    cy.contains('Sample data', { timeout: 60000 }).click({ force: true });
+    cy.contains('Sample data').click({ force: true });
     // Load sample flights data
     cy.get(`button[data-test-subj="addSampleDataSetflights"]`).click({
       force: true,
     });
 
     // Verify that sample data is add by checking toast notification
-    cy.contains('Sample flight data installed', { timeout: 60000 });
+    cy.contains('Sample flight data installed', { timeout: 240000 });
 
     cy.visit(`${BASE_PATH}/app/visualize#/`);
 
@@ -40,7 +40,7 @@ describe('Verify successful custom geojson file upload', () => {
     cy.get('[data-testId="filePicker"]').attachFile('sample_geojson.json');
     cy.get('[data-testId="customIndex"]').type('sample');
     cy.contains('Import file').click({ force: true });
-    cy.contains('Successfully added 2 features to sample-map. Refresh to visualize the uploaded map.', { timeout: 60000 });
+    cy.contains('Successfully added 2 features to sample-map. Refresh to visualize the uploaded map.', { timeout: 240000 });
   })
 
   after(() => {
