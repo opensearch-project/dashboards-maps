@@ -27,7 +27,7 @@ jobs:
         include:
           - os: windows-latest
             working_directory: X:\
-            os_java_options: -Xmx6144M
+            os_java_options: -Xmx4068M
             cypress_cache_folder: ~/AppData/Local/Cypress/Cache
           - os: ubuntu-latest
             cypress_cache_folder: ~/.cache/Cypress
@@ -120,7 +120,8 @@ jobs:
 
       - name: Sleep until OSD server starts - windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: Start-Sleep -s 300
+        # Window is slow so wait longer
+        run: Start-Sleep -s 400
         shell: powershell
 
       - name: Sleep until OSD server starts - non-windows
