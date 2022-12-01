@@ -1,12 +1,17 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { Fragment } from 'react';
 import { EuiSpacer, EuiText, EuiTabbedContent } from '@elastic/eui';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { DocumentLayerSpecification } from '../../model/mapLayerType';
 import { LayerBasicSettings } from './layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
 import { DocumentLayerStyle } from './document_layer_style';
 
 interface Props {
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
 }
 
@@ -17,7 +22,7 @@ export const DocumentLayerConfigPanel = ({
   const tabs = [
     {
       id: 'data-source--id',
-      name: 'Data source',
+      name: 'Data',
       content: (
         <Fragment>
           <EuiSpacer />
@@ -47,10 +52,13 @@ export const DocumentLayerConfigPanel = ({
       id: 'settings--id',
       name: 'Settings',
       content: (
-        <LayerBasicSettings
-          selectedLayerConfig={selectedLayerConfig}
-          setSelectedLayerConfig={setSelectedLayerConfig}
-        />
+        <Fragment>
+          <EuiSpacer />
+          <LayerBasicSettings
+            selectedLayerConfig={selectedLayerConfig}
+            setSelectedLayerConfig={setSelectedLayerConfig}
+          />
+        </Fragment>
       ),
     },
   ];

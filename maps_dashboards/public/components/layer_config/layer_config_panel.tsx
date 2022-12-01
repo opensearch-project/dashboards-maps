@@ -15,14 +15,14 @@ import {
   EuiButtonEmpty,
   EuiFlexGroup,
 } from '@elastic/eui';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './document_layer_config_panel';
 
 interface Props {
   setIsLayerConfigVisible: Function;
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   updateLayer: Function;
 }
@@ -38,7 +38,6 @@ export const LayerConfigPanel = ({
     setSelectedLayerConfig(undefined);
   };
   const onUpdate = () => {
-    console.log(selectedLayerConfig, 'Print-----selectedLayerConfig-----onUpdate');
     updateLayer();
     setIsLayerConfigVisible(false);
   };
@@ -51,7 +50,7 @@ export const LayerConfigPanel = ({
       hideCloseButton={true}
       className="layerConfigPanel"
     >
-      <EuiFlyoutHeader hasBorder>
+      <EuiFlyoutHeader hasBorder={false}>
         <EuiTitle size="m">
           <h2>{selectedLayerConfig.name}</h2>
         </EuiTitle>

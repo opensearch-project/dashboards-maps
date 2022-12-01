@@ -1,22 +1,27 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect } from 'react';
 import { EuiFormRow, EuiColorPicker, useColorPickerState } from '@elastic/eui';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 interface Props {
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
 }
 
 export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig }: Props) => {
   const [color, setColor, errors] = useColorPickerState(
-    selectedLayerConfig?.style?.circleColor || '#D36086'
+    selectedLayerConfig?.style?.fillColor || '#D36086'
   );
   useEffect(() => {
     setSelectedLayerConfig({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig?.style,
-        circleColor: color,
+        fillColor: color,
       },
     });
   }, [color]);

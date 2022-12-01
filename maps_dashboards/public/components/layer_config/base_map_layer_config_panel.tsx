@@ -5,11 +5,11 @@
 
 import React from 'react';
 import { EuiTitle, EuiSpacer } from '@elastic/eui';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 import { LayerBasicSettings } from './layer_basic_settings';
 
 interface Props {
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
 }
 

@@ -19,8 +19,8 @@ import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
-import { ILayerConfig } from '../../model/ILayerConfig';
-import { LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { MapLayerSpecification } from '../../model/mapLayerType';
+import { LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE, LAYER_ICON_TYPE_MAP } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -35,8 +35,8 @@ interface MaplibreRef {
 
 interface Props {
   maplibreRef: MaplibreRef;
-  setLayers: (layers: ILayerConfig[]) => void;
-  layers: ILayerConfig[];
+  setLayers: (layers: MapLayerSpecification[]) => void;
+  layers: MapLayerSpecification[];
 }
 
 const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
@@ -49,7 +49,9 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
 
   const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
   const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
-  const [selectedLayerConfig, setSelectedLayerConfig] = useState<ILayerConfig | undefined>();
+  const [selectedLayerConfig, setSelectedLayerConfig] = useState<
+    MapLayerSpecification | undefined
+  >();
   const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
 
   // Initially load the layers from the saved object
@@ -57,35 +59,36 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     if (layers.length <= 0) {
       return;
     }
-    const doDataLayerRender = async (layer: ILayerConfig) => {
-      const sourceConfig = layer.source;
-      const indexPatternRefName = sourceConfig.indexPatternRefName;
-      const geoField = sourceConfig.geoField;
-      const request = {
-        params: {
-          index: indexPatternRefName,
-          // TODO: update size after adding query bar
-          size: 100,
-          body: {
-            _source: geoField,
+    const doDataLayerRender = async (layer: MapLayerSpecification) => {
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER) {
+        const sourceConfig = layer.source;
+        const indexPatternRefName = sourceConfig?.indexPatternRefName;
+        const geoField = sourceConfig.geoFieldName;
+        const request = {
+          params: {
+            index: indexPatternRefName,
+            size: layer.source.documentRequestNumber,
+            body: {
+              _source: geoField,
+            },
           },
-        },
-      };
-      const search$ = search.search(request).subscribe({
-        next: (response: IOpenSearchDashboardsSearchResponse) => {
-          if (isCompleteResponse(response)) {
-            const dataSource = response.rawResponse.hits.hits;
-            layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
-            search$.unsubscribe();
-          } else {
-            notifications.toasts.addWarning('An error has occurred when query dataSource');
-            search$.unsubscribe();
-          }
-        },
-        error: (e: Error) => {
-          search.showError(e);
-        },
-      });
+        };
+        const search$ = search.search(request).subscribe({
+          next: (response: IOpenSearchDashboardsSearchResponse) => {
+            if (isCompleteResponse(response)) {
+              const dataSource = response.rawResponse.hits.hits;
+              layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
+              search$.unsubscribe();
+            } else {
+              notifications.toasts.addWarning('An error has occurred when query dataSource');
+              search$.unsubscribe();
+            }
+          },
+          error: (e: Error) => {
+            search.showError(e);
+          },
+        });
+      }
     };
     if (initialLayersLoaded) {
       if (!selectedLayerConfig) {
@@ -171,7 +174,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                         key={layer.id}
                         label={layer.name}
                         data-item={JSON.stringify(layer)}
-                        iconType={layer.iconType}
+                        iconType={LAYER_ICON_TYPE_MAP[layer.type]}
                         aria-label="layer in the map layers list"
                         isDisabled={isDisabled}
                         onClick={() => {

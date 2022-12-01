@@ -42,7 +42,7 @@ export const MapsList = () => {
         defaultMessage: 'Title',
       }),
       sortable: true,
-      render: (title, record) => (
+      render: (title: string, record: any) => (
         <EuiLink onClick={() => navigateToSavedMapPage(record.id)}>{title}</EuiLink>
       ),
     },

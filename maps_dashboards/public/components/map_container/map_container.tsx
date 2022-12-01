@@ -8,13 +8,13 @@ import { EuiPanel } from '@elastic/eui';
 import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { MAP_INITIAL_STATE, MAP_GLYPHS, MAP_VECTOR_TILE_DATA_SOURCE } from '../../../common';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 
 interface MapContainerProps {
   mapIdFromUrl: string;
-  setLayers: (layers: ILayerConfig[]) => void;
-  layers: ILayerConfig[];
+  setLayers: (layers: MapLayerSpecification[]) => void;
+  layers: MapLayerSpecification[];
 }
 
 export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerProps) => {
@@ -42,10 +42,6 @@ export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerPr
     const maplibreInstance = maplibreRef.current!;
     maplibreInstance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
     maplibreInstance.on('style.load', function () {
-      maplibreInstance.addSource('openmaptiles', {
-        type: 'vector',
-        url: MAP_VECTOR_TILE_DATA_SOURCE,
-      });
       setMounted(true);
     });
     maplibreInstance.on('move', () => {

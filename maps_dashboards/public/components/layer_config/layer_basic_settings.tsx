@@ -1,8 +1,14 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { EuiDualRange, EuiFieldText, EuiForm, EuiFormRow, EuiRange } from '@elastic/eui';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 
 interface Props {
-  selectedLayerConfig: any;
+  selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
 }
 
@@ -11,11 +17,11 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
     setSelectedLayerConfig({ ...selectedLayerConfig, zoomRange: value });
   };
 
-  const onOpacityChange = (e) => {
+  const onOpacityChange = (e: any) => {
     setSelectedLayerConfig({ ...selectedLayerConfig, opacity: Number(e.target.value) });
   };
 
-  const onNameChange = (e) => {
+  const onNameChange = (e: any) => {
     setSelectedLayerConfig({ ...selectedLayerConfig, name: String(e.target.value) });
   };
 
@@ -33,7 +39,7 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
           minInputProps={{ 'aria-label': 'Min value' }}
           maxInputProps={{ 'aria-label': 'Max value' }}
           onChange={onZoomChange}
-          aria-label="EuiDualRange with inputs for zoom level"
+          aria-label="DualRange with inputs for zoom level"
         />
       </EuiFormRow>
       <EuiFormRow label="Opacity">
@@ -44,7 +50,7 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
           value={selectedLayerConfig.opacity}
           onChange={onOpacityChange}
           showInput
-          aria-label="EuiRange for layer opacity"
+          aria-label="Range for layer opacity"
         />
       </EuiFormRow>
     </EuiForm>

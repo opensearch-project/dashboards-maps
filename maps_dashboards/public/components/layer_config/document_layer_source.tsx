@@ -1,14 +1,19 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect, useState } from 'react';
-import { EuiComboBox, EuiFlexItem, EuiFormLabel, EuiFlexGrid } from '@elastic/eui';
+import { EuiComboBox, EuiFlexItem, EuiFormLabel, EuiFlexGrid, EuiFieldNumber } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { IndexPattern, IndexPatternField } from '../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 interface Props {
   setSelectedLayerConfig: Function;
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: DocumentLayerSpecification;
 }
 
 export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfig }: Props) => {
@@ -24,12 +29,16 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   const [indexPattern, setIndexPattern] = useState<IndexPattern | null>();
   const [geoFields, setGeoFields] = useState<IndexPatternField[]>();
   const [selectedField, setSelectedField] = useState<IndexPatternField | null | undefined>();
+  const [documentRequestNumber, setDocumentRequestNumber] = useState<number>(
+    selectedLayerConfig.source.documentRequestNumber
+  );
 
-  function formatFieldToComboBox(field?: IndexPatternField | null) {
+  const formatFieldToComboBox = (field?: IndexPatternField | null) => {
     if (!field) return [];
     return formatFieldsToComboBox([field]);
-  }
-  function formatFieldsToComboBox(fields?: IndexPatternField[]) {
+  };
+
+  const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
     if (!fields) return [];
 
     return fields?.map((field) => {
@@ -37,41 +46,58 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
         label: field.displayName || field.name,
       };
     });
-  }
+  };
+
+  const onDocumentRequestNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const selectedNumber = parseInt(value, 10);
+    setDocumentRequestNumber(selectedNumber);
+    const source = { ...selectedLayerConfig.source, documentRequestNumber: selectedNumber };
+    setSelectedLayerConfig({ ...selectedLayerConfig, source });
+  };
 
   useEffect(() => {
-    const setDefaultIndexPattern = async () => {
-      const defaultIndexPattern = await indexPatterns.getDefault();
-      setIndexPattern(defaultIndexPattern);
+    const selectIndexPattern = async () => {
+      if (selectedLayerConfig.source.indexPatternId) {
+        const savedIndexPattern = await indexPatterns.get(
+          selectedLayerConfig.source.indexPatternId
+        );
+        setIndexPattern(savedIndexPattern);
+      }
     };
-
-    setDefaultIndexPattern();
+    selectIndexPattern();
   }, [indexPatterns]);
 
   // Update the fields list every time the index pattern is modified.
   useEffect(() => {
     const fields = indexPattern?.fields.filter((field) => field.type === 'geo_point');
     setGeoFields(fields);
-    setSelectedField(fields?.length ? fields[0] : null);
+    fields?.filter((field) => field.displayName === selectedLayerConfig.source.geoFieldName);
+    const savedField = fields?.find(
+      (field) => field.name === selectedLayerConfig.source.geoFieldName
+    );
+    setSelectedField(savedField);
   }, [indexPattern]);
 
   useEffect(() => {
-    const doAsyncSearch = async () => {
+    const setLayerSource = () => {
       if (!indexPattern || !selectedField) return;
-      console.log(indexPattern, 'Print-----indexPattern-----doAsyncSearch');
       const source = {
+        ...selectedLayerConfig.source,
         indexPatternRefName: indexPattern?.title,
-        geoField: selectedField?.displayName,
+        indexPatternId: indexPattern?.id,
+        geoFieldName: selectedField?.displayName,
+        geoFiledType: selectedField?.type,
       };
       setSelectedLayerConfig({ ...selectedLayerConfig, source });
     };
-    doAsyncSearch();
+    setLayerSource();
   }, [selectedField]);
 
   return (
     <EuiFlexGrid columns={1}>
       <EuiFlexItem>
-        <EuiFormLabel>Index Pattern</EuiFormLabel>
+        <EuiFormLabel>Data source</EuiFormLabel>
         <IndexPatternSelect
           savedObjectsClient={savedObjectsClient}
           placeholder={i18n.translate('backgroundSessionExample.selectIndexPatternPlaceholder', {
@@ -86,7 +112,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
         />
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiFormLabel>Geo Field</EuiFormLabel>
+        <EuiFormLabel>Geospatial Field</EuiFormLabel>
         <EuiComboBox
           options={formatFieldsToComboBox(geoFields)}
           selectedOptions={formatFieldToComboBox(selectedField)}
@@ -96,6 +122,15 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
             setSelectedField(field || null);
           }}
           sortMatchesBy="startsWith"
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiFormLabel>Number of documents</EuiFormLabel>
+        <EuiFieldNumber
+          placeholder="Number of documents"
+          value={documentRequestNumber}
+          onChange={onDocumentRequestNumberChange}
+          aria-label="Use aria labels when no actual label is in use"
         />
       </EuiFlexItem>
     </EuiFlexGrid>

@@ -4,7 +4,7 @@
  */
 
 import { Map as Maplibre } from 'maplibre-gl';
-import { ILayerConfig } from './ILayerConfig';
+import { DocumentLayerSpecification } from './mapLayerType';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -21,8 +21,9 @@ const getLocationValue = (data: any, geoField: string) => {
   }, data);
 };
 
-const getLayerSource = (data: any, layerConfig: ILayerConfig) => {
-  const geoField = layerConfig.source.geoField;
+const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
+  const sourceConfig = layerConfig?.source;
+  const geoField = sourceConfig.geoFieldName;
   const featureList: any = [];
   data.forEach((item: any) => {
     const location = getLocationValue(item._source, geoField);
@@ -46,7 +47,11 @@ const getLayerSource = (data: any, layerConfig: ILayerConfig) => {
   return geoJsonData;
 };
 
-const addNewLayer = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef, data: any) => {
+const addNewLayer = (
+  layerConfig: DocumentLayerSpecification,
+  maplibreRef: MaplibreRef,
+  data: any
+) => {
   if (maplibreRef.current) {
     const source = getLayerSource(data, layerConfig);
     maplibreRef.current.addSource(layerConfig.id, {
@@ -64,38 +69,52 @@ const addNewLayer = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef, data: 
       },
       paint: {
         'circle-radius': 6,
-        'circle-color': layerConfig.style?.circleColor,
+        'circle-color': layerConfig.style.fillColor,
         'circle-opacity': layerConfig.opacity,
       },
     });
   }
 };
 
-const updateLayerConfig = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) => {
+const updateLayerConfig = (
+  layerConfig: DocumentLayerSpecification,
+  maplibreRef: MaplibreRef,
+  data: any
+) => {
   if (maplibreRef.current) {
+    const dataSource = maplibreRef.current?.getSource(layerConfig.id);
+    if (dataSource) {
+      // @ts-ignore
+      dataSource.setData(getLayerSource(data, layerConfig));
+    }
     maplibreRef.current?.setLayerZoomRange(
       layerConfig.id,
       layerConfig.zoomRange[0],
       layerConfig.zoomRange[1]
     );
     maplibreRef.current?.setPaintProperty(layerConfig.id, 'circle-opacity', layerConfig.opacity);
+    maplibreRef.current?.setPaintProperty(
+      layerConfig.id,
+      'circle-color',
+      layerConfig.style?.fillColor
+    );
   }
 };
 
 export const DocumentLayerFunctions = {
-  render: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig, data: any) => {
+  render: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification, data: any) => {
     if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
-      updateLayerConfig(layerConfig, maplibreRef);
+      updateLayerConfig(layerConfig, maplibreRef, data);
     } else {
       addNewLayer(layerConfig, maplibreRef, data);
     }
   },
-  remove: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+  remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
     if (maplibreRef.current) {
       maplibreRef.current?.removeLayer(layerConfig.id);
     }
   },
-  hide: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+  hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
     if (maplibreRef.current) {
       maplibreRef.current.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
     }
