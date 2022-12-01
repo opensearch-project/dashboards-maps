@@ -16,7 +16,7 @@ on:
       - .github/workflows/unit-tests-workflow-for-customImportMap.yml
 
 env:
-  OPENSEARCH_DASHBOARDS_VERSION: '2.0'
+  OPENSEARCH_DASHBOARDS_VERSION: '2.4'
 jobs:
   tests:
     strategy:
