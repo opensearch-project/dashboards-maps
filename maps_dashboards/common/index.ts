@@ -29,23 +29,23 @@ export const APP_PATH = {
 
 export enum DASHBOARDS_MAPS_LAYER_NAME {
   OPENSEARCH_MAP = 'OpenSearch Map',
-  DOCUMENT_LAYER = 'Documents',
+  DOCUMENTS = 'Documents',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
   OPENSEARCH_MAP = 'opensearch_vector_tile_map',
-  DOCUMENT_LAYER = 'document_layer',
+  DOCUMENTS = 'documents',
 }
 
 export const DASHBOARDS_MAPS_LAYER_ICON = {
   OPENSEARCH_MAP: 'visMapRegion',
-  DOCUMENT_LAYER: 'document',
+  DOCUMENTS: 'document',
 };
 
-export const DOCUMENT_LAYER = {
-  name: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENT_LAYER,
-  type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER,
-  icon: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENT_LAYER,
+export const DOCUMENTS = {
+  name: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
+  type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS,
+  icon: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
 };
 
 export const OPENSEARCH_MAP_LAYER = {
@@ -61,5 +61,5 @@ export const LAYER_VISIBILITY = {
 
 export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'visMapRegion',
-  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER]: 'document',
+  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
 };

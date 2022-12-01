@@ -24,7 +24,7 @@ export type OSMLayerSpecification = {
 export type DocumentLayerSpecification = {
   name: string;
   id: string;
-  type: 'document_layer';
+  type: 'documents';
   zoomRange: number[];
   opacity: number;
   visibility: string;

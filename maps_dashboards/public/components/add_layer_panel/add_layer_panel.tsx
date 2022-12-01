@@ -28,7 +28,7 @@ import {
   MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
   MAP_VECTOR_TILE_BASIC_STYLE,
   MAP_VECTOR_TILE_DATA_SOURCE,
-  DOCUMENT_LAYER,
+  DOCUMENTS,
   OPENSEARCH_MAP_LAYER,
 } from '../../../common';
 
@@ -56,10 +56,10 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
           styleURL: MAP_VECTOR_TILE_BASIC_STYLE,
         },
       });
-    } else if (layerType === DOCUMENT_LAYER.type) {
+    } else if (layerType === DOCUMENTS.type) {
       setSelectedLayerConfig({
-        name: DOCUMENT_LAYER.name,
-        type: DOCUMENT_LAYER.type,
+        name: DOCUMENTS.name,
+        type: DOCUMENTS.type,
         id: uuidv4(),
         zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
         opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
@@ -79,7 +79,7 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
     setIsLayerConfigVisible(true);
   }
 
-  const dataLayers = [DOCUMENT_LAYER];
+  const dataLayers = [DOCUMENTS];
   const dataLayerItems = Object.values(dataLayers).map((layerItem, index) => {
     return (
       <EuiKeyPadMenuItem
@@ -99,7 +99,7 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
         key={index}
         label={layerItem.name}
         aria-label={layerItem.name}
-        onClick={() => onClickAddNewLayer(layerItem.name)}
+        onClick={() => onClickAddNewLayer(layerItem.type)}
       >
         <EuiIcon type={layerItem.icon} size="xl" color="primary" />
       </EuiKeyPadMenuItem>

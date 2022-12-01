@@ -60,7 +60,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       return;
     }
     const doDataLayerRender = async (layer: MapLayerSpecification) => {
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER) {
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
         const sourceConfig = layer.source;
         const indexPatternRefName = sourceConfig?.indexPatternRefName;
         const geoField = sourceConfig.geoFieldName;

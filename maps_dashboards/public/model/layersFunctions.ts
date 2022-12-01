@@ -9,5 +9,5 @@ import { DocumentLayerFunctions } from './documentLayerFunctions';
 
 export const layersFunctionMap: { [key: string]: any } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: OSMLayerFunctions,
-  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER]: DocumentLayerFunctions,
+  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DocumentLayerFunctions,
 };

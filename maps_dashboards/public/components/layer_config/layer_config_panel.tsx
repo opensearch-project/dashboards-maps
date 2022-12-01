@@ -64,7 +64,7 @@ export const LayerConfigPanel = ({
                 setSelectedLayerConfig={setSelectedLayerConfig}
               />
             )}
-            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENT_LAYER && (
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && (
               <DocumentLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
