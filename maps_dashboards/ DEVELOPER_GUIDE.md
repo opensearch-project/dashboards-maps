@@ -46,18 +46,18 @@ Ultimately, your directory structure should look like this:
 
 ### Run
 
-From OpenSearch-Dashbaords repo (root folder), run the following command:
+From OpenSearch-Dashboards repo (root folder), the following commands start OpenSearch Dashboards and includes this plugin.
 
 ```bash
 yarn osd bootstrap
 yarn start
 ```
 
-  Starts OpenSearch Dashboards and includes this plugin. OpenSearch Dashboards will be available on `localhost:5601`.
+OpenSearch Dashboards will be available on `localhost:5601`.
 
 ### Test
 
-From maps-dashboards folder running the following command runs the plugin unit tests -
+From maps-dashboards folder running the following command runs the plugin unit tests:
 
 `yarn test:jest`
 
@@ -67,8 +67,6 @@ See [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Backports
 
-The Github backport workflow creates backport PRs automatically when the original PR
-with an appropriate label `backport <backport-branch-name>` is merged to main with the backport workflow run successfully on the
-PR. For example, if a PR on main needs to be backported to `1.x` branch, add a label `backport 1.x` to the PR and make sure the
+The Github backport workflow creates backport PRs automatically for PRs with label `backport <backport-branch-name>`. Label should be attached to the original PR, backport workflow starts when original PR merged to main branch. For example, if a PR on main needs to be backported to `1.x` branch, add a label `backport 1.x` to the PR and make sure the
 backport workflow runs on the PR along with other checks. Once this PR is merged to main, the workflow will create a backport PR
 to the `1.x` branch.
