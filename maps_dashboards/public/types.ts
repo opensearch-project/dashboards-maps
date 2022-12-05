@@ -10,6 +10,7 @@ import {
   ToastsStart,
 } from 'opensearch-dashboards/public';
 import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/public';
+import { DataPublicPluginStart } from '../../../src/plugins/data/public';
 
 export interface MapsDashboardsPluginSetup {
   getGreeting: () => string;
@@ -20,6 +21,7 @@ export interface MapsDashboardsPluginStart {}
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
   savedObjects: SavedObjectsClient;
+  data: DataPublicPluginStart;
 }
 
 export interface MapServices extends CoreStart {
@@ -29,4 +31,5 @@ export interface MapServices extends CoreStart {
   navigation: NavigationPublicPluginStart;
   toastNotifications: ToastsStart;
   history: AppMountParameters['history'];
+  data: DataPublicPluginStart;
 }

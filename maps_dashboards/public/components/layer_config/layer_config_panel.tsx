@@ -15,13 +15,14 @@ import {
   EuiButtonEmpty,
   EuiFlexGroup,
 } from '@elastic/eui';
-import { ILayerConfig } from '../../model/ILayerConfig';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { DocumentLayerConfigPanel } from './document_layer_config_panel';
 
 interface Props {
   setIsLayerConfigVisible: Function;
-  selectedLayerConfig: ILayerConfig;
+  selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   updateLayer: Function;
 }
@@ -34,11 +35,11 @@ export const LayerConfigPanel = ({
 }: Props) => {
   const onClose = () => {
     setIsLayerConfigVisible(false);
-    setSelectedLayerConfig({});
+    setSelectedLayerConfig(undefined);
   };
   const onUpdate = () => {
     updateLayer();
-    onClose();
+    setIsLayerConfigVisible(false);
   };
 
   return (
@@ -49,21 +50,22 @@ export const LayerConfigPanel = ({
       hideCloseButton={true}
       className="layerConfigPanel"
     >
-      <EuiFlyoutHeader hasBorder>
+      <EuiFlyoutHeader hasBorder={false}>
         <EuiTitle size="m">
           <h2>{selectedLayerConfig.name}</h2>
         </EuiTitle>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiFlexGroup className="layerBasicSettings" direction="column">
-          <EuiFlexItem className="layerBasicSettings__header">
-            <EuiTitle size="xs">
-              <h2>Layer settings</h2>
-            </EuiTitle>
-          </EuiFlexItem>
           <EuiFlexItem>
             {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP && (
               <BaseMapLayerConfigPanel
+                selectedLayerConfig={selectedLayerConfig}
+                setSelectedLayerConfig={setSelectedLayerConfig}
+              />
+            )}
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && (
+              <DocumentLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
               />

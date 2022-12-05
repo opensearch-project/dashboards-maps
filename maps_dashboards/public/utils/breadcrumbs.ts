@@ -6,7 +6,7 @@
 import { i18n } from '@osd/i18n';
 import { PLUGIN_ID } from '../../common';
 
-export function getMapsLandingBreadcrumbs(navigateToApp) {
+export function getMapsLandingBreadcrumbs(navigateToApp: any) {
   return [
     {
       text: i18n.translate('maps.listing.breadcrumb', {
@@ -17,7 +17,7 @@ export function getMapsLandingBreadcrumbs(navigateToApp) {
   ];
 }
 
-export function getCreateBreadcrumbs(navigateToApp) {
+export function getCreateBreadcrumbs(navigateToApp: any) {
   return [
     ...getMapsLandingBreadcrumbs(navigateToApp),
     {
@@ -28,7 +28,7 @@ export function getCreateBreadcrumbs(navigateToApp) {
   ];
 }
 
-export function getSavedMapBreadcrumbs(text: string, navigateToApp) {
+export function getSavedMapBreadcrumbs(text: string, navigateToApp: any) {
   return [
     ...getMapsLandingBreadcrumbs(navigateToApp),
     {

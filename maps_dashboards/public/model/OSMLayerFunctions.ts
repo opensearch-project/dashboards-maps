@@ -1,13 +1,13 @@
 import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
-import { ILayerConfig } from './ILayerConfig';
-import { MAP_VECTOR_TILE_BASIC_STYLE } from '../../common';
+import { OSMLayerSpecification } from './mapLayerType';
 
 interface MaplibreRef {
   current: Maplibre | null;
 }
 
-const fetchStyleLayers = () => {
-  return fetch(MAP_VECTOR_TILE_BASIC_STYLE)
+// Fetch style layers from OpenSearch vector tile service
+const fetchStyleLayers = (url: string) => {
+  return fetch(url)
     .then((res) => res.json())
     .then((json) => json.layers)
     .catch((error) => {
@@ -20,7 +20,7 @@ const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
   return maplibreRef.current?.getStyle().layers || [];
 };
 
-const handleStyleLayers = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) => {
+const handleStyleLayers = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
   const layers = getCurrentStyleLayers(maplibreRef);
   layers.forEach((mbLayer) => {
     if (mbLayer.id.includes(layerConfig.id)) {
@@ -36,46 +36,75 @@ const handleStyleLayers = (layerConfig: ILayerConfig, maplibreRef: MaplibreRef) 
       maplibreRef.current?.setPaintProperty(
         mbLayer.id,
         `${mbLayer.type}-opacity`,
-        layerConfig.opacity
+        layerConfig.opacity / 100
       );
     }
   });
 };
 
+const layerExistInMbSource = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfig.id)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+  if (maplibreRef.current) {
+    handleStyleLayers(layerConfig, maplibreRef);
+  }
+};
+
+const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+  if (maplibreRef.current) {
+    const layerSource = layerConfig?.source;
+    const layerStyle = layerConfig?.style;
+    maplibreRef.current.addSource(layerConfig.id, {
+      type: 'vector',
+      url: layerSource?.dataURL,
+    });
+    fetchStyleLayers(layerStyle?.styleURL).then((styleLayers: LayerSpecification[]) => {
+      styleLayers.forEach((styleLayer) => {
+        styleLayer.id = styleLayer.id + '_' + layerConfig.id;
+        if (styleLayer.type !== 'background') {
+          styleLayer.source = layerConfig.id;
+        }
+        maplibreRef.current?.addLayer(styleLayer);
+        maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
+        maplibreRef.current?.setLayerZoomRange(
+          styleLayer.id,
+          layerConfig.zoomRange[0],
+          layerConfig.zoomRange[1]
+        );
+        // TODO: figure out error reason
+        if (styleLayer.type === 'symbol') {
+          return;
+        }
+        maplibreRef.current?.setPaintProperty(
+          styleLayer.id,
+          `${styleLayer.type}-opacity`,
+          layerConfig.opacity / 100
+        );
+      });
+    });
+  }
+};
+
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  initialize: async (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
-        styleLayers.forEach((styleLayer) => {
-          styleLayer.id = styleLayer.id + '_' + layerConfig.id;
-          maplibreRef.current?.addLayer(styleLayer);
-          maplibreRef.current?.setLayoutProperty(
-            styleLayer.id,
-            'visibility',
-            layerConfig.visibility
-          );
-        });
-        handleStyleLayers(layerConfig, maplibreRef);
-      });
+  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+    // If layer already exist in maplibre source, update layer config
+    // else add new layer.
+    if (layerExistInMbSource(layerConfig, maplibreRef)) {
+      updateLayerConfig(layerConfig, maplibreRef);
+    } else {
+      addNewLayer(layerConfig, maplibreRef);
     }
   },
-  update: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      handleStyleLayers(layerConfig, maplibreRef);
-    }
-  },
-  addNewLayer: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
-    if (maplibreRef.current) {
-      fetchStyleLayers().then((styleLayers: LayerSpecification[]) => {
-        styleLayers.forEach((styleLayer) => {
-          styleLayer.id = styleLayer.id + '_' + layerConfig.id;
-          maplibreRef.current?.addLayer(styleLayer);
-        });
-      });
-    }
-  },
-  remove: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+  remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
     const layers = getCurrentStyleLayers(maplibreRef);
     layers.forEach((mbLayer: { id: any }) => {
       if (mbLayer.id.includes(layerConfig.id)) {
@@ -83,7 +112,7 @@ export const OSMLayerFunctions = {
       }
     });
   },
-  hide: (maplibreRef: MaplibreRef, layerConfig: ILayerConfig) => {
+  hide: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
     const layers = getCurrentStyleLayers(maplibreRef);
     layers.forEach((mbLayer: { id: any }) => {
       if (mbLayer.id.includes(layerConfig.id)) {

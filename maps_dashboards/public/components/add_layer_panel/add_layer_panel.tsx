@@ -16,10 +16,23 @@ import {
   EuiButton,
   EuiIcon,
   EuiKeyPadMenuItem,
+  EuiSpacer,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
 import { v4 as uuidv4 } from 'uuid';
-import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../common';
+import {
+  LAYER_VISIBILITY,
+  MAP_DEFAULT_MIN_ZOOM,
+  MAP_DEFAULT_MAX_ZOOM,
+  MAP_DATA_LAYER_DEFAULT_OPACITY,
+  MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
+  MAP_VECTOR_TILE_BASIC_STYLE,
+  MAP_VECTOR_TILE_DATA_SOURCE,
+  DOCUMENTS,
+  OPENSEARCH_MAP_LAYER,
+  MAP_LAYER_DEFAULT_BORDER_THICKNESS,
+  DOCUMENTS_DEFAULT_REQUEST_NUMBER,
+} from '../../../common';
 
 interface Props {
   setIsLayerConfigVisible: Function;
@@ -29,36 +42,77 @@ interface Props {
 export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
-  function onClickAddNewLayer(layerItem: string) {
-    if (layerItem === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+  function onClickAddNewLayer(layerType: string) {
+    if (layerType === OPENSEARCH_MAP_LAYER.type) {
       setSelectedLayerConfig({
-        iconType: 'visMapRegion',
-        name: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
-        type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
+        name: OPENSEARCH_MAP_LAYER.name,
+        type: OPENSEARCH_MAP_LAYER.type,
         id: uuidv4(),
-        zoomRange: [0, 22],
-        opacity: 1,
+        zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+        opacity: MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
         visibility: LAYER_VISIBILITY.VISIBLE,
+        source: {
+          dataURL: MAP_VECTOR_TILE_DATA_SOURCE,
+        },
+        style: {
+          styleURL: MAP_VECTOR_TILE_BASIC_STYLE,
+        },
+      });
+    } else if (layerType === DOCUMENTS.type) {
+      const getInitialColor = () => {
+        const colorCode = (Math.random() * 0xfffff * 1000000).toString(16);
+        return '#' + colorCode.slice(0, 6);
+      };
+      const initialColor = getInitialColor();
+
+      setSelectedLayerConfig({
+        name: DOCUMENTS.name,
+        type: DOCUMENTS.type,
+        id: uuidv4(),
+        zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+        opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
+        visibility: LAYER_VISIBILITY.VISIBLE,
+        source: {
+          indexPatternRefName: undefined,
+          geoFiledType: undefined,
+          geoFieldName: undefined,
+          documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
+        },
+        style: {
+          fillColor: initialColor,
+          borderColor: initialColor,
+          borderThickness: MAP_LAYER_DEFAULT_BORDER_THICKNESS,
+        },
       });
     }
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
   }
 
-  const availableLayers = Object.values(DASHBOARDS_MAPS_LAYER_TYPE).map((layerItem, index) => {
+  const dataLayers = [DOCUMENTS];
+  const dataLayerItems = Object.values(dataLayers).map((layerItem, index) => {
     return (
-      <EuiFlexItem key={index}>
-        <EuiKeyPadMenuItem label={`${layerItem}`} aria-label={`${layerItem}`}>
-          <EuiIcon
-            type="visMapRegion"
-            size="xxl"
-            color="primary"
-            onClick={() => {
-              onClickAddNewLayer(layerItem);
-            }}
-          />
-        </EuiKeyPadMenuItem>
-      </EuiFlexItem>
+      <EuiKeyPadMenuItem
+        key={layerItem.name}
+        label={layerItem.name}
+        onClick={() => onClickAddNewLayer(layerItem.type)}
+      >
+        <EuiIcon type={layerItem.icon} size="xl" color="primary" />
+      </EuiKeyPadMenuItem>
+    );
+  });
+
+  const referenceLayers = [OPENSEARCH_MAP_LAYER];
+  const referenceLayersItems = Object.values(referenceLayers).map((layerItem, index) => {
+    return (
+      <EuiKeyPadMenuItem
+        key={index}
+        label={layerItem.name}
+        aria-label={layerItem.name}
+        onClick={() => onClickAddNewLayer(layerItem.type)}
+      >
+        <EuiIcon type={layerItem.icon} size="xl" color="primary" />
+      </EuiKeyPadMenuItem>
     );
   });
 
@@ -69,22 +123,29 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
     <div className="addLayer">
       <EuiFlexItem className="addLayer__button">
         <EuiButton size="s" fill onClick={showModal} aria-label="Add layer">
-          + Add layer
+          Add layer
         </EuiButton>
       </EuiFlexItem>
       {isAddNewLayerModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
             <EuiModalHeaderTitle>
-              <h1>Add layer</h1>
+              <h2>Add layer</h2>
             </EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody>
-            <EuiHorizontalRule />
             <EuiTitle size="s">
-              <h4>Reference layer</h4>
+              <h6>Data layer</h6>
             </EuiTitle>
-            <EuiFlexGroup gutterSize="l">{availableLayers}</EuiFlexGroup>
+            <EuiSpacer size="s" />
+            <EuiFlexGroup gutterSize="xs">{dataLayerItems}</EuiFlexGroup>
+            <EuiSpacer size="s" />
+            <EuiHorizontalRule margin="xs" />
+            <EuiTitle size="s">
+              <h6>Reference layer</h6>
+            </EuiTitle>
+            <EuiSpacer size="s" />
+            <EuiFlexGroup gutterSize="xs">{referenceLayersItems}</EuiFlexGroup>
           </EuiModalBody>
         </EuiModal>
       )}
