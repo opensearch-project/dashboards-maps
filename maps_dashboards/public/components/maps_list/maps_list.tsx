@@ -6,7 +6,14 @@
 import { i18n } from '@osd/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
-import { EuiPage, EuiPageBody, EuiPageContentBody, EuiLink } from '@elastic/eui';
+import {
+  EuiPage,
+  EuiPageBody,
+  EuiPageContentBody,
+  EuiLink,
+  EuiButton,
+  EuiPageHeader,
+} from '@elastic/eui';
 import {
   TableListView,
   useOpenSearchDashboards,
@@ -95,6 +102,18 @@ export const MapsList = () => {
     [savedObjectsClient, toasts]
   );
 
+  const noMapItem = (
+    <EuiPageHeader
+      pageTitle="Create your first map"
+      description="There is no map to display, let's create your first map."
+      rightSideItems={[
+        <EuiButton fill onClick={navigateToCreateMapPage}>
+          Create map
+        </EuiButton>,
+      ]}
+    />
+  );
+
   // Render the map list DOM.
   return (
     <I18nProvider>
@@ -111,7 +130,7 @@ export const MapsList = () => {
                 listingLimit={10}
                 initialPageSize={10}
                 initialFilter={''}
-                noItemsFragment={<div />}
+                noItemsFragment={noMapItem}
                 entityName={i18n.translate('maps.listing.table.entityName', {
                   defaultMessage: 'map',
                 })}

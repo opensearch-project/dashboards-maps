@@ -36,7 +36,7 @@ const handleStyleLayers = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
       maplibreRef.current?.setPaintProperty(
         mbLayer.id,
         `${mbLayer.type}-opacity`,
-        layerConfig.opacity
+        layerConfig.opacity / 100
       );
     }
   });
@@ -86,7 +86,7 @@ const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRe
         maplibreRef.current?.setPaintProperty(
           styleLayer.id,
           `${styleLayer.type}-opacity`,
-          layerConfig.opacity
+          layerConfig.opacity / 100
         );
       });
     });

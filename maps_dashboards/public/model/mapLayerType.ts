@@ -37,5 +37,7 @@ export type DocumentLayerSpecification = {
   };
   style: {
     fillColor: string;
+    borderColor: string;
+    borderThickness: number;
   };
 };

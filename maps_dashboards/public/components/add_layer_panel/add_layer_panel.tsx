@@ -30,6 +30,8 @@ import {
   MAP_VECTOR_TILE_DATA_SOURCE,
   DOCUMENTS,
   OPENSEARCH_MAP_LAYER,
+  MAP_LAYER_DEFAULT_BORDER_THICKNESS,
+  DOCUMENTS_DEFAULT_REQUEST_NUMBER,
 } from '../../../common';
 
 interface Props {
@@ -57,6 +59,12 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
         },
       });
     } else if (layerType === DOCUMENTS.type) {
+      const getInitialColor = () => {
+        const colorCode = (Math.random() * 0xfffff * 1000000).toString(16);
+        return '#' + colorCode.slice(0, 6);
+      };
+      const initialColor = getInitialColor();
+
       setSelectedLayerConfig({
         name: DOCUMENTS.name,
         type: DOCUMENTS.type,
@@ -68,10 +76,12 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
           indexPatternRefName: undefined,
           geoFiledType: undefined,
           geoFieldName: undefined,
-          documentRequestNumber: 20,
+          documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
         },
         style: {
-          fillColor: '#E7664C',
+          fillColor: initialColor,
+          borderColor: initialColor,
+          borderThickness: MAP_LAYER_DEFAULT_BORDER_THICKNESS,
         },
       });
     }

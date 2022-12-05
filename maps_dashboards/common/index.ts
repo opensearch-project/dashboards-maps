@@ -11,8 +11,13 @@ export const MAP_GLYPHS = 'https://tiles.maps.opensearch.org/fonts/{fontstack}/{
 export const MAP_VECTOR_TILE_DATA_SOURCE = 'https://tiles.maps.opensearch.org/data/v1.json';
 export const MAP_DEFAULT_MIN_ZOOM = 0;
 export const MAP_DEFAULT_MAX_ZOOM = 22;
-export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 1;
-export const MAP_DATA_LAYER_DEFAULT_OPACITY = 0.7;
+export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 100;
+export const MAP_DATA_LAYER_DEFAULT_OPACITY = 70;
+export const MAP_LAYER_DEFAULT_MIN_OPACITY = 0;
+export const MAP_LAYER_DEFAULT_MAX_OPACITY = 100;
+export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
+export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
+export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 20;
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {

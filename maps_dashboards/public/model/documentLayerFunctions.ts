@@ -70,7 +70,9 @@ const addNewLayer = (
       paint: {
         'circle-radius': 6,
         'circle-color': layerConfig.style.fillColor,
-        'circle-opacity': layerConfig.opacity,
+        'circle-opacity': layerConfig.opacity / 100,
+        'circle-stroke-color': layerConfig.style?.borderColor,
+        'circle-stroke-width': layerConfig.style?.borderThickness,
       },
     });
   }
@@ -92,11 +94,25 @@ const updateLayerConfig = (
       layerConfig.zoomRange[0],
       layerConfig.zoomRange[1]
     );
-    maplibreRef.current?.setPaintProperty(layerConfig.id, 'circle-opacity', layerConfig.opacity);
+    maplibreRef.current?.setPaintProperty(
+      layerConfig.id,
+      'circle-opacity',
+      layerConfig.opacity / 100
+    );
     maplibreRef.current?.setPaintProperty(
       layerConfig.id,
       'circle-color',
       layerConfig.style?.fillColor
+    );
+    maplibreRef.current?.setPaintProperty(
+      layerConfig.id,
+      'circle-stroke-color',
+      layerConfig.style?.borderColor
+    );
+    maplibreRef.current?.setPaintProperty(
+      layerConfig.id,
+      'circle-stroke-width',
+      layerConfig.style?.borderThickness
     );
   }
 };

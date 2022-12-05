@@ -4,8 +4,17 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiComboBox, EuiFlexItem, EuiFormLabel, EuiFlexGrid, EuiFieldNumber } from '@elastic/eui';
+import {
+  EuiComboBox,
+  EuiFlexItem,
+  EuiFormLabel,
+  EuiFlexGrid,
+  EuiFieldNumber,
+  EuiFormErrorText,
+  EuiSpacer,
+} from '@elastic/eui';
 import { i18n } from '@osd/i18n';
+import { FormattedMessage } from '@osd/i18n/react';
 import { IndexPattern, IndexPatternField } from '../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -32,6 +41,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   const [documentRequestNumber, setDocumentRequestNumber] = useState<number>(
     selectedLayerConfig.source.documentRequestNumber
   );
+  const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
 
   const formatFieldToComboBox = (field?: IndexPatternField | null) => {
     if (!field) return [];
@@ -70,7 +80,10 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
 
   // Update the fields list every time the index pattern is modified.
   useEffect(() => {
-    const fields = indexPattern?.fields.filter((field) => field.type === 'geo_point');
+    const acceptedFieldTypes = ['geo_point'];
+    const fields = indexPattern?.fields.filter(
+      (field) => acceptedFieldTypes.indexOf(field.type) !== -1
+    );
     setGeoFields(fields);
     fields?.filter((field) => field.displayName === selectedLayerConfig.source.geoFieldName);
     const savedField = fields?.find(
@@ -94,14 +107,19 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
     setLayerSource();
   }, [selectedField]);
 
+  useEffect(() => {
+    setHasInvalidRequestNumber(documentRequestNumber < 1 || documentRequestNumber > 1000);
+  }, [documentRequestNumber]);
+
   return (
     <EuiFlexGrid columns={1}>
       <EuiFlexItem>
         <EuiFormLabel>Data source</EuiFormLabel>
+        <EuiSpacer size="xs" />
         <IndexPatternSelect
           savedObjectsClient={savedObjectsClient}
-          placeholder={i18n.translate('backgroundSessionExample.selectIndexPatternPlaceholder', {
-            defaultMessage: 'Select index pattern',
+          placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
+            defaultMessage: 'Select data source',
           })}
           indexPatternId={indexPattern?.id || ''}
           onChange={async (newIndexPatternId: any) => {
@@ -113,6 +131,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
       </EuiFlexItem>
       <EuiFlexItem>
         <EuiFormLabel>Geospatial Field</EuiFormLabel>
+        <EuiSpacer size="xs" />
         <EuiComboBox
           options={formatFieldsToComboBox(geoFields)}
           selectedOptions={formatFieldToComboBox(selectedField)}
@@ -122,16 +141,29 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
             setSelectedField(field || null);
           }}
           sortMatchesBy="startsWith"
+          placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
+            defaultMessage: 'Select data field',
+          })}
         />
       </EuiFlexItem>
       <EuiFlexItem>
         <EuiFormLabel>Number of documents</EuiFormLabel>
+        <EuiSpacer size="xs" />
         <EuiFieldNumber
           placeholder="Number of documents"
           value={documentRequestNumber}
           onChange={onDocumentRequestNumberChange}
           aria-label="Use aria labels when no actual label is in use"
+          isInvalid={hasInvalidRequestNumber}
         />
+        {hasInvalidRequestNumber && (
+          <EuiFormErrorText>
+            <FormattedMessage
+              id="maps.documents.dataSource.errorMessage"
+              defaultMessage="Must between 1 and 10000"
+            />
+          </EuiFormErrorText>
+        )}
       </EuiFlexItem>
     </EuiFlexGrid>
   );

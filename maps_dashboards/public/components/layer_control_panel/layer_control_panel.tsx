@@ -12,7 +12,7 @@ import {
   EuiListGroupItem,
   EuiButtonEmpty,
   EuiHorizontalRule,
-  EuiButton,
+  EuiButtonIcon,
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
@@ -148,7 +148,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             <EuiFlexGroup direction="row" alignItems="center">
               <EuiFlexItem className="layerControlPanel__title">
                 <EuiTitle size="xs">
-                  <h2>Map layers</h2>
+                  <h2>Layer</h2>
                 </EuiTitle>
               </EuiFlexItem>
               <EuiFlexItem grow={false}>
@@ -246,16 +246,13 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
 
   return (
     <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
-      <EuiButton
+      <EuiButtonIcon
         className="layerControlPanel__visButton"
         size="s"
         iconType="menuRight"
-        iconSide="right"
         onClick={() => setIsLayerControlVisible((visible) => !visible)}
         aria-label="Show layer control"
-      >
-        Map layers
-      </EuiButton>
+      />
     </EuiFlexItem>
   );
 });
