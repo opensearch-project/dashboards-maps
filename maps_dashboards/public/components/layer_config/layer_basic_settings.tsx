@@ -20,6 +20,7 @@ import {
   MAP_LAYER_DEFAULT_MAX_OPACITY,
   MAP_LAYER_DEFAULT_OPACITY_STEP,
 } from '../../../common';
+import { layersTypeNameMap } from '../../model/layersFunctions';
 
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
@@ -41,6 +42,9 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
 
   return (
     <EuiForm>
+      <EuiFormRow label="Type">
+        <EuiFieldText name="layerType" value={layersTypeNameMap[selectedLayerConfig.type]} readOnly={true} />
+      </EuiFormRow>
       <EuiFormRow label="Name">
         <EuiFieldText name="layerName" value={selectedLayerConfig.name} onChange={onNameChange} />
       </EuiFormRow>
