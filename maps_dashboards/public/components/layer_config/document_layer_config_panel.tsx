@@ -25,7 +25,7 @@ export const DocumentLayerConfigPanel = ({
       name: 'Data',
       content: (
         <Fragment>
-          <EuiSpacer />
+          <EuiSpacer size="m" />
           <DocumentLayerSource
             selectedLayerConfig={selectedLayerConfig}
             setSelectedLayerConfig={setSelectedLayerConfig}
@@ -38,7 +38,6 @@ export const DocumentLayerConfigPanel = ({
       name: 'Style',
       content: (
         <Fragment>
-          <EuiSpacer />
           <EuiText>
             <DocumentLayerStyle
               selectedLayerConfig={selectedLayerConfig}
@@ -53,7 +52,7 @@ export const DocumentLayerConfigPanel = ({
       name: 'Settings',
       content: (
         <Fragment>
-          <EuiSpacer />
+          <EuiSpacer size="m" />
           <LayerBasicSettings
             selectedLayerConfig={selectedLayerConfig}
             setSelectedLayerConfig={setSelectedLayerConfig}
