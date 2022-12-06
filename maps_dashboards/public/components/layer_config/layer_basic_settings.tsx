@@ -58,7 +58,7 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
         <EuiTextArea placeholder="Enter description" value={selectedLayerConfig.description} onChange={onDescriptionChange} />
       </EuiFormRow>
 
-      <EuiFormRow label="Zoom">
+      <EuiFormRow label="Zoom levels">
         <EuiDualRange
           min={MAP_DEFAULT_MIN_ZOOM}
           max={MAP_DEFAULT_MAX_ZOOM}
