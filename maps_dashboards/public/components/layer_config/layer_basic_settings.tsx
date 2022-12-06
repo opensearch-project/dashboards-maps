@@ -11,6 +11,7 @@ import {
   EuiFormRow,
   EuiRange,
   EuiFormLabel,
+  EuiTextArea,
 } from '@elastic/eui';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
@@ -40,6 +41,10 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
     setSelectedLayerConfig({ ...selectedLayerConfig, name: String(e.target.value) });
   };
 
+  const onDescriptionChange = (e: any) => {
+    setSelectedLayerConfig({ ...selectedLayerConfig, description: String(e.target.value) });
+  };
+
   return (
     <EuiForm>
       <EuiFormRow label="Type">
@@ -48,6 +53,11 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
       <EuiFormRow label="Name">
         <EuiFieldText name="layerName" value={selectedLayerConfig.name} onChange={onNameChange} />
       </EuiFormRow>
+
+      <EuiFormRow label = "Description">
+        <EuiTextArea placeholder="Enter description" value={selectedLayerConfig.description} onChange={onDescriptionChange} />
+      </EuiFormRow>
+
       <EuiFormRow label="Zoom">
         <EuiDualRange
           min={MAP_DEFAULT_MIN_ZOOM}
