@@ -11,6 +11,7 @@ import {
   EuiFormRow,
   EuiRange,
   EuiFormLabel,
+  EuiTextArea,
 } from '@elastic/eui';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
@@ -20,6 +21,7 @@ import {
   MAP_LAYER_DEFAULT_MAX_OPACITY,
   MAP_LAYER_DEFAULT_OPACITY_STEP,
 } from '../../../common';
+import { layersTypeNameMap } from '../../model/layersFunctions';
 
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
@@ -39,12 +41,24 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
     setSelectedLayerConfig({ ...selectedLayerConfig, name: String(e.target.value) });
   };
 
+  const onDescriptionChange = (e: any) => {
+    setSelectedLayerConfig({ ...selectedLayerConfig, description: String(e.target.value) });
+  };
+
   return (
     <EuiForm>
+      <EuiFormRow label="Type">
+        <EuiFieldText name="layerType" value={layersTypeNameMap[selectedLayerConfig.type]} readOnly={true} />
+      </EuiFormRow>
       <EuiFormRow label="Name">
         <EuiFieldText name="layerName" value={selectedLayerConfig.name} onChange={onNameChange} />
       </EuiFormRow>
-      <EuiFormRow label="Zoom">
+
+      <EuiFormRow label = "Description">
+        <EuiTextArea placeholder="Enter description" value={selectedLayerConfig.description} onChange={onDescriptionChange} />
+      </EuiFormRow>
+
+      <EuiFormRow label="Zoom levels">
         <EuiDualRange
           min={MAP_DEFAULT_MIN_ZOOM}
           max={MAP_DEFAULT_MAX_ZOOM}

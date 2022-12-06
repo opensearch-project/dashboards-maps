@@ -10,6 +10,7 @@ export type OSMLayerSpecification = {
   name: string;
   id: string;
   type: 'opensearch_vector_tile_map';
+  description: string;
   zoomRange: number[];
   opacity: number;
   visibility: string;
@@ -25,6 +26,7 @@ export type DocumentLayerSpecification = {
   name: string;
   id: string;
   type: 'documents';
+  description: string;
   zoomRange: number[];
   opacity: number;
   visibility: string;
