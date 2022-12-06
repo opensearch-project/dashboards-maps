@@ -50,10 +50,8 @@ export const LayerConfigPanel = ({
       hideCloseButton={true}
       className="layerConfigPanel"
     >
-      <EuiFlyoutHeader hasBorder={false}>
-        <EuiTitle size="m">
-          <h2>{selectedLayerConfig.name}</h2>
-        </EuiTitle>
+      <EuiFlyoutHeader hasBorder={true}>
+        <strong>{selectedLayerConfig.name}</strong>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiFlexGroup className="layerBasicSettings" direction="column">
