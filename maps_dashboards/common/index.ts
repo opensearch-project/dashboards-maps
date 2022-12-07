@@ -18,6 +18,7 @@ export const MAP_LAYER_DEFAULT_MAX_OPACITY = 100;
 export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
 export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 20;
+export const DOCUMENTS_DEFAULT_MARKER_SIZE = 5;
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
