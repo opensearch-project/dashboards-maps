@@ -18,10 +18,10 @@ import {
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
-import { IndexPattern, IndexPatternField } from '../../../../../src/plugins/data/public';
-import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { MapServices } from '../../types';
-import { DocumentLayerSpecification } from '../../model/mapLayerType';
+import { IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../../../types';
+import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 
 interface Props {
   setSelectedLayerConfig: Function;
@@ -83,7 +83,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
 
   // Update the fields list every time the index pattern is modified.
   useEffect(() => {
-    const acceptedFieldTypes = ['geo_point'];
+    const acceptedFieldTypes = ['geo_point', 'geo_shape'];
     const fields = indexPattern?.fields.filter(
       (field) => acceptedFieldTypes.indexOf(field.type) !== -1
     );
@@ -103,7 +103,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
         indexPatternRefName: indexPattern?.title,
         indexPatternId: indexPattern?.id,
         geoFieldName: selectedField?.displayName,
-        geoFiledType: selectedField?.type,
+        geoFieldType: selectedField?.type,
       };
       setSelectedLayerConfig({ ...selectedLayerConfig, source });
     };

@@ -32,6 +32,7 @@ import {
   OPENSEARCH_MAP_LAYER,
   MAP_LAYER_DEFAULT_BORDER_THICKNESS,
   DOCUMENTS_DEFAULT_REQUEST_NUMBER,
+  DOCUMENTS_DEFAULT_MARKER_SIZE,
 } from '../../../common';
 
 interface Props {
@@ -74,7 +75,7 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
         visibility: LAYER_VISIBILITY.VISIBLE,
         source: {
           indexPatternRefName: undefined,
-          geoFiledType: undefined,
+          geoFieldType: undefined,
           geoFieldName: undefined,
           documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
         },
@@ -82,6 +83,7 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
           fillColor: initialColor,
           borderColor: initialColor,
           borderThickness: MAP_LAYER_DEFAULT_BORDER_THICKNESS,
+          markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
         },
       });
     }

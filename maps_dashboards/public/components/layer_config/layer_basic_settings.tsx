@@ -56,14 +56,22 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
       <EuiSpacer size="m" />
       <EuiForm>
         <EuiFormRow label="Type">
-          <EuiFieldText name="layerType" value={layersTypeNameMap[selectedLayerConfig.type]} readOnly={true} />
+          <EuiFieldText
+            name="layerType"
+            value={layersTypeNameMap[selectedLayerConfig.type]}
+            readOnly={true}
+          />
         </EuiFormRow>
         <EuiFormRow label="Name">
           <EuiFieldText name="layerName" value={selectedLayerConfig.name} onChange={onNameChange} />
         </EuiFormRow>
 
-        <EuiFormRow label = "Description">
-          <EuiTextArea placeholder="Enter description" value={selectedLayerConfig.description} onChange={onDescriptionChange} />
+        <EuiFormRow label="Description">
+          <EuiTextArea
+            placeholder="Enter description"
+            value={selectedLayerConfig.description}
+            onChange={onDescriptionChange}
+          />
         </EuiFormRow>
 
         <EuiFormRow label="Zoom levels">

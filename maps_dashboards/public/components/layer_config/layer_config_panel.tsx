@@ -10,7 +10,6 @@ import {
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
-  EuiTitle,
   EuiFlexItem,
   EuiButtonEmpty,
   EuiFlexGroup,
@@ -18,7 +17,7 @@ import {
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
-import { DocumentLayerConfigPanel } from './document_layer_config_panel';
+import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 
 interface Props {
   setIsLayerConfigVisible: Function;

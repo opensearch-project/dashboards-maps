@@ -33,7 +33,7 @@ export type DocumentLayerSpecification = {
   source: {
     indexPatternRefName: string;
     indexPatternId?: string;
-    geoFiledType: 'geo_point' | 'geo_shape';
+    geoFieldType: 'geo_point' | 'geo_shape';
     geoFieldName: string;
     documentRequestNumber: number;
   };
@@ -41,5 +41,6 @@ export type DocumentLayerSpecification = {
     fillColor: string;
     borderColor: string;
     borderThickness: number;
+    markerSize: number;
   };
 };

@@ -9,9 +9,31 @@ import { DocumentLayerSpecification } from './mapLayerType';
 interface MaplibreRef {
   current: Maplibre | null;
 }
+// https://opensearch.org/docs/1.3/opensearch/supported-field-types/geo-shape
+const openSearchGeoJSONMap = new Map<string, string>([
+  ['point', 'Point'],
+  ['linestring', 'LineString'],
+  ['polygon', 'Polygon'],
+  ['multipoint', 'MultiPoint'],
+  ['multilinestring', 'MultiLineString'],
+  ['multipolygon', 'MultiPolygon'],
+  ['geometrycollection', 'GeometryCollection'],
+]);
 
-const layerExistInMbSource = (layerId: string, maplibreRef: MaplibreRef) => {
-  return !!maplibreRef.current?.getLayer(layerId);
+const GeoJSONMaplibreMap = new Map<string, string>([
+  ['Point', 'circle'],
+  ['LineString', 'line'],
+  ['Polygon', 'fill'],
+]);
+
+const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfigId)) {
+      return true;
+    }
+  }
+  return false;
 };
 
 const getLocationValue = (data: any, geoField: string) => {
@@ -21,30 +43,55 @@ const getLocationValue = (data: any, geoField: string) => {
   }, data);
 };
 
+const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
+  return maplibreRef.current?.getStyle().layers || [];
+};
+
+const getGeoFieldType = (layerConfig: DocumentLayerSpecification) => {
+  return layerConfig?.source?.geoFieldType;
+};
+
+const getGeoFieldName = (layerConfig: DocumentLayerSpecification) => {
+  return layerConfig?.source?.geoFieldName;
+};
+
 const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
-  const sourceConfig = layerConfig?.source;
-  const geoField = sourceConfig.geoFieldName;
+  const geoFieldName = getGeoFieldName(layerConfig);
+  const geoFieldType = getGeoFieldType(layerConfig);
   const featureList: any = [];
   data.forEach((item: any) => {
-    const location = getLocationValue(item._source, geoField);
-    const feature = {
-      geometry: {
-        type: 'Point',
-        coordinates: [location.lon, location.lat],
-      },
-      properties: {
-        title: item._id,
-        description: item._index,
-      },
-    };
+    const location = getLocationValue(item._source, geoFieldName);
+    let feature;
+    if (geoFieldType === 'geo_point') {
+      feature = {
+        geometry: {
+          type: 'Point',
+          coordinates: [location.lon, location.lat],
+        },
+        properties: {
+          title: item._id,
+          description: item._index,
+        },
+      };
+    } else {
+      feature = {
+        geometry: {
+          type: openSearchGeoJSONMap.get(location.type),
+          coordinates: location.coordinates,
+        },
+        properties: {
+          title: item._id,
+          description: item._index,
+        },
+      };
+    }
     featureList.push(feature);
   });
 
-  const geoJsonData = {
+  return {
     type: 'FeatureCollection',
     features: featureList,
   };
-  return geoJsonData;
 };
 
 const addNewLayer = (
@@ -52,29 +99,89 @@ const addNewLayer = (
   maplibreRef: MaplibreRef,
   data: any
 ) => {
+  const addGeoPointLayer = () => {
+    maplibreRef.current?.addLayer({
+      id: layerConfig.id,
+      type: 'circle',
+      source: layerConfig.id,
+      paint: {
+        'circle-radius': layerConfig.style?.markerSize,
+        'circle-color': layerConfig.style?.fillColor,
+        'circle-opacity': layerConfig.opacity / 100,
+        'circle-stroke-width': layerConfig.style?.borderThickness,
+        'circle-stroke-color': layerConfig.style?.borderColor,
+      },
+    });
+  };
+
+  const addGeoShapeLayer = (source: any) => {
+    source.features.map((feature: any) => {
+      const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
+      if (mbType === 'circle') {
+        maplibreRef.current?.addLayer({
+          id: layerConfig.id + '-' + feature.properties.title,
+          type: 'circle',
+          source: layerConfig.id,
+          filter: ['==', '$type', 'Point'],
+          paint: {
+            'circle-radius': layerConfig.style?.markerSize,
+            'circle-color': layerConfig.style?.fillColor,
+            'circle-opacity': layerConfig.opacity / 100,
+            'circle-stroke-width': layerConfig.style?.borderThickness,
+            'circle-stroke-color': layerConfig.style?.borderColor,
+          },
+        });
+      } else if (mbType === 'line') {
+        maplibreRef.current?.addLayer({
+          id: layerConfig.id + '-' + feature.properties.title,
+          type: 'line',
+          source: layerConfig.id,
+          filter: ['==', '$type', 'LineString'],
+          paint: {
+            'line-color': layerConfig.style?.fillColor,
+            'line-opacity': layerConfig.opacity / 100,
+            'line-width': layerConfig.style?.borderThickness,
+          },
+        });
+      } else if (mbType === 'fill') {
+        maplibreRef.current?.addLayer({
+          id: layerConfig.id + '-' + feature.properties.title,
+          type: 'fill',
+          source: layerConfig.id,
+          filter: ['==', '$type', 'Polygon'],
+          paint: {
+            'fill-color': layerConfig.style?.fillColor,
+            'fill-opacity': layerConfig.opacity / 100,
+            'fill-outline-color': layerConfig.style?.borderColor,
+          },
+        });
+        // Add boarder for polygon
+        maplibreRef.current?.addLayer({
+          id: layerConfig.id + '-' + feature.properties.title + '-border',
+          type: 'line',
+          source: layerConfig.id,
+          filter: ['==', '$type', 'Polygon'],
+          paint: {
+            'line-color': layerConfig.style?.borderColor,
+            'line-opacity': layerConfig.opacity / 100,
+            'line-width': layerConfig.style?.borderThickness,
+          },
+        });
+      }
+    });
+  };
   if (maplibreRef.current) {
     const source = getLayerSource(data, layerConfig);
     maplibreRef.current.addSource(layerConfig.id, {
       type: 'geojson',
       data: source,
     });
-    maplibreRef.current.addLayer({
-      id: layerConfig.id,
-      source: layerConfig.id,
-      type: 'circle',
-      minzoom: layerConfig.zoomRange[0],
-      maxzoom: layerConfig.zoomRange[1],
-      layout: {
-        visibility: layerConfig.visibility === 'visible' ? 'visible' : 'none',
-      },
-      paint: {
-        'circle-radius': 6,
-        'circle-color': layerConfig.style.fillColor,
-        'circle-opacity': layerConfig.opacity / 100,
-        'circle-stroke-color': layerConfig.style?.borderColor,
-        'circle-stroke-width': layerConfig.style?.borderThickness,
-      },
-    });
+    const geoFieldType = getGeoFieldType(layerConfig);
+    if (geoFieldType === 'geo_point') {
+      addGeoPointLayer();
+    } else {
+      addGeoShapeLayer(source);
+    }
   }
 };
 
@@ -84,36 +191,123 @@ const updateLayerConfig = (
   data: any
 ) => {
   if (maplibreRef.current) {
-    const dataSource = maplibreRef.current?.getSource(layerConfig.id);
+    const maplibreInstance = maplibreRef.current;
+    const dataSource = maplibreInstance?.getSource(layerConfig.id);
     if (dataSource) {
       // @ts-ignore
       dataSource.setData(getLayerSource(data, layerConfig));
     }
-    maplibreRef.current?.setLayerZoomRange(
-      layerConfig.id,
-      layerConfig.zoomRange[0],
-      layerConfig.zoomRange[1]
-    );
-    maplibreRef.current?.setPaintProperty(
-      layerConfig.id,
-      'circle-opacity',
-      layerConfig.opacity / 100
-    );
-    maplibreRef.current?.setPaintProperty(
-      layerConfig.id,
-      'circle-color',
-      layerConfig.style?.fillColor
-    );
-    maplibreRef.current?.setPaintProperty(
-      layerConfig.id,
-      'circle-stroke-color',
-      layerConfig.style?.borderColor
-    );
-    maplibreRef.current?.setPaintProperty(
-      layerConfig.id,
-      'circle-stroke-width',
-      layerConfig.style?.borderThickness
-    );
+    const geoFieldType = getGeoFieldType(layerConfig);
+    if (geoFieldType === 'geo_point') {
+      maplibreInstance?.setLayerZoomRange(
+        layerConfig.id,
+        layerConfig.zoomRange[0],
+        layerConfig.zoomRange[1]
+      );
+      maplibreInstance?.setPaintProperty(
+        layerConfig.id,
+        'circle-opacity',
+        layerConfig.opacity / 100
+      );
+      maplibreInstance?.setPaintProperty(
+        layerConfig.id,
+        'circle-color',
+        layerConfig.style?.fillColor
+      );
+      maplibreInstance?.setPaintProperty(
+        layerConfig.id,
+        'circle-stroke-color',
+        layerConfig.style?.borderColor
+      );
+      maplibreInstance?.setPaintProperty(
+        layerConfig.id,
+        'circle-stroke-width',
+        layerConfig.style?.borderThickness
+      );
+      maplibreInstance?.setPaintProperty(
+        layerConfig.id,
+        'circle-radius',
+        layerConfig.style?.markerSize
+      );
+    } else {
+      getCurrentStyleLayers(maplibreRef).forEach((layer) => {
+        if (layer.id.includes(layerConfig.id)) {
+          maplibreInstance.setLayerZoomRange(
+            layer.id,
+            layerConfig.zoomRange[0],
+            layerConfig.zoomRange[1]
+          );
+          if (layer.type === 'circle') {
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'circle-opacity',
+              layerConfig.opacity / 100
+            );
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'circle-color',
+              layerConfig.style?.fillColor
+            );
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'circle-stroke-color',
+              layerConfig.style?.borderColor
+            );
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'circle-stroke-width',
+              layerConfig.style?.borderThickness
+            );
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'circle-radius',
+              layerConfig.style?.markerSize
+            );
+          } else if (layer.type === 'line') {
+            if (layer.id.includes('border')) {
+              maplibreInstance?.setPaintProperty(
+                layer.id,
+                'line-color',
+                layerConfig.style?.borderColor
+              );
+              maplibreInstance?.setPaintProperty(
+                layer.id,
+                'line-width',
+                layerConfig.style?.borderThickness
+              );
+            } else {
+              maplibreInstance?.setPaintProperty(
+                layer.id,
+                'line-opacity',
+                layerConfig.opacity / 100
+              );
+              maplibreInstance?.setPaintProperty(
+                layer.id,
+                'line-color',
+                layerConfig.style?.fillColor
+              );
+              maplibreInstance?.setPaintProperty(
+                layer.id,
+                'line-width',
+                layerConfig.style?.borderThickness
+              );
+            }
+          } else if (layer.type === 'fill') {
+            maplibreInstance?.setPaintProperty(layer.id, 'fill-opacity', layerConfig.opacity / 100);
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'fill-color',
+              layerConfig.style?.fillColor
+            );
+            maplibreInstance?.setPaintProperty(
+              layer.id,
+              'fill-outline-color',
+              layerConfig.style?.borderColor
+            );
+          }
+        }
+      });
+    }
   }
 };
 
@@ -126,13 +320,19 @@ export const DocumentLayerFunctions = {
     }
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    if (maplibreRef.current) {
-      maplibreRef.current?.removeLayer(layerConfig.id);
-    }
+    const layers = getCurrentStyleLayers(maplibreRef);
+    layers.forEach((layer: { id: any }) => {
+      if (layer.id.includes(layerConfig.id)) {
+        maplibreRef.current?.removeLayer(layer.id);
+      }
+    });
   },
   hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    if (maplibreRef.current) {
-      maplibreRef.current.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
-    }
+    const layers = getCurrentStyleLayers(maplibreRef);
+    layers.forEach((layer) => {
+      if (layer.id.includes(layerConfig.id)) {
+        maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
+      }
+    });
   },
 };

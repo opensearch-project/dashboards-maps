@@ -4,9 +4,9 @@
  */
 
 import React, { Fragment } from 'react';
-import { EuiSpacer, EuiText, EuiTabbedContent } from '@elastic/eui';
-import { DocumentLayerSpecification } from '../../model/mapLayerType';
-import { LayerBasicSettings } from './layer_basic_settings';
+import { EuiSpacer, EuiTabbedContent } from '@elastic/eui';
+import { DocumentLayerSpecification } from '../../../model/mapLayerType';
+import { LayerBasicSettings } from '../layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
 import { DocumentLayerStyle } from './document_layer_style';
 
@@ -38,12 +38,11 @@ export const DocumentLayerConfigPanel = ({
       name: 'Style',
       content: (
         <Fragment>
-          <EuiText>
-            <DocumentLayerStyle
-              selectedLayerConfig={selectedLayerConfig}
-              setSelectedLayerConfig={setSelectedLayerConfig}
-            />
-          </EuiText>
+          <EuiSpacer size="m" />
+          <DocumentLayerStyle
+            selectedLayerConfig={selectedLayerConfig}
+            setSelectedLayerConfig={setSelectedLayerConfig}
+          />
         </Fragment>
       ),
     },
