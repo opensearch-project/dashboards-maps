@@ -11,6 +11,7 @@ import {
   EuiFlexGrid,
   EuiFieldNumber,
   EuiFormErrorText,
+  EuiCollapsibleNavGroup,
   EuiSpacer,
   EuiPanel,
   EuiTitle,
@@ -114,67 +115,67 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   }, [documentRequestNumber]);
 
   return (
-    <EuiPanel paddingSize="m">
-      <EuiTitle size="xs">
-        <h2>Documents</h2>
-      </EuiTitle>
-      <EuiSpacer size="m" />
-      <EuiFlexGrid columns={1}>
-        <EuiFlexItem>
-          <EuiFormLabel>Data source</EuiFormLabel>
-          <EuiSpacer size="s" />
-          <IndexPatternSelect
-            savedObjectsClient={savedObjectsClient}
-            placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
-              defaultMessage: 'Select data source',
-            })}
-            indexPatternId={indexPattern?.id || ''}
-            onChange={async (newIndexPatternId: any) => {
-              const newIndexPattern = await indexPatterns.get(newIndexPatternId);
-              setIndexPattern(newIndexPattern);
-            }}
-            isClearable={false}
-          />
-        </EuiFlexItem>
-        <EuiSpacer size="m" />
-        <EuiFlexItem>
-          <EuiFormLabel>Geospatial Field</EuiFormLabel>
-          <EuiSpacer size="s" />
-          <EuiComboBox
-            options={formatFieldsToComboBox(geoFields)}
-            selectedOptions={formatFieldToComboBox(selectedField)}
-            singleSelection={true}
-            onChange={(option) => {
-              const field = indexPattern?.getFieldByName(option[0].label);
-              setSelectedField(field || null);
-            }}
-            sortMatchesBy="startsWith"
-            placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
-              defaultMessage: 'Select data field',
-            })}
-          />
-        </EuiFlexItem>
-        <EuiSpacer size="m" />
-        <EuiFlexItem>
-          <EuiFormLabel>Number of documents</EuiFormLabel>
-          <EuiSpacer size="s" />
-          <EuiFieldNumber
-            placeholder="Number of documents"
-            value={documentRequestNumber}
-            onChange={onDocumentRequestNumberChange}
-            aria-label="Use aria labels when no actual label is in use"
-            isInvalid={hasInvalidRequestNumber}
-          />
-          {hasInvalidRequestNumber && (
-            <EuiFormErrorText>
-              <FormattedMessage
-                id="maps.documents.dataSource.errorMessage"
-                defaultMessage="Must between 1 and 10000"
-              />
-            </EuiFormErrorText>
-          )}
-        </EuiFlexItem>
-      </EuiFlexGrid>
+    <EuiPanel paddingSize="s">
+      <EuiCollapsibleNavGroup
+      title="Documents"
+      titleSize="xxs"
+      isCollapsible={true}
+      initialIsOpen={true}>
+        <EuiFlexGrid columns={1}>
+          <EuiFlexItem>
+            <EuiFormLabel>Data source</EuiFormLabel>
+            <EuiSpacer size="xs" />
+            <IndexPatternSelect
+              savedObjectsClient={savedObjectsClient}
+              placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
+                defaultMessage: 'Select data source',
+              })}
+              indexPatternId={indexPattern?.id || ''}
+              onChange={async (newIndexPatternId: any) => {
+                const newIndexPattern = await indexPatterns.get(newIndexPatternId);
+                setIndexPattern(newIndexPattern);
+              }}
+              isClearable={false}
+            />
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiFormLabel>Geospatial Field</EuiFormLabel>
+            <EuiSpacer size="xs" />
+            <EuiComboBox
+              options={formatFieldsToComboBox(geoFields)}
+              selectedOptions={formatFieldToComboBox(selectedField)}
+              singleSelection={true}
+              onChange={(option) => {
+                const field = indexPattern?.getFieldByName(option[0].label);
+                setSelectedField(field || null);
+              }}
+              sortMatchesBy="startsWith"
+              placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
+                defaultMessage: 'Select data field',
+              })}
+            />
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <EuiFormLabel>Number of documents</EuiFormLabel>
+            <EuiSpacer size="xs" />
+            <EuiFieldNumber
+              placeholder="Number of documents"
+              value={documentRequestNumber}
+              onChange={onDocumentRequestNumberChange}
+              aria-label="Use aria labels when no actual label is in use"
+              isInvalid={hasInvalidRequestNumber}
+            />
+            {hasInvalidRequestNumber && (
+              <EuiFormErrorText>
+                <FormattedMessage
+                  id="maps.documents.dataSource.errorMessage"
+                  defaultMessage="Must between 1 and 10000"
+                />
+              </EuiFormErrorText>
+            )}
+          </EuiFlexItem>
+        </EuiFlexGrid>
+      </EuiCollapsibleNavGroup>
     </EuiPanel>
   );
 };
