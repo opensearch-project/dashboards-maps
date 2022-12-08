@@ -99,8 +99,9 @@ const addNewLayer = (
   maplibreRef: MaplibreRef,
   data: any
 ) => {
+  const maplibreInstance = maplibreRef.current;
   const addGeoPointLayer = () => {
-    maplibreRef.current?.addLayer({
+    maplibreInstance?.addLayer({
       id: layerConfig.id,
       type: 'circle',
       source: layerConfig.id,
@@ -112,14 +113,16 @@ const addNewLayer = (
         'circle-stroke-color': layerConfig.style?.borderColor,
       },
     });
+    maplibreInstance?.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
   };
 
   const addGeoShapeLayer = (source: any) => {
     source.features.map((feature: any) => {
       const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
       if (mbType === 'circle') {
-        maplibreRef.current?.addLayer({
-          id: layerConfig.id + '-' + feature.properties.title,
+        const circleLayerId = layerConfig.id + feature.properties.title;
+        maplibreInstance?.addLayer({
+          id: circleLayerId,
           type: 'circle',
           source: layerConfig.id,
           filter: ['==', '$type', 'Point'],
@@ -131,9 +134,11 @@ const addNewLayer = (
             'circle-stroke-color': layerConfig.style?.borderColor,
           },
         });
+        maplibreInstance?.setLayoutProperty(circleLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'line') {
-        maplibreRef.current?.addLayer({
-          id: layerConfig.id + '-' + feature.properties.title,
+        const lineLayerId = layerConfig.id + '-' + feature.properties.title;
+        maplibreInstance?.addLayer({
+          id: lineLayerId,
           type: 'line',
           source: layerConfig.id,
           filter: ['==', '$type', 'LineString'],
@@ -143,9 +148,12 @@ const addNewLayer = (
             'line-width': layerConfig.style?.borderThickness,
           },
         });
+        maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'fill') {
-        maplibreRef.current?.addLayer({
-          id: layerConfig.id + '-' + feature.properties.title,
+        const polygonFillLayerId = layerConfig.id + '-' + feature.properties.title;
+        const polygonBorderLayerId = polygonFillLayerId + '-border';
+        maplibreInstance?.addLayer({
+          id: polygonFillLayerId,
           type: 'fill',
           source: layerConfig.id,
           filter: ['==', '$type', 'Polygon'],
@@ -155,9 +163,14 @@ const addNewLayer = (
             'fill-outline-color': layerConfig.style?.borderColor,
           },
         });
+        maplibreInstance?.setLayoutProperty(
+          polygonFillLayerId,
+          'visibility',
+          layerConfig.visibility
+        );
         // Add boarder for polygon
-        maplibreRef.current?.addLayer({
-          id: layerConfig.id + '-' + feature.properties.title + '-border',
+        maplibreInstance?.addLayer({
+          id: polygonBorderLayerId,
           type: 'line',
           source: layerConfig.id,
           filter: ['==', '$type', 'Polygon'],
@@ -167,12 +180,17 @@ const addNewLayer = (
             'line-width': layerConfig.style?.borderThickness,
           },
         });
+        maplibreInstance?.setLayoutProperty(
+          polygonBorderLayerId,
+          'visibility',
+          layerConfig.visibility
+        );
       }
     });
   };
-  if (maplibreRef.current) {
+  if (maplibreInstance) {
     const source = getLayerSource(data, layerConfig);
-    maplibreRef.current.addSource(layerConfig.id, {
+    maplibreInstance.addSource(layerConfig.id, {
       type: 'geojson',
       data: source,
     });
@@ -190,8 +208,8 @@ const updateLayerConfig = (
   maplibreRef: MaplibreRef,
   data: any
 ) => {
-  if (maplibreRef.current) {
-    const maplibreInstance = maplibreRef.current;
+  const maplibreInstance = maplibreRef.current;
+  if (maplibreInstance) {
     const dataSource = maplibreInstance?.getSource(layerConfig.id);
     if (dataSource) {
       // @ts-ignore
