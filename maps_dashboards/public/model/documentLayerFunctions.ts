@@ -99,9 +99,9 @@ const addNewLayer = (
   maplibreRef: MaplibreRef,
   data: any
 ) => {
-  const maplireInstance = maplibreRef.current;
+  const maplibreInstance = maplibreRef.current;
   const addGeoPointLayer = () => {
-    maplireInstance?.addLayer({
+    maplibreInstance?.addLayer({
       id: layerConfig.id,
       type: 'circle',
       source: layerConfig.id,
@@ -113,7 +113,7 @@ const addNewLayer = (
         'circle-stroke-color': layerConfig.style?.borderColor,
       },
     });
-    maplireInstance?.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
+    maplibreInstance?.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
   };
 
   const addGeoShapeLayer = (source: any) => {
@@ -121,7 +121,7 @@ const addNewLayer = (
       const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
       if (mbType === 'circle') {
         const circleLayerId = layerConfig.id + feature.properties.title;
-        maplireInstance?.addLayer({
+        maplibreInstance?.addLayer({
           id: circleLayerId,
           type: 'circle',
           source: layerConfig.id,
@@ -134,10 +134,10 @@ const addNewLayer = (
             'circle-stroke-color': layerConfig.style?.borderColor,
           },
         });
-        maplireInstance?.setLayoutProperty(circleLayerId, 'visibility', layerConfig.visibility);
+        maplibreInstance?.setLayoutProperty(circleLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'line') {
         const lineLayerId = layerConfig.id + '-' + feature.properties.title;
-        maplireInstance?.addLayer({
+        maplibreInstance?.addLayer({
           id: lineLayerId,
           type: 'line',
           source: layerConfig.id,
@@ -148,11 +148,11 @@ const addNewLayer = (
             'line-width': layerConfig.style?.borderThickness,
           },
         });
-        maplireInstance?.setLayoutProperty(lineLayerId, 'visibility', layerConfig.visibility);
+        maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'fill') {
         const polygonFillLayerId = layerConfig.id + '-' + feature.properties.title;
         const polygonBorderLayerId = polygonFillLayerId + '-border';
-        maplireInstance?.addLayer({
+        maplibreInstance?.addLayer({
           id: polygonFillLayerId,
           type: 'fill',
           source: layerConfig.id,
@@ -163,13 +163,13 @@ const addNewLayer = (
             'fill-outline-color': layerConfig.style?.borderColor,
           },
         });
-        maplireInstance?.setLayoutProperty(
+        maplibreInstance?.setLayoutProperty(
           polygonFillLayerId,
           'visibility',
           layerConfig.visibility
         );
         // Add boarder for polygon
-        maplireInstance?.addLayer({
+        maplibreInstance?.addLayer({
           id: polygonBorderLayerId,
           type: 'line',
           source: layerConfig.id,
@@ -180,7 +180,7 @@ const addNewLayer = (
             'line-width': layerConfig.style?.borderThickness,
           },
         });
-        maplireInstance?.setLayoutProperty(
+        maplibreInstance?.setLayoutProperty(
           polygonBorderLayerId,
           'visibility',
           layerConfig.visibility
@@ -188,9 +188,9 @@ const addNewLayer = (
       }
     });
   };
-  if (maplireInstance) {
+  if (maplibreInstance) {
     const source = getLayerSource(data, layerConfig);
-    maplireInstance.addSource(layerConfig.id, {
+    maplibreInstance.addSource(layerConfig.id, {
       type: 'geojson',
       data: source,
     });
