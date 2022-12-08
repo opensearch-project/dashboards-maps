@@ -14,6 +14,10 @@
     height: $euiSizeL;
     width: $euiSizeL;
   }
+
+  .euiListGroupItem__label {
+    width: $euiSizeL * 6;
+  }
 }
 
 .layerControlPanel--hide {

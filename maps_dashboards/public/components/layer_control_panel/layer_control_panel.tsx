@@ -21,8 +21,11 @@ import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
-  LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE, LAYER_ICON_TYPE_MAP,
-  LAYER_PANEL_SHOW_LAYER_ICON, LAYER_PANEL_HIDE_LAYER_ICON
+  LAYER_VISIBILITY,
+  DASHBOARDS_MAPS_LAYER_TYPE,
+  LAYER_ICON_TYPE_MAP,
+  LAYER_PANEL_SHOW_LAYER_ICON,
+  LAYER_PANEL_HIDE_LAYER_ICON,
 } from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
@@ -146,8 +149,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
   const [layerVisibility, setLayerVisibility] = useState(new Map<string, boolean>([]));
   layers.forEach((layer) => {
     layerVisibility.set(layer.id, layer.visibility === LAYER_VISIBILITY.VISIBLE);
-    }
-  );
+  });
 
   if (isLayerControlVisible) {
     return (
@@ -201,7 +203,11 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
                         <EuiButtonEmpty
-                          iconType={layerVisibility.get(layer.id) ? LAYER_PANEL_HIDE_LAYER_ICON : LAYER_PANEL_SHOW_LAYER_ICON}
+                          iconType={
+                            layerVisibility.get(layer.id)
+                              ? LAYER_PANEL_HIDE_LAYER_ICON
+                              : LAYER_PANEL_SHOW_LAYER_ICON
+                          }
                           size="s"
                           onClick={() => {
                             if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
