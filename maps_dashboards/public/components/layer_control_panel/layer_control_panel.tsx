@@ -173,7 +173,12 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                 isLayerConfigVisible && selectedLayerConfig && selectedLayerConfig.id === layer.id;
               return (
                 <div key={layer.id}>
-                  <EuiFlexGroup alignItems="center" gutterSize="none" direction="row">
+                  <EuiFlexGroup
+                    className={isLayerSelected ? 'layerControlPanel__selected' : ''}
+                    alignItems="center"
+                    gutterSize="none"
+                    direction="row"
+                  >
                     <EuiFlexItem>
                       <EuiListGroupItem
                         key={layer.id}
@@ -181,7 +186,6 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                         data-item={JSON.stringify(layer)}
                         iconType={LAYER_ICON_TYPE_MAP[layer.type]}
                         aria-label="layer in the map layers list"
-                        isActive={isLayerSelected}
                         onClick={() => onClickLayerName(layer)}
                       />
                     </EuiFlexItem>
