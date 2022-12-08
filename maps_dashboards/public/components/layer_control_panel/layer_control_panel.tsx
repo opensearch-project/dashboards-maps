@@ -135,6 +135,11 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     setLayers(layersClone);
   };
 
+  const onClickLayerName = (layer: MapLayerSpecification) => {
+    setSelectedLayerConfig(layer);
+    setIsLayerConfigVisible(true);
+  };
+
   if (isLayerControlVisible) {
     return (
       <I18nProvider>
@@ -164,11 +169,16 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             </EuiFlexGroup>
             <EuiHorizontalRule margin="none" />
             {layers.map((layer, index) => {
-              const isDisabled =
+              const isLayerSelected =
                 isLayerConfigVisible && selectedLayerConfig && selectedLayerConfig.id === layer.id;
               return (
                 <div key={layer.id}>
-                  <EuiFlexGroup alignItems="center" gutterSize="none" direction="row">
+                  <EuiFlexGroup
+                    className={isLayerSelected ? 'layerControlPanel__selected' : ''}
+                    alignItems="center"
+                    gutterSize="none"
+                    direction="row"
+                  >
                     <EuiFlexItem>
                       <EuiListGroupItem
                         key={layer.id}
@@ -176,17 +186,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                         data-item={JSON.stringify(layer)}
                         iconType={LAYER_ICON_TYPE_MAP[layer.type]}
                         aria-label="layer in the map layers list"
-                        isDisabled={isDisabled}
-                        onClick={() => {
-                          setSelectedLayerConfig(layer);
-                          if (
-                            selectedLayerConfig &&
-                            selectedLayerConfig.id === layer.id &&
-                            !isLayerConfigVisible
-                          ) {
-                            setIsLayerConfigVisible(true);
-                          }
-                        }}
+                        onClick={() => onClickLayerName(layer)}
                       />
                     </EuiFlexItem>
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
@@ -204,7 +204,6 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                           }}
                           aria-label="Hide or show layer"
                           color="text"
-                          isDisabled={isDisabled}
                         />
                       </EuiFlexItem>
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
@@ -217,7 +216,6 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                           }}
                           aria-label="Delete layer"
                           color="text"
-                          isDisabled={isDisabled}
                         />
                       </EuiFlexItem>
                     </EuiFlexGroup>
@@ -237,6 +235,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             <AddLayerPanel
               setIsLayerConfigVisible={setIsLayerConfigVisible}
               setSelectedLayerConfig={setSelectedLayerConfig}
+              IsLayerConfigVisible={isLayerConfigVisible}
             />
           </EuiFlexGroup>
         </EuiPanel>

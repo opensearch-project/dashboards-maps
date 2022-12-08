@@ -6,6 +6,10 @@
     padding: $euiSizeM $euiSizeM
   }
 
+  .layerControlPanel__selected {
+    background-color: $euiColorLightShade;
+  }
+
   .layerControlPanel__layerFunctionButton {
     height: $euiSizeL;
     width: $euiSizeL;
@@ -21,3 +25,4 @@
     border-color: $euiColorLightShade;
   }
 }
+

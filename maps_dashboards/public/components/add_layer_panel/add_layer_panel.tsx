@@ -38,9 +38,14 @@ import {
 interface Props {
   setIsLayerConfigVisible: Function;
   setSelectedLayerConfig: Function;
+  IsLayerConfigVisible: boolean;
 }
 
-export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig }: Props) => {
+export const AddLayerPanel = ({
+  setIsLayerConfigVisible,
+  setSelectedLayerConfig,
+  IsLayerConfigVisible,
+}: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
   function onClickAddNewLayer(layerType: string) {
@@ -124,7 +129,13 @@ export const AddLayerPanel = ({ setIsLayerConfigVisible, setSelectedLayerConfig 
   return (
     <div className="addLayer">
       <EuiFlexItem className="addLayer__button">
-        <EuiButton size="s" fill onClick={showModal} aria-label="Add layer">
+        <EuiButton
+          size="s"
+          fill
+          onClick={showModal}
+          aria-label="Add layer"
+          isDisabled={IsLayerConfigVisible}
+        >
           Add layer
         </EuiButton>
       </EuiFlexItem>
