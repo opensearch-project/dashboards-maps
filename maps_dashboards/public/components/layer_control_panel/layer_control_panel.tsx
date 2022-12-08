@@ -20,7 +20,10 @@ import './layer_control_panel.scss';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import { LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE, LAYER_ICON_TYPE_MAP } from '../../../common';
+import {
+  LAYER_VISIBILITY, DASHBOARDS_MAPS_LAYER_TYPE, LAYER_ICON_TYPE_MAP,
+  LAYER_PANEL_SHOW_LAYER_ICON, LAYER_PANEL_HIDE_LAYER_ICON
+} from '../../../common';
 import { layersFunctionMap } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -140,6 +143,12 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     setIsLayerConfigVisible(true);
   };
 
+  const [layerVisibility, setLayerVisibility] = useState(new Map<string, boolean>([]));
+  layers.forEach((layer) => {
+    layerVisibility.set(layer.id, layer.visibility === LAYER_VISIBILITY.VISIBLE);
+    }
+  );
+
   if (isLayerControlVisible) {
     return (
       <I18nProvider>
@@ -192,13 +201,15 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                     <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                       <EuiFlexItem grow={false} className="layerControlPanel__layerFunctionButton">
                         <EuiButtonEmpty
-                          iconType="eyeClosed"
+                          iconType={layerVisibility.get(layer.id) ? LAYER_PANEL_HIDE_LAYER_ICON : LAYER_PANEL_SHOW_LAYER_ICON}
                           size="s"
                           onClick={() => {
                             if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
                               layer.visibility = LAYER_VISIBILITY.NONE;
+                              setLayerVisibility(new Map(layerVisibility.set(layer.id, false)));
                             } else {
                               layer.visibility = LAYER_VISIBILITY.VISIBLE;
+                              setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
                             }
                             layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
                           }}
