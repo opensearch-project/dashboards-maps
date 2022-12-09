@@ -136,6 +136,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
                 setIndexPattern(newIndexPattern);
               }}
               isClearable={false}
+              isInvalid={!(indexPattern instanceof IndexPattern)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
@@ -146,13 +147,14 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
               selectedOptions={formatFieldToComboBox(selectedField)}
               singleSelection={true}
               onChange={(option) => {
-                const field = indexPattern?.getFieldByName(option[0].label);
+                const field = indexPattern?.getFieldByName(option[0]?.label);
                 setSelectedField(field || null);
               }}
               sortMatchesBy="startsWith"
               placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
                 defaultMessage: 'Select data field',
               })}
+              isInvalid={!(indexPattern instanceof IndexPattern)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
