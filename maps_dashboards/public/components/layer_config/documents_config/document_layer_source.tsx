@@ -14,7 +14,6 @@ import {
   EuiCollapsibleNavGroup,
   EuiSpacer,
   EuiPanel,
-  EuiTitle,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -117,10 +116,11 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   return (
     <EuiPanel paddingSize="s">
       <EuiCollapsibleNavGroup
-      title="Documents"
-      titleSize="xxs"
-      isCollapsible={true}
-      initialIsOpen={true}>
+        title="Documents"
+        titleSize="xxs"
+        isCollapsible={true}
+        initialIsOpen={true}
+      >
         <EuiFlexGrid columns={1}>
           <EuiFlexItem>
             <EuiFormLabel>Data source</EuiFormLabel>
