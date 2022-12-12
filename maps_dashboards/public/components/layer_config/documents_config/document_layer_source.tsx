@@ -14,7 +14,6 @@ import {
   EuiCollapsibleNavGroup,
   EuiSpacer,
   EuiPanel,
-  EuiTitle,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -117,10 +116,11 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   return (
     <EuiPanel paddingSize="s">
       <EuiCollapsibleNavGroup
-      title="Documents"
-      titleSize="xxs"
-      isCollapsible={true}
-      initialIsOpen={true}>
+        title="Documents"
+        titleSize="xxs"
+        isCollapsible={true}
+        initialIsOpen={true}
+      >
         <EuiFlexGrid columns={1}>
           <EuiFlexItem>
             <EuiFormLabel>Data source</EuiFormLabel>
@@ -136,6 +136,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
                 setIndexPattern(newIndexPattern);
               }}
               isClearable={false}
+              isInvalid={!(indexPattern instanceof IndexPattern)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
@@ -146,13 +147,14 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
               selectedOptions={formatFieldToComboBox(selectedField)}
               singleSelection={true}
               onChange={(option) => {
-                const field = indexPattern?.getFieldByName(option[0].label);
+                const field = indexPattern?.getFieldByName(option[0]?.label);
                 setSelectedField(field || null);
               }}
               sortMatchesBy="startsWith"
               placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
                 defaultMessage: 'Select data field',
               })}
+              isInvalid={!(indexPattern instanceof IndexPattern)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
