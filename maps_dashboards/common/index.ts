@@ -19,8 +19,9 @@ export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
 export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 20;
 export const DOCUMENTS_DEFAULT_MARKER_SIZE = 5;
-export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye'
-export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed'
+export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye';
+export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed';
+export const MAX_LAYER_NAME_LIMIT = 35;
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
