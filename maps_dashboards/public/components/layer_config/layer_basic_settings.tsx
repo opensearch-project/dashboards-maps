@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   EuiDualRange,
   EuiFieldText,
@@ -23,6 +23,7 @@ import {
   MAP_LAYER_DEFAULT_MIN_OPACITY,
   MAP_LAYER_DEFAULT_MAX_OPACITY,
   MAP_LAYER_DEFAULT_OPACITY_STEP,
+  MAX_LAYER_NAME_LIMIT,
 } from '../../../common';
 import { layersTypeNameMap } from '../../model/layersFunctions';
 
@@ -40,8 +41,27 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
     setSelectedLayerConfig({ ...selectedLayerConfig, opacity: Number(e.target.value) });
   };
 
+  const [invalid, setInvalid] = useState<boolean>(selectedLayerConfig.name.length === 0);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  const validateName = (name: string) => {
+    if (name?.length === 0) {
+      setInvalid(true);
+      setErrors(['Name cannot be empty']);
+      return;
+    }
+    if (MAX_LAYER_NAME_LIMIT < name?.length) {
+      setInvalid(true);
+      setErrors(['Name should be less than ' + MAX_LAYER_NAME_LIMIT + ' characters']);
+      return;
+    }
+    setInvalid(false);
+  };
+
   const onNameChange = (e: any) => {
-    setSelectedLayerConfig({ ...selectedLayerConfig, name: String(e.target.value) });
+    const layerName = String(e.target.value);
+    setSelectedLayerConfig({ ...selectedLayerConfig, name: layerName });
+    validateName(layerName);
   };
 
   const onDescriptionChange = (e: any) => {
@@ -62,8 +82,13 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
             readOnly={true}
           />
         </EuiFormRow>
-        <EuiFormRow label="Name">
-          <EuiFieldText name="layerName" value={selectedLayerConfig.name} onChange={onNameChange} />
+        <EuiFormRow label="Name" error={errors} isInvalid={invalid}>
+          <EuiFieldText
+            name="layerName"
+            value={selectedLayerConfig.name}
+            onChange={onNameChange}
+            isInvalid={invalid}
+          />
         </EuiFormRow>
 
         <EuiFormRow label="Description">
