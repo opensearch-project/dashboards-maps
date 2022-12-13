@@ -17,7 +17,12 @@ import {
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
-import { IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
+import _, { Dictionary } from 'lodash';
+import {
+  IndexPattern,
+  IndexPatternField,
+  OPENSEARCH_FIELD_TYPES,
+} from '../../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../../types';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
@@ -45,19 +50,29 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
   );
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
 
+  const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
+    if (!fields) return [];
+    const fieldTypeMap: Dictionary<IndexPatternField[]> = _.groupBy(fields, (field) => field.type);
+
+    const fieldOptions: Array<{ label: string; options: Array<{ label: string; }>; }> = [];
+    let typeOptions: Array<{ label: string }> = [];
+
+    Object.entries(fieldTypeMap).forEach(([geoFieldType, fieldEntries]) => {
+      for (const field of fieldEntries) {
+        typeOptions.push({ label: `${field.displayName || field.name}` });
+      }
+      fieldOptions.push({
+        label: `${geoFieldType}`,
+        options: typeOptions,
+      });
+      typeOptions = [];
+    });
+    return fieldOptions;
+  };
+
   const formatFieldToComboBox = (field?: IndexPatternField | null) => {
     if (!field) return [];
     return formatFieldsToComboBox([field]);
-  };
-
-  const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
-    if (!fields) return [];
-
-    return fields?.map((field) => {
-      return {
-        label: field.displayName || field.name,
-      };
-    });
   };
 
   const onDocumentRequestNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +97,10 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
 
   // Update the fields list every time the index pattern is modified.
   useEffect(() => {
-    const acceptedFieldTypes = ['geo_point', 'geo_shape'];
+    const acceptedFieldTypes = [
+      OPENSEARCH_FIELD_TYPES.GEO_POINT.toString(),
+      OPENSEARCH_FIELD_TYPES.GEO_SHAPE.toString(),
+    ];
     const fields = indexPattern?.fields.filter(
       (field) => acceptedFieldTypes.indexOf(field.type) !== -1
     );
@@ -154,7 +172,7 @@ export const DocumentLayerSource = ({ setSelectedLayerConfig, selectedLayerConfi
               placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
                 defaultMessage: 'Select data field',
               })}
-              isInvalid={!(indexPattern instanceof IndexPattern)}
+              isInvalid={!(selectedField instanceof IndexPatternField)}
             />
           </EuiFlexItem>
           <EuiFlexItem>
