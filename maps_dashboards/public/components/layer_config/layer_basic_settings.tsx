@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   EuiDualRange,
   EuiFieldText,
@@ -30,17 +30,14 @@ import { layersTypeNameMap } from '../../model/layersFunctions';
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
+  setIsUpdateDisabled: Function;
 }
 
-export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig }: Props) => {
-  const onZoomChange = (value: number[]) => {
-    setSelectedLayerConfig({ ...selectedLayerConfig, zoomRange: value });
-  };
-
-  const onOpacityChange = (e: any) => {
-    setSelectedLayerConfig({ ...selectedLayerConfig, opacity: Number(e.target.value) });
-  };
-
+export const LayerBasicSettings = ({
+  selectedLayerConfig,
+  setSelectedLayerConfig,
+  setIsUpdateDisabled,
+}: Props) => {
   const [invalid, setInvalid] = useState<boolean>(selectedLayerConfig.name.length === 0);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -58,14 +55,33 @@ export const LayerBasicSettings = ({ selectedLayerConfig, setSelectedLayerConfig
     setInvalid(false);
   };
 
+  const { name } = selectedLayerConfig;
+
+  useEffect(() => {
+    const disableUpdate = !name || invalid;
+    setIsUpdateDisabled(disableUpdate);
+  }, [setIsUpdateDisabled, name, invalid]);
+
+  const commonUpdate = (key: string, value: any) => {
+    const newLayerConfig = { ...selectedLayerConfig, [key]: value };
+    setSelectedLayerConfig(newLayerConfig);
+  };
+  const onZoomChange = (value: number[]) => {
+    commonUpdate('zoomRange', value);
+  };
+
+  const onOpacityChange = (e: any) => {
+    commonUpdate('opacity', Number(e.target.value));
+  };
+
   const onNameChange = (e: any) => {
     const layerName = String(e.target.value);
-    setSelectedLayerConfig({ ...selectedLayerConfig, name: layerName });
     validateName(layerName);
+    commonUpdate('name', layerName);
   };
 
   const onDescriptionChange = (e: any) => {
-    setSelectedLayerConfig({ ...selectedLayerConfig, description: String(e.target.value) });
+    commonUpdate('description', String(e.target.value));
   };
 
   return (

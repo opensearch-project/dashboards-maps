@@ -42,20 +42,17 @@ export const getTopNavConfig = (
       run: (_anchorElement) => {
         const onModalSave = async ({ newTitle, newDescription }: OnSaveProps) => {
           let newlySavedMap;
+          const saveAttributes = {
+            title: newTitle,
+            description: newDescription,
+            layerList: JSON.stringify(layers),
+          };
           if (mapIdFromUrl) {
             // edit existing map
-            newlySavedMap = await savedObjectsClient.update('map', mapIdFromUrl, {
-              title: newTitle,
-              description: newDescription,
-              layerList: JSON.stringify(layers),
-            });
+            newlySavedMap = await savedObjectsClient.update('map', mapIdFromUrl, saveAttributes);
           } else {
             // save new map
-            newlySavedMap = await savedObjectsClient.create('map', {
-              title: newTitle,
-              description: newDescription,
-              layerList: JSON.stringify(layers),
-            });
+            newlySavedMap = await savedObjectsClient.create('map', saveAttributes);
           }
           const id = newlySavedMap.id;
           if (id) {

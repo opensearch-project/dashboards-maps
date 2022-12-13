@@ -13,12 +13,37 @@ import { DocumentLayerStyle } from './document_layer_style';
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
+  setIsUpdateDisabled: Function;
 }
 
-export const DocumentLayerConfigPanel = ({
-  selectedLayerConfig,
-  setSelectedLayerConfig,
-}: Props) => {
+export const DocumentLayerConfigPanel = (props: Props) => {
+  const { selectedLayerConfig } = props;
+
+  const checkKeys = [
+    'name',
+    {
+      key: 'source',
+      children: ['indexPatternId', 'geoFieldName'],
+    },
+  ];
+  const setIsUpdateDisabled = (isUpdateDisabled: boolean) => {
+    const check = (obj: any, keys: any) => {
+      return keys.some((key: any) => {
+        if (typeof key === 'string') {
+          return !obj[key];
+        } else {
+          return !obj[key.key] || check(obj[key.key], key.children);
+        }
+      });
+    };
+    props.setIsUpdateDisabled(check(selectedLayerConfig, checkKeys) || isUpdateDisabled);
+  };
+
+  const newProps = {
+    ...props,
+    setIsUpdateDisabled,
+  };
+
   const tabs = [
     {
       id: 'data-source--id',
@@ -26,10 +51,7 @@ export const DocumentLayerConfigPanel = ({
       content: (
         <Fragment>
           <EuiSpacer size="m" />
-          <DocumentLayerSource
-            selectedLayerConfig={selectedLayerConfig}
-            setSelectedLayerConfig={setSelectedLayerConfig}
-          />
+          <DocumentLayerSource {...newProps} />
         </Fragment>
       ),
     },
@@ -39,10 +61,7 @@ export const DocumentLayerConfigPanel = ({
       content: (
         <Fragment>
           <EuiSpacer size="m" />
-          <DocumentLayerStyle
-            selectedLayerConfig={selectedLayerConfig}
-            setSelectedLayerConfig={setSelectedLayerConfig}
-          />
+          <DocumentLayerStyle {...newProps} />
         </Fragment>
       ),
     },
@@ -52,10 +71,7 @@ export const DocumentLayerConfigPanel = ({
       content: (
         <Fragment>
           <EuiSpacer size="m" />
-          <LayerBasicSettings
-            selectedLayerConfig={selectedLayerConfig}
-            setSelectedLayerConfig={setSelectedLayerConfig}
-          />
+          <LayerBasicSettings {...newProps} />
         </Fragment>
       ),
     },

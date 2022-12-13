@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { cloneDeep, isEqual } from 'lodash';
+
 import {
   EuiButton,
   EuiFlyout,
@@ -13,32 +15,57 @@ import {
   EuiFlexItem,
   EuiButtonEmpty,
   EuiFlexGroup,
+  EuiModal,
+  EuiModalBody,
+  EuiModalFooter,
+  EuiModalHeader,
+  EuiModalHeaderTitle,
 } from '@elastic/eui';
+
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 
 interface Props {
-  setIsLayerConfigVisible: Function;
+  closeLayerConfigPanel: Function;
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   updateLayer: Function;
 }
 
 export const LayerConfigPanel = ({
-  setIsLayerConfigVisible,
+  closeLayerConfigPanel,
   selectedLayerConfig,
   setSelectedLayerConfig,
   updateLayer,
 }: Props) => {
-  const onClose = () => {
-    setIsLayerConfigVisible(false);
+  const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
+  const [originLayerConfig, setOriginLayerConfig] = useState<any>(null);
+  const [warnModalVisible, setwarnModalVisible] = useState(false);
+
+  useEffect(() => {
+    setOriginLayerConfig(cloneDeep(selectedLayerConfig));
+  }, []);
+
+  const discardChanges = () => {
+    closeLayerConfigPanel(false);
     setSelectedLayerConfig(undefined);
+  };
+  const onClose = () => {
+    if (isEqual(originLayerConfig, selectedLayerConfig)) {
+      discardChanges();
+    } else {
+      setwarnModalVisible(true);
+    }
   };
   const onUpdate = () => {
     updateLayer();
-    setIsLayerConfigVisible(false);
+    closeLayerConfigPanel(false);
+  };
+
+  const closeModal = () => {
+    setwarnModalVisible(false);
   };
 
   return (
@@ -59,12 +86,14 @@ export const LayerConfigPanel = ({
               <BaseMapLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
+                setIsUpdateDisabled={setIsUpdateDisabled}
               />
             )}
             {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && (
               <DocumentLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
+                setIsUpdateDisabled={setIsUpdateDisabled}
               />
             )}
           </EuiFlexItem>
@@ -78,12 +107,28 @@ export const LayerConfigPanel = ({
             </EuiButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton iconType="play" onClick={onUpdate} fill>
+            <EuiButton disabled={isUpdateDisabled} iconType="play" onClick={onUpdate} fill>
               Update
             </EuiButton>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutFooter>
+      {warnModalVisible && (
+        <EuiModal onClose={closeModal}>
+          <EuiModalHeader>
+            <EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle>
+          </EuiModalHeader>
+          <EuiModalBody>
+            <p>Do you want to discard the changes?</p>
+          </EuiModalBody>
+          <EuiModalFooter>
+            <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
+            <EuiButton onClick={discardChanges} fill>
+              Discard
+            </EuiButton>
+          </EuiModalFooter>
+        </EuiModal>
+      )}
     </EuiFlyout>
   );
 };

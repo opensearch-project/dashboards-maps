@@ -19,81 +19,30 @@ import {
   EuiSpacer,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  LAYER_VISIBILITY,
-  MAP_DEFAULT_MIN_ZOOM,
-  MAP_DEFAULT_MAX_ZOOM,
-  MAP_DATA_LAYER_DEFAULT_OPACITY,
-  MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
-  MAP_VECTOR_TILE_BASIC_STYLE,
-  MAP_VECTOR_TILE_DATA_SOURCE,
-  DOCUMENTS,
-  OPENSEARCH_MAP_LAYER,
-  MAP_LAYER_DEFAULT_BORDER_THICKNESS,
-  DOCUMENTS_DEFAULT_REQUEST_NUMBER,
-  DOCUMENTS_DEFAULT_MARKER_SIZE,
-} from '../../../common';
+import { DOCUMENTS, OPENSEARCH_MAP_LAYER } from '../../../common';
+import { getLayerConfigMap } from '../../utils/getIntialLayerConfig';
 
 interface Props {
   setIsLayerConfigVisible: Function;
   setSelectedLayerConfig: Function;
   IsLayerConfigVisible: boolean;
+  addLayer: Function;
 }
 
 export const AddLayerPanel = ({
   setIsLayerConfigVisible,
   setSelectedLayerConfig,
   IsLayerConfigVisible,
+  addLayer,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
   function onClickAddNewLayer(layerType: string) {
-    if (layerType === OPENSEARCH_MAP_LAYER.type) {
-      setSelectedLayerConfig({
-        name: OPENSEARCH_MAP_LAYER.name,
-        type: OPENSEARCH_MAP_LAYER.type,
-        id: uuidv4(),
-        zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
-        opacity: MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
-        visibility: LAYER_VISIBILITY.VISIBLE,
-        source: {
-          dataURL: MAP_VECTOR_TILE_DATA_SOURCE,
-        },
-        style: {
-          styleURL: MAP_VECTOR_TILE_BASIC_STYLE,
-        },
-      });
-    } else if (layerType === DOCUMENTS.type) {
-      const getInitialColor = () => {
-        const colorCode = (Math.random() * 0xfffff * 1000000).toString(16);
-        return '#' + colorCode.slice(0, 6);
-      };
-      const initialColor = getInitialColor();
-
-      setSelectedLayerConfig({
-        name: DOCUMENTS.name,
-        type: DOCUMENTS.type,
-        id: uuidv4(),
-        zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
-        opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
-        visibility: LAYER_VISIBILITY.VISIBLE,
-        source: {
-          indexPatternRefName: undefined,
-          geoFieldType: undefined,
-          geoFieldName: undefined,
-          documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
-        },
-        style: {
-          fillColor: initialColor,
-          borderColor: initialColor,
-          borderThickness: MAP_LAYER_DEFAULT_BORDER_THICKNESS,
-          markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
-        },
-      });
-    }
+    const initLayerConfig = getLayerConfigMap()[layerType];
+    setSelectedLayerConfig(initLayerConfig);
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
+    addLayer(initLayerConfig);
   }
 
   const dataLayers = [DOCUMENTS];

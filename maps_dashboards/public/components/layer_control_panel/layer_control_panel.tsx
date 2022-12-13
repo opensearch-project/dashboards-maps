@@ -63,9 +63,13 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     MapLayerSpecification | undefined
   >();
   const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
+  const [addLayerId, setAddLayerId] = useState('');
+  const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
 
-  // Initially load the layers from the saved object
   useEffect(() => {
+    if (!isUpdatingLayerRender && initialLayersLoaded) {
+      return;
+    }
     if (layers.length <= 0) {
       return;
     }
@@ -109,7 +113,9 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       } else {
         doDataLayerRender(selectedLayerConfig);
       }
-      setSelectedLayerConfig(undefined);
+      if (addLayerId !== selectedLayerConfig.id) {
+        setSelectedLayerConfig(undefined);
+      }
     } else {
       layers.forEach((layer) => {
         if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
@@ -120,7 +126,20 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       });
       setInitialLayersLoaded(true);
     }
+    setIsUpdatingLayerRender(false);
   }, [layers]);
+
+  const closeLayerConfigPanel = () => {
+    setIsLayerConfigVisible(false);
+    setTimeout(() => {
+      maplibreRef.current?.resize();
+    }, 0);
+  };
+
+  const addLayer = (layer: MapLayerSpecification) => {
+    setLayers([...layers, layer]);
+    setAddLayerId(layer.id);
+  };
 
   const updateLayer = () => {
     if (!selectedLayerConfig) {
@@ -137,6 +156,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       };
     }
     setLayers(layersClone);
+    setIsUpdatingLayerRender(true);
   };
 
   const removeLayer = (index: number) => {
@@ -293,7 +313,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             </EuiDragDropContext>
             {isLayerConfigVisible && selectedLayerConfig && (
               <LayerConfigPanel
-                setIsLayerConfigVisible={setIsLayerConfigVisible}
+                closeLayerConfigPanel={closeLayerConfigPanel}
                 selectedLayerConfig={selectedLayerConfig}
                 updateLayer={updateLayer}
                 setSelectedLayerConfig={setSelectedLayerConfig}
@@ -303,6 +323,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
               setIsLayerConfigVisible={setIsLayerConfigVisible}
               setSelectedLayerConfig={setSelectedLayerConfig}
               IsLayerConfigVisible={isLayerConfigVisible}
+              addLayer={addLayer}
             />
           </EuiFlexGroup>
         </EuiPanel>
