@@ -27,6 +27,7 @@ interface Props {
   setSelectedLayerConfig: Function;
   IsLayerConfigVisible: boolean;
   addLayer: Function;
+  setIsNewLayer: Function;
 }
 
 export const AddLayerPanel = ({
@@ -34,6 +35,7 @@ export const AddLayerPanel = ({
   setSelectedLayerConfig,
   IsLayerConfigVisible,
   addLayer,
+  setIsNewLayer,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
 
@@ -42,6 +44,7 @@ export const AddLayerPanel = ({
     setSelectedLayerConfig(initLayerConfig);
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
+    setIsNewLayer(true);
     addLayer(initLayerConfig);
   }
 

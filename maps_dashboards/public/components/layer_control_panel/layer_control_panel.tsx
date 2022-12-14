@@ -65,6 +65,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
   const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
   const [addLayerId, setAddLayerId] = useState('');
   const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
+  const [isNewLayer, setIsNewLayer] = useState(false);
 
   useEffect(() => {
     if (!isUpdatingLayerRender && initialLayersLoaded) {
@@ -159,10 +160,13 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     setIsUpdatingLayerRender(true);
   };
 
-  const removeLayer = (index: number) => {
+  const removeLayer = (layerId: string) => {
     const layersClone = [...layers];
-    layersClone.splice(index, 1);
-    setLayers(layersClone);
+    const index = layersClone.findIndex((layer) => layer.id === layerId);
+    if (index > -1) {
+      layersClone.splice(index, 1);
+      setLayers(layersClone);
+    }
   };
 
   const onClickLayerName = (layer: MapLayerSpecification) => {
@@ -283,7 +287,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                                   iconType="trash"
                                   onClick={() => {
                                     layersFunctionMap[layer.type]?.remove(maplibreRef, layer);
-                                    removeLayer(index);
+                                    removeLayer(layer.id);
                                   }}
                                   aria-label="Delete layer"
                                   color="text"
@@ -317,6 +321,9 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                 selectedLayerConfig={selectedLayerConfig}
                 updateLayer={updateLayer}
                 setSelectedLayerConfig={setSelectedLayerConfig}
+                removeLayer={removeLayer}
+                isNewLayer={isNewLayer}
+                setIsNewLayer={setIsNewLayer}
               />
             )}
             <AddLayerPanel
@@ -324,6 +331,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
               setSelectedLayerConfig={setSelectedLayerConfig}
               IsLayerConfigVisible={isLayerConfigVisible}
               addLayer={addLayer}
+              setIsNewLayer={setIsNewLayer}
             />
           </EuiFlexGroup>
         </EuiPanel>

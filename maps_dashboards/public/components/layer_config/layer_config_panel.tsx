@@ -32,6 +32,9 @@ interface Props {
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   updateLayer: Function;
+  removeLayer: Function;
+  isNewLayer: boolean;
+  setIsNewLayer: Function;
 }
 
 export const LayerConfigPanel = ({
@@ -39,10 +42,13 @@ export const LayerConfigPanel = ({
   selectedLayerConfig,
   setSelectedLayerConfig,
   updateLayer,
+  removeLayer,
+  isNewLayer,
+  setIsNewLayer,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
-  const [originLayerConfig, setOriginLayerConfig] = useState<any>(null);
-  const [warnModalVisible, setwarnModalVisible] = useState(false);
+  const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
+  const [warnModalVisible, setWarnModalVisible] = useState(false);
 
   useEffect(() => {
     setOriginLayerConfig(cloneDeep(selectedLayerConfig));
@@ -56,7 +62,11 @@ export const LayerConfigPanel = ({
     if (isEqual(originLayerConfig, selectedLayerConfig)) {
       discardChanges();
     } else {
-      setwarnModalVisible(true);
+      setWarnModalVisible(true);
+    }
+    if (isNewLayer) {
+      removeLayer(selectedLayerConfig.id);
+      setIsNewLayer(false);
     }
   };
   const onUpdate = () => {
@@ -65,7 +75,7 @@ export const LayerConfigPanel = ({
   };
 
   const closeModal = () => {
-    setwarnModalVisible(false);
+    setWarnModalVisible(false);
   };
 
   return (
