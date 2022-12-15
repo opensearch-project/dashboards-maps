@@ -63,9 +63,14 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     MapLayerSpecification | undefined
   >();
   const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
+  const [addLayerId, setAddLayerId] = useState('');
+  const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
+  const [isNewLayer, setIsNewLayer] = useState(false);
 
-  // Initially load the layers from the saved object
   useEffect(() => {
+    if (!isUpdatingLayerRender && initialLayersLoaded) {
+      return;
+    }
     if (layers.length <= 0) {
       return;
     }
@@ -109,7 +114,9 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       } else {
         doDataLayerRender(selectedLayerConfig);
       }
-      setSelectedLayerConfig(undefined);
+      if (addLayerId !== selectedLayerConfig.id) {
+        setSelectedLayerConfig(undefined);
+      }
     } else {
       layers.forEach((layer) => {
         if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
@@ -120,7 +127,20 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       });
       setInitialLayersLoaded(true);
     }
+    setIsUpdatingLayerRender(false);
   }, [layers]);
+
+  const closeLayerConfigPanel = () => {
+    setIsLayerConfigVisible(false);
+    setTimeout(() => {
+      maplibreRef.current?.resize();
+    }, 0);
+  };
+
+  const addLayer = (layer: MapLayerSpecification) => {
+    setLayers([...layers, layer]);
+    setAddLayerId(layer.id);
+  };
 
   const updateLayer = () => {
     if (!selectedLayerConfig) {
@@ -137,12 +157,16 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
       };
     }
     setLayers(layersClone);
+    setIsUpdatingLayerRender(true);
   };
 
-  const removeLayer = (index: number) => {
+  const removeLayer = (layerId: string) => {
     const layersClone = [...layers];
-    layersClone.splice(index, 1);
-    setLayers(layersClone);
+    const index = layersClone.findIndex((layer) => layer.id === layerId);
+    if (index > -1) {
+      layersClone.splice(index, 1);
+      setLayers(layersClone);
+    }
   };
 
   const onClickLayerName = (layer: MapLayerSpecification) => {
@@ -263,7 +287,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                                   iconType="trash"
                                   onClick={() => {
                                     layersFunctionMap[layer.type]?.remove(maplibreRef, layer);
-                                    removeLayer(index);
+                                    removeLayer(layer.id);
                                   }}
                                   aria-label="Delete layer"
                                   color="text"
@@ -293,16 +317,21 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             </EuiDragDropContext>
             {isLayerConfigVisible && selectedLayerConfig && (
               <LayerConfigPanel
-                setIsLayerConfigVisible={setIsLayerConfigVisible}
+                closeLayerConfigPanel={closeLayerConfigPanel}
                 selectedLayerConfig={selectedLayerConfig}
                 updateLayer={updateLayer}
                 setSelectedLayerConfig={setSelectedLayerConfig}
+                removeLayer={removeLayer}
+                isNewLayer={isNewLayer}
+                setIsNewLayer={setIsNewLayer}
               />
             )}
             <AddLayerPanel
               setIsLayerConfigVisible={setIsLayerConfigVisible}
               setSelectedLayerConfig={setSelectedLayerConfig}
               IsLayerConfigVisible={isLayerConfigVisible}
+              addLayer={addLayer}
+              setIsNewLayer={setIsNewLayer}
             />
           </EuiFlexGroup>
         </EuiPanel>

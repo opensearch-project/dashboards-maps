@@ -37,6 +37,9 @@ const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) =
 };
 
 const getLocationValue = (data: any, geoField: string) => {
+  if (!geoField) {
+    return null;
+  }
   const keys = geoField.split('.');
   return keys.reduce((pre, cur) => {
     return pre?.[cur];

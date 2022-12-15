@@ -11,12 +11,10 @@ import { LayerBasicSettings } from './layer_basic_settings';
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
+  setIsUpdateDisabled: Function;
 }
 
-export const BaseMapLayerConfigPanel = ({
-  selectedLayerConfig,
-  setSelectedLayerConfig,
-}: Props) => {
+export const BaseMapLayerConfigPanel = (props: Props) => {
   const tabs = [
     {
       id: 'settings--id',
@@ -24,10 +22,7 @@ export const BaseMapLayerConfigPanel = ({
       content: (
         <Fragment>
           <EuiSpacer size="m" />
-          <LayerBasicSettings
-            selectedLayerConfig={selectedLayerConfig}
-            setSelectedLayerConfig={setSelectedLayerConfig}
-          />
+          <LayerBasicSettings {...props} />
         </Fragment>
       ),
     },
