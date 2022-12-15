@@ -36,6 +36,8 @@ export type DocumentLayerSpecification = {
     geoFieldType: 'geo_point' | 'geo_shape';
     geoFieldName: string;
     documentRequestNumber: number;
+    showTooltips: boolean;
+    tooltipFields: string[];
   };
   style: {
     fillColor: string;
