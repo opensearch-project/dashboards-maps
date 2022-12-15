@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   DOCUMENTS,
   DOCUMENTS_DEFAULT_MARKER_SIZE,
-  DOCUMENTS_DEFAULT_REQUEST_NUMBER,
+  DOCUMENTS_DEFAULT_REQUEST_NUMBER, DOCUMENTS_DEFAULT_SHOW_TOOLTIPS, DOCUMENTS_DEFAULT_TOOLTIPS,
   LAYER_VISIBILITY,
   MAP_DATA_LAYER_DEFAULT_OPACITY,
   MAP_DEFAULT_MAX_ZOOM,
@@ -48,6 +48,8 @@ export const getLayerConfigMap = () => ({
       geoFieldType: undefined,
       geoFieldName: undefined,
       documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
+      tooltipFields: DOCUMENTS_DEFAULT_TOOLTIPS,
+      showTooltips: DOCUMENTS_DEFAULT_SHOW_TOOLTIPS,
     },
     style: {
       ...getStyleColor(),
