@@ -58,39 +58,46 @@ const getGeoFieldName = (layerConfig: DocumentLayerSpecification) => {
   return layerConfig?.source?.geoFieldName;
 };
 
+const buildGeometry = (fieldType: string, location: any) => {
+  if (fieldType === 'geo_point') {
+    return {
+      type: 'Point',
+      coordinates: [location.lon, location.lat],
+    };
+  }
+  return {
+    type: openSearchGeoJSONMap.get(location.type),
+    coordinates: location.coordinates,
+  };
+};
+
+// copy tooltip fields to property
+const buildProperties = (document: any, fields: string[]) => {
+  const property: { [name: string]: any } = {};
+  if (!fields) {
+    return property;
+  }
+  fields.forEach((field) => {
+    const fieldValue = getFieldValue(document._source, field);
+    if (fieldValue) {
+      property[field] = fieldValue;
+    }
+  });
+  return property;
+};
+
 const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
   const geoFieldName = getGeoFieldName(layerConfig);
   const geoFieldType = getGeoFieldType(layerConfig);
   const featureList: any = [];
   data.forEach((item: any) => {
     const geoFieldValue = getFieldValue(item._source, geoFieldName);
-    let feature;
-    if (geoFieldType === 'geo_point') {
-      feature = {
-        geometry: {
-          type: 'Point',
-          coordinates: [geoFieldValue.lon, geoFieldValue.lat],
-        },
-        properties: {
-          title: item._id,
-          description: item._index,
-        },
-      };
-    } else {
-      feature = {
-        geometry: {
-          type: openSearchGeoJSONMap.get(geoFieldValue.type),
-          coordinates: geoFieldValue.coordinates,
-        },
-        properties: {
-          title: item._id,
-          description: item._index,
-        },
-      };
-    }
+    const feature = {
+      geometry: buildGeometry(geoFieldType, geoFieldValue),
+      properties: buildProperties(item, layerConfig.source.tooltipFields),
+    };
     featureList.push(feature);
   });
-
   return {
     type: 'FeatureCollection',
     features: featureList,
