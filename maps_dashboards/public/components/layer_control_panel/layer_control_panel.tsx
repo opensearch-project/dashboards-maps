@@ -79,12 +79,16 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
         const sourceConfig = layer.source;
         const indexPatternRefName = sourceConfig?.indexPatternRefName;
         const geoField = sourceConfig.geoFieldName;
+        const sourceFields: string[] = [geoField];
+        if (sourceConfig.showTooltips === true && sourceConfig.tooltipFields.length > 0) {
+          sourceFields.push(...sourceConfig.tooltipFields);
+        }
         const request = {
           params: {
             index: indexPatternRefName,
             size: layer.source.documentRequestNumber,
             body: {
-              _source: geoField,
+              _source: sourceFields,
             },
           },
         };

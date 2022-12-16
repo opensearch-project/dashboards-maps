@@ -36,11 +36,11 @@ const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) =
   return false;
 };
 
-const getLocationValue = (data: any, geoField: string) => {
-  if (!geoField) {
+const getFieldValue = (data: any, name: string) => {
+  if (!name) {
     return null;
   }
-  const keys = geoField.split('.');
+  const keys = name.split('.');
   return keys.reduce((pre, cur) => {
     return pre?.[cur];
   }, data);
@@ -63,13 +63,13 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
   const geoFieldType = getGeoFieldType(layerConfig);
   const featureList: any = [];
   data.forEach((item: any) => {
-    const location = getLocationValue(item._source, geoFieldName);
+    const geoFieldValue = getFieldValue(item._source, geoFieldName);
     let feature;
     if (geoFieldType === 'geo_point') {
       feature = {
         geometry: {
           type: 'Point',
-          coordinates: [location.lon, location.lat],
+          coordinates: [geoFieldValue.lon, geoFieldValue.lat],
         },
         properties: {
           title: item._id,
@@ -79,8 +79,8 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
     } else {
       feature = {
         geometry: {
-          type: openSearchGeoJSONMap.get(location.type),
-          coordinates: location.coordinates,
+          type: openSearchGeoJSONMap.get(geoFieldValue.type),
+          coordinates: geoFieldValue.coordinates,
         },
         properties: {
           title: item._id,
