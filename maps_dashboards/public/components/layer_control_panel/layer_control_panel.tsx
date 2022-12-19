@@ -97,6 +97,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             if (isCompleteResponse(response)) {
               const dataSource = response.rawResponse.hits.hits;
               layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
+              layersFunctionMap[layer.type].addTooltip(maplibreRef, layer);
               search$.unsubscribe();
             } else {
               notifications.toasts.addWarning('An error has occurred when query dataSource');
