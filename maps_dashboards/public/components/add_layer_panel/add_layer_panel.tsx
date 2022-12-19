@@ -56,7 +56,7 @@ export const AddLayerPanel = ({
         label={layerItem.name}
         onClick={() => onClickAddNewLayer(layerItem.type)}
       >
-        <EuiIcon type={layerItem.icon} size="xl" color="primary" />
+        <EuiIcon type={layerItem.icon} size="xl" color="secondary" />
       </EuiKeyPadMenuItem>
     );
   });
@@ -70,7 +70,7 @@ export const AddLayerPanel = ({
         aria-label={layerItem.name}
         onClick={() => onClickAddNewLayer(layerItem.type)}
       >
-        <EuiIcon type={layerItem.icon} size="xl" color="primary" />
+        <EuiIcon type={layerItem.icon} size="xl" color="secondary" />
       </EuiKeyPadMenuItem>
     );
   });

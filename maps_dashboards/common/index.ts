@@ -49,7 +49,7 @@ export enum DASHBOARDS_MAPS_LAYER_TYPE {
 }
 
 export const DASHBOARDS_MAPS_LAYER_ICON = {
-  OPENSEARCH_MAP: 'visMapRegion',
+  OPENSEARCH_MAP: 'globe',
   DOCUMENTS: 'document',
 };
 
@@ -71,6 +71,6 @@ export const LAYER_VISIBILITY = {
 };
 
 export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
-  [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'visMapRegion',
+  [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'globe',
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
 };
