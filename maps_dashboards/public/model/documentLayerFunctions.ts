@@ -344,6 +344,7 @@ const updateLayerConfig = (
 const clickPopup = new Popup({
   closeButton: false,
   closeOnClick: false,
+  maxWidth: 'max-content',
 });
 export const getClickPopup = () => {
   return clickPopup;

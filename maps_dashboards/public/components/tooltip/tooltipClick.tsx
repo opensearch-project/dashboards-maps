@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { EuiFlexItem, EuiFlexGroup, EuiPanel, EuiText, EuiSpacer } from '@elastic/eui';
+import {
+  EuiFlexItem,
+  EuiFlexGroup,
+  EuiPanel,
+  EuiText,
+  EuiHorizontalRule,
+} from '@elastic/eui';
 import { TooltipHeaderContent } from './tooltipHeaderContent';
 import { TooltipTable } from './tooltipTable';
 
@@ -23,16 +29,18 @@ export function TooltipClick(title: string, features: any[], onClose: Function) 
     return rows;
   };
   return (
-    <EuiFlexGroup>
-      <EuiFlexItem>
-        <EuiPanel paddingSize={'s'}>
-          <EuiText>
+    <EuiPanel paddingSize={'s'} grow={true}>
+      <EuiText className={'eui-textTruncate'} grow={true}>
+        <EuiFlexGroup responsive={false} direction="column" gutterSize="none">
+          <EuiFlexItem grow={false}>
             <TooltipHeaderContent title={title} close={true} onClose={onClose} />
-            <EuiSpacer size="xs" />
+            <EuiHorizontalRule margin="xs" />
+          </EuiFlexItem>
+          <EuiFlexItem grow={true}>
             <TooltipTable pages={toTableRows()} />
-          </EuiText>
-        </EuiPanel>
-      </EuiFlexItem>
-    </EuiFlexGroup>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiText>
+    </EuiPanel>
   );
 }
