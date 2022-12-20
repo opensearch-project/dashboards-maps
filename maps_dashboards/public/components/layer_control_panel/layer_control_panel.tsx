@@ -37,7 +37,9 @@ import { MapServices } from '../../types';
 import {
   IOpenSearchDashboardsSearchResponse,
   isCompleteResponse,
+  buildOpenSearchQuery,
 } from '../../../../../src/plugins/data/common';
+import { IndexPattern } from '../../../../../src/plugins/data/public';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -52,7 +54,7 @@ interface Props {
 const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
   const {
     services: {
-      data: { search },
+      data: { search, indexPatterns },
       notifications,
     },
   } = useOpenSearchDashboards<MapServices>();
@@ -83,12 +85,17 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
         if (sourceConfig.showTooltips === true && sourceConfig.tooltipFields.length > 0) {
           sourceFields.push(...sourceConfig.tooltipFields);
         }
+        let indexPattern: IndexPattern | undefined = undefined;
+        if (layer.source.indexPatternId) {
+          indexPattern = await indexPatterns.get(layer.source.indexPatternId);
+        }
         const request = {
           params: {
             index: indexPatternRefName,
             size: layer.source.documentRequestNumber,
             body: {
               _source: sourceFields,
+              query: buildOpenSearchQuery(indexPattern, [], layer.source.filters),
             },
           },
         };

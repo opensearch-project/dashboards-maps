@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   EuiComboBox,
   EuiFlexItem,
@@ -20,11 +20,11 @@ import {
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
-import { IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
+import { Filter, IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../../types';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
-import _, { Dictionary } from "lodash";
+import _, { Dictionary } from 'lodash';
 
 interface Props {
   setSelectedLayerConfig: Function;
@@ -41,7 +41,7 @@ export const DocumentLayerSource = ({
     services: {
       savedObjects: { client: savedObjectsClient },
       data: {
-        ui: { IndexPatternSelect },
+        ui: { IndexPatternSelect, SearchBar },
         indexPatterns,
       },
     },
@@ -136,6 +136,16 @@ export const DocumentLayerSource = ({
     const source = { ...selectedLayerConfig.source, tooltipFields: tooltipSelection };
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
+
+  const onFiltersUpdated = useCallback(
+    (filters: Filter[]) => {
+      setSelectedLayerConfig({
+        ...selectedLayerConfig,
+        source: { ...selectedLayerConfig.source, filters },
+      });
+    },
+    [selectedLayerConfig]
+  );
 
   useEffect(() => {
     const selectIndexPattern = async () => {
@@ -273,6 +283,23 @@ export const DocumentLayerSource = ({
               </EuiFlexItem>
             </EuiFlexGrid>
           </EuiForm>
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+      <EuiSpacer size="m" />
+      <EuiPanel>
+        <EuiCollapsibleNavGroup
+          title="Filters"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={true}
+        >
+          <SearchBar
+            appName="maps-dashboards"
+            showQueryBar={false}
+            indexPatterns={indexPattern ? [indexPattern] : []}
+            filters={selectedLayerConfig.source.filters ?? []}
+            onFiltersUpdated={onFiltersUpdated}
+          />
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />

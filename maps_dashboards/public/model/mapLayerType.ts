@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { Filter } from '../../../../src/plugins/data/public';
+
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
 export type MapLayerSpecification = OSMLayerSpecification | DocumentLayerSpecification;
 
@@ -38,6 +40,7 @@ export type DocumentLayerSpecification = {
     documentRequestNumber: number;
     showTooltips: boolean;
     tooltipFields: string[];
+    filters: Filter[];
   };
   style: {
     fillColor: string;
