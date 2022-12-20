@@ -10,15 +10,26 @@ import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
+import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { MapState } from '../../model/mapState';
 
 interface MapContainerProps {
-  mapIdFromUrl: string;
   setLayers: (layers: MapLayerSpecification[]) => void;
   layers: MapLayerSpecification[];
+  layersIndexPatterns: IndexPattern[];
+  setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
+  maplibreRef: React.MutableRefObject<Maplibre | null>;
+  mapState: MapState;
 }
 
-export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerProps) => {
-  const maplibreRef = useRef<Maplibre | null>(null);
+export const MapContainer = ({
+  setLayers,
+  layers,
+  layersIndexPatterns,
+  setLayersIndexPatterns,
+  maplibreRef,
+  mapState,
+}: MapContainerProps) => {
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
@@ -56,7 +67,14 @@ export const MapContainer = ({ mapIdFromUrl, setLayers, layers }: MapContainerPr
       </EuiPanel>
       <div className="layerControlPanel-container">
         {mounted && (
-          <LayerControlPanel maplibreRef={maplibreRef} layers={layers} setLayers={setLayers} />
+          <LayerControlPanel
+            maplibreRef={maplibreRef}
+            layers={layers}
+            setLayers={setLayers}
+            layersIndexPatterns={layersIndexPatterns}
+            setLayersIndexPatterns={setLayersIndexPatterns}
+            mapState={mapState}
+          />
         )}
       </div>
       <div className="map-container" ref={mapContainer} />

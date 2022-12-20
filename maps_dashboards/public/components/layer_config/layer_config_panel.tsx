@@ -26,6 +26,7 @@ import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
+import { IndexPattern } from '../../../../../src/plugins/data/public';
 
 interface Props {
   closeLayerConfigPanel: Function;
@@ -35,6 +36,8 @@ interface Props {
   removeLayer: Function;
   isNewLayer: boolean;
   setIsNewLayer: Function;
+  layersIndexPatterns: IndexPattern[];
+  updateIndexPatterns: Function;
   isLayerExists: Function;
 }
 
@@ -46,6 +49,8 @@ export const LayerConfigPanel = ({
   removeLayer,
   isNewLayer,
   setIsNewLayer,
+  layersIndexPatterns,
+  updateIndexPatterns,
   isLayerExists,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
@@ -107,6 +112,7 @@ export const LayerConfigPanel = ({
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
+                layersIndexPatterns={layersIndexPatterns}
                 isLayerExists={isLayerExists}
               />
             )}

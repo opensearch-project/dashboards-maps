@@ -34,7 +34,7 @@ export type DocumentLayerSpecification = {
   visibility: string;
   source: {
     indexPatternRefName: string;
-    indexPatternId?: string;
+    indexPatternId: string;
     geoFieldType: 'geo_point' | 'geo_shape';
     geoFieldName: string;
     documentRequestNumber: number;
