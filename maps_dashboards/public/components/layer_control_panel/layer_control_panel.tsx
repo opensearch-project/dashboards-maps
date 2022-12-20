@@ -191,6 +191,11 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     }
   };
 
+  const getReverseLayers = () => {
+    const layersClone = [...layers];
+    return layersClone.reverse();
+  };
+
   if (isLayerControlVisible) {
     return (
       <I18nProvider>
@@ -221,7 +226,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
             <EuiHorizontalRule margin="none" />
             <EuiDragDropContext onDragEnd={onDragEnd}>
               <EuiDroppable droppableId="LAYERS_HANDLE_DROPPABLE_AREA" spacing="none">
-                {layers.map((layer, index) => {
+                {getReverseLayers().map((layer, index) => {
                   const isLayerSelected =
                     isLayerConfigVisible &&
                     selectedLayerConfig &&
