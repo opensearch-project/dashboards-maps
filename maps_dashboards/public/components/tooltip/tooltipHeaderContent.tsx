@@ -1,9 +1,9 @@
-import {
-  EuiButtonIcon,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiTextColor,
-} from '@elastic/eui';
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiTextColor } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import React from 'react';
 

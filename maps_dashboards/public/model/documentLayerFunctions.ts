@@ -346,11 +346,11 @@ const clickPopup = new Popup({
   closeOnClick: false,
   maxWidth: 'max-content',
 });
-export const getClickPopup = () => {
+const getClickPopup = () => {
   return clickPopup;
 };
 
-export const buildPopup = (features: any[], title: string) => {
+const buildPopup = (features: any[], title: string) => {
   const div = document.createElement('div');
   ReactDOM.render(
     TooltipClick(title, features, () => {

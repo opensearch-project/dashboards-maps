@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { EuiBasicTable, EuiFlexGroup, EuiFlexItem, EuiPagination } from '@elastic/eui';
 import React, { useState, Fragment } from 'react';
 
@@ -11,13 +16,13 @@ const TooltipTable = (props: Props) => {
     {
       field: 'key',
       name: 'Field Name',
-      width: '100%',
+      width: '25%',
       truncateText: false,
     },
     {
       field: 'value',
       name: 'Field Value',
-      width: '70%',
+      width: '75%',
       truncateText: true,
     },
   ];
@@ -42,7 +47,7 @@ const TooltipTable = (props: Props) => {
   return (
     <Fragment>
       <EuiFlexGroup responsive={false}>
-        <EuiFlexItem grow={true}>
+        <EuiFlexItem grow={false}>
           <EuiBasicTable
             isSelectable={false}
             items={props.pages[activePage]}
@@ -53,7 +58,7 @@ const TooltipTable = (props: Props) => {
           />
         </EuiFlexItem>
       </EuiFlexGroup>
-      <EuiFlexGroup responsive={true} justifyContent="spaceAround">
+      <EuiFlexGroup justifyContent="spaceAround">
         <EuiFlexItem grow={false}>
           <EuiPagination
             aria-label="Compressed pagination"
