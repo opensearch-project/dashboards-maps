@@ -3,8 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre } from 'maplibre-gl';
+import { Map as Maplibre, Popup } from 'maplibre-gl';
+import ReactDOM from 'react-dom';
 import { DocumentLayerSpecification } from './mapLayerType';
+import { TooltipClick } from '../components/tooltip/tooltipClick';
+import { LAYER_VISIBILITY } from '../../common';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -71,7 +74,6 @@ const buildGeometry = (fieldType: string, location: any) => {
   };
 };
 
-// copy tooltip fields to property
 const buildProperties = (document: any, fields: string[]) => {
   const property: { [name: string]: any } = {};
   if (!fields) {
@@ -339,6 +341,26 @@ const updateLayerConfig = (
   }
 };
 
+const clickPopup = new Popup({
+  closeButton: false,
+  closeOnClick: false,
+  maxWidth: 'max-content',
+});
+const getClickPopup = () => {
+  return clickPopup;
+};
+
+const buildPopup = (features: any[], title: string) => {
+  const div = document.createElement('div');
+  ReactDOM.render(
+    TooltipClick(title, features, () => {
+      getClickPopup().remove();
+    }),
+    div
+  );
+  return getClickPopup().setDOMContent(div).setLngLat(features[0].geometry.coordinates);
+};
+
 export const DocumentLayerFunctions = {
   render: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification, data: any) => {
     if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
@@ -360,6 +382,23 @@ export const DocumentLayerFunctions = {
     layers.forEach((layer) => {
       if (layer.id.includes(layerConfig.id)) {
         maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
+      }
+    });
+  },
+  addTooltip: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
+    const layers = getCurrentStyleLayers(maplibreRef);
+    layers.forEach((layer) => {
+      if (layer.id.includes(layerConfig.id)) {
+        maplibreRef.current?.on('click', layer.id, (e: any) => {
+          if (maplibreRef.current && layerConfig.visibility === LAYER_VISIBILITY.VISIBLE) {
+            // remove click pop up if previously opened click popup is not closed by user.
+            getClickPopup()?.remove();
+            if (maplibreRef.current) {
+              maplibreRef.current.getCanvas().style.cursor = 'pointer';
+              buildPopup(e.features, layerConfig.name).addTo(maplibreRef.current);
+            }
+          }
+        });
       }
     });
   },
