@@ -10,8 +10,11 @@ import {
   OnSaveProps,
   SavedObjectSaveModalOrigin,
   showSaveModal,
+  checkForDuplicateTitle,
 } from '../../../../../src/plugins/saved_objects/public';
 import { MapServices } from '../../types';
+
+const SAVED_OBJECT_TYPE = 'map';
 
 interface GetTopNavConfigParams {
   mapIdFromUrl: string;
@@ -28,6 +31,7 @@ export const getTopNavConfig = (
     i18n: { Context: I18nContext },
     savedObjects: { client: savedObjectsClient },
     history,
+    overlays,
   }: MapServices,
   { mapIdFromUrl, layers, title, description, setTitle, setDescription }: GetTopNavConfigParams
 ) => {
@@ -40,19 +44,42 @@ export const getTopNavConfig = (
         defaultMessage: `Save`,
       }),
       run: (_anchorElement) => {
-        const onModalSave = async ({ newTitle, newDescription }: OnSaveProps) => {
+        const onModalSave = async ({ newTitle, newDescription, onTitleDuplicate }: OnSaveProps) => {
           let newlySavedMap;
           const saveAttributes = {
             title: newTitle,
             description: newDescription,
             layerList: JSON.stringify(layers),
           };
+          try {
+            await checkForDuplicateTitle(
+              {
+                title: newTitle,
+                lastSavedTitle: title,
+                copyOnSave: false,
+                getDisplayName: () => SAVED_OBJECT_TYPE,
+                getOpenSearchType: () => SAVED_OBJECT_TYPE,
+              },
+              false,
+              onTitleDuplicate,
+              {
+                savedObjectsClient,
+                overlays,
+              }
+            );
+          } catch (_error) {
+            return {};
+          }
           if (mapIdFromUrl) {
             // edit existing map
-            newlySavedMap = await savedObjectsClient.update('map', mapIdFromUrl, saveAttributes);
+            newlySavedMap = await savedObjectsClient.update(
+              SAVED_OBJECT_TYPE,
+              mapIdFromUrl,
+              saveAttributes
+            );
           } else {
             // save new map
-            newlySavedMap = await savedObjectsClient.create('map', saveAttributes);
+            newlySavedMap = await savedObjectsClient.create(SAVED_OBJECT_TYPE, saveAttributes);
           }
           const id = newlySavedMap.id;
           if (id) {
