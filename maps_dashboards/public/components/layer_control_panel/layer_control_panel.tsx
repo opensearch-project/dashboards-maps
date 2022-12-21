@@ -85,7 +85,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
         if (sourceConfig.showTooltips === true && sourceConfig.tooltipFields.length > 0) {
           sourceFields.push(...sourceConfig.tooltipFields);
         }
-        let indexPattern: IndexPattern | undefined = undefined;
+        let indexPattern: IndexPattern | undefined;
         if (layer.source.indexPatternId) {
           indexPattern = await indexPatterns.get(layer.source.indexPatternId);
         }
