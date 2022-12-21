@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiBasicTable, EuiFlexGroup, EuiFlexItem, EuiPagination } from '@elastic/eui';
+import { EuiBasicTable, EuiFlexGroup, EuiFlexItem, EuiPagination, EuiText } from '@elastic/eui';
 import React, { useState, Fragment } from 'react';
 
 interface Props {
   pages: any[];
+  isClickEvent: boolean;
 }
 
 const TooltipTable = (props: Props) => {
@@ -44,6 +45,26 @@ const TooltipTable = (props: Props) => {
       textOnly: true,
     };
   };
+  const buildMessage = (count: number) => {
+    return (
+      <EuiText textAlign="center" size="xs">
+        {1} of {count}
+      </EuiText>
+    );
+  };
+
+  const buildPagination = (count: number) => {
+    return (
+      <EuiPagination
+        aria-label="Compressed pagination"
+        pageCount={count}
+        activePage={activePage}
+        onPageClick={(pageIndex) => setActivePage(pageIndex)}
+        compressed
+      />
+    );
+  };
+
   return (
     <Fragment>
       <EuiFlexGroup responsive={false}>
@@ -60,13 +81,9 @@ const TooltipTable = (props: Props) => {
       </EuiFlexGroup>
       <EuiFlexGroup justifyContent="spaceAround">
         <EuiFlexItem grow={false}>
-          <EuiPagination
-            aria-label="Compressed pagination"
-            pageCount={props.pages.length}
-            activePage={activePage}
-            onPageClick={(pageIndex) => setActivePage(pageIndex)}
-            compressed
-          />
+          {props.isClickEvent
+            ? buildPagination(props.pages.length)
+            : buildMessage(props.pages.length)}
         </EuiFlexItem>
       </EuiFlexGroup>
     </Fragment>
