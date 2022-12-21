@@ -5,17 +5,16 @@
 
 import React from 'react';
 
-import {
-  EuiFlexItem,
-  EuiFlexGroup,
-  EuiPanel,
-  EuiText,
-  EuiHorizontalRule,
-} from '@elastic/eui';
+import { EuiFlexItem, EuiFlexGroup, EuiPanel, EuiText, EuiHorizontalRule } from '@elastic/eui';
 import { TooltipHeaderContent } from './tooltipHeaderContent';
 import { TooltipTable } from './tooltipTable';
 
-export function TooltipClick(title: string, features: any[], onClose: Function) {
+export function TooltipContainer(
+  title: string,
+  features: any[],
+  isClickEvent: boolean,
+  onClose: Function
+) {
   const toTableRows = () => {
     const rows: any[] = [];
     for (const feature of features) {
@@ -38,11 +37,11 @@ export function TooltipClick(title: string, features: any[], onClose: Function) 
       <EuiText className={'eui-textTruncate'} grow={true}>
         <EuiFlexGroup responsive={false} direction="column" gutterSize="none">
           <EuiFlexItem grow={false}>
-            <TooltipHeaderContent title={title} close={true} onClose={onClose} />
+            <TooltipHeaderContent title={title} isClickEvent={isClickEvent} onClose={onClose} />
             <EuiHorizontalRule margin="xs" />
           </EuiFlexItem>
           <EuiFlexItem grow={true}>
-            <TooltipTable pages={toTableRows()} />
+            <TooltipTable pages={toTableRows()} isClickEvent={isClickEvent} />
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiText>
