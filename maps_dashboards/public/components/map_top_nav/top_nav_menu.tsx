@@ -45,8 +45,11 @@ export const MapTopNavMenu = ({ mapIdFromUrl, savedMapObject, layers }: MapTopNa
       setTitle(savedMapObject.attributes.title);
       setDescription(savedMapObject.attributes.description!);
     }
+  }, [savedMapObject, mapIdFromUrl]);
+
+  useEffect(() => {
     changeTitle(title || 'Create');
-  }, [savedMapObject, mapIdFromUrl, title, changeTitle]);
+  }, [title, changeTitle]);
 
   return (
     <TopNavMenu
