@@ -286,12 +286,12 @@ export const DocumentLayerSource = ({
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />
-      <EuiPanel>
+      <EuiPanel paddingSize="s">
         <EuiCollapsibleNavGroup
           title="Filters"
           titleSize="xxs"
           isCollapsible={true}
-          initialIsOpen={true}
+          initialIsOpen={selectedLayerConfig.source.filters?.length > 0}
         >
           <SearchBar
             appName="maps-dashboards"
