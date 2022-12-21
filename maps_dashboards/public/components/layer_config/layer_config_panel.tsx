@@ -35,6 +35,7 @@ interface Props {
   removeLayer: Function;
   isNewLayer: boolean;
   setIsNewLayer: Function;
+  isLayerExists: Function;
 }
 
 export const LayerConfigPanel = ({
@@ -45,6 +46,7 @@ export const LayerConfigPanel = ({
   removeLayer,
   isNewLayer,
   setIsNewLayer,
+  isLayerExists,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
   const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
@@ -97,6 +99,7 @@ export const LayerConfigPanel = ({
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
+                isLayerExists={isLayerExists}
               />
             )}
             {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && (
@@ -104,6 +107,7 @@ export const LayerConfigPanel = ({
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
+                isLayerExists={isLayerExists}
               />
             )}
           </EuiFlexItem>

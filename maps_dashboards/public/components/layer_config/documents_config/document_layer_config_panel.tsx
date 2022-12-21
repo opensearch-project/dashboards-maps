@@ -14,6 +14,7 @@ interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  isLayerExists: Function;
 }
 
 export const DocumentLayerConfigPanel = (props: Props) => {

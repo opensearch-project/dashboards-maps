@@ -31,12 +31,14 @@ interface Props {
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  isLayerExists: Function;
 }
 
 export const LayerBasicSettings = ({
   selectedLayerConfig,
   setSelectedLayerConfig,
   setIsUpdateDisabled,
+  isLayerExists,
 }: Props) => {
   const [invalid, setInvalid] = useState<boolean>(selectedLayerConfig.name.length === 0);
   const [errors, setErrors] = useState<string[]>([]);
@@ -52,7 +54,13 @@ export const LayerBasicSettings = ({
       setErrors(['Name should be less than ' + MAX_LAYER_NAME_LIMIT + ' characters']);
       return;
     }
+    if (isLayerExists(name)) {
+      setInvalid(true);
+      setErrors(['Name already exists']);
+      return;
+    }
     setInvalid(false);
+    return;
   };
 
   const { name } = selectedLayerConfig;

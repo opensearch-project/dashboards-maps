@@ -12,6 +12,7 @@ interface Props {
   selectedLayerConfig: MapLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  isLayerExists: Function;
 }
 
 export const BaseMapLayerConfigPanel = (props: Props) => {

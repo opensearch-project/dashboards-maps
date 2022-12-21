@@ -181,6 +181,10 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
     }
   };
 
+  const isLayerExists = (name: string) => {
+    return layers.findIndex((layer) => layer.name === name) > -1;
+  };
+
   const onClickLayerName = (layer: MapLayerSpecification) => {
     setSelectedLayerConfig(layer);
     setIsLayerConfigVisible(true);
@@ -341,6 +345,7 @@ const LayerControlPanel = memo(({ maplibreRef, setLayers, layers }: Props) => {
                 removeLayer={removeLayer}
                 isNewLayer={isNewLayer}
                 setIsNewLayer={setIsNewLayer}
+                isLayerExists={isLayerExists}
               />
             )}
             <AddLayerPanel
