@@ -41,29 +41,54 @@ export const APP_PATH = {
 export enum DASHBOARDS_MAPS_LAYER_NAME {
   OPENSEARCH_MAP = 'OpenSearch Map',
   DOCUMENTS = 'Documents',
+  CUSTOM_MAP = 'Custom Map',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
   OPENSEARCH_MAP = 'opensearch_vector_tile_map',
   DOCUMENTS = 'documents',
+  CUSTOM_MAP = 'custom_map',
 }
 
-export const DASHBOARDS_MAPS_LAYER_ICON = {
-  OPENSEARCH_MAP: 'globe',
-  DOCUMENTS: 'document',
-};
+export enum DASHBOARDS_MAPS_LAYER_ICON {
+  OPENSEARCH_MAP = 'globe',
+  DOCUMENTS = 'document',
+  CUSTOM_MAP = 'globe',
+}
+
+export enum DASHBOARDS_MAPS_LAYER_DESCRIPTION {
+  OPENSEARCH_MAP = 'Default basemaps from OpenSearch',
+  DOCUMENTS = 'View points, lines and polygons on map',
+  CUSTOM_MAP = 'Configure Maps to use WMS map server',
+}
 
 export const DOCUMENTS = {
   name: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
   type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS,
   icon: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
+  description: DASHBOARDS_MAPS_LAYER_DESCRIPTION.DOCUMENTS,
 };
 
 export const OPENSEARCH_MAP_LAYER = {
   name: DASHBOARDS_MAPS_LAYER_NAME.OPENSEARCH_MAP,
   type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP,
   icon: DASHBOARDS_MAPS_LAYER_ICON.OPENSEARCH_MAP,
+  description: DASHBOARDS_MAPS_LAYER_DESCRIPTION.OPENSEARCH_MAP,
 };
+
+export const CUSTOM_MAP = {
+  name: DASHBOARDS_MAPS_LAYER_NAME.CUSTOM_MAP,
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP,
+  icon: DASHBOARDS_MAPS_LAYER_ICON.CUSTOM_MAP,
+  description: DASHBOARDS_MAPS_LAYER_DESCRIPTION.CUSTOM_MAP,
+};
+
+export interface Layer {
+  name: DASHBOARDS_MAPS_LAYER_NAME;
+  type: DASHBOARDS_MAPS_LAYER_TYPE;
+  icon: DASHBOARDS_MAPS_LAYER_ICON;
+  description: DASHBOARDS_MAPS_LAYER_DESCRIPTION;
+}
 
 export const LAYER_VISIBILITY = {
   NONE: 'none',
@@ -73,4 +98,5 @@ export const LAYER_VISIBILITY = {
 export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'globe',
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
+  [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
 };

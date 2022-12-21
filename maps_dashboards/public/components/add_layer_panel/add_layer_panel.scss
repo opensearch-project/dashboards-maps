@@ -4,5 +4,9 @@
  */
 
 .addLayer__button {
-  padding: $euiSizeM $euiSizeM
+  padding: $euiSizeM $euiSizeM;
+}
+
+.addLayerDialog__description {
+  width: 272px;
 }
