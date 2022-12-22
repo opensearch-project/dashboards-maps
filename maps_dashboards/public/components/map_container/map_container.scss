@@ -4,11 +4,12 @@
  */
 
 @import "maplibre-gl/dist/maplibre-gl.css";
+@import "../../variables";
 
 /* stylelint-disable no-empty-source */
 .map-container {
   width: 100%;
-  min-height: calc(100vh - 98px);
+  min-height: calc(100vh - #{$mapHeaderOffset});
 }
 
 .maplibregl-ctrl-top-left {
@@ -19,8 +20,8 @@
 .layerControlPanel-container {
   z-index: 1;
   position: absolute;
-  left: $euiSizeS;
-  top: $euiSizeS;
+  margin-left: $euiSizeS;
+  margin-top: $euiSizeS;
 }
 
 .zoombar {

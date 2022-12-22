@@ -3,33 +3,51 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SimpleSavedObject } from 'opensearch-dashboards/public';
+import { Map as Maplibre } from 'maplibre-gl';
 import { MapContainer } from '../map_container';
 import { MapTopNavMenu } from '../map_top_nav';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { MapServices } from '../../types';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
-import { OPENSEARCH_MAP_LAYER } from '../../../common';
-import { getLayerConfigMap } from '../../utils/getIntialLayerConfig';
+import { DASHBOARDS_MAPS_LAYER_TYPE, OPENSEARCH_MAP_LAYER } from '../../../common';
+import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
+import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { MapState } from '../../model/mapState';
 
 export const MapPage = () => {
-  const [layers, setLayers] = useState<MapLayerSpecification[]>([]);
-  const { id: mapIdFromUrl } = useParams<{ id: string }>();
-  const [savedMapObject, setSavedMapObject] =
-    useState<SimpleSavedObject<MapSavedObjectAttributes> | null>();
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
   } = services;
+  const [layers, setLayers] = useState<MapLayerSpecification[]>([]);
+  const { id: mapIdFromUrl } = useParams<{ id: string }>();
+  const [savedMapObject, setSavedMapObject] =
+    useState<SimpleSavedObject<MapSavedObjectAttributes> | null>();
+  const [layersIndexPatterns, setLayersIndexPatterns] = useState<IndexPattern[]>([]);
+  const maplibreRef = useRef<Maplibre | null>(null);
+  const [mapState, setMapState] = useState<MapState>(getInitialMapState());
 
   useEffect(() => {
     if (mapIdFromUrl) {
       savedObjectsClient.get<MapSavedObjectAttributes>('map', mapIdFromUrl).then((res) => {
         setSavedMapObject(res);
-        setLayers(JSON.parse(res.attributes.layerList as string));
+        const layerList: MapLayerSpecification[] = JSON.parse(res.attributes.layerList as string);
+        const savedMapState: MapState = JSON.parse(res.attributes.mapState as string);
+        setMapState(savedMapState);
+        setLayers(layerList);
+        const savedIndexPatterns: IndexPattern[] = [];
+        layerList.forEach(async (layer: MapLayerSpecification) => {
+          if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+            const indexPatternId = layer.source.indexPatternId;
+            const indexPattern = await services.data.indexPatterns.get(indexPatternId);
+            savedIndexPatterns.push(indexPattern);
+          }
+        });
+        setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
       const initialDefaultLayer: MapLayerSpecification =
@@ -40,8 +58,23 @@ export const MapPage = () => {
 
   return (
     <div>
-      <MapTopNavMenu mapIdFromUrl={mapIdFromUrl} savedMapObject={savedMapObject} layers={layers} />
-      <MapContainer mapIdFromUrl={mapIdFromUrl} layers={layers} setLayers={setLayers} />
+      <MapTopNavMenu
+        mapIdFromUrl={mapIdFromUrl}
+        savedMapObject={savedMapObject}
+        layers={layers}
+        layersIndexPatterns={layersIndexPatterns}
+        maplibreRef={maplibreRef}
+        mapState={mapState}
+        setMapState={setMapState}
+      />
+      <MapContainer
+        layers={layers}
+        setLayers={setLayers}
+        layersIndexPatterns={layersIndexPatterns}
+        setLayersIndexPatterns={setLayersIndexPatterns}
+        maplibreRef={maplibreRef}
+        mapState={mapState}
+      />
     </div>
   );
 };

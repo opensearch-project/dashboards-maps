@@ -21,6 +21,7 @@ import {
   OPENSEARCH_MAP_LAYER,
   CUSTOM_MAP,
 } from '../../common';
+import { MapState } from '../model/mapState';
 
 export const getLayerConfigMap = () => ({
   [OPENSEARCH_MAP_LAYER.type]: {
@@ -95,5 +96,25 @@ export const getStyleColor = () => {
   return {
     fillColor: initialColor,
     borderColor: initialColor,
+  };
+};
+
+export const getInitialMapState = (): MapState => {
+  const timeRange = {
+    from: 'now-15m',
+    to: 'now',
+  };
+  const query = {
+    query: '',
+    language: 'kuery',
+  };
+  const refreshInterval = {
+    pause: true,
+    value: 12000,
+  };
+  return {
+    timeRange,
+    query,
+    refreshInterval,
   };
 };

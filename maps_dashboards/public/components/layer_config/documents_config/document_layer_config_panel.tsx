@@ -5,6 +5,7 @@
 
 import React, { Fragment } from 'react';
 import { EuiSpacer, EuiTabbedContent } from '@elastic/eui';
+import { IndexPattern } from '../../../../../../src/plugins/data/public';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 import { LayerBasicSettings } from '../layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
@@ -14,6 +15,7 @@ interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  layersIndexPatterns: IndexPattern[];
   isLayerExists: Function;
 }
 

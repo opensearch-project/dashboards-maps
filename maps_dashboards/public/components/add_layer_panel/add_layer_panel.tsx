@@ -21,7 +21,7 @@ import {
 } from '@elastic/eui';
 import './add_layer_panel.scss';
 import { DOCUMENTS, OPENSEARCH_MAP_LAYER, CUSTOM_MAP, Layer } from '../../../common';
-import { getLayerConfigMap } from '../../utils/getIntialLayerConfig';
+import { getLayerConfigMap } from '../../utils/getIntialConfig';
 
 interface Props {
   setIsLayerConfigVisible: Function;

@@ -20,22 +20,24 @@ import {
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
+import _, { Dictionary } from 'lodash';
 import { Filter, IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../../types';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
-import _, { Dictionary } from 'lodash';
 
 interface Props {
   setSelectedLayerConfig: Function;
   selectedLayerConfig: DocumentLayerSpecification;
   setIsUpdateDisabled: Function;
+  layersIndexPatterns: IndexPattern[];
 }
 
 export const DocumentLayerSource = ({
   setSelectedLayerConfig,
   selectedLayerConfig,
   setIsUpdateDisabled,
+  layersIndexPatterns,
 }: Props) => {
   const {
     services: {
@@ -150,10 +152,10 @@ export const DocumentLayerSource = ({
   useEffect(() => {
     const selectIndexPattern = async () => {
       if (selectedLayerConfig.source.indexPatternId) {
-        const savedIndexPattern = await indexPatterns.get(
-          selectedLayerConfig.source.indexPatternId
+        const selectedIndexPattern = layersIndexPatterns.find(
+          (ip) => ip.id === selectedLayerConfig.source.indexPatternId
         );
-        setIndexPattern(savedIndexPattern);
+        setIndexPattern(selectedIndexPattern);
       }
     };
     selectIndexPattern();
@@ -205,7 +207,7 @@ export const DocumentLayerSource = ({
 
   const shouldTooltipSectionOpen = () => {
     return (
-      selectedLayerConfig.source.showTooltips === true &&
+      selectedLayerConfig.source.showTooltips &&
       selectedLayerConfig.source.tooltipFields?.length > 0
     );
   };

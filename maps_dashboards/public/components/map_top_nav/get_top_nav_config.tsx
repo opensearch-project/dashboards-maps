@@ -13,6 +13,7 @@ import {
   checkForDuplicateTitle,
 } from '../../../../../src/plugins/saved_objects/public';
 import { MapServices } from '../../types';
+import { MapState } from '../../model/mapState';
 
 const SAVED_OBJECT_TYPE = 'map';
 
@@ -23,6 +24,7 @@ interface GetTopNavConfigParams {
   description: string;
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
+  mapState: MapState;
 }
 
 export const getTopNavConfig = (
@@ -33,7 +35,15 @@ export const getTopNavConfig = (
     history,
     overlays,
   }: MapServices,
-  { mapIdFromUrl, layers, title, description, setTitle, setDescription }: GetTopNavConfigParams
+  {
+    mapIdFromUrl,
+    layers,
+    title,
+    description,
+    setTitle,
+    setDescription,
+    mapState,
+  }: GetTopNavConfigParams
 ) => {
   const topNavConfig: TopNavMenuData[] = [
     {
@@ -50,6 +60,7 @@ export const getTopNavConfig = (
             title: newTitle,
             description: newDescription,
             layerList: JSON.stringify(layers),
+            mapState: JSON.stringify(mapState),
           };
           try {
             await checkForDuplicateTitle(
