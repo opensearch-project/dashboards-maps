@@ -74,6 +74,9 @@ export const LayerConfigPanel = ({
   const onUpdate = () => {
     updateLayer();
     closeLayerConfigPanel(false);
+    if (isNewLayer) {
+      setIsNewLayer(false);
+    }
   };
 
   const closeModal = () => {
