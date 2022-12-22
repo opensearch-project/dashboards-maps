@@ -71,14 +71,14 @@ export const MapTopNavMenu = ({
     changeTitle(title || 'Create');
   }, [title, changeTitle]);
 
-  const refreshDataLayerRender = useCallback(() => {
+  const refreshDataLayerRender = () => {
     layers.forEach((layer: MapLayerSpecification) => {
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
         return;
       }
       doDataLayerRender(layer, mapState, services, maplibreRef);
     });
-  }, [layers, mapState, maplibreRef, services]);
+  };
 
   const handleQuerySubmit = ({ query, dateRange }: { query?: Query; dateRange: TimeRange }) => {
     if (query) {
@@ -96,7 +96,7 @@ export const MapTopNavMenu = ({
     setIsRefreshPaused(mapState.refreshInterval.pause);
     setRefreshIntervalValue(mapState.refreshInterval.value);
     refreshDataLayerRender();
-  }, [mapState, refreshDataLayerRender]);
+  }, [mapState]);
 
   return (
     <TopNavMenu
