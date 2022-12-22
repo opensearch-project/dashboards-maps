@@ -3,11 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre, Popup, LngLatLike } from 'maplibre-gl';
-import ReactDOM from 'react-dom';
+import { Map as Maplibre } from 'maplibre-gl';
 import { DocumentLayerSpecification } from './mapLayerType';
-import { TooltipContainer } from '../components/tooltip/tooltipContainer';
-import { LAYER_VISIBILITY } from '../../common';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -341,53 +338,6 @@ const updateLayerConfig = (
   }
 };
 
-const clickPopup = new Popup({
-  closeButton: false,
-  closeOnClick: false,
-  maxWidth: 'max-content',
-});
-const getClickPopup = () => {
-  return clickPopup;
-};
-
-const hoverPopup = new Popup({
-  closeButton: false,
-  closeOnClick: false,
-  maxWidth: 'max-content',
-});
-export const getHoverPopup = () => {
-  return hoverPopup;
-};
-
-export const buildPopup = (
-  popup: Popup,
-  features: any[],
-  title: string,
-  coordinates: LngLatLike,
-  isClickEvent: boolean
-) => {
-  const div = document.createElement('div');
-  ReactDOM.render(
-    TooltipContainer(title, features, isClickEvent, () => {
-      getClickPopup().remove();
-    }),
-    div
-  );
-  return popup.setDOMContent(div).setLngLat(coordinates);
-};
-
-const getCoordinates = (e: any): any => {
-  const coordinates = e.features[0].geometry.coordinates.slice();
-
-  // Ensure that if the map is zoomed out such that multiple
-  // copies of the feature are visible, the popup appears
-  // over the copy being pointed to.
-  while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-  }
-  return coordinates;
-};
-
 export const DocumentLayerFunctions = {
   render: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification, data: any) => {
     if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
@@ -409,56 +359,6 @@ export const DocumentLayerFunctions = {
     layers.forEach((layer) => {
       if (layer.id.includes(layerConfig.id)) {
         maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
-      }
-    });
-  },
-  addTooltip: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((layer) => {
-      if (layer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.on('click', layer.id, (e: any) => {
-          if (
-            maplibreRef.current &&
-            layerConfig.visibility === LAYER_VISIBILITY.VISIBLE &&
-            layerConfig.source.showTooltips === true
-          ) {
-            // remove click pop up if previously opened click popup is not closed by user.
-            getClickPopup()?.remove();
-            if (maplibreRef.current) {
-              buildPopup(
-                getClickPopup(),
-                e.features,
-                layerConfig.name,
-                getCoordinates(e),
-                true
-              ).addTo(maplibreRef.current);
-            }
-          }
-        });
-        // on hover
-        maplibreRef.current?.on('mouseenter', layer.id, (e: any) => {
-          if (
-            maplibreRef.current &&
-            layerConfig.visibility === LAYER_VISIBILITY.VISIBLE &&
-            layerConfig.source.showTooltips
-          ) {
-            maplibreRef.current.getCanvas().style.cursor = 'pointer';
-            buildPopup(
-              getHoverPopup(),
-              e.features,
-              layerConfig.name,
-              getCoordinates(e),
-              false
-            ).addTo(maplibreRef.current);
-          }
-        });
-        // on leave
-        maplibreRef.current?.on('mouseleave', layer.id, function () {
-          if (maplibreRef.current) {
-            maplibreRef.current.getCanvas().style.cursor = '';
-            getHoverPopup()?.remove();
-          }
-        });
       }
     });
   },
