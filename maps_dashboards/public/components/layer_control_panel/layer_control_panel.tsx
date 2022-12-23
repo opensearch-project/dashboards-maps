@@ -17,6 +17,7 @@ import {
   EuiDraggable,
   EuiDroppable,
   euiDragDropReorder,
+  EuiConfirmModal,
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
@@ -74,6 +75,10 @@ export const LayerControlPanel = memo(
     const [addLayerId, setAddLayerId] = useState('');
     const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
+    const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
+    const [selectedDeleteLayer, setSelectedDeleteLayer] = useState<
+      MapLayerSpecification | undefined
+    >();
 
     useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {
@@ -193,6 +198,55 @@ export const LayerControlPanel = memo(
       }
     };
 
+    const onLayerVisibilityChange = (layer: MapLayerSpecification) => {
+      if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
+        layer.visibility = LAYER_VISIBILITY.NONE;
+        setLayerVisibility(new Map(layerVisibility.set(layer.id, false)));
+      } else {
+        layer.visibility = LAYER_VISIBILITY.VISIBLE;
+        setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
+      }
+      layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
+    };
+
+    const onDeleteLayerIconClick = (layer: MapLayerSpecification) => {
+      setSelectedDeleteLayer(layer);
+      setIsDeleteLayerModalVisible(true);
+    };
+
+    const onDeleteLayerConfirm = () => {
+      if (selectedDeleteLayer) {
+        layersFunctionMap[selectedDeleteLayer.type]?.remove(maplibreRef, selectedDeleteLayer);
+        removeLayer(selectedDeleteLayer.id);
+        setIsDeleteLayerModalVisible(false);
+        setSelectedDeleteLayer(undefined);
+      }
+    };
+
+    const onCancelDeleteLayer = () => {
+      setIsDeleteLayerModalVisible(false);
+      setSelectedDeleteLayer(undefined);
+    };
+
+    let deleteLayerModal;
+    if (isDeleteLayerModalVisible) {
+      deleteLayerModal = (
+        <EuiConfirmModal
+          title="Delete layer"
+          onCancel={onCancelDeleteLayer}
+          onConfirm={onDeleteLayerConfirm}
+          cancelButtonText="Cancel"
+          confirmButtonText="Delete"
+          buttonColor="danger"
+          defaultFocusedButton="confirm"
+        >
+          <p>
+            Do you want to delete layer <strong>{selectedDeleteLayer?.name}</strong>?
+          </p>
+        </EuiConfirmModal>
+      );
+    }
+
     if (isLayerControlVisible) {
       return (
         <I18nProvider>
@@ -266,20 +320,7 @@ export const LayerControlPanel = memo(
                                         : LAYER_PANEL_SHOW_LAYER_ICON
                                     }
                                     size="s"
-                                    onClick={() => {
-                                      if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
-                                        layer.visibility = LAYER_VISIBILITY.NONE;
-                                        setLayerVisibility(
-                                          new Map(layerVisibility.set(layer.id, false))
-                                        );
-                                      } else {
-                                        layer.visibility = LAYER_VISIBILITY.VISIBLE;
-                                        setLayerVisibility(
-                                          new Map(layerVisibility.set(layer.id, true))
-                                        );
-                                      }
-                                      layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
-                                    }}
+                                    onClick={() => onLayerVisibilityChange(layer)}
                                     aria-label="Hide or show layer"
                                     color="text"
                                   />
@@ -291,10 +332,7 @@ export const LayerControlPanel = memo(
                                   <EuiButtonEmpty
                                     size="s"
                                     iconType="trash"
-                                    onClick={() => {
-                                      layersFunctionMap[layer.type]?.remove(maplibreRef, layer);
-                                      removeLayer(layer.id);
-                                    }}
+                                    onClick={() => onDeleteLayerIconClick(layer)}
                                     aria-label="Delete layer"
                                     color="text"
                                   />
@@ -342,6 +380,7 @@ export const LayerControlPanel = memo(
                 addLayer={addLayer}
                 setIsNewLayer={setIsNewLayer}
               />
+              {deleteLayerModal}
             </EuiFlexGroup>
           </EuiPanel>
         </I18nProvider>
