@@ -34,6 +34,13 @@ export class MapsDashboardsPlugin
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
         const { navigation, data } = depsStart as AppPluginStartDependencies;
+
+        // make sure the index pattern list is up to date
+        data.indexPatterns.clearCache();
+        // make sure a default index pattern exists
+        // if not, the page will be redirected to management and maps won't be rendered
+        await data.indexPatterns.ensureDefaultIndexPattern();
+
         const services: MapServices = {
           ...coreStart,
           setHeaderActionMenu: params.setHeaderActionMenu,
