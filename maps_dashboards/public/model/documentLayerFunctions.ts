@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre } from 'maplibre-gl';
+import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
+import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
 import { DocumentLayerSpecification } from './mapLayerType';
 
 interface MaplibreRef {
@@ -338,6 +339,12 @@ const updateLayerConfig = (
   }
 };
 
+let layerPopup: Popup | null = null;
+
+function getPopup() {
+  return layerPopup;
+}
+
 export const DocumentLayerFunctions = {
   render: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification, data: any) => {
     if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
@@ -360,6 +367,26 @@ export const DocumentLayerFunctions = {
       if (layer.id.includes(layerConfig.id)) {
         maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
       }
+    });
+  },
+  addTooltip: (map: Maplibre, layerConfig: DocumentLayerSpecification) => {
+    map.on('mouseenter', layerConfig.id, (e) => {
+      getPopup()?.remove();
+      map.getCanvas().style.cursor = 'pointer';
+      if (e.features) {
+        layerPopup = createPopup({
+          features: (e.features ?? []) as MapGeoJSONFeature[],
+          layers: [layerConfig],
+          showCloseButton: false,
+          showPagination: false,
+          showLayerSelection: false,
+        });
+        layerPopup?.setLngLat(getPopupLngLat(e.features[0].geometry) ?? e.lngLat).addTo(map);
+      }
+    });
+    map.on('mouseleave', layerConfig.id, () => {
+      getPopup()?.remove();
+      map.getCanvas().style.cursor = '';
     });
   },
 };

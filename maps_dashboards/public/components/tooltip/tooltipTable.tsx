@@ -13,7 +13,8 @@ import {
   EuiSpacer,
   EuiText,
 } from '@elastic/eui';
-import React, { useState, Fragment, useCallback } from 'react';
+import React, { useState, Fragment, useCallback, useEffect, useMemo } from 'react';
+import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 export type RowData = {
   key: string;
@@ -21,21 +22,28 @@ export type RowData = {
 };
 export type PageData = RowData[];
 export type TableData = PageData[];
+type Table = { table: TableData; layer: DocumentLayerSpecification };
 
 export const ALL_LAYERS = -1;
 
 interface Props {
-  tables: TableData[];
-  onLayerChange?: (layer: number) => void;
+  tables: Table[];
+  onLayerChange?: (layerIndexes: number[]) => void;
   showPagination?: boolean;
   showLayerSelection?: boolean;
 }
 
-function getLayerLabel(layerIndex: number) {
-  if (layerIndex >= 0) {
-    return `layer-${layerIndex + 1}`;
+function mergeTables(tables: Table[], selectedIndex: number[]) {
+  const merged: TableData = [];
+  const allSelected = selectedIndex.includes(ALL_LAYERS);
+
+  for (let i = 0; i < tables.length; i++) {
+    if (allSelected || selectedIndex.includes(i)) {
+      merged.push(...tables[i].table);
+    }
   }
-  return 'All layers';
+
+  return merged;
 }
 
 const TooltipTable = ({
@@ -44,8 +52,14 @@ const TooltipTable = ({
   showPagination = true,
   showLayerSelection = true,
 }: Props) => {
-  const [selectedLayer, setSelectedLayer] = useState(0);
-  const [activePages, setActivePages] = useState<Record<number, number | undefined>>({});
+  const [selectedLayers, setSelectedLayers] = useState<EuiComboBoxOptionOption<number>[]>([
+    {
+      label: tables[0]?.layer.name ?? '',
+      value: 0,
+      key: '0',
+    },
+  ]);
+  const [activePage, setActivePage] = useState<number>(0);
   const columns = [
     {
       field: 'key',
@@ -61,6 +75,11 @@ const TooltipTable = ({
     },
   ];
 
+  useEffect(() => {
+    // When selected layer changed, reset the active page to the first page
+    setActivePage(0);
+  }, [selectedLayers]);
+
   const getRowProps = (item) => {
     const { id } = item;
     return {
@@ -69,35 +88,43 @@ const TooltipTable = ({
     };
   };
 
-  const handleLayerChange = useCallback((data: EuiComboBoxOptionOption<number>[]) => {
-    if (data.length > 0) {
-      const layer = data[0]?.value ?? 0;
-      setSelectedLayer(layer);
-      if (onLayerChange) {
-        onLayerChange(layer);
+  const handleLayerChange = useCallback(
+    (layerSelections: EuiComboBoxOptionOption<number>[]) => {
+      if (tables.length === 0) {
+        return;
       }
-    }
-  }, []);
 
-  const onSelectPage = useCallback(
-    (pageIndex) => {
-      setActivePages((state) => {
-        const newState = { ...state };
-        newState[selectedLayer] = pageIndex;
-        return newState;
-      });
+      let selections = layerSelections;
+
+      // when cleared selections, automatically select the first layer: value = 0
+      if (layerSelections.length === 0) {
+        selections = [{ label: tables[0]?.layer.name, value: 0, key: '0' }];
+      }
+
+      setSelectedLayers(selections);
+      if (onLayerChange) {
+        onLayerChange(selections.map((s) => s.value ?? 0));
+      }
     },
-    [selectedLayer]
+    [tables]
   );
 
-  const options = [{ label: 'All layers', value: ALL_LAYERS }];
-  tables.forEach((_, i) => {
-    options.push({ label: `layer-${i + 1}`, value: i });
-  });
+  const options = useMemo(() => {
+    const layerOptions = [{ label: 'All layers', value: ALL_LAYERS, key: '-1' }];
+    tables.forEach(({ layer }, i) => {
+      layerOptions.push({ label: layer.name, value: i, key: `${i}` });
+    });
+    return layerOptions;
+  }, [tables]);
 
-  const selectedOptions = [{ label: getLayerLabel(selectedLayer), value: selectedLayer }];
-  const activePage = activePages[selectedLayer] ?? 0;
-  const tableItems = selectedLayer >= 0 ? tables[selectedLayer] : tables.flat();
+  const tableItems = useMemo(
+    () =>
+      mergeTables(
+        tables,
+        selectedLayers.map((l) => l.value ?? 0)
+      ),
+    [tables, selectedLayers]
+  );
   const pageItems = tableItems[activePage];
 
   const getCellProps = (item, column) => {
@@ -128,10 +155,9 @@ const TooltipTable = ({
       <EuiFlexGroup justifyContent="spaceAround" alignItems="center">
         {showLayerSelection && (
           <EuiFlexItem>
-            <EuiComboBox
+            <EuiComboBox<number>
               placeholder="Select a layer"
-              singleSelection={{ asPlainText: true }}
-              selectedOptions={selectedOptions}
+              selectedOptions={selectedLayers}
               options={options}
               onChange={handleLayerChange}
             />
@@ -143,7 +169,7 @@ const TooltipTable = ({
               aria-label="Compressed pagination"
               pageCount={tableItems.length}
               activePage={activePage}
-              onPageClick={onSelectPage}
+              onPageClick={setActivePage}
               compressed
             />
           ) : (

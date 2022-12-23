@@ -2,11 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Popup, MapGeoJSONFeature } from 'maplibre-gl';
 
-import { MapLayerSpecification, OSMLayerSpecification } from '../../model/mapLayerType';
-import { TooltipContainer } from './tooltipContainer';
+import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
+import { FeatureGroupItem, TooltipContainer } from './tooltipContainer';
 
 type Options = {
-  featureGroup: GeoJSON.Feature[][];
+  features: MapGeoJSONFeature[];
+  layers: DocumentLayerSpecification[];
   showCloseButton?: boolean;
   showPagination?: boolean;
   showLayerSelection?: boolean;
@@ -14,24 +15,22 @@ type Options = {
 
 export function isTooltipEnabledLayer(
   layer: MapLayerSpecification
-): layer is Exclude<MapLayerSpecification, OSMLayerSpecification> {
+): layer is DocumentLayerSpecification {
   return layer.type !== 'opensearch_vector_tile_map' && layer.source.showTooltips === true;
 }
 
 export function groupFeaturesByLayers(
   features: MapGeoJSONFeature[],
-  layers: Exclude<MapLayerSpecification, OSMLayerSpecification>[]
+  layers: DocumentLayerSpecification[]
 ) {
-  const featureGroups: MapGeoJSONFeature[][] = [];
+  const featureGroups: FeatureGroupItem[] = [];
   if (layers.length > 0) {
-    layers.forEach((l) => {
-      const layerFeatures = features.filter((f) => f.layer.source === l.id);
+    layers.forEach((layer) => {
+      const layerFeatures = features.filter((f) => f.layer.source === layer.id);
       if (layerFeatures.length > 0) {
-        featureGroups.push(layerFeatures);
+        featureGroups.push({ features: layerFeatures, layer });
       }
     });
-  } else {
-    featureGroups.push(features);
   }
   return featureGroups;
 }
@@ -48,7 +47,8 @@ export function getPopupLngLat(geometry: GeoJSON.Geometry) {
 }
 
 export function createPopup({
-  featureGroup,
+  features,
+  layers,
   showCloseButton = true,
   showPagination = true,
   showLayerSelection = true,
@@ -58,6 +58,8 @@ export function createPopup({
     closeOnClick: false,
     maxWidth: 'max-content',
   });
+
+  const featureGroup = groupFeaturesByLayers(features, layers);
 
   // Don't show popup if no feature
   if (featureGroup.length === 0) {

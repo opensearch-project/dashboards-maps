@@ -5,25 +5,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
-import {
-  Map as Maplibre,
-  MapLayerMouseEvent,
-  MapMouseEvent,
-  NavigationControl,
-  Popup,
-} from 'maplibre-gl';
+import { Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import {
-  createPopup,
-  getPopupLngLat,
-  groupFeaturesByLayers,
-  isTooltipEnabledLayer,
-} from '../tooltip/create_tooltip';
+import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import { DocumentLayerFunctions } from '../../model/documentLayerFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -84,57 +74,23 @@ export const MapContainer = ({
 
       const features = maplibreRef.current?.queryRenderedFeatures(e.point);
       if (features && maplibreRef.current) {
-        const featureGroup = groupFeaturesByLayers(features, tooltipEnabledLayers);
-        clickPopup = createPopup({ featureGroup });
+        clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
         clickPopup
           ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
           .addTo(maplibreRef.current);
       }
     }
 
-    let hoverPopup: Popup | null = null;
-
-    function onMouseEnter(e: MapLayerMouseEvent) {
-      hoverPopup?.remove();
-
-      if (maplibreRef.current) {
-        maplibreRef.current.getCanvas().style.cursor = 'pointer';
-        if (e.features) {
-          hoverPopup = createPopup({
-            featureGroup: [e.features],
-            showCloseButton: false,
-            showPagination: false,
-            showLayerSelection: false,
-          });
-          hoverPopup
-            ?.setLngLat(getPopupLngLat(e.features[0].geometry) ?? e.lngLat)
-            .addTo(maplibreRef.current);
-        }
-      }
-    }
-
-    function onMouseLeave(e: MapLayerMouseEvent) {
-      hoverPopup?.remove();
-      if (maplibreRef.current) {
-        maplibreRef.current.getCanvas().style.cursor = '';
-      }
-    }
-
     if (maplibreRef.current) {
       maplibreRef.current.on('click', onClickMap);
-      tooltipEnabledLayers.forEach((l) => {
-        maplibreRef.current?.on('mouseenter', l.id, onMouseEnter);
-        maplibreRef.current?.on('mouseleave', l.id, onMouseLeave);
-      });
+      for (const layer of tooltipEnabledLayers) {
+        DocumentLayerFunctions.addTooltip(maplibreRef.current, layer);
+      }
     }
 
     return () => {
       if (maplibreRef.current) {
         maplibreRef.current.off('click', onClickMap);
-        tooltipEnabledLayers.forEach((l) => {
-          maplibreRef.current?.off('mouseenter', l.id, onMouseEnter);
-          maplibreRef.current?.off('mouseleave', l.id, onMouseLeave);
-        });
       }
     };
   }, [layers]);

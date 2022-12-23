@@ -7,10 +7,17 @@ import React, { useMemo, useState } from 'react';
 
 import { EuiFlexItem, EuiFlexGroup, EuiPanel, EuiText, EuiHorizontalRule } from '@elastic/eui';
 import { TooltipHeaderContent } from './tooltipHeaderContent';
-import { PageData, TableData, TooltipTable } from './tooltipTable';
+import { ALL_LAYERS, PageData, TableData, TooltipTable } from './tooltipTable';
+import { MapGeoJSONFeature } from 'maplibre-gl';
+import { DocumentLayerSpecification } from '../../model/mapLayerType';
+
+export type FeatureGroupItem = {
+  features: MapGeoJSONFeature[];
+  layer: DocumentLayerSpecification;
+};
 
 interface TooltipProps {
-  featureGroup: GeoJSON.Feature[][];
+  featureGroup: FeatureGroupItem[];
   onClose: () => void;
   showCloseButton?: boolean;
   showPagination?: boolean;
@@ -28,17 +35,17 @@ function featureToTableRow(properties: Record<string, any>) {
   return row;
 }
 
-function toTable(features: GeoJSON.Feature[]) {
+function toTable(featureGroupItem: FeatureGroupItem) {
   const table: TableData = [];
-  for (const feature of features) {
+  for (const feature of featureGroupItem.features) {
     if (feature?.properties) {
       table.push(featureToTableRow(feature.properties));
     }
   }
-  return table;
+  return { table, layer: featureGroupItem.layer };
 }
 
-function createTableData(featureGroups: GeoJSON.Feature[][]) {
+function createTableData(featureGroups: FeatureGroupItem[]) {
   return featureGroups.map(toTable);
 }
 
@@ -49,10 +56,21 @@ export function TooltipContainer({
   showPagination = true,
   showLayerSelection = true,
 }: TooltipProps) {
-  const [selectedLayer, setSelectedLayer] = useState(0);
+  const [selectedLayerIndexes, setSelectedLayerIndexes] = useState<number[]>([0]);
   const tables = useMemo(() => createTableData(featureGroup), [featureGroup]);
 
-  const title = selectedLayer >= 0 ? `layer-${selectedLayer + 1}` : 'All layers';
+  const title = useMemo(() => {
+    if (selectedLayerIndexes.includes(ALL_LAYERS)) {
+      return 'All layers';
+    }
+    if (selectedLayerIndexes.length === 1) {
+      return tables[selectedLayerIndexes[0]].layer.name;
+    }
+    if (selectedLayerIndexes.length > 1) {
+      return `${tables[selectedLayerIndexes[0]].layer.name}, +${tables.length - 1}`;
+    }
+    return '';
+  }, [selectedLayerIndexes, tables]);
 
   return (
     <EuiPanel style={{ width: 350 }} paddingSize={'s'} grow={true}>
@@ -69,7 +87,7 @@ export function TooltipContainer({
           <EuiFlexItem grow={true}>
             <TooltipTable
               tables={tables}
-              onLayerChange={setSelectedLayer}
+              onLayerChange={setSelectedLayerIndexes}
               showPagination={showPagination}
               showLayerSelection={showLayerSelection}
             />
