@@ -68,9 +68,10 @@ export const DocumentLayerSource = ({
   };
 
   useEffect(() => {
-    const disableUpdate = !indexPattern || !selectedField;
+    const disableUpdate =
+      !indexPattern || !selectedField || documentRequestNumber < 1 || documentRequestNumber > 10000;
     setIsUpdateDisabled(disableUpdate);
-  }, [setIsUpdateDisabled, indexPattern, selectedField]);
+  }, [setIsUpdateDisabled, indexPattern, selectedField, documentRequestNumber]);
 
   const formatFieldToComboBox = (field?: IndexPatternField | null) => {
     if (!field) return [];
@@ -196,7 +197,7 @@ export const DocumentLayerSource = ({
   }, [selectedField]);
 
   useEffect(() => {
-    setHasInvalidRequestNumber(documentRequestNumber < 1 || documentRequestNumber > 1000);
+    setHasInvalidRequestNumber(documentRequestNumber < 1 || documentRequestNumber > 10000);
   }, [documentRequestNumber]);
 
   const onShowTooltipsChange = (event: { target: { checked: React.SetStateAction<boolean> } }) => {
