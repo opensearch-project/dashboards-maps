@@ -5,13 +5,15 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
-import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
+import { Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
+import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import { DocumentLayerFunctions } from '../../model/documentLayerFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -59,6 +61,39 @@ export const MapContainer = ({
       return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
     });
   }, []);
+
+  useEffect(() => {
+    let clickPopup: Popup | null = null;
+
+    // We don't want to show layer information in the popup for the map tile layer
+    const tooltipEnabledLayers = layers.filter(isTooltipEnabledLayer);
+
+    function onClickMap(e: MapMouseEvent) {
+      // remove previous popup
+      clickPopup?.remove();
+
+      const features = maplibreRef.current?.queryRenderedFeatures(e.point);
+      if (features && maplibreRef.current) {
+        clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
+        clickPopup
+          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          .addTo(maplibreRef.current);
+      }
+    }
+
+    if (maplibreRef.current) {
+      maplibreRef.current.on('click', onClickMap);
+      for (const layer of tooltipEnabledLayers) {
+        DocumentLayerFunctions.addTooltip(maplibreRef.current, layer);
+      }
+    }
+
+    return () => {
+      if (maplibreRef.current) {
+        maplibreRef.current.off('click', onClickMap);
+      }
+    };
+  }, [layers]);
 
   return (
     <div>

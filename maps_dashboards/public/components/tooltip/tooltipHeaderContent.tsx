@@ -9,7 +9,7 @@ import React from 'react';
 
 interface Props {
   title: string;
-  isClickEvent: boolean;
+  showCloseButton: boolean;
   onClose: Function;
 }
 
@@ -23,7 +23,7 @@ const TooltipHeaderContent = (props: Props) => {
           </h4>
         </EuiTextColor>
       </EuiFlexItem>
-      {props.isClickEvent && (
+      {props.showCloseButton && (
         <EuiFlexItem key="closeButton" grow={false}>
           <EuiButtonIcon
             onClick={() => {
