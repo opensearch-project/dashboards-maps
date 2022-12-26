@@ -152,7 +152,7 @@ const TooltipTable = ({
         </EuiFlexItem>
       </EuiFlexGroup>
       <EuiSpacer size="s" />
-      <EuiFlexGroup justifyContent="spaceAround" alignItems="center">
+      <EuiFlexGroup justifyContent="spaceAround" alignItems="center" gutterSize="none">
         {showLayerSelection && (
           <EuiFlexItem>
             <EuiComboBox<number>
