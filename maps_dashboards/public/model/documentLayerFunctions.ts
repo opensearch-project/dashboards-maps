@@ -6,6 +6,7 @@
 import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
 import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
 import { DocumentLayerSpecification } from './mapLayerType';
+import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -60,16 +61,18 @@ const getGeoFieldName = (layerConfig: DocumentLayerSpecification) => {
 };
 
 const buildGeometry = (fieldType: string, location: any) => {
-  if (fieldType === 'geo_point') {
+  if (isGeoJSON(location)) {
     return {
-      type: 'Point',
-      coordinates: [location.lon, location.lat],
+      type: openSearchGeoJSONMap.get(location.type?.toLowerCase()),
+      coordinates: location.coordinates,
     };
   }
-  return {
-    type: openSearchGeoJSONMap.get(location.type),
-    coordinates: location.coordinates,
-  };
+  if (fieldType === 'geo_point') {
+    // convert other supported formats to GeoJSON
+    return convertGeoPointToGeoJSON(location);
+  }
+  // We don't support non-geo-json format for geo_shape yet
+  return undefined;
 };
 
 const buildProperties = (document: any, fields: string[]) => {
@@ -92,11 +95,14 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
   const featureList: any = [];
   data.forEach((item: any) => {
     const geoFieldValue = getFieldValue(item._source, geoFieldName);
-    const feature = {
-      geometry: buildGeometry(geoFieldType, geoFieldValue),
-      properties: buildProperties(item, layerConfig.source.tooltipFields),
-    };
-    featureList.push(feature);
+    const geometry = buildGeometry(geoFieldType, geoFieldValue);
+    if (geometry) {
+      const feature = {
+        geometry,
+        properties: buildProperties(item, layerConfig.source.tooltipFields),
+      };
+      featureList.push(feature);
+    }
   });
   return {
     type: 'FeatureCollection',
