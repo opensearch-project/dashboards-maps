@@ -98,6 +98,14 @@ export const MapTopNavMenu = ({
     refreshDataLayerRender();
   }, [mapState]);
 
+  const onRefreshChange = useCallback(
+    ({ isPaused, refreshInterval }: { isPaused: boolean; refreshInterval: number }) => {
+      setIsRefreshPaused(isPaused);
+      setRefreshIntervalValue(refreshInterval);
+    },
+    []
+  );
+
   return (
     <TopNavMenu
       appName={PLUGIN_ID}
@@ -119,12 +127,13 @@ export const MapTopNavMenu = ({
       showSaveQuery={true}
       showQueryInput={true}
       onQuerySubmit={handleQuerySubmit}
-      useDefaultBehaviors
       dateRangeFrom={dateFrom}
       dateRangeTo={dateTo}
       query={queryConfig}
       isRefreshPaused={isRefreshPaused}
       refreshInterval={refreshIntervalValue}
+      onRefresh={refreshDataLayerRender}
+      onRefreshChange={onRefreshChange}
     />
   );
 };
