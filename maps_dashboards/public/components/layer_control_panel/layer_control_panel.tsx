@@ -16,8 +16,8 @@ import {
   EuiDragDropContext,
   EuiDraggable,
   EuiDroppable,
-  euiDragDropReorder,
   EuiConfirmModal,
+  DropResult,
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
@@ -33,7 +33,7 @@ import {
   LAYER_PANEL_SHOW_LAYER_ICON,
   LAYER_PANEL_HIDE_LAYER_ICON,
 } from '../../../common';
-import { layersFunctionMap } from '../../model/layersFunctions';
+import { LayerActions, layersFunctionMap } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import { doDataLayerRender } from '../../model/DataLayerController';
@@ -165,12 +165,42 @@ export const LayerControlPanel = memo(
       layerVisibility.set(layer.id, layer.visibility === LAYER_VISIBILITY.VISIBLE);
     });
 
-    const onDragEnd = ({ source, destination }) => {
-      if (source && destination) {
-        const reorderedLayers = euiDragDropReorder(layers, source.index, destination.index);
-        setLayers(reorderedLayers);
-        // TODO: Refresh Maplibre layers
+    const beforeMaplibreLayerID = (source: number, destination: number) => {
+      if (source > destination) {
+        // if layer is moved below, move current layer below given destination
+        return layers[destination].id;
       }
+      const beforeIndex = destination + 1; // if layer is moved up, move current layer above destination
+      if (beforeIndex < layers.length) {
+        return layers[beforeIndex].id;
+      }
+      return undefined;
+    };
+
+    const onDragEnd = (dropResult: DropResult) => {
+      if (!dropResult) {
+        return;
+      }
+      if (dropResult.source && dropResult.destination) {
+        // we display list in reverse order
+        const prevIndex = getLayerIndex(dropResult.source.index);
+        const newIndex = getLayerIndex(dropResult.destination.index);
+
+        const currentMaplibreLayerId = layers[prevIndex].id;
+        const beforeMaplibreLayerId = beforeMaplibreLayerID(prevIndex, newIndex);
+        LayerActions.move(maplibreRef, currentMaplibreLayerId, beforeMaplibreLayerId);
+
+        // update map layers
+        const layersClone = [...layers];
+        const oldLayer = layersClone[prevIndex];
+        layersClone.splice(prevIndex, 1);
+        layersClone.splice(newIndex, 0, oldLayer);
+        setLayers(layersClone);
+      }
+    };
+
+    const getLayerIndex = (reversedIndex: number) => {
+      return layers.length - reversedIndex - 1;
     };
 
     const getReverseLayers = () => {
