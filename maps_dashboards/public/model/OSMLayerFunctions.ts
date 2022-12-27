@@ -1,5 +1,6 @@
 import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -58,7 +59,11 @@ const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
   }
 };
 
-const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+const addNewLayer = (
+  layerConfig: OSMLayerSpecification,
+  maplibreRef: MaplibreRef,
+  beforeLayerId: string | undefined
+) => {
   if (maplibreRef.current) {
     const layerSource = layerConfig?.source;
     const layerStyle = layerConfig?.style;
@@ -67,12 +72,13 @@ const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRe
       url: layerSource?.dataURL,
     });
     fetchStyleLayers(layerStyle?.styleURL).then((styleLayers: LayerSpecification[]) => {
+      const beforeMbLayerId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
       styleLayers.forEach((styleLayer) => {
         styleLayer.id = styleLayer.id + '_' + layerConfig.id;
         if (styleLayer.type !== 'background') {
           styleLayer.source = layerConfig.id;
         }
-        maplibreRef.current?.addLayer(styleLayer);
+        maplibreRef.current?.addLayer(styleLayer, beforeMbLayerId);
         maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
         maplibreRef.current?.setLayerZoomRange(
           styleLayer.id,
@@ -95,13 +101,17 @@ const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRe
 
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+  render: (
+    maplibreRef: MaplibreRef,
+    layerConfig: OSMLayerSpecification,
+    beforeLayerId: string | undefined
+  ) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
     if (layerExistInMbSource(layerConfig, maplibreRef)) {
       updateLayerConfig(layerConfig, maplibreRef);
     } else {
-      addNewLayer(layerConfig, maplibreRef);
+      addNewLayer(layerConfig, maplibreRef, beforeLayerId);
     }
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {

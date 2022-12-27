@@ -7,6 +7,11 @@ import { Map as Maplibre } from 'maplibre-gl';
 import { DASHBOARDS_MAPS_LAYER_NAME, DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
+import { MapLayerSpecification } from './mapLayerType';
+
+interface MaplibreRef {
+  current: Maplibre | null;
+}
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -51,4 +56,23 @@ export const layersFunctionMap: { [key: string]: any } = {
 export const layersTypeNameMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_NAME.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
+};
+
+const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
+  return maplibreRef.current?.getStyle().layers || [];
+};
+
+export const getMaplibreBeforeLayerId = (
+  selectedLayer: MapLayerSpecification,
+  maplibreRef: MaplibreRef,
+  beforeLayerId: string | undefined
+): string | undefined => {
+  const currentLoadedMbLayers = getCurrentStyleLayers(maplibreRef);
+  if (beforeLayerId) {
+    const beforeMbLayer = currentLoadedMbLayers.find((mbLayer) =>
+      mbLayer.id.includes(beforeLayerId)
+    );
+    return beforeMbLayer?.id;
+  }
+  return undefined;
 };
