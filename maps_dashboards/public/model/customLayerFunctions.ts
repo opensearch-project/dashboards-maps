@@ -1,0 +1,115 @@
+import {
+  Map as Maplibre,
+  AttributionControl,
+  RasterSourceSpecification,
+} from 'maplibre-gl';
+import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
+
+interface MaplibreRef {
+  current: Maplibre | null;
+}
+
+const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
+  return maplibreRef.current?.getStyle().layers || [];
+};
+
+const layerExistInMbSource = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfig.id)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
+  const maplibreInstance = maplibreRef.current;
+  if (maplibreInstance) {
+    const customLauer = maplibreInstance.getLayer(layerConfig.id);
+    if (customLauer) {
+      maplibreInstance.setPaintProperty(
+        layerConfig.id,
+        'raster-opacity',
+        layerConfig.opacity / 100
+      );
+      maplibreInstance.setLayerZoomRange(
+        layerConfig.id,
+        layerConfig.zoomRange[0],
+        layerConfig.zoomRange[1]
+      );
+      const rasterLayerSource = maplibreInstance.getSource(
+        layerConfig.id
+      )! as RasterSourceSpecification;
+      if (rasterLayerSource.attribution !== layerConfig.source?.attribution) {
+        rasterLayerSource.attribution = layerConfig?.source?.attribution;
+        maplibreInstance._controls.forEach((control) => {
+          if (control instanceof AttributionControl) {
+            control._updateAttributions();
+          }
+        });
+      }
+      if (rasterLayerSource.tiles![0] !== layerConfig.source?.url) {
+        rasterLayerSource.tiles = [layerConfig?.source?.url];
+        maplibreInstance.style.sourceCaches[layerConfig.id].clearTiles();
+        maplibreInstance.style.sourceCaches[layerConfig.id].update(maplibreInstance.transform);
+        maplibreInstance.triggerRepaint();
+      }
+    }
+  }
+};
+
+const addNewLayer = (
+  layerConfig: CustomLayerSpecification,
+  maplibreRef: MaplibreRef,
+  beforeLayerId: string | undefined
+) => {
+  const maplibreInstance = maplibreRef.current;
+  if (maplibreInstance) {
+    const layerSource = layerConfig?.source;
+    maplibreInstance.addSource(layerConfig.id, {
+      type: 'raster',
+      tiles: [layerSource?.url],
+      tileSize: 256,
+      attribution: layerSource?.attribution,
+    });
+    maplibreInstance.addLayer(
+      {
+        id: layerConfig.id,
+        type: 'raster',
+        source: layerConfig.id,
+      },
+      beforeLayerId
+    );
+  }
+};
+
+export const CustomLayerFunctions = {
+  render: (
+    maplibreRef: MaplibreRef,
+    layerConfig: CustomLayerSpecification,
+    beforeLayerId: string | undefined
+  ) => {
+    if (layerExistInMbSource(layerConfig, maplibreRef)) {
+      updateLayerConfig(layerConfig, maplibreRef);
+    } else {
+      addNewLayer(layerConfig, maplibreRef, beforeLayerId);
+    }
+  },
+  remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+    const layers = getCurrentStyleLayers(maplibreRef);
+    layers.forEach((mbLayer: { id: any }) => {
+      if (mbLayer.id.includes(layerConfig.id)) {
+        maplibreRef.current?.removeLayer(mbLayer.id);
+      }
+    });
+  },
+  hide: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+    const layers = getCurrentStyleLayers(maplibreRef);
+    layers.forEach((mbLayer: { id: any }) => {
+      if (mbLayer.id.includes(layerConfig.id)) {
+        maplibreRef.current?.setLayoutProperty(mbLayer.id, 'visibility', layerConfig.visibility);
+      }
+    });
+  },
+};

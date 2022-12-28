@@ -33,7 +33,11 @@ import {
   LAYER_PANEL_SHOW_LAYER_ICON,
   LAYER_PANEL_HIDE_LAYER_ICON,
 } from '../../../common';
-import { LayerActions, layersFunctionMap } from '../../model/layersFunctions';
+import {
+  LayerActions,
+  layersFunctionMap,
+  referenceLayerTypeLookup,
+} from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import {
@@ -94,7 +98,10 @@ export const LayerControlPanel = memo(
         if (!selectedLayerConfig) {
           return;
         }
-        if (selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+        if (
+          selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP ||
+          selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP
+        ) {
           handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
         } else {
           updateIndexPatterns();
@@ -104,7 +111,7 @@ export const LayerControlPanel = memo(
       } else {
         layers.forEach((layer) => {
           const beforeLayerId = getMapBeforeLayerId(layer);
-          if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
+          if (referenceLayerTypeLookup[layer.type]) {
             handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
           } else {
             handleDataLayerRender(layer, mapState, services, maplibreRef, beforeLayerId);
@@ -227,10 +234,10 @@ export const LayerControlPanel = memo(
       if (!selectedLayerConfig) {
         return;
       }
-      if (selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-        return;
-      }
-      if (!selectedLayerConfig.source.indexPatternId) {
+      if (
+        selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP ||
+        selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP
+      ) {
         return;
       }
       const findIndexPattern = layersIndexPatterns.find(

@@ -29,6 +29,7 @@ import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap } from '../../model/layersFunctions';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
 
 interface Props {
   closeLayerConfigPanel: Function;
@@ -125,6 +126,14 @@ export const LayerConfigPanel = ({
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
                 layersIndexPatterns={layersIndexPatterns}
+                isLayerExists={isLayerExists}
+              />
+            )}
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP && (
+              <CustomMapConfigPanel
+                selectedLayerConfig={selectedLayerConfig}
+                setSelectedLayerConfig={setSelectedLayerConfig}
+                setIsUpdateDisabled={setIsUpdateDisabled}
                 isLayerExists={isLayerExists}
               />
             )}

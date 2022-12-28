@@ -61,27 +61,17 @@ export const getLayerConfigMap = () => ({
       markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
     },
   },
-  //TODO: update custom layer config
   [CUSTOM_MAP.type]: {
     name: '',
     description: '',
     type: CUSTOM_MAP.type,
     id: uuidv4(),
     zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
-    opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
+    opacity: MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
     visibility: LAYER_VISIBILITY.VISIBLE,
     source: {
-      indexPatternRefName: undefined,
-      geoFieldType: undefined,
-      geoFieldName: undefined,
-      documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
-      tooltipFields: DOCUMENTS_DEFAULT_TOOLTIPS,
-      showTooltips: DOCUMENTS_DEFAULT_SHOW_TOOLTIPS,
-    },
-    style: {
-      ...getStyleColor(),
-      borderThickness: MAP_LAYER_DEFAULT_BORDER_THICKNESS,
-      markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
+      url: '',
+      attribution: '',
     },
   },
 });

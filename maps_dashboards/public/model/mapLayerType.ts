@@ -6,7 +6,10 @@
 import { Filter } from '../../../../src/plugins/data/public';
 
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
-export type MapLayerSpecification = OSMLayerSpecification | DocumentLayerSpecification;
+export type MapLayerSpecification =
+  | OSMLayerSpecification
+  | DocumentLayerSpecification
+  | CustomLayerSpecification;
 
 export type OSMLayerSpecification = {
   name: string;
@@ -47,5 +50,19 @@ export type DocumentLayerSpecification = {
     borderColor: string;
     borderThickness: number;
     markerSize: number;
+  };
+};
+
+export type CustomLayerSpecification = {
+  name: string;
+  id: string;
+  type: 'custom_map';
+  description: string;
+  zoomRange: number[];
+  opacity: number;
+  visibility: string;
+  source: {
+    url: string;
+    attribution: string;
   };
 };
