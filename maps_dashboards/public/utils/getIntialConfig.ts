@@ -25,7 +25,7 @@ import { MapState } from '../model/mapState';
 
 export const getLayerConfigMap = () => ({
   [OPENSEARCH_MAP_LAYER.type]: {
-    name: OPENSEARCH_MAP_LAYER.name,
+    name: '',
     description: '',
     type: OPENSEARCH_MAP_LAYER.type,
     id: uuidv4(),
@@ -40,7 +40,7 @@ export const getLayerConfigMap = () => ({
     },
   },
   [DOCUMENTS.type]: {
-    name: DOCUMENTS.name,
+    name: '',
     description: '',
     type: DOCUMENTS.type,
     id: uuidv4(),
@@ -63,7 +63,7 @@ export const getLayerConfigMap = () => ({
   },
   //TODO: update custom layer config
   [CUSTOM_MAP.type]: {
-    name: CUSTOM_MAP.name,
+    name: '',
     description: '',
     type: CUSTOM_MAP.type,
     id: uuidv4(),

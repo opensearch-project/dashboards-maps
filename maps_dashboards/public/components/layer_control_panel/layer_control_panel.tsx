@@ -135,6 +135,10 @@ export const LayerControlPanel = memo(
       }, 0);
     };
 
+    const newLayerIndex = () => {
+      return layers?.length + 1;
+    };
+
     const addLayer = (layer: MapLayerSpecification) => {
       setLayers([...layers, layer]);
       setAddLayerId(layer.id);
@@ -391,7 +395,7 @@ export const LayerControlPanel = memo(
                                   grow={false}
                                   className="layerControlPanel__layerFunctionButton"
                                 >
-                                  <EuiButtonIcon
+                                  <EuiButtonEmpty
                                     size="s"
                                     iconType="grab"
                                     {...provided.dragHandleProps}
@@ -429,6 +433,7 @@ export const LayerControlPanel = memo(
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 IsLayerConfigVisible={isLayerConfigVisible}
                 addLayer={addLayer}
+                newLayerIndex={newLayerIndex()}
                 setIsNewLayer={setIsNewLayer}
               />
               {deleteLayerModal}

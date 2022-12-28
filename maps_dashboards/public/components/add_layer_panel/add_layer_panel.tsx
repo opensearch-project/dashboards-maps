@@ -29,6 +29,7 @@ interface Props {
   IsLayerConfigVisible: boolean;
   addLayer: Function;
   setIsNewLayer: Function;
+  newLayerIndex: number;
 }
 
 export const AddLayerPanel = ({
@@ -37,16 +38,15 @@ export const AddLayerPanel = ({
   IsLayerConfigVisible,
   addLayer,
   setIsNewLayer,
+  newLayerIndex,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
-  const [nextLayerIndex, setNextLayerIndex] = useState<number>(1);
 
   function onClickAddNewLayer(layerType: string) {
     const initLayerConfig = getLayerConfigMap()[layerType];
-    initLayerConfig.name = 'New layer ' + nextLayerIndex;
+    initLayerConfig.name = 'New layer ' + newLayerIndex;
     setSelectedLayerConfig(initLayerConfig);
-    setNextLayerIndex(nextLayerIndex + 1);
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
     setIsNewLayer(true);
