@@ -12,7 +12,7 @@ import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_d
 import { MapServices } from '../../types';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 import { getSavedMapBreadcrumbs } from '../../utils/breadcrumbs';
-import { doDataLayerRender } from '../../model/DataLayerController';
+import { handleDataLayerRender } from '../../model/layerRenderController';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { MapState } from '../../model/mapState';
 
@@ -76,7 +76,7 @@ export const MapTopNavMenu = ({
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
         return;
       }
-      doDataLayerRender(layer, mapState, services, maplibreRef);
+      handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
     });
   };
 

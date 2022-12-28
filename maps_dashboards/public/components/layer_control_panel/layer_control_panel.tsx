@@ -36,7 +36,10 @@ import {
 import { LayerActions, layersFunctionMap } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
-import { doDataLayerRender } from '../../model/DataLayerController';
+import {
+  handleReferenceLayerRender,
+  handleDataLayerRender,
+} from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 
 interface MaplibreRef {
@@ -87,31 +90,43 @@ export const LayerControlPanel = memo(
       if (layers.length <= 0) {
         return;
       }
+
       if (initialLayersLoaded) {
         if (!selectedLayerConfig) {
           return;
         }
         if (selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-          layersFunctionMap[selectedLayerConfig.type].render(maplibreRef, selectedLayerConfig);
+          handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
         } else {
           updateIndexPatterns();
-          doDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef);
+          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
         }
         if (addLayerId !== selectedLayerConfig.id) {
           setSelectedLayerConfig(undefined);
         }
       } else {
         layers.forEach((layer) => {
+          const beforeLayerId = getMapBeforeLayerId(layer);
           if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-            layersFunctionMap[layer.type].render(maplibreRef, layer);
+            handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
           } else {
-            doDataLayerRender(layer, mapState, services, maplibreRef);
+            handleDataLayerRender(layer, mapState, services, maplibreRef, beforeLayerId);
           }
         });
         setInitialLayersLoaded(true);
       }
       setIsUpdatingLayerRender(false);
     }, [layers]);
+
+    // Get layer id from layers that is above the selected layer
+    function getMapBeforeLayerId(selectedLayer: MapLayerSpecification): string | undefined {
+      const selectedLayerIndex = layers.findIndex((layer) => layer.id === selectedLayer.id);
+      const beforeLayers = layers.slice(selectedLayerIndex + 1);
+      if (beforeLayers.length === 0) {
+        return undefined;
+      }
+      return beforeLayers[0]?.id;
+    }
 
     const closeLayerConfigPanel = () => {
       setIsLayerConfigVisible(false);

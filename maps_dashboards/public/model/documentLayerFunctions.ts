@@ -7,6 +7,7 @@ import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
 import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -113,22 +114,27 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
 const addNewLayer = (
   layerConfig: DocumentLayerSpecification,
   maplibreRef: MaplibreRef,
-  data: any
+  data: any,
+  beforeLayerId: string | undefined
 ) => {
   const maplibreInstance = maplibreRef.current;
+  const mbLayerBeforeId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
   const addGeoPointLayer = () => {
-    maplibreInstance?.addLayer({
-      id: layerConfig.id,
-      type: 'circle',
-      source: layerConfig.id,
-      paint: {
-        'circle-radius': layerConfig.style?.markerSize,
-        'circle-color': layerConfig.style?.fillColor,
-        'circle-opacity': layerConfig.opacity / 100,
-        'circle-stroke-width': layerConfig.style?.borderThickness,
-        'circle-stroke-color': layerConfig.style?.borderColor,
+    maplibreInstance?.addLayer(
+      {
+        id: layerConfig.id,
+        type: 'circle',
+        source: layerConfig.id,
+        paint: {
+          'circle-radius': layerConfig.style?.markerSize,
+          'circle-color': layerConfig.style?.fillColor,
+          'circle-opacity': layerConfig.opacity / 100,
+          'circle-stroke-width': layerConfig.style?.borderThickness,
+          'circle-stroke-color': layerConfig.style?.borderColor,
+        },
       },
-    });
+      mbLayerBeforeId
+    );
     maplibreInstance?.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
   };
 
@@ -137,33 +143,39 @@ const addNewLayer = (
       const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
       if (mbType === 'circle') {
         const circleLayerId = layerConfig.id + feature.properties.title;
-        maplibreInstance?.addLayer({
-          id: circleLayerId,
-          type: 'circle',
-          source: layerConfig.id,
-          filter: ['==', '$type', 'Point'],
-          paint: {
-            'circle-radius': layerConfig.style?.markerSize,
-            'circle-color': layerConfig.style?.fillColor,
-            'circle-opacity': layerConfig.opacity / 100,
-            'circle-stroke-width': layerConfig.style?.borderThickness,
-            'circle-stroke-color': layerConfig.style?.borderColor,
+        maplibreInstance?.addLayer(
+          {
+            id: circleLayerId,
+            type: 'circle',
+            source: layerConfig.id,
+            filter: ['==', '$type', 'Point'],
+            paint: {
+              'circle-radius': layerConfig.style?.markerSize,
+              'circle-color': layerConfig.style?.fillColor,
+              'circle-opacity': layerConfig.opacity / 100,
+              'circle-stroke-width': layerConfig.style?.borderThickness,
+              'circle-stroke-color': layerConfig.style?.borderColor,
+            },
           },
-        });
+          mbLayerBeforeId
+        );
         maplibreInstance?.setLayoutProperty(circleLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'line') {
         const lineLayerId = layerConfig.id + '-' + feature.properties.title;
-        maplibreInstance?.addLayer({
-          id: lineLayerId,
-          type: 'line',
-          source: layerConfig.id,
-          filter: ['==', '$type', 'LineString'],
-          paint: {
-            'line-color': layerConfig.style?.fillColor,
-            'line-opacity': layerConfig.opacity / 100,
-            'line-width': layerConfig.style?.borderThickness,
+        maplibreInstance?.addLayer(
+          {
+            id: lineLayerId,
+            type: 'line',
+            source: layerConfig.id,
+            filter: ['==', '$type', 'LineString'],
+            paint: {
+              'line-color': layerConfig.style?.fillColor,
+              'line-opacity': layerConfig.opacity / 100,
+              'line-width': layerConfig.style?.borderThickness,
+            },
           },
-        });
+          mbLayerBeforeId
+        );
         maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'fill') {
         const polygonFillLayerId = layerConfig.id + '-' + feature.properties.title;
@@ -185,17 +197,20 @@ const addNewLayer = (
           layerConfig.visibility
         );
         // Add boarder for polygon
-        maplibreInstance?.addLayer({
-          id: polygonBorderLayerId,
-          type: 'line',
-          source: layerConfig.id,
-          filter: ['==', '$type', 'Polygon'],
-          paint: {
-            'line-color': layerConfig.style?.borderColor,
-            'line-opacity': layerConfig.opacity / 100,
-            'line-width': layerConfig.style?.borderThickness,
+        maplibreInstance?.addLayer(
+          {
+            id: polygonBorderLayerId,
+            type: 'line',
+            source: layerConfig.id,
+            filter: ['==', '$type', 'Polygon'],
+            paint: {
+              'line-color': layerConfig.style?.borderColor,
+              'line-opacity': layerConfig.opacity / 100,
+              'line-width': layerConfig.style?.borderThickness,
+            },
           },
-        });
+          mbLayerBeforeId
+        );
         maplibreInstance?.setLayoutProperty(
           polygonBorderLayerId,
           'visibility',
@@ -352,11 +367,16 @@ function getPopup() {
 }
 
 export const DocumentLayerFunctions = {
-  render: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification, data: any) => {
+  render: (
+    maplibreRef: MaplibreRef,
+    layerConfig: DocumentLayerSpecification,
+    data: any,
+    beforeLayerId: string | undefined
+  ) => {
     if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
       updateLayerConfig(layerConfig, maplibreRef, data);
     } else {
-      addNewLayer(layerConfig, maplibreRef, data);
+      addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
     }
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
