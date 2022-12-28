@@ -4,7 +4,11 @@
  */
 
 import { Map as Maplibre } from 'maplibre-gl';
-import { DASHBOARDS_MAPS_LAYER_NAME, DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
+import {
+  DASHBOARDS_MAPS_LAYER_ICON,
+  DASHBOARDS_MAPS_LAYER_NAME,
+  DASHBOARDS_MAPS_LAYER_TYPE,
+} from '../../common';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
 import { MapLayerSpecification } from './mapLayerType';
@@ -75,4 +79,8 @@ export const getMaplibreBeforeLayerId = (
     return beforeMbLayer?.id;
   }
   return undefined;
+};
+export const layersTypeIconMap: { [key: string]: string } = {
+  [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_ICON.OPENSEARCH_MAP,
+  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
 };

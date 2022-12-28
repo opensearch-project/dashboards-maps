@@ -40,10 +40,13 @@ export const AddLayerPanel = ({
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
+  const [nextLayerIndex, setNextLayerIndex] = useState<number>(1);
 
   function onClickAddNewLayer(layerType: string) {
     const initLayerConfig = getLayerConfigMap()[layerType];
+    initLayerConfig.name = 'New layer ' + nextLayerIndex;
     setSelectedLayerConfig(initLayerConfig);
+    setNextLayerIndex(nextLayerIndex + 1);
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);
     setIsNewLayer(true);
