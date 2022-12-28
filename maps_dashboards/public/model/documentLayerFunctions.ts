@@ -139,13 +139,13 @@ const addNewLayer = (
   };
 
   const addGeoShapeLayer = (source: any) => {
-    source.features.map((feature: any) => {
+    source.features.map((feature: any, index: number) => {
       const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
+      const mbLayerId = `${layerConfig.id}-${index}`;
       if (mbType === 'circle') {
-        const circleLayerId = layerConfig.id + feature.properties.title;
         maplibreInstance?.addLayer(
           {
-            id: circleLayerId,
+            id: mbLayerId,
             type: 'circle',
             source: layerConfig.id,
             filter: ['==', '$type', 'Point'],
@@ -159,12 +159,11 @@ const addNewLayer = (
           },
           mbLayerBeforeId
         );
-        maplibreInstance?.setLayoutProperty(circleLayerId, 'visibility', layerConfig.visibility);
+        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'line') {
-        const lineLayerId = layerConfig.id + '-' + feature.properties.title;
         maplibreInstance?.addLayer(
           {
-            id: lineLayerId,
+            id: mbLayerId,
             type: 'line',
             source: layerConfig.id,
             filter: ['==', '$type', 'LineString'],
@@ -176,26 +175,24 @@ const addNewLayer = (
           },
           mbLayerBeforeId
         );
-        maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', layerConfig.visibility);
+        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
       } else if (mbType === 'fill') {
-        const polygonFillLayerId = layerConfig.id + '-' + feature.properties.title;
-        const polygonBorderLayerId = polygonFillLayerId + '-border';
-        maplibreInstance?.addLayer({
-          id: polygonFillLayerId,
-          type: 'fill',
-          source: layerConfig.id,
-          filter: ['==', '$type', 'Polygon'],
-          paint: {
-            'fill-color': layerConfig.style?.fillColor,
-            'fill-opacity': layerConfig.opacity / 100,
-            'fill-outline-color': layerConfig.style?.borderColor,
+        const polygonBorderLayerId = `${mbLayerId}-border`;
+        maplibreInstance?.addLayer(
+          {
+            id: mbLayerId,
+            type: 'fill',
+            source: layerConfig.id,
+            filter: ['==', '$type', 'Polygon'],
+            paint: {
+              'fill-color': layerConfig.style?.fillColor,
+              'fill-opacity': layerConfig.opacity / 100,
+              'fill-outline-color': layerConfig.style?.borderColor,
+            },
           },
-        });
-        maplibreInstance?.setLayoutProperty(
-          polygonFillLayerId,
-          'visibility',
-          layerConfig.visibility
+          mbLayerBeforeId
         );
+        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
         // Add boarder for polygon
         maplibreInstance?.addLayer(
           {
