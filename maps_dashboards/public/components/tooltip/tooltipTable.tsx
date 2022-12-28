@@ -163,6 +163,7 @@ const TooltipTable = ({
               selectedOptions={selectedLayers}
               options={options}
               onChange={handleLayerChange}
+              singleSelection={true}
             />
           </EuiFlexItem>
         )}

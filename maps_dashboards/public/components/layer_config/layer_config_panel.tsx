@@ -19,7 +19,8 @@ import {
   EuiModalBody,
   EuiModalFooter,
   EuiModalHeader,
-  EuiModalHeaderTitle, EuiIcon
+  EuiModalHeaderTitle,
+  EuiIcon,
 } from '@elastic/eui';
 
 import { MapLayerSpecification } from '../../model/mapLayerType';
