@@ -27,7 +27,7 @@ import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
-import { layersTypeIconMap} from '../../model/layersFunctions';
+import { layersTypeIconMap } from '../../model/layersFunctions';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 
 interface Props {
