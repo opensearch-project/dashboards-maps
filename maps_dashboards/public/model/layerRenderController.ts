@@ -89,7 +89,6 @@ export const handleDataLayerRender = (
     const { layer, dataSource } = result;
     if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
       layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, beforeLayerId);
-      layersFunctionMap[layer.type].addTooltip(maplibreRef, layer);
     }
   });
 };
