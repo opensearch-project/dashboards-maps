@@ -193,12 +193,21 @@ export const DocumentLayerSource = ({
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
 
+  const onToggleGeoBoundingBox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const source = { ...selectedLayerConfig.source, useGeoBoundingBoxFilter: e.target.checked };
+    setSelectedLayerConfig({ ...selectedLayerConfig, source });
+  };
+
   const shouldTooltipSectionOpen = () => {
     return (
       selectedLayerConfig.source.showTooltips &&
       selectedLayerConfig.source.tooltipFields?.length > 0
     );
   };
+
+  const filterPanelInitialIsOpen =
+    selectedLayerConfig.source.filters?.length > 0 ||
+    selectedLayerConfig.source.useGeoBoundingBoxFilter;
 
   return (
     <div>
@@ -281,7 +290,7 @@ export const DocumentLayerSource = ({
           title="Filters"
           titleSize="xxs"
           isCollapsible={true}
-          initialIsOpen={selectedLayerConfig.source.filters?.length > 0}
+          initialIsOpen={filterPanelInitialIsOpen}
         >
           <SearchBar
             appName="maps-dashboards"
@@ -290,6 +299,17 @@ export const DocumentLayerSource = ({
             filters={selectedLayerConfig.source.filters ?? []}
             onFiltersUpdated={onFiltersUpdated}
           />
+          <EuiSpacer />
+          <EuiFormRow>
+            <EuiCheckbox
+              id={`${selectedLayerConfig.id}-bounding-box-filter`}
+              disabled={selectedLayerConfig.source.geoFieldType !== 'geo_point'}
+              label={'Only request data around map extent'}
+              checked={selectedLayerConfig.source.useGeoBoundingBoxFilter ? true : false}
+              onChange={onToggleGeoBoundingBox}
+              compressed
+            />
+          </EuiFormRow>
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />

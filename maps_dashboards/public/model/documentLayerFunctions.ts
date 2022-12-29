@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
-import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
+import { Map as Maplibre } from 'maplibre-gl';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
 import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
