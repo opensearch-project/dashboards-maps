@@ -75,7 +75,6 @@ export const LayerControlPanel = memo(
       MapLayerSpecification | undefined
     >();
     const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
-    const [addLayerId, setAddLayerId] = useState('');
     const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
@@ -101,9 +100,7 @@ export const LayerControlPanel = memo(
           updateIndexPatterns();
           handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
         }
-        if (addLayerId !== selectedLayerConfig.id) {
-          setSelectedLayerConfig(undefined);
-        }
+        setSelectedLayerConfig(undefined);
       } else {
         layers.forEach((layer) => {
           const beforeLayerId = getMapBeforeLayerId(layer);
@@ -141,7 +138,6 @@ export const LayerControlPanel = memo(
 
     const addLayer = (layer: MapLayerSpecification) => {
       setLayers([...layers, layer]);
-      setAddLayerId(layer.id);
     };
 
     const updateLayer = () => {
@@ -387,8 +383,9 @@ export const LayerControlPanel = memo(
                                     iconType="trash"
                                     onClick={() => onDeleteLayerIconClick(layer)}
                                     aria-label="Delete layer"
-                                    color="danger"
+                                    color={layer.id === selectedLayerConfig?.id ? 'text' : 'danger'}
                                     title="Delete layer"
+                                    disabled={layer.id === selectedLayerConfig?.id}
                                   />
                                 </EuiFlexItem>
                                 <EuiFlexItem
