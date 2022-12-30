@@ -110,7 +110,10 @@ const TooltipTable = ({
   );
 
   const options = useMemo(() => {
-    const layerOptions = [{ label: 'All layers', value: ALL_LAYERS, key: '-1' }];
+    const layerOptions = [];
+    if (tables.length > 1) {
+      layerOptions.push({ label: 'All layers', value: ALL_LAYERS, key: '-1' });
+    }
     tables.forEach(({ layer }, i) => {
       layerOptions.push({ label: layer.name, value: i, key: `${i}` });
     });
@@ -153,13 +156,14 @@ const TooltipTable = ({
       </EuiFlexGroup>
       <EuiSpacer size="s" />
       <EuiFlexGroup justifyContent="spaceAround" alignItems="center" gutterSize="none">
-        {showLayerSelection && (
+        {showLayerSelection && options?.length > 1 && (
           <EuiFlexItem>
             <EuiComboBox<number>
               placeholder="Select a layer"
               selectedOptions={selectedLayers}
               options={options}
               onChange={handleLayerChange}
+              singleSelection={true}
             />
           </EuiFlexItem>
         )}

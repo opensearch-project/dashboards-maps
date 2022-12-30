@@ -20,12 +20,14 @@ import {
   EuiModalFooter,
   EuiModalHeader,
   EuiModalHeaderTitle,
+  EuiIcon,
 } from '@elastic/eui';
 
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
+import { layersTypeIconMap } from '../../model/layersFunctions';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 
 interface Props {
@@ -97,7 +99,14 @@ export const LayerConfigPanel = ({
       className="layerConfigPanel"
     >
       <EuiFlyoutHeader hasBorder={true}>
-        <strong>{selectedLayerConfig.name}</strong>
+        <EuiFlexGroup gutterSize="s" justifyContent="spaceAround">
+          <EuiFlexItem grow={false}>
+            <EuiIcon type={layersTypeIconMap[selectedLayerConfig.type]} size="m" />
+          </EuiFlexItem>
+          <EuiFlexItem>
+            <strong>{selectedLayerConfig.name}</strong>
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </EuiFlyoutHeader>
       <EuiFlyoutBody>
         <EuiFlexGroup className="layerBasicSettings" direction="column">

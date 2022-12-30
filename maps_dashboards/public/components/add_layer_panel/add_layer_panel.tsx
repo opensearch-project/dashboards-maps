@@ -20,7 +20,13 @@ import {
   EuiText,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
-import { DOCUMENTS, OPENSEARCH_MAP_LAYER, CUSTOM_MAP, Layer } from '../../../common';
+import {
+  DOCUMENTS,
+  OPENSEARCH_MAP_LAYER,
+  CUSTOM_MAP,
+  Layer,
+  NEW_MAP_LAYER_DEFAULT_PREFIX,
+} from '../../../common';
 import { getLayerConfigMap } from '../../utils/getIntialConfig';
 
 interface Props {
@@ -29,6 +35,7 @@ interface Props {
   IsLayerConfigVisible: boolean;
   addLayer: Function;
   setIsNewLayer: Function;
+  newLayerIndex: number;
 }
 
 export const AddLayerPanel = ({
@@ -37,12 +44,14 @@ export const AddLayerPanel = ({
   IsLayerConfigVisible,
   addLayer,
   setIsNewLayer,
+  newLayerIndex,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
 
   function onClickAddNewLayer(layerType: string) {
     const initLayerConfig = getLayerConfigMap()[layerType];
+    initLayerConfig.name = NEW_MAP_LAYER_DEFAULT_PREFIX + ' ' + newLayerIndex;
     setSelectedLayerConfig(initLayerConfig);
     setIsAddNewLayerModalVisible(false);
     setIsLayerConfigVisible(true);

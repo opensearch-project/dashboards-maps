@@ -308,7 +308,7 @@ export const DocumentLayerSource = ({
       <EuiSpacer size="m" />
       <EuiPanel paddingSize="s">
         <EuiCollapsibleNavGroup
-          title="Tool Tips"
+          title="Tooltips"
           titleSize="xxs"
           isCollapsible={true}
           initialIsOpen={shouldTooltipSectionOpen()}

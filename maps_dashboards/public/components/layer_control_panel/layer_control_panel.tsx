@@ -135,6 +135,10 @@ export const LayerControlPanel = memo(
       }, 0);
     };
 
+    const newLayerIndex = () => {
+      return layers?.length + 1;
+    };
+
     const addLayer = (layer: MapLayerSpecification) => {
       setLayers([...layers, layer]);
       setAddLayerId(layer.id);
@@ -316,6 +320,7 @@ export const LayerControlPanel = memo(
                     aria-label="Hide layer control"
                     color="text"
                     className="layerControlPanel__visButton"
+                    title="Collapse layers panel"
                   />
                 </EuiFlexItem>
               </EuiFlexGroup>
@@ -358,7 +363,7 @@ export const LayerControlPanel = memo(
                                   grow={false}
                                   className="layerControlPanel__layerFunctionButton"
                                 >
-                                  <EuiButtonEmpty
+                                  <EuiButtonIcon
                                     iconType={
                                       layerVisibility.get(layer.id)
                                         ? LAYER_PANEL_HIDE_LAYER_ICON
@@ -368,18 +373,22 @@ export const LayerControlPanel = memo(
                                     onClick={() => onLayerVisibilityChange(layer)}
                                     aria-label="Hide or show layer"
                                     color="text"
+                                    title={
+                                      layerVisibility.get(layer.id) ? 'Hide layer' : 'Show layer'
+                                    }
                                   />
                                 </EuiFlexItem>
                                 <EuiFlexItem
                                   grow={false}
                                   className="layerControlPanel__layerFunctionButton"
                                 >
-                                  <EuiButtonEmpty
+                                  <EuiButtonIcon
                                     size="s"
                                     iconType="trash"
                                     onClick={() => onDeleteLayerIconClick(layer)}
                                     aria-label="Delete layer"
-                                    color="text"
+                                    color="danger"
+                                    title="Delete layer"
                                   />
                                 </EuiFlexItem>
                                 <EuiFlexItem
@@ -392,6 +401,7 @@ export const LayerControlPanel = memo(
                                     {...provided.dragHandleProps}
                                     aria-label="Drag Handle"
                                     color="text"
+                                    title="Move layer up or down"
                                   />
                                 </EuiFlexItem>
                               </EuiFlexGroup>
@@ -423,6 +433,7 @@ export const LayerControlPanel = memo(
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 IsLayerConfigVisible={isLayerConfigVisible}
                 addLayer={addLayer}
+                newLayerIndex={newLayerIndex()}
                 setIsNewLayer={setIsNewLayer}
               />
               {deleteLayerModal}
@@ -440,6 +451,7 @@ export const LayerControlPanel = memo(
           iconType="menuRight"
           onClick={() => setIsLayerControlVisible((visible) => !visible)}
           aria-label="Show layer control"
+          title="Expand layers panel"
         />
       </EuiFlexItem>
     );
