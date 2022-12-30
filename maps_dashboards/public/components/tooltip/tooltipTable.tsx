@@ -14,7 +14,6 @@ import {
   EuiText,
 } from '@elastic/eui';
 import React, { useState, Fragment, useCallback, useEffect, useMemo } from 'react';
-import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 export type RowData = {
   key: string;
@@ -22,7 +21,7 @@ export type RowData = {
 };
 export type PageData = RowData[];
 export type TableData = PageData[];
-type Table = { table: TableData; layer: DocumentLayerSpecification };
+type Table = { table: TableData; layer: string };
 
 export const ALL_LAYERS = -1;
 
@@ -54,7 +53,7 @@ const TooltipTable = ({
 }: Props) => {
   const [selectedLayers, setSelectedLayers] = useState<EuiComboBoxOptionOption<number>[]>([
     {
-      label: tables[0]?.layer.name ?? '',
+      label: tables[0]?.layer ?? '',
       value: 0,
       key: '0',
     },
@@ -110,7 +109,7 @@ const TooltipTable = ({
       layerOptions.push({ label: 'All layers', value: ALL_LAYERS, key: '-1' });
     }
     tables.forEach(({ layer }, i) => {
-      layerOptions.push({ label: layer.name, value: i, key: `${i}` });
+      layerOptions.push({ label: layer, value: i, key: `${i}` });
     });
     return layerOptions;
   }, [tables]);

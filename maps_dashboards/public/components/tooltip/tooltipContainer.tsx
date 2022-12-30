@@ -42,7 +42,7 @@ function toTable(featureGroupItem: FeatureGroupItem) {
       table.push(featureToTableRow(feature.properties));
     }
   }
-  return { table, layer: featureGroupItem.layer };
+  return { table, layer: featureGroupItem.layer.name };
 }
 
 function createTableData(featureGroups: FeatureGroupItem[]) {
@@ -64,10 +64,10 @@ export function TooltipContainer({
       return 'All layers';
     }
     if (selectedLayerIndexes.length === 1) {
-      return tables[selectedLayerIndexes[0]].layer.name;
+      return tables[selectedLayerIndexes[0]].layer;
     }
     if (selectedLayerIndexes.length > 1) {
-      return `${tables[selectedLayerIndexes[0]].layer.name}, +${tables.length - 1}`;
+      return `${tables[selectedLayerIndexes[0]].layer}, +${tables.length - 1}`;
     }
     return '';
   }, [selectedLayerIndexes, tables]);
