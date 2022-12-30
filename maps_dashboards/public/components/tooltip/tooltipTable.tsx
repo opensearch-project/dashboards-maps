@@ -15,13 +15,16 @@ import {
 } from '@elastic/eui';
 import React, { useState, Fragment, useCallback, useEffect, useMemo } from 'react';
 
-export type RowData = {
+export interface RowData {
   key: string;
   value: string;
-};
+}
 export type PageData = RowData[];
 export type TableData = PageData[];
-type Table = { table: TableData; layer: string };
+interface Table {
+  table: TableData;
+  layer: string;
+}
 
 export const ALL_LAYERS = -1;
 
@@ -36,12 +39,15 @@ function mergeTables(tables: Table[], selectedIndex: number[]) {
   const merged: TableData = [];
   const allSelected = selectedIndex.includes(ALL_LAYERS);
 
-  for (let i = 0; i < tables.length; i++) {
-    if (allSelected || selectedIndex.includes(i)) {
-      merged.push(...tables[i].table);
+  if (!allSelected) {
+    for (const index of selectedIndex) {
+      merged.push(...tables[index].table);
     }
+    return merged;
   }
-
+  for (let i = 0; i < tables.length; i++) {
+    merged.push(...tables[i].table);
+  }
   return merged;
 }
 
@@ -51,7 +57,7 @@ const TooltipTable = ({
   showPagination = true,
   showLayerSelection = true,
 }: Props) => {
-  const [selectedLayers, setSelectedLayers] = useState<EuiComboBoxOptionOption<number>[]>([
+  const [selectedLayers, setSelectedLayers] = useState<Array<EuiComboBoxOptionOption<number>>>([
     {
       label: tables[0]?.layer ?? '',
       value: 0,
@@ -88,7 +94,7 @@ const TooltipTable = ({
   };
 
   const handleLayerChange = useCallback(
-    (layerSelections: EuiComboBoxOptionOption<number>[]) => {
+    (layerSelections: Array<EuiComboBoxOptionOption<number>>) => {
       if (tables.length === 0) {
         return;
       }
