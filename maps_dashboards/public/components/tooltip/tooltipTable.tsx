@@ -94,12 +94,7 @@ const TooltipTable = ({
         return;
       }
 
-      let selections = layerSelections;
-
-      // when cleared selections, automatically select the first layer: value = 0
-      if (layerSelections.length === 0) {
-        selections = [{ label: tables[0]?.layer.name, value: 0, key: '0' }];
-      }
+      const selections = layerSelections;
 
       setSelectedLayers(selections);
       if (onLayerChange) {
@@ -161,9 +156,10 @@ const TooltipTable = ({
             <EuiComboBox<number>
               placeholder="Select a layer"
               selectedOptions={selectedLayers}
+              singleSelection={{ asPlainText: true }}
               options={options}
               onChange={handleLayerChange}
-              singleSelection={true}
+              isClearable={false}
             />
           </EuiFlexItem>
         )}

@@ -15,7 +15,7 @@ import {
   EuiSpacer,
   EuiPanel,
   EuiForm,
-  EuiSwitch,
+  EuiCheckbox,
   EuiFormRow,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
@@ -315,14 +315,12 @@ export const DocumentLayerSource = ({
         >
           <EuiFlexGrid columns={1}>
             <EuiFlexItem>
-              <EuiFormRow display="columnCompressedSwitch" label={'Show Tooltips'}>
-                <EuiSwitch
-                  label={showTooltips ? 'on' : 'off'}
-                  checked={showTooltips}
-                  onChange={onShowTooltipsChange}
-                  compressed
-                />
-              </EuiFormRow>
+              <EuiCheckbox
+                id="toggle-tooltip"
+                label="Show Tooltips"
+                checked={showTooltips}
+                onChange={onShowTooltipsChange}
+              />
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiFormLabel>Tooltip Fields</EuiFormLabel>
