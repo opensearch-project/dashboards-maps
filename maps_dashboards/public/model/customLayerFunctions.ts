@@ -1,8 +1,4 @@
-import {
-  Map as Maplibre,
-  AttributionControl,
-  RasterSourceSpecification,
-} from 'maplibre-gl';
+import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
 
 interface MaplibreRef {
@@ -49,7 +45,8 @@ const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: M
           }
         });
       }
-      if (rasterLayerSource.tiles![0] !== layerConfig.source?.url) {
+      const tilesURL = getCustomMapURL(layerConfig);
+      if (rasterLayerSource.tiles![0] !== tilesURL) {
         rasterLayerSource.tiles = [layerConfig?.source?.url];
         maplibreInstance.style.sourceCaches[layerConfig.id].clearTiles();
         maplibreInstance.style.sourceCaches[layerConfig.id].update(maplibreInstance.transform);
@@ -66,10 +63,11 @@ const addNewLayer = (
 ) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
+    const tilesURL = getCustomMapURL(layerConfig);
     const layerSource = layerConfig?.source;
     maplibreInstance.addSource(layerConfig.id, {
       type: 'raster',
-      tiles: [layerSource?.url],
+      tiles: [tilesURL],
       tileSize: 256,
       attribution: layerSource?.attribution,
     });
@@ -81,6 +79,17 @@ const addNewLayer = (
       },
       beforeLayerId
     );
+  }
+};
+
+const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
+  const layerSource = layerConfig?.source;
+  if (layerSource?.protocol === 'tms') {
+    return layerSource?.url;
+  } else if (layerSource?.protocol === 'wms') {
+    return `${layerSource?.url}?service=WMS&version=${layerSource.version}&request=GetMap&format=${layerSource.format}&transparent=true&layers=${layerSource?.layers}&styles=${layerSource.styles}&SRS=EPSG%3A3857&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
+  } else {
+    return '';
   }
 };
 

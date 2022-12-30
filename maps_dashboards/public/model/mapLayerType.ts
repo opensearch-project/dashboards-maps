@@ -53,7 +53,9 @@ export type DocumentLayerSpecification = {
   };
 };
 
-export type CustomLayerSpecification = {
+export type CustomLayerSpecification = CustomTMSLayerSpecification | CustomWMSLayerSpecification;
+
+export type CustomTMSLayerSpecification = {
   name: string;
   id: string;
   type: 'custom_map';
@@ -63,6 +65,26 @@ export type CustomLayerSpecification = {
   visibility: string;
   source: {
     url: string;
+    protocol: 'tms';
     attribution: string;
+  };
+};
+
+export type CustomWMSLayerSpecification = {
+  name: string;
+  id: string;
+  type: 'custom_map';
+  description: string;
+  zoomRange: number[];
+  opacity: number;
+  visibility: string;
+  source: {
+    url: string;
+    protocol: 'wms';
+    attribution: string;
+    layers: string;
+    styles: string;
+    version: string;
+    format: string;
   };
 };

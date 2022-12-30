@@ -234,16 +234,15 @@ export const LayerControlPanel = memo(
       if (!selectedLayerConfig) {
         return;
       }
-      if (
-        selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP ||
-        selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP
-      ) {
+      if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
         return;
       }
       const findIndexPattern = layersIndexPatterns.find(
+        // @ts-ignore
         (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
       );
       if (!findIndexPattern) {
+        // @ts-ignore
         const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
         const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
         setLayersIndexPatterns(cloneLayersIndexPatterns);

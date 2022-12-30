@@ -71,6 +71,7 @@ export const getLayerConfigMap = () => ({
     visibility: LAYER_VISIBILITY.VISIBLE,
     source: {
       url: '',
+      protocol: 'tms',
       attribution: '',
     },
   },
