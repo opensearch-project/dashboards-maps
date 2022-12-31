@@ -30,21 +30,23 @@ export const CustomMapSource = ({
   setIsUpdateDisabled,
 }: Props) => {
   const customMapProtocolOptions = [
-    { value: 'tms', text: 'TMS' },
-    { value: 'wms', text: 'WMS' },
+    { value: 'tms', text: 'Tile Map Service (TMS)' },
+    { value: 'wms', text: 'Web Map Service (WMS)' },
   ];
 
   const [customMapURL, setCustomMapURL] = useState<string>('');
   const [customMapAttribution, setCustomMapAttribution] = useState<string>('');
-  const [protocol, setProtocol] = useState(customMapProtocolOptions[0].value);
+  const [protocol, setProtocol] = useState(customMapProtocolOptions[1].value);
   const [WMSLayers, setWMSLayers] = useState<string>('');
   const [WMSVersion, setWMSVersion] = useState<string>('');
   const [WMSFormat, setWMSFormat] = useState<string>('');
   const [WMSStyles, setWMSStyles] = useState<string>('');
+  // CRS: Coordinate reference systems in WMS
+  const [WMSCRS, setWMSCRS] = useState<string>('');
+  const [WMSBbox, setWMSBbox] = useState<string>('');
 
   const onChangeCustomMapURL = (e: any) => {
     setCustomMapURL(e.target.value);
-    setIsUpdateDisabled(false);
     setSelectedLayerConfig({
       ...selectedLayerConfig,
       source: {
@@ -56,7 +58,6 @@ export const CustomMapSource = ({
 
   const onChangeCustomMapAttribution = (e: any) => {
     setCustomMapAttribution(e.target.value);
-    setIsUpdateDisabled(false);
     setSelectedLayerConfig({
       ...selectedLayerConfig,
       source: {
@@ -121,7 +122,30 @@ export const CustomMapSource = ({
     });
   };
 
+  const onChangeWMSCRS = (e: any) => {
+    setWMSCRS(e.target.value);
+    setSelectedLayerConfig({
+      ...selectedLayerConfig,
+      source: {
+        ...selectedLayerConfig?.source,
+        crs: e.target.value,
+      },
+    });
+  };
+
+  const onChangeWMSBbox = (e: any) => {
+    setWMSBbox(e.target.value);
+    setSelectedLayerConfig({
+      ...selectedLayerConfig,
+      source: {
+        ...selectedLayerConfig?.source,
+        bbox: e.target.value,
+      },
+    });
+  };
+
   const isInvalidURL = (url: string): boolean => {
+    if (url === '') return false;
     try {
       new URL(url);
       return false;
@@ -139,6 +163,8 @@ export const CustomMapSource = ({
       setWMSVersion(selectedLayerConfig.source.version);
       setWMSFormat(selectedLayerConfig.source.format);
       setWMSStyles(selectedLayerConfig.source.styles);
+      setWMSCRS(selectedLayerConfig.source.crs);
+      setWMSBbox(selectedLayerConfig.source.bbox);
     }
   }, [selectedLayerConfig]);
 
@@ -147,9 +173,22 @@ export const CustomMapSource = ({
   }, [selectedLayerConfig.source.attribution]);
 
   useEffect(() => {
-    const disableUpdate = isInvalidURL(customMapURL);
-    setIsUpdateDisabled(disableUpdate);
-  }, [customMapURL, setIsUpdateDisabled]);
+    if (protocol === 'wms') {
+      setIsUpdateDisabled(isInvalidURL(customMapURL) || WMSLayers === '' || WMSVersion === '');
+    } else {
+      setIsUpdateDisabled(isInvalidURL(customMapURL));
+    }
+  }, [
+    WMSBbox,
+    WMSCRS,
+    WMSFormat,
+    WMSLayers,
+    WMSStyles,
+    WMSVersion,
+    customMapURL,
+    protocol,
+    setIsUpdateDisabled,
+  ]);
 
   return (
     <div>
@@ -233,6 +272,16 @@ export const CustomMapSource = ({
                   <EuiFormLabel>WMS format</EuiFormLabel>
                   <EuiSpacer size="xs" />
                   <EuiFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiFormLabel>WMS CRS</EuiFormLabel>
+                  <EuiSpacer size="xs" />
+                  <EuiFieldText value={WMSCRS} onChange={onChangeWMSCRS} fullWidth={true} />
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiFormLabel>WMS bbox</EuiFormLabel>
+                  <EuiSpacer size="xs" />
+                  <EuiFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
                 </EuiFlexItem>
                 <EuiFlexItem>
                   <EuiFormLabel>WMS attribution</EuiFormLabel>

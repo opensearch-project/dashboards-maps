@@ -86,5 +86,7 @@ export type CustomWMSLayerSpecification = {
     styles: string;
     version: string;
     format: string;
+    crs: string;
+    bbox: string;
   };
 };
