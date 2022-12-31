@@ -1,5 +1,6 @@
 import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
+import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -7,16 +8,6 @@ interface MaplibreRef {
 
 const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
   return maplibreRef.current?.getStyle().layers || [];
-};
-
-const layerExistInMbSource = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
-  const layers = getCurrentStyleLayers(maplibreRef);
-  for (const layer in layers) {
-    if (layers[layer].id.includes(layerConfig.id)) {
-      return true;
-    }
-  }
-  return false;
 };
 
 const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
@@ -71,13 +62,14 @@ const addNewLayer = (
       tileSize: 256,
       attribution: layerSource?.attribution,
     });
+    const beforeMbLayerId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
     maplibreInstance.addLayer(
       {
         id: layerConfig.id,
         type: 'raster',
         source: layerConfig.id,
       },
-      beforeLayerId
+      beforeMbLayerId
     );
   }
 };
@@ -99,7 +91,7 @@ export const CustomLayerFunctions = {
     layerConfig: CustomLayerSpecification,
     beforeLayerId: string | undefined
   ) => {
-    if (layerExistInMbSource(layerConfig, maplibreRef)) {
+    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
       updateLayerConfig(layerConfig, maplibreRef);
     } else {
       addNewLayer(layerConfig, maplibreRef, beforeLayerId);

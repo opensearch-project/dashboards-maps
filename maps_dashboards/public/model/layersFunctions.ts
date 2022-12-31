@@ -83,6 +83,17 @@ export const getMaplibreBeforeLayerId = (
   }
   return undefined;
 };
+
+export const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfigId)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 export const layersTypeIconMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_ICON.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
