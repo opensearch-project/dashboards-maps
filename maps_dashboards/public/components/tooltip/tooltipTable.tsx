@@ -14,7 +14,6 @@ import {
   EuiText,
 } from '@elastic/eui';
 import React, { useState, Fragment, useCallback, useEffect, useMemo } from 'react';
-import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 export type RowData = {
   key: string;
@@ -22,7 +21,7 @@ export type RowData = {
 };
 export type PageData = RowData[];
 export type TableData = PageData[];
-type Table = { table: TableData; layer: DocumentLayerSpecification };
+type Table = { table: TableData; layer: string };
 
 export const ALL_LAYERS = -1;
 
@@ -37,12 +36,27 @@ function mergeTables(tables: Table[], selectedIndex: number[]) {
   const merged: TableData = [];
   const allSelected = selectedIndex.includes(ALL_LAYERS);
 
-  for (let i = 0; i < tables.length; i++) {
-    if (allSelected || selectedIndex.includes(i)) {
-      merged.push(...tables[i].table);
+  if (!allSelected) {
+    for (const index of selectedIndex) {
+      merged.push(...tables[index].table);
     }
+    return merged;
   }
-
+  const features: PageData[] = [];
+  for (let i = 0; i < tables.length; i++) {
+    tables[i].table.map((feature) => {
+      // Add layer name to every feature as first field
+      features.push(
+        [
+          {
+            key: 'Layer name',
+            value: tables[i].layer,
+          },
+        ].concat(feature.slice(0))
+      );
+    });
+    merged.push(...features);
+  }
   return merged;
 }
 
@@ -54,7 +68,7 @@ const TooltipTable = ({
 }: Props) => {
   const [selectedLayers, setSelectedLayers] = useState<EuiComboBoxOptionOption<number>[]>([
     {
-      label: tables[0]?.layer.name ?? '',
+      label: tables[0]?.layer ?? '',
       value: 0,
       key: '0',
     },
@@ -110,7 +124,7 @@ const TooltipTable = ({
       layerOptions.push({ label: 'All layers', value: ALL_LAYERS, key: '-1' });
     }
     tables.forEach(({ layer }, i) => {
-      layerOptions.push({ label: layer.name, value: i, key: `${i}` });
+      layerOptions.push({ label: layer, value: i, key: `${i}` });
     });
     return layerOptions;
   }, [tables]);
