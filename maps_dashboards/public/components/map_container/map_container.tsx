@@ -64,6 +64,7 @@ export const MapContainer = ({
 
   useEffect(() => {
     let clickPopup: Popup | null = null;
+    let hoverPopup: Popup | null = null;
 
     // We don't want to show layer information in the popup for the map tile layer
     const tooltipEnabledLayers = layers.filter(isTooltipEnabledLayer);
@@ -81,16 +82,43 @@ export const MapContainer = ({
       }
     }
 
-    if (maplibreRef.current) {
-      maplibreRef.current.on('click', onClickMap);
-      for (const layer of tooltipEnabledLayers) {
-        DocumentLayerFunctions.addTooltip(maplibreRef.current, layer);
+    function onHoverMap(e: MapMouseEvent) {
+      // remove previous popup
+      hoverPopup?.remove();
+
+      const features = maplibreRef.current?.queryRenderedFeatures(e.point);
+      if (features && maplibreRef.current) {
+        hoverPopup = createPopup({
+          features,
+          layers: tooltipEnabledLayers,
+          showCloseButton: false,
+          showPagination: false,
+          showLayerSelection: false,
+        });
+        hoverPopup
+          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          .addTo(maplibreRef.current);
       }
+    }
+
+    if (maplibreRef.current) {
+      const map = maplibreRef.current;
+      map.on('click', onClickMap);
+      // reset cursor to default when user is no longer hovering over a clickable feature
+      map.on('mouseleave', () => {
+        map.getCanvas().style.cursor = '';
+      });
+      map.on('mouseenter', () => {
+        map.getCanvas().style.cursor = 'pointer';
+      });
+      // add tooltip when users mouse move over a point
+      map.on('mousemove', onHoverMap);
     }
 
     return () => {
       if (maplibreRef.current) {
         maplibreRef.current.off('click', onClickMap);
+        maplibreRef.current.off('mousemove', onHoverMap);
       }
     };
   }, [layers]);

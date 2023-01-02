@@ -357,12 +357,6 @@ const updateLayerConfig = (
   }
 };
 
-let layerPopup: Popup | null = null;
-
-function getPopup() {
-  return layerPopup;
-}
-
 export const DocumentLayerFunctions = {
   render: (
     maplibreRef: MaplibreRef,
@@ -390,26 +384,6 @@ export const DocumentLayerFunctions = {
       if (layer.id.includes(layerConfig.id)) {
         maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
       }
-    });
-  },
-  addTooltip: (map: Maplibre, layerConfig: DocumentLayerSpecification) => {
-    map.on('mouseenter', layerConfig.id, (e) => {
-      getPopup()?.remove();
-      map.getCanvas().style.cursor = 'pointer';
-      if (e.features) {
-        layerPopup = createPopup({
-          features: (e.features ?? []) as MapGeoJSONFeature[],
-          layers: [layerConfig],
-          showCloseButton: false,
-          showPagination: false,
-          showLayerSelection: false,
-        });
-        layerPopup?.setLngLat(getPopupLngLat(e.features[0].geometry) ?? e.lngLat).addTo(map);
-      }
-    });
-    map.on('mouseleave', layerConfig.id, () => {
-      getPopup()?.remove();
-      map.getCanvas().style.cursor = '';
     });
   },
 };

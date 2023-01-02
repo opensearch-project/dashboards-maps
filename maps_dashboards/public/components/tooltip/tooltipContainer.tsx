@@ -6,9 +6,9 @@
 import React, { useMemo, useState } from 'react';
 
 import { EuiFlexItem, EuiFlexGroup, EuiPanel, EuiText, EuiHorizontalRule } from '@elastic/eui';
+import { MapGeoJSONFeature } from 'maplibre-gl';
 import { TooltipHeaderContent } from './tooltipHeaderContent';
 import { ALL_LAYERS, PageData, TableData, TooltipTable } from './tooltipTable';
-import { MapGeoJSONFeature } from 'maplibre-gl';
 import { DocumentLayerSpecification } from '../../model/mapLayerType';
 
 export type FeatureGroupItem = {
@@ -65,9 +65,6 @@ export function TooltipContainer({
     }
     if (selectedLayerIndexes.length === 1) {
       return tables[selectedLayerIndexes[0]].layer;
-    }
-    if (selectedLayerIndexes.length > 1) {
-      return `${tables[selectedLayerIndexes[0]].layer}, +${tables.length - 1}`;
     }
     return '';
   }, [selectedLayerIndexes, tables]);
