@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
-import { Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
+import { LngLat, Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
@@ -13,7 +13,6 @@ import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
-import { DocumentLayerFunctions } from '../../model/documentLayerFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -35,6 +34,7 @@ export const MapContainer = ({
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
+  const [coordinates, setCoordinates] = useState<LngLat>();
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -53,7 +53,7 @@ export const MapContainer = ({
     });
 
     const maplibreInstance = maplibreRef.current!;
-    maplibreInstance.addControl(new NavigationControl({ showCompass: false }), 'top-right');
+    maplibreInstance.addControl(new NavigationControl({ showCompass: true }), 'top-right');
     maplibreInstance.on('style.load', function () {
       setMounted(true);
     });
@@ -82,7 +82,9 @@ export const MapContainer = ({
       }
     }
 
-    function onHoverMap(e: MapMouseEvent) {
+    function onMouseMoveMap(e: MapMouseEvent) {
+      setCoordinates(e.lngLat.wrap());
+
       // remove previous popup
       hoverPopup?.remove();
 
@@ -107,18 +109,19 @@ export const MapContainer = ({
       // reset cursor to default when user is no longer hovering over a clickable feature
       map.on('mouseleave', () => {
         map.getCanvas().style.cursor = '';
+        hoverPopup?.remove();
       });
       map.on('mouseenter', () => {
         map.getCanvas().style.cursor = 'pointer';
       });
       // add tooltip when users mouse move over a point
-      map.on('mousemove', onHoverMap);
+      map.on('mousemove', onMouseMoveMap);
     }
 
     return () => {
       if (maplibreRef.current) {
         maplibreRef.current.off('click', onClickMap);
-        maplibreRef.current.off('mousemove', onHoverMap);
+        maplibreRef.current.off('mousemove', onMouseMoveMap);
       }
     };
   }, [layers]);
@@ -126,7 +129,11 @@ export const MapContainer = ({
   return (
     <div>
       <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar">
-        <p> Zoom: {zoom} </p>
+        <small>
+          {coordinates &&
+            `lat: ${coordinates.lat.toFixed(4)}, lon: ${coordinates.lng.toFixed(4)}, `}
+          zoom: {zoom}
+        </small>
       </EuiPanel>
       <div className="layerControlPanel-container">
         {mounted && (
