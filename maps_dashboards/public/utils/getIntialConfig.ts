@@ -71,7 +71,7 @@ export const getLayerConfigMap = () => ({
     visibility: LAYER_VISIBILITY.VISIBLE,
     source: {
       url: '',
-      protocol: 'wms',
+      customType: 'wms',
       attribution: '',
       layers: '',
       styles: '',

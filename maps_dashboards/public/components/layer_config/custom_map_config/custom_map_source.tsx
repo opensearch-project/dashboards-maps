@@ -29,14 +29,14 @@ export const CustomMapSource = ({
   setSelectedLayerConfig,
   setIsUpdateDisabled,
 }: Props) => {
-  const customMapProtocolOptions = [
+  const customMapTypeOptions = [
     { value: 'tms', text: 'Tile Map Service (TMS)' },
     { value: 'wms', text: 'Web Map Service (WMS)' },
   ];
 
   const [customMapURL, setCustomMapURL] = useState<string>('');
   const [customMapAttribution, setCustomMapAttribution] = useState<string>('');
-  const [protocol, setProtocol] = useState(customMapProtocolOptions[1].value);
+  const [customType, setCustomType] = useState(customMapTypeOptions[1].value);
   const [WMSLayers, setWMSLayers] = useState<string>('');
   const [WMSVersion, setWMSVersion] = useState<string>('');
   const [WMSFormat, setWMSFormat] = useState<string>('');
@@ -67,13 +67,13 @@ export const CustomMapSource = ({
     });
   };
 
-  const onChangeProtocol = (e: any) => {
-    setProtocol(e.target.value);
+  const onChangeCustomType = (e: any) => {
+    setCustomType(e.target.value);
     setSelectedLayerConfig({
       ...selectedLayerConfig,
       source: {
         ...selectedLayerConfig?.source,
-        protocol: e.target.value,
+        customType: e.target.value,
       },
     });
   };
@@ -156,9 +156,9 @@ export const CustomMapSource = ({
 
   useEffect(() => {
     setCustomMapURL(selectedLayerConfig.source.url);
-    setProtocol(selectedLayerConfig.source.protocol);
+    setCustomType(selectedLayerConfig.source.customType);
     setCustomMapAttribution(selectedLayerConfig.source.attribution);
-    if (selectedLayerConfig.source.protocol === 'wms') {
+    if (selectedLayerConfig.source.customType === 'wms') {
       setWMSLayers(selectedLayerConfig.source.layers);
       setWMSVersion(selectedLayerConfig.source.version);
       setWMSFormat(selectedLayerConfig.source.format);
@@ -173,7 +173,7 @@ export const CustomMapSource = ({
   }, [selectedLayerConfig.source.attribution]);
 
   useEffect(() => {
-    if (protocol === 'wms') {
+    if (customType === 'wms') {
       setIsUpdateDisabled(isInvalidURL(customMapURL) || WMSLayers === '' || WMSVersion === '');
     } else {
       setIsUpdateDisabled(isInvalidURL(customMapURL));
@@ -186,7 +186,7 @@ export const CustomMapSource = ({
     WMSStyles,
     WMSVersion,
     customMapURL,
-    protocol,
+    customType,
     setIsUpdateDisabled,
   ]);
 
@@ -196,16 +196,16 @@ export const CustomMapSource = ({
         <EuiForm>
           <EuiFlexGrid columns={1}>
             <EuiFlexItem>
-              <EuiFormLabel>Protocol</EuiFormLabel>
+              <EuiFormLabel>Custom type</EuiFormLabel>
               <EuiSpacer size="xs" />
               <EuiSelect
-                options={customMapProtocolOptions}
-                value={protocol}
-                onChange={onChangeProtocol}
+                options={customMapTypeOptions}
+                value={customType}
+                onChange={onChangeCustomType}
                 fullWidth
               />
             </EuiFlexItem>
-            {selectedLayerConfig.source.protocol === 'tms' && (
+            {selectedLayerConfig.source.customType === 'tms' && (
               <>
                 <EuiFlexItem>
                   <EuiFormLabel>TMS URL</EuiFormLabel>
@@ -237,7 +237,7 @@ export const CustomMapSource = ({
                 </EuiFlexItem>
               </>
             )}
-            {selectedLayerConfig.source.protocol === 'wms' && (
+            {selectedLayerConfig.source.customType === 'wms' && (
               <>
                 <EuiFlexItem>
                   <EuiFormLabel>WMS URL</EuiFormLabel>

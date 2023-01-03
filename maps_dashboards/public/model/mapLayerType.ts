@@ -65,7 +65,7 @@ export type CustomTMSLayerSpecification = {
   visibility: string;
   source: {
     url: string;
-    protocol: 'tms';
+    customType: 'tms';
     attribution: string;
   };
 };
@@ -80,7 +80,7 @@ export type CustomWMSLayerSpecification = {
   visibility: string;
   source: {
     url: string;
-    protocol: 'wms';
+    customType: 'wms';
     attribution: string;
     layers: string;
     styles: string;

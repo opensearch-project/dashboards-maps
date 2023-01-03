@@ -76,9 +76,9 @@ const addNewLayer = (
 
 const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
   const layerSource = layerConfig?.source;
-  if (layerSource?.protocol === 'tms') {
+  if (layerSource?.customType === 'tms') {
     return layerSource?.url;
-  } else if (layerSource?.protocol === 'wms') {
+  } else if (layerSource?.customType === 'wms') {
     const referenceSystemName = layerSource.version === '1.3.0' ? 'crs' : 'srs';
     return `${layerSource?.url}?service=WMS&version=${layerSource.version}&request=GetMap&format=${layerSource.format}&transparent=true&layers=${layerSource?.layers}&styles=${layerSource.styles}&${referenceSystemName}=${layerSource.crs}&width=256&height=256&bbox={bbox-epsg-3857}`;
   } else {
