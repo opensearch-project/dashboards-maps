@@ -88,6 +88,9 @@ export const LayerControlPanel = memo(
     const [selectedDeleteLayer, setSelectedDeleteLayer] = useState<
       MapLayerSpecification | undefined
     >();
+    const [wantSelectNewLayer, setWantSelectNewLayer] = useState<MapLayerSpecification | null>(
+      null
+    );
 
     useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {
@@ -181,15 +184,26 @@ export const LayerControlPanel = memo(
       if (!selectedLayerConfig || !originLayerConfig) {
         return false;
       }
-      return isEqual(originLayerConfig, selectedLayerConfig);
+      return !isEqual(originLayerConfig, selectedLayerConfig);
     };
 
     const onClickLayerName = (layer: MapLayerSpecification) => {
       if (hasUnsavedChanges()) {
         setUnsavedModalVisible(true);
+        setWantSelectNewLayer(layer);
       } else {
         setSelectedLayerConfig(layer);
         setIsLayerConfigVisible(true);
+        setWantSelectNewLayer(null);
+      }
+    };
+
+    const updateUnsavedModalVisible = (visible: boolean) => {
+      setUnsavedModalVisible(visible);
+      if (!visible && wantSelectNewLayer) {
+        setSelectedLayerConfig(wantSelectNewLayer);
+        setIsLayerConfigVisible(true);
+        setWantSelectNewLayer(null);
       }
     };
 
@@ -445,7 +459,7 @@ export const LayerControlPanel = memo(
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
                   unsavedModalVisible={unsavedModalVisible}
-                  setUnsavedModalVisible={setUnsavedModalVisible}
+                  setUnsavedModalVisible={updateUnsavedModalVisible}
                 />
               )}
               <AddLayerPanel

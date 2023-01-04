@@ -49,15 +49,9 @@ export const DocumentLayerSource = ({
   const [indexPattern, setIndexPattern] = useState<IndexPattern | null>();
   const [geoFields, setGeoFields] = useState<IndexPatternField[]>();
   const [selectedField, setSelectedField] = useState<IndexPatternField | null | undefined>();
-  const [documentRequestNumber, setDocumentRequestNumber] = useState<number>(
-    selectedLayerConfig.source.documentRequestNumber
-  );
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
   const [showTooltips, setShowTooltips] = useState<boolean>(
     selectedLayerConfig.source.showTooltips
-  );
-  const [selectedTooltipFields, setSelectedTooltipFields] = useState<string[]>(
-    selectedLayerConfig.source.tooltipFields
   );
 
   const errorsMap = {
@@ -66,30 +60,14 @@ export const DocumentLayerSource = ({
   };
 
   useEffect(() => {
-    const disableUpdate =
-      !indexPattern || !selectedField || documentRequestNumber < 1 || documentRequestNumber > 10000;
+    const disableUpdate = !indexPattern || !selectedField || hasInvalidRequestNumber;
     setIsUpdateDisabled(disableUpdate);
-  }, [setIsUpdateDisabled, indexPattern, selectedField, documentRequestNumber]);
+  }, [setIsUpdateDisabled, indexPattern, selectedField, hasInvalidRequestNumber]);
 
   const formatFieldToComboBox = (field?: IndexPatternField | null) => {
     if (!field) return [];
     return formatFieldsToComboBox([field]);
   };
-
-  useEffect(() => {
-    if (selectedLayerConfig.source.documentRequestNumber !== documentRequestNumber) {
-      setDocumentRequestNumber(selectedLayerConfig.source.documentRequestNumber);
-    }
-    if (selectedLayerConfig.source.showTooltips !== showTooltips) {
-      setShowTooltips(selectedLayerConfig.source.showTooltips);
-    }
-    shouldTooltipSectionOpen();
-  }, [
-    documentRequestNumber,
-    selectedLayerConfig.source.documentRequestNumber,
-    selectedLayerConfig.source.showTooltips,
-    showTooltips,
-  ]);
 
   const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
     if (!fields) return [];
@@ -137,8 +115,7 @@ export const DocumentLayerSource = ({
 
   const onDocumentRequestNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const selectedNumber = parseInt(value, 10) || 1;
-    setDocumentRequestNumber(selectedNumber);
+    const selectedNumber = parseInt(value, 10);
     const source = { ...selectedLayerConfig.source, documentRequestNumber: selectedNumber };
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
@@ -148,7 +125,6 @@ export const DocumentLayerSource = ({
     for (const option of options) {
       tooltipSelection.push(option.label);
     }
-    setSelectedTooltipFields(tooltipSelection);
     const source = { ...selectedLayerConfig.source, tooltipFields: tooltipSelection };
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
@@ -187,11 +163,6 @@ export const DocumentLayerSource = ({
       (field) => field.name === selectedLayerConfig.source.geoFieldName
     );
     setSelectedField(savedField);
-    if (selectedLayerConfig.source.indexPatternId === indexPattern?.id) {
-      setSelectedTooltipFields(selectedLayerConfig.source.tooltipFields);
-    } else {
-      setSelectedTooltipFields([]);
-    }
   }, [indexPattern]);
 
   useEffect(() => {
@@ -210,8 +181,11 @@ export const DocumentLayerSource = ({
   }, [selectedField]);
 
   useEffect(() => {
-    setHasInvalidRequestNumber(documentRequestNumber < 1 || documentRequestNumber > 10000);
-  }, [documentRequestNumber]);
+    setHasInvalidRequestNumber(
+      selectedLayerConfig.source.documentRequestNumber < 1 ||
+        selectedLayerConfig.source.documentRequestNumber > 10000
+    );
+  }, [selectedLayerConfig.source.documentRequestNumber]);
 
   const onShowTooltipsChange = (event: { target: { checked: React.SetStateAction<boolean> } }) => {
     setShowTooltips(event.target.checked);
@@ -283,7 +257,7 @@ export const DocumentLayerSource = ({
                 <EuiSpacer size="xs" />
                 <EuiFieldNumber
                   placeholder="Number of documents"
-                  value={documentRequestNumber}
+                  value={selectedLayerConfig.source.documentRequestNumber}
                   onChange={onDocumentRequestNumberChange}
                   aria-label="Use aria labels when no actual label is in use"
                   isInvalid={hasInvalidRequestNumber}
@@ -340,7 +314,9 @@ export const DocumentLayerSource = ({
               <EuiSpacer size="xs" />
               <EuiComboBox
                 options={tooltipFieldsOptions()}
-                selectedOptions={formatTooltipFieldsToComboBox(selectedTooltipFields)}
+                selectedOptions={formatTooltipFieldsToComboBox(
+                  selectedLayerConfig.source.tooltipFields
+                )}
                 singleSelection={false}
                 onChange={onTooltipSelectionChange}
                 sortMatchesBy="startsWith"

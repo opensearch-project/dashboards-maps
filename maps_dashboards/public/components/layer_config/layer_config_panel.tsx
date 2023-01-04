@@ -63,7 +63,11 @@ export const LayerConfigPanel = ({
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
 
   useEffect(() => {
-    if (originLayerConfig === null || originLayerConfig.id !== selectedLayerConfig.id) {
+    if (
+      originLayerConfig === null ||
+      originLayerConfig.id !== selectedLayerConfig.id ||
+      !isEqual(originLayerConfig.source, selectedLayerConfig.source)
+    ) {
       setOriginLayerConfig(cloneDeep(selectedLayerConfig));
     }
   }, [originLayerConfig, selectedLayerConfig]);
