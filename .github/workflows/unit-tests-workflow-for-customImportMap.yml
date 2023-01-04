@@ -46,6 +46,7 @@ jobs:
         run: |
           echo "::set-output name=node_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.node).match(/[.0-9]+/)[0]")"
           echo "::set-output name=yarn_version::$(node -p "(require('./OpenSearch-Dashboards/package.json').engines.yarn).match(/[.0-9]+/)[0]")"
+
       - name: Setup node
         uses: actions/setup-node@v1
         with:
@@ -57,8 +58,9 @@ jobs:
           npm uninstall -g yarn
           echo "Installing yarn ${{ steps.versions_step.outputs.yarn_version }}"
           npm i -g yarn@${{ steps.versions_step.outputs.yarn_version }}
+
       - name: Move custom_import_map to Plugins Dir
-        run: mv src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
+        run: mv custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
 
       - name: Bootstrap plugin/opensearch-dashboards
         run: |
