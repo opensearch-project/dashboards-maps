@@ -42,8 +42,8 @@ function mergeTables(tables: Table[], selectedIndex: number[]) {
     }
     return merged;
   }
-  const features: PageData[] = [];
   for (let i = 0; i < tables.length; i++) {
+    const features: PageData[] = [];
     tables[i].table.map((feature) => {
       // Add layer name to every feature as first field
       features.push(
