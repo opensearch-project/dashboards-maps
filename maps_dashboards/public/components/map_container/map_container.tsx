@@ -144,6 +144,7 @@ export const MapContainer = ({
             layersIndexPatterns={layersIndexPatterns}
             setLayersIndexPatterns={setLayersIndexPatterns}
             mapState={mapState}
+            zoom={zoom}
           />
         )}
       </div>
