@@ -30,14 +30,12 @@ interface Props {
   setSelectedLayerConfig: Function;
   selectedLayerConfig: DocumentLayerSpecification;
   setIsUpdateDisabled: Function;
-  layersIndexPatterns: IndexPattern[];
 }
 
 export const DocumentLayerSource = ({
   setSelectedLayerConfig,
   selectedLayerConfig,
   setIsUpdateDisabled,
-  layersIndexPatterns,
 }: Props) => {
   const {
     services: {
@@ -77,6 +75,21 @@ export const DocumentLayerSource = ({
     if (!field) return [];
     return formatFieldsToComboBox([field]);
   };
+
+  useEffect(() => {
+    if (selectedLayerConfig.source.documentRequestNumber !== documentRequestNumber) {
+      setDocumentRequestNumber(selectedLayerConfig.source.documentRequestNumber);
+    }
+    if (selectedLayerConfig.source.showTooltips !== showTooltips) {
+      setShowTooltips(selectedLayerConfig.source.showTooltips);
+    }
+    shouldTooltipSectionOpen();
+  }, [
+    documentRequestNumber,
+    selectedLayerConfig.source.documentRequestNumber,
+    selectedLayerConfig.source.showTooltips,
+    showTooltips,
+  ]);
 
   const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
     if (!fields) return [];
@@ -153,14 +166,14 @@ export const DocumentLayerSource = ({
   useEffect(() => {
     const selectIndexPattern = async () => {
       if (selectedLayerConfig.source.indexPatternId) {
-        const selectedIndexPattern = layersIndexPatterns.find(
-          (ip) => ip.id === selectedLayerConfig.source.indexPatternId
+        const selectedIndexPattern = await indexPatterns.get(
+          selectedLayerConfig.source.indexPatternId
         );
         setIndexPattern(selectedIndexPattern);
       }
     };
     selectIndexPattern();
-  }, [indexPatterns]);
+  }, [indexPatterns, selectedLayerConfig.source.indexPatternId]);
 
   // Update the fields list every time the index pattern is modified.
   useEffect(() => {

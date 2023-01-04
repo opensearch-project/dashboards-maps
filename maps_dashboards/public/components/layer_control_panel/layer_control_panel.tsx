@@ -22,6 +22,7 @@ import {
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
+import { isEqual } from 'lodash';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
@@ -82,6 +83,8 @@ export const LayerControlPanel = memo(
     const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
+    const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
+    const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
     const [selectedDeleteLayer, setSelectedDeleteLayer] = useState<
       MapLayerSpecification | undefined
     >();
@@ -174,10 +177,22 @@ export const LayerControlPanel = memo(
       }
     };
 
-    const onClickLayerName = (layer: MapLayerSpecification) => {
-      setSelectedLayerConfig(layer);
-      setIsLayerConfigVisible(true);
+    const hasUnsavedChanges = () => {
+      if (!selectedLayerConfig || !originLayerConfig) {
+        return false;
+      }
+      return isEqual(originLayerConfig, selectedLayerConfig);
     };
+
+    const onClickLayerName = (layer: MapLayerSpecification) => {
+      if (hasUnsavedChanges()) {
+        setUnsavedModalVisible(true);
+      } else {
+        setSelectedLayerConfig(layer);
+        setIsLayerConfigVisible(true);
+      }
+    };
+
     const isLayerExists = (name: string) => {
       return layers.findIndex((layer) => layer.name === name) > -1;
     };
@@ -426,9 +441,11 @@ export const LayerControlPanel = memo(
                   removeLayer={removeLayer}
                   isNewLayer={isNewLayer}
                   setIsNewLayer={setIsNewLayer}
-                  layersIndexPatterns={layersIndexPatterns}
-                  updateIndexPatterns={updateIndexPatterns}
                   isLayerExists={isLayerExists}
+                  originLayerConfig={originLayerConfig}
+                  setOriginLayerConfig={setOriginLayerConfig}
+                  unsavedModalVisible={unsavedModalVisible}
+                  setUnsavedModalVisible={setUnsavedModalVisible}
                 />
               )}
               <AddLayerPanel
