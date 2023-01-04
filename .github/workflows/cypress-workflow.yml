@@ -68,7 +68,7 @@ jobs:
       
       - name: Move custom_import_map to Plugins Dir
         run: |
-          mv dashboards-maps/src/plugins/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
+          mv dashboards-maps/custom_import_map OpenSearch-Dashboards/plugins/custom_import_map
       
       - name: Bootstrap plugin/opensearch-dashboards
         run: |
