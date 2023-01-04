@@ -12,6 +12,7 @@ import {
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
 import { MapLayerSpecification } from './mapLayerType';
+import { CustomLayerFunctions } from './customLayerFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -55,11 +56,13 @@ export const LayerActions = {
 export const layersFunctionMap: { [key: string]: any } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: OSMLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DocumentLayerFunctions,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: CustomLayerFunctions,
 };
 
 export const layersTypeNameMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_NAME.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_NAME.CUSTOM_MAP,
 };
 
 const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
@@ -80,7 +83,25 @@ export const getMaplibreBeforeLayerId = (
   }
   return undefined;
 };
+
+export const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) => {
+  const layers = getCurrentStyleLayers(maplibreRef);
+  for (const layer in layers) {
+    if (layers[layer].id.includes(layerConfigId)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 export const layersTypeIconMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_ICON.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_ICON.CUSTOM_MAP,
+};
+
+export const referenceLayerTypeLookup = {
+  [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: true,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: true,
+  [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: false,
 };

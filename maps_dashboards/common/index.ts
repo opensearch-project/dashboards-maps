@@ -61,7 +61,7 @@ export enum DASHBOARDS_MAPS_LAYER_ICON {
 export enum DASHBOARDS_MAPS_LAYER_DESCRIPTION {
   OPENSEARCH_MAP = 'Default basemaps from OpenSearch',
   DOCUMENTS = 'View points, lines and polygons on map',
-  CUSTOM_MAP = 'Configure Maps to use WMS map server',
+  CUSTOM_MAP = 'Configure Maps to use custom map source',
 }
 
 export const DOCUMENTS = {

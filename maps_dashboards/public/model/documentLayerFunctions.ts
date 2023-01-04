@@ -7,7 +7,7 @@ import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
 import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
-import { getMaplibreBeforeLayerId } from './layersFunctions';
+import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -28,16 +28,6 @@ const GeoJSONMaplibreMap = new Map<string, string>([
   ['LineString', 'line'],
   ['Polygon', 'fill'],
 ]);
-
-const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) => {
-  const layers = getCurrentStyleLayers(maplibreRef);
-  for (const layer in layers) {
-    if (layers[layer].id.includes(layerConfigId)) {
-      return true;
-    }
-  }
-  return false;
-};
 
 const getFieldValue = (data: any, name: string) => {
   if (!name) {

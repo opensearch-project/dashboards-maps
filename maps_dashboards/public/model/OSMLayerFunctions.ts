@@ -1,6 +1,6 @@
 import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
-import { getMaplibreBeforeLayerId } from './layersFunctions';
+import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -41,16 +41,6 @@ const handleStyleLayers = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
       );
     }
   });
-};
-
-const layerExistInMbSource = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
-  const layers = getCurrentStyleLayers(maplibreRef);
-  for (const layer in layers) {
-    if (layers[layer].id.includes(layerConfig.id)) {
-      return true;
-    }
-  }
-  return false;
 };
 
 const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
@@ -108,7 +98,7 @@ export const OSMLayerFunctions = {
   ) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
-    if (layerExistInMbSource(layerConfig, maplibreRef)) {
+    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
       updateLayerConfig(layerConfig, maplibreRef);
     } else {
       addNewLayer(layerConfig, maplibreRef, beforeLayerId);
