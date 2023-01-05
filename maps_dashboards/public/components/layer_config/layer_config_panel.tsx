@@ -28,7 +28,6 @@ import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap } from '../../model/layersFunctions';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
 
 interface Props {
@@ -42,8 +41,6 @@ interface Props {
   isLayerExists: Function;
   originLayerConfig: MapLayerSpecification | null;
   setOriginLayerConfig: Function;
-  unsavedModalVisible: boolean;
-  setUnsavedModalVisible: Function;
 }
 
 export const LayerConfigPanel = ({
@@ -57,17 +54,12 @@ export const LayerConfigPanel = ({
   isLayerExists,
   originLayerConfig,
   setOriginLayerConfig,
-  unsavedModalVisible,
-  setUnsavedModalVisible,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
+  const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
 
   useEffect(() => {
-    if (
-      originLayerConfig === null ||
-      originLayerConfig.id !== selectedLayerConfig.id ||
-      !isEqual(originLayerConfig.source, selectedLayerConfig.source)
-    ) {
+    if (originLayerConfig === null || originLayerConfig.id !== selectedLayerConfig.id) {
       setOriginLayerConfig(cloneDeep(selectedLayerConfig));
     }
   }, [originLayerConfig, selectedLayerConfig]);
@@ -93,6 +85,7 @@ export const LayerConfigPanel = ({
   const onUpdate = () => {
     updateLayer();
     closeLayerConfigPanel(false);
+    setOriginLayerConfig(null);
     if (isNewLayer) {
       setIsNewLayer(false);
     }

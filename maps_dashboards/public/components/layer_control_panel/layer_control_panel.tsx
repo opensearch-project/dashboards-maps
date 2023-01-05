@@ -72,6 +72,7 @@ export const LayerControlPanel = memo(
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
       data: { indexPatterns },
+      notifications,
     } = services;
 
     const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
@@ -83,14 +84,10 @@ export const LayerControlPanel = memo(
     const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
-    const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
     const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
     const [selectedDeleteLayer, setSelectedDeleteLayer] = useState<
       MapLayerSpecification | undefined
     >();
-    const [wantSelectNewLayer, setWantSelectNewLayer] = useState<MapLayerSpecification | null>(
-      null
-    );
 
     useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {
@@ -189,21 +186,12 @@ export const LayerControlPanel = memo(
 
     const onClickLayerName = (layer: MapLayerSpecification) => {
       if (hasUnsavedChanges()) {
-        setUnsavedModalVisible(true);
-        setWantSelectNewLayer(layer);
+        notifications.toasts.addWarning(
+          `You have unsaved changes for ${selectedLayerConfig?.name}`
+        );
       } else {
         setSelectedLayerConfig(layer);
         setIsLayerConfigVisible(true);
-        setWantSelectNewLayer(null);
-      }
-    };
-
-    const updateUnsavedModalVisible = (visible: boolean) => {
-      setUnsavedModalVisible(visible);
-      if (!visible && wantSelectNewLayer) {
-        setSelectedLayerConfig(wantSelectNewLayer);
-        setIsLayerConfigVisible(true);
-        setWantSelectNewLayer(null);
       }
     };
 
@@ -458,8 +446,6 @@ export const LayerControlPanel = memo(
                   isLayerExists={isLayerExists}
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
-                  unsavedModalVisible={unsavedModalVisible}
-                  setUnsavedModalVisible={updateUnsavedModalVisible}
                 />
               )}
               <AddLayerPanel
