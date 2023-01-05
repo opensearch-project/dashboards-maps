@@ -27,20 +27,19 @@ interface Props {
 }
 
 export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig }: Props) => {
-  const [fillColor, setFillColor] = useColorPickerState(selectedLayerConfig?.style?.fillColor);
-  const [borderColor, setBorderColor] = useColorPickerState(
-    selectedLayerConfig?.style?.borderColor
-  );
-  const [borderThickness, setBorderThickness] = useState<number>(
-    selectedLayerConfig?.style?.borderThickness
-  );
-  const [markerSize, setMarkerSize] = useState<number>(selectedLayerConfig?.style?.markerSize);
+  const [fillColor, setFillColor] = useState(selectedLayerConfig?.style?.fillColor);
+  const [borderColor, setBorderColor] = useState(selectedLayerConfig?.style?.borderColor);
   const [hasInvalidThickness, setHasInvalidThickness] = useState<boolean>(false);
   const [hasInvalidSize, setHasInvalidSize] = useState<boolean>(false);
   const geoTypeToggleButtonGroupPrefix = 'geoTypeToggleButtonGroup';
   const [toggleGeoTypeIdSelected, setToggleGeoTypeIdSelected] = useState(
     `${geoTypeToggleButtonGroupPrefix}__Point`
   );
+
+  useEffect(() => {
+    setFillColor(selectedLayerConfig?.style?.fillColor);
+    setBorderColor(selectedLayerConfig?.style?.borderColor);
+  }, [selectedLayerConfig]);
 
   useEffect(() => {
     setSelectedLayerConfig({
@@ -70,7 +69,6 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
         borderThickness: Number(e.target.value),
       },
     });
-    setBorderThickness(Number(e.target.value));
   };
 
   const onMarkerSizeChange = (e: any) => {
@@ -81,24 +79,29 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
         markerSize: Number(e.target.value),
       },
     });
-    setMarkerSize(Number(e.target.value));
   };
 
   useEffect(() => {
-    if (borderThickness < 0 || borderThickness > 100) {
+    if (
+      selectedLayerConfig?.style?.borderThickness < 0 ||
+      selectedLayerConfig?.style?.borderThickness > 100
+    ) {
       setHasInvalidThickness(true);
     } else {
       setHasInvalidThickness(false);
     }
-  }, [borderThickness]);
+  }, [selectedLayerConfig?.style?.borderThickness]);
 
   useEffect(() => {
-    if (markerSize < 0 || markerSize > 100) {
+    if (
+      selectedLayerConfig?.style?.markerSize < 0 ||
+      selectedLayerConfig?.style?.markerSize > 100
+    ) {
       setHasInvalidSize(true);
     } else {
       setHasInvalidSize(false);
     }
-  }, [markerSize]);
+  }, [selectedLayerConfig?.style?.markerSize]);
 
   const toggleButtonsGeoType = [
     {
@@ -193,13 +196,13 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
             <ColorPicker color={borderColor} setColor={setBorderColor} label="Border color" />
             <WidthSelector
               label="Border thickness"
-              size={borderThickness}
+              size={selectedLayerConfig?.style?.borderThickness}
               onWidthChange={onBorderThicknessChange}
               hasInvalid={hasInvalidThickness}
             />
             <WidthSelector
               label="Marker size"
-              size={markerSize}
+              size={selectedLayerConfig?.style?.markerSize}
               onWidthChange={onMarkerSizeChange}
               hasInvalid={hasInvalidSize}
             />
@@ -210,7 +213,7 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
             <ColorPicker color={fillColor} setColor={setFillColor} label="Fill color" />
             <WidthSelector
               label="Border thickness"
-              size={borderThickness}
+              size={selectedLayerConfig?.style?.borderThickness}
               onWidthChange={onBorderThicknessChange}
               hasInvalid={hasInvalidThickness}
             />
@@ -222,7 +225,7 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
             <ColorPicker color={borderColor} setColor={setBorderColor} label="Border color" />
             <WidthSelector
               label="Border thickness"
-              size={borderThickness}
+              size={selectedLayerConfig?.style?.borderThickness}
               onWidthChange={onBorderThicknessChange}
               hasInvalid={hasInvalidThickness}
             />
