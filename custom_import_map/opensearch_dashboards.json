@@ -1,9 +1,9 @@
 {
     "id": "customImportMap",
     "version": "3.0.0.0",
-    "opensearchDashboardsVersion": "2.4.1",
+    "opensearchDashboardsVersion": "3.0.0",
     "server": true,
     "ui": true,
-    "requiredPlugins": ["regionMap", "opensearchDashboardsReact"],
+    "requiredPlugins": ["regionMap", "opensearchDashboardsReact", "navigation", "savedObjects", "data"],
     "optionalPlugins": []
   }

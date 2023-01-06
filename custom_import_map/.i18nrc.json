@@ -1,0 +1,7 @@
+{
+  "prefix": "customImportMap",
+  "paths": {
+    "customImportMap": "."
+  },
+  "translations": ["translations/ja-JP.json"]
+}

@@ -1,0 +1,32 @@
+.layerControlPanel--show {
+  pointer-events: auto;
+  width: $euiSizeL * 11;
+
+  .layerControlPanel__title {
+    padding: $euiSizeM $euiSizeM
+  }
+
+  .layerControlPanel__selected {
+    background-color: $euiColorLightShade;
+  }
+
+  .layerControlPanel__layerFunctionButton {
+    height: $euiSizeL;
+    width: $euiSizeL;
+  }
+
+  .euiListGroupItem__label {
+    width: $euiSizeL * 6;
+  }
+}
+
+.layerControlPanel--hide {
+  pointer-events: auto;
+
+  .layerControlPanel__visButton {
+    background-color: $euiColorEmptyShade;
+    color: $euiTextColor;
+    border-color: $euiColorLightShade;
+  }
+}
+

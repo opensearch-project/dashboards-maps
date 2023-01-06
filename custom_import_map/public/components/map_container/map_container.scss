@@ -1,0 +1,32 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import "maplibre-gl/dist/maplibre-gl.css";
+@import "../../variables";
+
+/* stylelint-disable no-empty-source */
+.map-container {
+  width: 100%;
+  min-height: calc(100vh - #{$mapHeaderOffset});
+}
+
+.maplibregl-ctrl-top-left {
+  left: $euiSizeS;
+  top: $euiSizeS;
+}
+
+.layerControlPanel-container {
+  z-index: 1;
+  position: absolute;
+  margin-left: $euiSizeS;
+  margin-top: $euiSizeS;
+}
+
+.zoombar {
+  z-index: 1;
+  position: absolute;
+  bottom: $euiSizeM;
+  right: $euiSizeS;
+}

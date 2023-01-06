@@ -22,6 +22,9 @@
   "dependencies": {
     "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
     "@cypress/skip-test": "^2.6.1",
-    "cypress-file-upload": "^5.0.8"
+    "cypress-file-upload": "^5.0.8",
+    "maplibre-gl": "^2.4.0",
+    "uuid": "3.3.2",
+    "prettier": "^2.1.1"
   }
 }
