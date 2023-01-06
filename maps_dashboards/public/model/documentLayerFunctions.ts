@@ -23,11 +23,22 @@ const openSearchGeoJSONMap = new Map<string, string>([
   ['geometrycollection', 'GeometryCollection'],
 ]);
 
-const GeoJSONMaplibreMap = new Map<string, string>([
-  ['Point', 'circle'],
-  ['LineString', 'line'],
-  ['Polygon', 'fill'],
-]);
+const buildLayerSuffix = (layerId: string, mapLibreType: string) => {
+  if (mapLibreType.toLowerCase() === 'circle') {
+    return layerId;
+  }
+  if (mapLibreType.toLowerCase() === 'line') {
+    return layerId + '-line';
+  }
+  if (mapLibreType.toLowerCase() === 'fill') {
+    return layerId + '-fill';
+  }
+  if (mapLibreType.toLowerCase() === 'fill-outline') {
+    return layerId + '-outline';
+  }
+  // if unknown type is found, use layerId as default
+  return layerId;
+};
 
 const getFieldValue = (data: any, name: string) => {
   if (!name) {
@@ -118,116 +129,203 @@ const addNewLayer = (
 ) => {
   const maplibreInstance = maplibreRef.current;
   const mbLayerBeforeId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
-  const addGeoPointLayer = () => {
+  const addLineLayer = (
+    documentLayerConfig: DocumentLayerSpecification,
+    beforeId: string | undefined
+  ) => {
+    const lineLayerId = buildLayerSuffix(documentLayerConfig.id, 'line');
     maplibreInstance?.addLayer(
       {
-        id: layerConfig.id,
-        type: 'circle',
-        source: layerConfig.id,
+        id: lineLayerId,
+        type: 'line',
+        source: documentLayerConfig.id,
+        filter: ['==', '$type', 'LineString'],
         paint: {
-          'circle-radius': layerConfig.style?.markerSize,
-          'circle-color': layerConfig.style?.fillColor,
-          'circle-opacity': layerConfig.opacity / 100,
-          'circle-stroke-width': layerConfig.style?.borderThickness,
-          'circle-stroke-color': layerConfig.style?.borderColor,
+          'line-color': documentLayerConfig.style?.fillColor,
+          'line-opacity': documentLayerConfig.opacity / 100,
+          'line-width': documentLayerConfig.style?.borderThickness,
         },
       },
-      mbLayerBeforeId
+      beforeId
     );
-    maplibreInstance?.setLayoutProperty(layerConfig.id, 'visibility', layerConfig.visibility);
+    maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', documentLayerConfig.visibility);
   };
 
-  const addGeoShapeLayer = (source: any) => {
-    source.features.map((feature: any, index: number) => {
-      const mbType = GeoJSONMaplibreMap.get(feature.geometry.type);
-      const mbLayerId = `${layerConfig.id}-${index}`;
-      if (mbType === 'circle') {
-        maplibreInstance?.addLayer(
-          {
-            id: mbLayerId,
-            type: 'circle',
-            source: layerConfig.id,
-            filter: ['==', '$type', 'Point'],
-            paint: {
-              'circle-radius': layerConfig.style?.markerSize,
-              'circle-color': layerConfig.style?.fillColor,
-              'circle-opacity': layerConfig.opacity / 100,
-              'circle-stroke-width': layerConfig.style?.borderThickness,
-              'circle-stroke-color': layerConfig.style?.borderColor,
-            },
-          },
-          mbLayerBeforeId
-        );
-        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
-      } else if (mbType === 'line') {
-        maplibreInstance?.addLayer(
-          {
-            id: mbLayerId,
-            type: 'line',
-            source: layerConfig.id,
-            filter: ['==', '$type', 'LineString'],
-            paint: {
-              'line-color': layerConfig.style?.fillColor,
-              'line-opacity': layerConfig.opacity / 100,
-              'line-width': layerConfig.style?.borderThickness,
-            },
-          },
-          mbLayerBeforeId
-        );
-        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
-      } else if (mbType === 'fill') {
-        const polygonBorderLayerId = `${mbLayerId}-border`;
-        maplibreInstance?.addLayer(
-          {
-            id: mbLayerId,
-            type: 'fill',
-            source: layerConfig.id,
-            filter: ['==', '$type', 'Polygon'],
-            paint: {
-              'fill-color': layerConfig.style?.fillColor,
-              'fill-opacity': layerConfig.opacity / 100,
-              'fill-outline-color': layerConfig.style?.borderColor,
-            },
-          },
-          mbLayerBeforeId
-        );
-        maplibreInstance?.setLayoutProperty(mbLayerId, 'visibility', layerConfig.visibility);
-        // Add boarder for polygon
-        maplibreInstance?.addLayer(
-          {
-            id: polygonBorderLayerId,
-            type: 'line',
-            source: layerConfig.id,
-            filter: ['==', '$type', 'Polygon'],
-            paint: {
-              'line-color': layerConfig.style?.borderColor,
-              'line-opacity': layerConfig.opacity / 100,
-              'line-width': layerConfig.style?.borderThickness,
-            },
-          },
-          mbLayerBeforeId
-        );
-        maplibreInstance?.setLayoutProperty(
-          polygonBorderLayerId,
-          'visibility',
-          layerConfig.visibility
-        );
-      }
-    });
+  const addCircleLayer = (
+    documentLayerConfig: DocumentLayerSpecification,
+    beforeId: string | undefined
+  ) => {
+    const circleLayerId = buildLayerSuffix(documentLayerConfig.id, 'circle');
+    maplibreInstance?.addLayer(
+      {
+        id: circleLayerId,
+        type: 'circle',
+        source: layerConfig.id,
+        filter: ['==', '$type', 'Point'],
+        paint: {
+          'circle-radius': documentLayerConfig.style?.markerSize,
+          'circle-color': documentLayerConfig.style?.fillColor,
+          'circle-opacity': documentLayerConfig.opacity / 100,
+          'circle-stroke-width': documentLayerConfig.style?.borderThickness,
+          'circle-stroke-color': documentLayerConfig.style?.borderColor,
+        },
+      },
+      beforeId
+    );
+    maplibreInstance?.setLayoutProperty(
+      circleLayerId,
+      'visibility',
+      documentLayerConfig.visibility
+    );
   };
+
+  const addFillLayer = (
+    documentLayerConfig: DocumentLayerSpecification,
+    beforeId: string | undefined
+  ) => {
+    const fillLayerId = buildLayerSuffix(documentLayerConfig.id, 'fill');
+    maplibreInstance?.addLayer(
+      {
+        id: fillLayerId,
+        type: 'fill',
+        source: layerConfig.id,
+        filter: ['==', '$type', 'Polygon'],
+        paint: {
+          'fill-color': documentLayerConfig.style?.fillColor,
+          'fill-opacity': documentLayerConfig.opacity / 100,
+        },
+      },
+      beforeId
+    );
+    maplibreInstance?.setLayoutProperty(fillLayerId, 'visibility', documentLayerConfig.visibility);
+    // Due to limitations on WebGL, fill can't render outlines with width wider than 1,
+    // so we have to create another style layer with type=line to apply width.
+    const outlineId = buildLayerSuffix(documentLayerConfig.id, 'fill-outline');
+    maplibreInstance?.addLayer(
+      {
+        id: outlineId,
+        type: 'line',
+        source: layerConfig.id,
+        filter: ['==', '$type', 'Polygon'],
+        paint: {
+          'line-color': layerConfig.style?.borderColor,
+          'line-opacity': layerConfig.opacity / 100,
+          'line-width': layerConfig.style?.borderThickness,
+        },
+      },
+      beforeId
+    );
+    maplibreInstance?.setLayoutProperty(outlineId, 'visibility', layerConfig.visibility);
+  };
+
   if (maplibreInstance) {
     const source = getLayerSource(data, layerConfig);
     maplibreInstance.addSource(layerConfig.id, {
       type: 'geojson',
       data: source,
     });
+    addCircleLayer(layerConfig, mbLayerBeforeId);
     const geoFieldType = getGeoFieldType(layerConfig);
-    if (geoFieldType === 'geo_point') {
-      addGeoPointLayer();
-    } else {
-      addGeoShapeLayer(source);
+    if (geoFieldType === 'geo_shape') {
+      addLineLayer(layerConfig, mbLayerBeforeId);
+      addFillLayer(layerConfig, mbLayerBeforeId);
     }
   }
+};
+
+const updateCircleLayer = (
+  maplibreInstance: Maplibre,
+  documentLayerConfig: DocumentLayerSpecification
+) => {
+  const circleLayerId = buildLayerSuffix(documentLayerConfig.id, 'circle');
+  const circleLayerStyle = documentLayerConfig.style;
+  maplibreInstance?.setLayerZoomRange(
+    circleLayerId,
+    documentLayerConfig.zoomRange[0],
+    documentLayerConfig.zoomRange[1]
+  );
+  maplibreInstance?.setPaintProperty(
+    circleLayerId,
+    'circle-opacity',
+    documentLayerConfig.opacity / 100
+  );
+  maplibreInstance?.setPaintProperty(circleLayerId, 'circle-color', circleLayerStyle?.fillColor);
+  maplibreInstance?.setPaintProperty(
+    circleLayerId,
+    'circle-stroke-color',
+    circleLayerStyle?.borderColor
+  );
+  maplibreInstance?.setPaintProperty(
+    circleLayerId,
+    'circle-stroke-width',
+    circleLayerStyle?.borderThickness
+  );
+  maplibreInstance?.setPaintProperty(circleLayerId, 'circle-radius', circleLayerStyle?.markerSize);
+};
+
+const updateLineLayer = (
+  maplibreInstance: Maplibre,
+  documentLayerConfig: DocumentLayerSpecification
+) => {
+  const lineLayerId = buildLayerSuffix(documentLayerConfig.id, 'line');
+  maplibreInstance?.setLayerZoomRange(
+    lineLayerId,
+    documentLayerConfig.zoomRange[0],
+    documentLayerConfig.zoomRange[1]
+  );
+  maplibreInstance?.setPaintProperty(
+    lineLayerId,
+    'line-opacity',
+    documentLayerConfig.opacity / 100
+  );
+  maplibreInstance?.setPaintProperty(
+    lineLayerId,
+    'line-color',
+    documentLayerConfig.style?.fillColor
+  );
+  maplibreInstance?.setPaintProperty(
+    lineLayerId,
+    'line-width',
+    documentLayerConfig.style?.borderThickness
+  );
+};
+
+const updateFillLayer = (
+  maplibreInstance: Maplibre,
+  documentLayerConfig: DocumentLayerSpecification
+) => {
+  const fillLayerId = buildLayerSuffix(documentLayerConfig.id, 'fill');
+  maplibreInstance?.setLayerZoomRange(
+    fillLayerId,
+    documentLayerConfig.zoomRange[0],
+    documentLayerConfig.zoomRange[1]
+  );
+  maplibreInstance?.setPaintProperty(
+    fillLayerId,
+    'fill-opacity',
+    documentLayerConfig.opacity / 100
+  );
+  maplibreInstance?.setPaintProperty(
+    fillLayerId,
+    'fill-color',
+    documentLayerConfig.style?.fillColor
+  );
+  maplibreInstance?.setPaintProperty(
+    fillLayerId,
+    'fill-outline-color',
+    documentLayerConfig.style?.borderColor
+  );
+  const outlineLayerId = buildLayerSuffix(documentLayerConfig.id, 'fill-outline');
+  maplibreInstance?.setPaintProperty(
+    outlineLayerId,
+    'line-color',
+    documentLayerConfig.style?.borderColor
+  );
+  maplibreInstance?.setPaintProperty(
+    outlineLayerId,
+    'line-width',
+    documentLayerConfig.style?.borderThickness
+  );
 };
 
 const updateLayerConfig = (
@@ -242,116 +340,11 @@ const updateLayerConfig = (
       // @ts-ignore
       dataSource.setData(getLayerSource(data, layerConfig));
     }
+    updateCircleLayer(maplibreInstance, layerConfig);
     const geoFieldType = getGeoFieldType(layerConfig);
-    if (geoFieldType === 'geo_point') {
-      maplibreInstance?.setLayerZoomRange(
-        layerConfig.id,
-        layerConfig.zoomRange[0],
-        layerConfig.zoomRange[1]
-      );
-      maplibreInstance?.setPaintProperty(
-        layerConfig.id,
-        'circle-opacity',
-        layerConfig.opacity / 100
-      );
-      maplibreInstance?.setPaintProperty(
-        layerConfig.id,
-        'circle-color',
-        layerConfig.style?.fillColor
-      );
-      maplibreInstance?.setPaintProperty(
-        layerConfig.id,
-        'circle-stroke-color',
-        layerConfig.style?.borderColor
-      );
-      maplibreInstance?.setPaintProperty(
-        layerConfig.id,
-        'circle-stroke-width',
-        layerConfig.style?.borderThickness
-      );
-      maplibreInstance?.setPaintProperty(
-        layerConfig.id,
-        'circle-radius',
-        layerConfig.style?.markerSize
-      );
-    } else {
-      getCurrentStyleLayers(maplibreRef).forEach((layer) => {
-        if (layer.id.includes(layerConfig.id)) {
-          maplibreInstance.setLayerZoomRange(
-            layer.id,
-            layerConfig.zoomRange[0],
-            layerConfig.zoomRange[1]
-          );
-          if (layer.type === 'circle') {
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'circle-opacity',
-              layerConfig.opacity / 100
-            );
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'circle-color',
-              layerConfig.style?.fillColor
-            );
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'circle-stroke-color',
-              layerConfig.style?.borderColor
-            );
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'circle-stroke-width',
-              layerConfig.style?.borderThickness
-            );
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'circle-radius',
-              layerConfig.style?.markerSize
-            );
-          } else if (layer.type === 'line') {
-            if (layer.id.includes('border')) {
-              maplibreInstance?.setPaintProperty(
-                layer.id,
-                'line-color',
-                layerConfig.style?.borderColor
-              );
-              maplibreInstance?.setPaintProperty(
-                layer.id,
-                'line-width',
-                layerConfig.style?.borderThickness
-              );
-            } else {
-              maplibreInstance?.setPaintProperty(
-                layer.id,
-                'line-opacity',
-                layerConfig.opacity / 100
-              );
-              maplibreInstance?.setPaintProperty(
-                layer.id,
-                'line-color',
-                layerConfig.style?.fillColor
-              );
-              maplibreInstance?.setPaintProperty(
-                layer.id,
-                'line-width',
-                layerConfig.style?.borderThickness
-              );
-            }
-          } else if (layer.type === 'fill') {
-            maplibreInstance?.setPaintProperty(layer.id, 'fill-opacity', layerConfig.opacity / 100);
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'fill-color',
-              layerConfig.style?.fillColor
-            );
-            maplibreInstance?.setPaintProperty(
-              layer.id,
-              'fill-outline-color',
-              layerConfig.style?.borderColor
-            );
-          }
-        }
-      });
+    if (geoFieldType === 'geo_shape') {
+      updateLineLayer(maplibreInstance, layerConfig);
+      updateFillLayer(maplibreInstance, layerConfig);
     }
   }
 };
