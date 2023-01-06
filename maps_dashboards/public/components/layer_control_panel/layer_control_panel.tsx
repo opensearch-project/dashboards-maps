@@ -330,15 +330,10 @@ export const LayerControlPanel = memo(
     }
 
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
-      const tooltipContent = `Layer type: ${layer.type}, Zoom range: ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        return (
-          tooltipContent +
-          `, Index pattern: ${layer.source.indexPatternRefName}` +
-          `, Geo field: ${layer.source.geoFieldName}`
-        );
+      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
+        return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
       } else {
-        return tooltipContent;
+        return `Layer is visible within zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
       }
     };
 
