@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre, Popup, MapGeoJSONFeature } from 'maplibre-gl';
-import { createPopup, getPopupLngLat } from '../components/tooltip/create_tooltip';
+import { Map as Maplibre } from 'maplibre-gl';
+import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
 import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
@@ -58,11 +58,20 @@ const buildGeometry = (fieldType: string, location: any) => {
       coordinates: location.coordinates,
     };
   }
+
+  if (typeof location === 'string') {
+    // Check if location is WKT format
+    const geometry = parse(location);
+    if (geometry) {
+      return geometry;
+    }
+  }
+  // Geopoint supports other format like object, string, array,
   if (fieldType === 'geo_point') {
     // convert other supported formats to GeoJSON
     return convertGeoPointToGeoJSON(location);
   }
-  // We don't support non-geo-json format for geo_shape yet
+  // We don't support any other format
   return undefined;
 };
 
