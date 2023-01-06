@@ -16,6 +16,8 @@ import { CustomImportMapPluginSetup, CustomImportMapPluginStart } from './types'
 import { createGeospatialCluster } from './clusters';
 import { GeospatialService, OpensearchService } from './services';
 import { geospatial, opensearch } from '../server/routes';
+import { mapSavedObjectsType } from './saved_objects';
+import { capabilitiesProvider } from './saved_objects/capabilities_provider';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
@@ -29,6 +31,7 @@ export class CustomImportMapPlugin
 
   public async setup(core: CoreSetup) {
     this.logger.debug('customImportMap: Setup');
+    // @ts-ignore
     const globalConfig = await this.globalConfig$.pipe(first()).toPromise();
 
     const geospatialClient = createGeospatialCluster(core, globalConfig);
@@ -40,6 +43,12 @@ export class CustomImportMapPlugin
     // Register server side APIs
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
+
+    // Register saved object types
+    core.savedObjects.registerType(mapSavedObjectsType);
+
+    // Register capabilities
+    core.capabilities.registerProvider(capabilitiesProvider);
 
     return {};
   }
