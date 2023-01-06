@@ -5,7 +5,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
-import { LngLat, Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
+import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
 import { debounce } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
@@ -88,7 +88,7 @@ export const MapContainer = ({
       }
     }
 
-    function onMouseMoveMap(e: MapMouseEvent) {
+    function onMouseMoveMap(e: MapEventType['mousemove']) {
       setCoordinates(e.lngLat.wrap());
 
       // remove previous popup
