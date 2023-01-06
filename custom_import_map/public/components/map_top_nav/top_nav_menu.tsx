@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SimpleSavedObject } from 'opensearch-dashboards/public';
 import { IndexPattern, Query, TimeRange } from '../../../../../src/plugins/data/public';
-import { DASHBOARDS_MAPS_LAYER_TYPE, PLUGIN_ID } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, PLUGIN_NAVIGATION_BAR_ID } from '../../../common';
 import { getTopNavConfig } from './get_top_nav_config';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -108,7 +108,7 @@ export const MapTopNavMenu = ({
 
   return (
     <TopNavMenu
-      appName={PLUGIN_ID}
+      appName={PLUGIN_NAVIGATION_BAR_ID}
       config={getTopNavConfig(services, {
         mapIdFromUrl,
         layers,

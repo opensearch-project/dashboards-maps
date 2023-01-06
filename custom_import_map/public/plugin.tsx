@@ -16,7 +16,7 @@ import {
   AppPluginStartDependencies,
   MapServices, CustomImportMapPluginSetup, CustomImportMapPluginStart,
 } from './types';
-import { PLUGIN_NAME, PLUGIN_ID, PLUGIN_NAVIGATION_BAR_TILE } from '../common/constants/shared';
+import {PLUGIN_NAME, PLUGIN_NAVIGATION_BAR_ID, PLUGIN_NAVIGATION_BAR_TILE} from '../common/constants/shared';
 
 import { AppPluginSetupDependencies } from './types';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
@@ -30,7 +30,7 @@ export class CustomImportMapPlugin
   ): CustomImportMapPluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
-      id: PLUGIN_ID,
+      id: PLUGIN_NAVIGATION_BAR_ID,
       title: PLUGIN_NAVIGATION_BAR_TILE,
       category: DEFAULT_APP_CATEGORIES.opensearchDashboards,
       async mount(params: AppMountParameters) {

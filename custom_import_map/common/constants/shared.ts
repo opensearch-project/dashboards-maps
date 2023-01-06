@@ -13,3 +13,4 @@ export const MAX_FILE_PAYLOAD_SIZE = fromMBtoBytes(MAX_FILE_PAYLOAD_SIZE_IN_MB);
 export const PLUGIN_ID = 'customImportMap';
 export const PLUGIN_NAME = 'customImportMap';
 export const PLUGIN_NAVIGATION_BAR_TILE = 'Maps';
+export const PLUGIN_NAVIGATION_BAR_ID = 'maps-dashboards';
