@@ -30,7 +30,6 @@ import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
-  DASHBOARDS_MAPS_LAYER_TYPE,
   LAYER_ICON_TYPE_MAP,
   LAYER_PANEL_HIDE_LAYER_ICON,
   LAYER_PANEL_SHOW_LAYER_ICON,
@@ -131,9 +130,7 @@ export const LayerControlPanel = memo(
       const getCurrentVisibleLayers = () => {
         return layers.filter(
           (layer: { visibility: string; zoomRange: number[] }) =>
-            layer.visibility === 'visible' &&
-            zoom >= layer.zoomRange[0] &&
-            zoom <= layer.zoomRange[1]
+            zoom >= layer.zoomRange[0] && zoom <= layer.zoomRange[1]
         );
       };
       setVisibleLayers(getCurrentVisibleLayers());
@@ -337,6 +334,10 @@ export const LayerControlPanel = memo(
       }
     };
 
+    const layerIsVisible = (layer: MapLayerSpecification) => {
+      return visibleLayers.includes(layer);
+    };
+
     if (isLayerControlVisible) {
       return (
         <I18nProvider>
@@ -397,18 +398,16 @@ export const LayerControlPanel = memo(
                                 <EuiIcon
                                   size="m"
                                   type={LAYER_ICON_TYPE_MAP[layer.type]}
-                                  color={
-                                    visibleLayers.find((l) => l.id === layer.id)
-                                      ? 'success'
-                                      : '#DDDDDD'
-                                  }
+                                  color={layerIsVisible(layer) ? 'success' : '#DDDDDD'}
                                 />
                               </EuiFlexItem>
                               <EuiFlexItem>
                                 <EuiToolTip
-                                  position="right"
-                                  title={layer.name}
-                                  content={getLayerTooltipContent(layer)}
+                                  position="top"
+                                  title={layerIsVisible(layer) ? '' : layer.name}
+                                  content={
+                                    layerIsVisible(layer) ? '' : getLayerTooltipContent(layer)
+                                  }
                                 >
                                   <EuiListGroupItem
                                     key={layer.id}
