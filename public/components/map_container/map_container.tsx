@@ -163,7 +163,7 @@ export const MapContainer = ({
 
   return (
     <div>
-      <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar">
+      <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar" data-test-subj="mapStatusBar">
         <small>
           {coordinates &&
             `lat: ${coordinates.lat.toFixed(4)}, lon: ${coordinates.lng.toFixed(4)}, `}

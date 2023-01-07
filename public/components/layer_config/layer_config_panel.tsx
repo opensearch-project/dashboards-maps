@@ -151,7 +151,13 @@ export const LayerConfigPanel = ({
             </EuiButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton disabled={isUpdateDisabled} iconType="play" onClick={onUpdate} fill>
+            <EuiButton
+              disabled={isUpdateDisabled}
+              iconType="play"
+              onClick={onUpdate}
+              fill
+              data-test-subj="updateButton"
+            >
               Update
             </EuiButton>
           </EuiFlexItem>

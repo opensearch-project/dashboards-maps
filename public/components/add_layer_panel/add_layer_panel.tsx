@@ -106,6 +106,7 @@ export const AddLayerPanel = ({
           onClick={showModal}
           aria-label="Add layer"
           isDisabled={IsLayerConfigVisible}
+          data-test-subj="addLayerButton"
         >
           Add layer
         </EuiButton>
