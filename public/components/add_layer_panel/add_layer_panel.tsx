@@ -76,8 +76,8 @@ export const AddLayerPanel = ({
     );
   });
 
-  const referenceLayers = [OPENSEARCH_MAP_LAYER, CUSTOM_MAP];
-  const referenceLayersItems = Object.values(referenceLayers).map((layerItem, index) => {
+  const baseLayers = [OPENSEARCH_MAP_LAYER, CUSTOM_MAP];
+  const baseLayersItems = Object.values(baseLayers).map((layerItem, index) => {
     return (
       <EuiKeyPadMenuItem
         key={index}
@@ -128,10 +128,10 @@ export const AddLayerPanel = ({
                 <EuiSpacer size="s" />
                 <EuiHorizontalRule margin="xs" />
                 <EuiTitle size="s">
-                  <h6>Reference layer</h6>
+                  <h6>Base layer</h6>
                 </EuiTitle>
                 <EuiSpacer size="s" />
-                <EuiFlexGroup gutterSize="xs">{referenceLayersItems}</EuiFlexGroup>
+                <EuiFlexGroup gutterSize="xs">{baseLayersItems}</EuiFlexGroup>
               </EuiFlexItem>
               <EuiFlexItem className="addLayerDialog__description">
                 <EuiTitle size="s">
