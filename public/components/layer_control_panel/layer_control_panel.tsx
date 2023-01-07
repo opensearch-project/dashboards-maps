@@ -311,7 +311,7 @@ export const LayerControlPanel = memo(
               <EuiFlexGroup direction="row" alignItems="center">
                 <EuiFlexItem className="layerControlPanel__title">
                   <EuiTitle size="xs">
-                    <h2>Layer</h2>
+                    <h2>Layers</h2>
                   </EuiTitle>
                 </EuiFlexItem>
                 <EuiFlexItem grow={false}>

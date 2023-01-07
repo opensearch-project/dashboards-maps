@@ -246,7 +246,7 @@ export const DocumentLayerSource = ({
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiFormRow
-                  label="Geospatial Field"
+                  label="Geospatial field"
                   isInvalid={!selectedField}
                   error={errorsMap.geoFields}
                 >
@@ -317,13 +317,13 @@ export const DocumentLayerSource = ({
             <EuiFlexItem>
               <EuiCheckbox
                 id="toggle-tooltip"
-                label="Show Tooltips"
+                label="Show tooltips"
                 checked={showTooltips}
                 onChange={onShowTooltipsChange}
               />
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiFormLabel>Tooltip Fields</EuiFormLabel>
+              <EuiFormLabel>Tooltip fields</EuiFormLabel>
               <EuiSpacer size="xs" />
               <EuiComboBox
                 options={tooltipFieldsOptions()}

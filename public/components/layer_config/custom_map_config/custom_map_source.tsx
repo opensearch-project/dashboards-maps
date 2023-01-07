@@ -222,7 +222,7 @@ export const CustomMapSource = ({
           <EuiForm>
             <EuiFormRow
               label="WMS URL*"
-              helpText="Web map service URL."
+              helpText="Web map service URL"
               isInvalid={isInvalidURL(customMapURL)}
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
             >
@@ -237,25 +237,25 @@ export const CustomMapSource = ({
             <EuiSpacer size="m" />
             <EuiFormRow
               label="WMS layers*"
-              helpText="The names of the layers to be included in the map image. A comma separated list of layers to use."
+              helpText="The names of the layers to include in the map image. For more than one name, use a comma-separated list."
             >
               <EuiFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
             </EuiFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow label="WMS version*" helpText="The version of the WMS supports.">
+            <EuiFormRow label="WMS version*">
               <EuiFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
             </EuiFormRow>
             <EuiSpacer size="m" />
             <EuiFormRow
               label="WMS format*"
-              helpText="The format of the map image to be returned. The most common formats are 'image/png' and 'image/jpeg'."
+              helpText="The format of the map image to return. The most common formats are 'image/png' and 'image/jpeg'."
             >
               <EuiFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
             </EuiFormRow>
             <EuiSpacer size="m" />
             <EuiFormRow
               label="WMS CRS"
-              helpText="The coordinate reference system (CRS) to be used for the map image."
+              helpText="The coordinate reference system (CRS) to use for the map image."
             >
               <EuiFieldText
                 value={WMSCoordinateSystem}
@@ -266,7 +266,7 @@ export const CustomMapSource = ({
             <EuiSpacer size="m" />
             <EuiFormRow
               label="WMS bbox"
-              helpText="The bounding box of the area to be included in the map image."
+              helpText="The bounding box of the region to include in the map image."
             >
               <EuiFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
             </EuiFormRow>
