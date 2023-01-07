@@ -43,6 +43,7 @@ export type DocumentLayerSpecification = {
     documentRequestNumber: number;
     showTooltips: boolean;
     tooltipFields: string[];
+    useGeoBoundingBoxFilter: boolean;
     filters: Filter[];
   };
   style: {

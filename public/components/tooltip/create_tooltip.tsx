@@ -16,7 +16,11 @@ type Options = {
 export function isTooltipEnabledLayer(
   layer: MapLayerSpecification
 ): layer is DocumentLayerSpecification {
-  return layer.type !== 'opensearch_vector_tile_map' && layer.source.showTooltips === true;
+  return (
+    layer.type !== 'opensearch_vector_tile_map' &&
+    layer.type !== 'custom_map' &&
+    layer.source.showTooltips === true
+  );
 }
 
 export function groupFeaturesByLayers(
