@@ -5,14 +5,18 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
-import { LngLat, Map as Maplibre, MapMouseEvent, NavigationControl, Popup } from 'maplibre-gl';
+import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
+import { debounce } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { MAP_INITIAL_STATE, MAP_GLYPHS } from '../../../common';
+import { MAP_INITIAL_STATE, MAP_GLYPHS, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import { handleDataLayerRender } from '../../model/layerRenderController';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../../types';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -31,6 +35,7 @@ export const MapContainer = ({
   maplibreRef,
   mapState,
 }: MapContainerProps) => {
+  const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
@@ -62,6 +67,7 @@ export const MapContainer = ({
     });
   }, []);
 
+  // Create onClick tooltip for each layer features that has tooltip enabled
   useEffect(() => {
     let clickPopup: Popup | null = null;
     let hoverPopup: Popup | null = null;
@@ -69,7 +75,7 @@ export const MapContainer = ({
     // We don't want to show layer information in the popup for the map tile layer
     const tooltipEnabledLayers = layers.filter(isTooltipEnabledLayer);
 
-    function onClickMap(e: MapMouseEvent) {
+    function onClickMap(e: MapEventType['click']) {
       // remove previous popup
       clickPopup?.remove();
 
@@ -82,7 +88,7 @@ export const MapContainer = ({
       }
     }
 
-    function onMouseMoveMap(e: MapMouseEvent) {
+    function onMouseMoveMap(e: MapEventType['mousemove']) {
       setCoordinates(e.lngLat.wrap());
 
       // remove previous popup
@@ -126,6 +132,35 @@ export const MapContainer = ({
     };
   }, [layers]);
 
+  // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
+  useEffect(() => {
+    function renderLayers() {
+      layers.forEach((layer: MapLayerSpecification) => {
+        // We don't send search query if the layer doesn't have "request data around map extent" enabled
+        if (
+          layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS &&
+          layer.source.useGeoBoundingBoxFilter
+        ) {
+          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
+        }
+      });
+    }
+
+    // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
+    // resizing the window, the "moveend" event could be fired constantly
+    const debouncedRenderLayers = debounce(renderLayers, 200);
+
+    if (maplibreRef.current) {
+      maplibreRef.current.on('moveend', debouncedRenderLayers);
+    }
+
+    return () => {
+      if (maplibreRef.current) {
+        maplibreRef.current.off('moveend', debouncedRenderLayers);
+      }
+    };
+  }, [layers, mapState, services]);
+
   return (
     <div>
       <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar">
@@ -144,6 +179,7 @@ export const MapContainer = ({
             layersIndexPatterns={layersIndexPatterns}
             setLayersIndexPatterns={setLayersIndexPatterns}
             mapState={mapState}
+            zoom={zoom}
           />
         )}
       </div>

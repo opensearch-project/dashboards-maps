@@ -5,33 +5,35 @@
 
 import React, { memo, useEffect, useState } from 'react';
 import {
-  EuiPanel,
-  EuiTitle,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiListGroupItem,
+  DropResult,
   EuiButtonEmpty,
-  EuiHorizontalRule,
   EuiButtonIcon,
+  EuiConfirmModal,
   EuiDragDropContext,
   EuiDraggable,
   EuiDroppable,
-  EuiConfirmModal,
-  DropResult,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiHorizontalRule,
+  EuiListGroupItem,
+  EuiPanel,
+  EuiTitle,
+  EuiIcon,
+  EuiToolTip,
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
+import { isEqual } from 'lodash';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
-  LAYER_VISIBILITY,
-  DASHBOARDS_MAPS_LAYER_TYPE,
   LAYER_ICON_TYPE_MAP,
-  LAYER_PANEL_SHOW_LAYER_ICON,
   LAYER_PANEL_HIDE_LAYER_ICON,
+  LAYER_PANEL_SHOW_LAYER_ICON,
+  LAYER_VISIBILITY,
 } from '../../../common';
 import {
   LayerActions,
@@ -41,8 +43,8 @@ import {
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import {
-  handleReferenceLayerRender,
   handleDataLayerRender,
+  handleReferenceLayerRender,
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 
@@ -57,6 +59,7 @@ interface Props {
   layersIndexPatterns: IndexPattern[];
   setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
   mapState: MapState;
+  zoom: number;
 }
 
 export const LayerControlPanel = memo(
@@ -67,10 +70,12 @@ export const LayerControlPanel = memo(
     layersIndexPatterns,
     setLayersIndexPatterns,
     mapState,
+    zoom,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
       data: { indexPatterns },
+      notifications,
     } = services;
 
     const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
@@ -82,9 +87,11 @@ export const LayerControlPanel = memo(
     const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
+    const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
     const [selectedDeleteLayer, setSelectedDeleteLayer] = useState<
       MapLayerSpecification | undefined
     >();
+    const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
 
     useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {
@@ -98,10 +105,7 @@ export const LayerControlPanel = memo(
         if (!selectedLayerConfig) {
           return;
         }
-        if (
-          selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP ||
-          selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP
-        ) {
+        if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
           handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
         } else {
           updateIndexPatterns();
@@ -121,6 +125,16 @@ export const LayerControlPanel = memo(
       }
       setIsUpdatingLayerRender(false);
     }, [layers]);
+
+    useEffect(() => {
+      const getCurrentVisibleLayers = () => {
+        return layers.filter(
+          (layer: { visibility: string; zoomRange: number[] }) =>
+            zoom >= layer.zoomRange[0] && zoom <= layer.zoomRange[1]
+        );
+      };
+      setVisibleLayers(getCurrentVisibleLayers());
+    }, [layers, zoom]);
 
     // Get layer id from layers that is above the selected layer
     function getMapBeforeLayerId(selectedLayer: MapLayerSpecification): string | undefined {
@@ -174,10 +188,24 @@ export const LayerControlPanel = memo(
       }
     };
 
-    const onClickLayerName = (layer: MapLayerSpecification) => {
-      setSelectedLayerConfig(layer);
-      setIsLayerConfigVisible(true);
+    const hasUnsavedChanges = () => {
+      if (!selectedLayerConfig || !originLayerConfig) {
+        return false;
+      }
+      return !isEqual(originLayerConfig, selectedLayerConfig);
     };
+
+    const onClickLayerName = (layer: MapLayerSpecification) => {
+      if (hasUnsavedChanges()) {
+        notifications.toasts.addWarning(
+          `You have unsaved changes for ${selectedLayerConfig?.name}`
+        );
+      } else {
+        setSelectedLayerConfig(layer);
+        setIsLayerConfigVisible(true);
+      }
+    };
+
     const isLayerExists = (name: string) => {
       return layers.findIndex((layer) => layer.name === name) > -1;
     };
@@ -298,6 +326,18 @@ export const LayerControlPanel = memo(
       );
     }
 
+    const getLayerTooltipContent = (layer: MapLayerSpecification) => {
+      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
+        return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
+      } else {
+        return `Layer is visible within zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
+      }
+    };
+
+    const layerIsVisible = (layer: MapLayerSpecification) => {
+      return visibleLayers.includes(layer);
+    };
+
     if (isLayerControlVisible) {
       return (
         <I18nProvider>
@@ -349,16 +389,34 @@ export const LayerControlPanel = memo(
                               alignItems="center"
                               gutterSize="none"
                               direction="row"
+                              justifyContent={'flexStart'}
                             >
-                              <EuiFlexItem>
-                                <EuiListGroupItem
-                                  key={layer.id}
-                                  label={layer.name}
-                                  data-item={JSON.stringify(layer)}
-                                  iconType={LAYER_ICON_TYPE_MAP[layer.type]}
-                                  aria-label="layer in the map layers list"
-                                  onClick={() => onClickLayerName(layer)}
+                              <EuiFlexItem
+                                className="layerControlPanel__layerTypeIcon"
+                                grow={false}
+                              >
+                                <EuiIcon
+                                  size="m"
+                                  type={LAYER_ICON_TYPE_MAP[layer.type]}
+                                  color={layerIsVisible(layer) ? 'success' : '#DDDDDD'}
                                 />
+                              </EuiFlexItem>
+                              <EuiFlexItem>
+                                <EuiToolTip
+                                  position="top"
+                                  title={layerIsVisible(layer) ? '' : layer.name}
+                                  content={
+                                    layerIsVisible(layer) ? '' : getLayerTooltipContent(layer)
+                                  }
+                                >
+                                  <EuiListGroupItem
+                                    key={layer.id}
+                                    label={layer.name}
+                                    aria-label="layer in the map layers list"
+                                    onClick={() => onClickLayerName(layer)}
+                                    showToolTip={false}
+                                  />
+                                </EuiToolTip>
                               </EuiFlexItem>
                               <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
                                 <EuiFlexItem
@@ -426,9 +484,9 @@ export const LayerControlPanel = memo(
                   removeLayer={removeLayer}
                   isNewLayer={isNewLayer}
                   setIsNewLayer={setIsNewLayer}
-                  layersIndexPatterns={layersIndexPatterns}
-                  updateIndexPatterns={updateIndexPatterns}
                   isLayerExists={isLayerExists}
+                  originLayerConfig={originLayerConfig}
+                  setOriginLayerConfig={setOriginLayerConfig}
                 />
               )}
               <AddLayerPanel

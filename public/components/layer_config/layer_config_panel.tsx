@@ -28,7 +28,6 @@ import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap } from '../../model/layersFunctions';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
 
 interface Props {
@@ -39,9 +38,9 @@ interface Props {
   removeLayer: Function;
   isNewLayer: boolean;
   setIsNewLayer: Function;
-  layersIndexPatterns: IndexPattern[];
-  updateIndexPatterns: Function;
   isLayerExists: Function;
+  originLayerConfig: MapLayerSpecification | null;
+  setOriginLayerConfig: Function;
 }
 
 export const LayerConfigPanel = ({
@@ -52,27 +51,31 @@ export const LayerConfigPanel = ({
   removeLayer,
   isNewLayer,
   setIsNewLayer,
-  layersIndexPatterns,
-  updateIndexPatterns,
   isLayerExists,
+  originLayerConfig,
+  setOriginLayerConfig,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
-  const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
-  const [warnModalVisible, setWarnModalVisible] = useState(false);
+  const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
 
   useEffect(() => {
-    setOriginLayerConfig(cloneDeep(selectedLayerConfig));
-  }, []);
+    if (originLayerConfig === null || originLayerConfig.id !== selectedLayerConfig.id) {
+      setOriginLayerConfig(cloneDeep(selectedLayerConfig));
+    }
+  }, [originLayerConfig, selectedLayerConfig]);
 
   const discardChanges = () => {
     closeLayerConfigPanel(false);
     setSelectedLayerConfig(undefined);
+    setOriginLayerConfig(null);
+    setUnsavedModalVisible(false);
   };
+
   const onClose = () => {
     if (isEqual(originLayerConfig, selectedLayerConfig)) {
       discardChanges();
     } else {
-      setWarnModalVisible(true);
+      setUnsavedModalVisible(true);
     }
     if (isNewLayer) {
       removeLayer(selectedLayerConfig.id);
@@ -82,13 +85,14 @@ export const LayerConfigPanel = ({
   const onUpdate = () => {
     updateLayer();
     closeLayerConfigPanel(false);
+    setOriginLayerConfig(null);
     if (isNewLayer) {
       setIsNewLayer(false);
     }
   };
 
   const closeModal = () => {
-    setWarnModalVisible(false);
+    setUnsavedModalVisible(false);
   };
 
   return (
@@ -125,7 +129,6 @@ export const LayerConfigPanel = ({
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
-                layersIndexPatterns={layersIndexPatterns}
                 isLayerExists={isLayerExists}
               />
             )}
@@ -154,7 +157,7 @@ export const LayerConfigPanel = ({
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutFooter>
-      {warnModalVisible && (
+      {unsavedModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
             <EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle>

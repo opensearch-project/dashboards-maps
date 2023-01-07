@@ -15,16 +15,19 @@
       "pre-commit": "lint-staged"
     }
   },
-  "devDependencies": {
-    "cypress": "9.5.4",
-    "cypress-multi-reporters": "^1.5.0"
-  },
   "dependencies": {
     "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
     "@cypress/skip-test": "^2.6.1",
     "cypress-file-upload": "^5.0.8",
     "maplibre-gl": "^2.4.0",
     "uuid": "3.3.2",
+    "prettier": "^2.1.1",
+    "@types/wellknown": "^0.5.4",
+    "wellknown": "^0.5.0"
+  },
+  "devDependencies": {
+    "cypress": "9.5.4",
+    "cypress-multi-reporters": "^1.5.0",
     "prettier": "^2.1.1"
   }
 }
