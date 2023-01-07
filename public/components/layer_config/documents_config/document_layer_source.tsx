@@ -237,6 +237,7 @@ export const DocumentLayerSource = ({
                       setIndexPattern(newIndexPattern);
                     }}
                     isClearable={false}
+                    data-test-subj={'indexPatternSelect'}
                   />
                 </EuiFormRow>
               </EuiFlexItem>

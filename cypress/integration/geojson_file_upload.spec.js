@@ -10,16 +10,10 @@ import 'cypress-file-upload';
 
 describe('Verify successful custom geojson file upload', () => {
   before(() => {
-    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`);
-    // Click on "Sample data" tab
-    cy.contains('Sample data').click({ force: true });
-    // Load sample flights data
-    cy.get(`button[data-test-subj="addSampleDataSetflights"]`).click({
-      force: true,
-    });
-
-    // Verify that sample data is add by checking toast notification
-    cy.contains('Sample flight data installed', { timeout: 240000 });
+    cy.wait(180000).visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`);
+    cy.get('div[data-test-subj="sampleDataSetCardflights"]', { timeout: 60000 })
+      .contains(/(Add|View) data/)
+      .click();
 
     cy.visit(`${BASE_PATH}/app/visualize#/`);
 
@@ -40,11 +34,14 @@ describe('Verify successful custom geojson file upload', () => {
     cy.get('[data-testId="filePicker"]').attachFile('sample_geojson.json');
     cy.get('[data-testId="customIndex"]').type('sample');
     cy.contains('Import file').click({ force: true });
-    cy.contains('Successfully added 2 features to sample-map. Refresh to visualize the uploaded map.', { timeout: 240000 });
-  })
+    cy.contains(
+      'Successfully added 2 features to sample-map. Refresh to visualize the uploaded map.',
+      { timeout: 240000 }
+    );
+  });
 
   after(() => {
     cy.visit(`${BASE_PATH}/app/home#/tutorial_directory`);
     cy.get('button[data-test-subj="removeSampleDataSetflights"]').should('be.visible').click();
-  })
+  });
 });
