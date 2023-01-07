@@ -58,9 +58,9 @@ export const APP_PATH = {
 };
 
 export enum DASHBOARDS_MAPS_LAYER_NAME {
-  OPENSEARCH_MAP = 'OpenSearch Map',
+  OPENSEARCH_MAP = 'OpenSearch map',
   DOCUMENTS = 'Documents',
-  CUSTOM_MAP = 'Custom Map',
+  CUSTOM_MAP = 'Custom map',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
@@ -76,9 +76,9 @@ export enum DASHBOARDS_MAPS_LAYER_ICON {
 }
 
 export enum DASHBOARDS_MAPS_LAYER_DESCRIPTION {
-  OPENSEARCH_MAP = 'Default basemaps from OpenSearch',
-  DOCUMENTS = 'View points, lines and polygons on map',
-  CUSTOM_MAP = 'Configure Maps to use custom map source',
+  OPENSEARCH_MAP = 'Use default OpenSearch basemaps.',
+  DOCUMENTS = 'View points, lines, and polygons on the map.',
+  CUSTOM_MAP = 'Configure maps to use a custom map source.',
 }
 
 export const DOCUMENTS = {
