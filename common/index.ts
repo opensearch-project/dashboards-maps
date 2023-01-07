@@ -43,6 +43,8 @@ export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed';
 export const MAX_LAYER_NAME_LIMIT = 35;
 export const MAP_LAYER_DEFAULT_NAME = 'Default map';
 export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
+export const MIN_LONGITUDE = -180;
+export const MAX_LONGITUDE = 180;
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
