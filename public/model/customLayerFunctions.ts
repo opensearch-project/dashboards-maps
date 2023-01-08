@@ -71,6 +71,11 @@ const addNewLayer = (
       },
       beforeMbLayerId
     );
+    maplibreInstance.setLayerZoomRange(
+      layerConfig.id,
+      layerConfig.zoomRange[0],
+      layerConfig.zoomRange[1]
+    );
   }
 };
 

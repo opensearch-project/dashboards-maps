@@ -149,6 +149,11 @@ const addNewLayer = (
       beforeId
     );
     maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', documentLayerConfig.visibility);
+    maplibreInstance?.setLayerZoomRange(
+      lineLayerId,
+      documentLayerConfig.zoomRange[0],
+      documentLayerConfig.zoomRange[1]
+    );
   };
 
   const addCircleLayer = (
@@ -177,6 +182,11 @@ const addNewLayer = (
       'visibility',
       documentLayerConfig.visibility
     );
+    maplibreInstance?.setLayerZoomRange(
+      circleLayerId,
+      documentLayerConfig.zoomRange[0],
+      documentLayerConfig.zoomRange[1]
+    );
   };
 
   const addFillLayer = (
@@ -198,6 +208,11 @@ const addNewLayer = (
       beforeId
     );
     maplibreInstance?.setLayoutProperty(fillLayerId, 'visibility', documentLayerConfig.visibility);
+    maplibreInstance?.setLayerZoomRange(
+      fillLayerId,
+      documentLayerConfig.zoomRange[0],
+      documentLayerConfig.zoomRange[1]
+    );
     // Due to limitations on WebGL, fill can't render outlines with width wider than 1,
     // so we have to create another style layer with type=line to apply width.
     const outlineId = buildLayerSuffix(documentLayerConfig.id, 'fill-outline');
@@ -216,6 +231,11 @@ const addNewLayer = (
       beforeId
     );
     maplibreInstance?.setLayoutProperty(outlineId, 'visibility', layerConfig.visibility);
+    maplibreInstance?.setLayerZoomRange(
+      outlineId,
+      documentLayerConfig.zoomRange[0],
+      documentLayerConfig.zoomRange[1]
+    );
   };
 
   if (maplibreInstance) {
