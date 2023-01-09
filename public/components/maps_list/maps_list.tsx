@@ -119,7 +119,7 @@ export const MapsList = () => {
     <I18nProvider>
       <>
         <EuiPage restrictWidth="1000px">
-          <EuiPageBody component="main">
+          <EuiPageBody component="main" data-test-subj="mapListingPage">
             <EuiPageContentBody>
               <TableListView
                 headingId="mapsListingHeading"
