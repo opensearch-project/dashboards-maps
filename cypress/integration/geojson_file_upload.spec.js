@@ -10,7 +10,8 @@ import 'cypress-file-upload';
 
 describe('Verify successful custom geojson file upload', () => {
   before(() => {
-    cy.wait(180000).visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`);
+    cy.wait(120000);
+    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`);
     cy.get('div[data-test-subj="sampleDataSetCardflights"]', { timeout: 60000 })
       .contains(/(Add|View) data/)
       .click();

@@ -23,7 +23,6 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands';
-import { addMatchImageSnapshotCommand } from 'cypress-image-snapshot/command';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
@@ -45,7 +44,3 @@ if (Cypress.env('security_enabled')) {
   Cypress.env('opensearch', `http://${Cypress.env('opensearch_url')}`);
 }
 
-addMatchImageSnapshotCommand({
-  failureThreshold: 0.1,
-  failureThresholdType: 'percent',
-});

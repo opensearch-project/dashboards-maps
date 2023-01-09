@@ -341,7 +341,11 @@ export const LayerControlPanel = memo(
     if (isLayerControlVisible) {
       return (
         <I18nProvider>
-          <EuiPanel paddingSize="none" className="layerControlPanel layerControlPanel--show">
+          <EuiPanel
+            paddingSize="none"
+            className="layerControlPanel layerControlPanel--show"
+            data-test-subj="layerControlPanel"
+          >
             <EuiFlexGroup
               responsive={false}
               justifyContent="spaceBetween"

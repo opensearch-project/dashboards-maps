@@ -1,7 +1,5 @@
 {
   "defaultCommandTimeout": 120000,
-  "viewportWidth": 2000,
-  "viewportHeight": 1320,
   "env": {
     "opensearch_url": "localhost:9200",
     "opensearch_dashboards": "http://localhost:5601",

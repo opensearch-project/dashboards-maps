@@ -20,7 +20,6 @@
     "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
     "@types/wellknown": "^0.5.4",
     "cypress-file-upload": "^5.0.8",
-    "cypress-image-snapshot": "^4.0.1",
     "maplibre-gl": "^2.4.0",
     "prettier": "^2.1.1",
     "uuid": "3.3.2",

@@ -225,6 +225,7 @@ export const DocumentLayerSource = ({
                   label="Data source"
                   isInvalid={!indexPattern}
                   error={errorsMap.datasource}
+                  data-test-subj={'indexPatternSelect'}
                 >
                   <IndexPatternSelect
                     savedObjectsClient={savedObjectsClient}
@@ -246,6 +247,7 @@ export const DocumentLayerSource = ({
                   label="Geospatial Field"
                   isInvalid={!selectedField}
                   error={errorsMap.geoFields}
+                  data-test-subj={'geoFieldSelect'}
                 >
                   <EuiComboBox
                     options={formatFieldsToComboBox(geoFields)}
@@ -259,6 +261,7 @@ export const DocumentLayerSource = ({
                     placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
                       defaultMessage: 'Select data field',
                     })}
+                    data-test-subj={'geoFieldSelect'}
                   />
                 </EuiFormRow>
               </EuiFlexItem>

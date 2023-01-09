@@ -24,7 +24,7 @@ jobs:
       # This setting says that all jobs should finish, even if one fails
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ ubuntu-latest, windows-latest ]
         include:
           - os: windows-latest
             working_directory: X:\
@@ -32,8 +32,6 @@ jobs:
             cypress_cache_folder: ~/AppData/Local/Cypress/Cache
           - os: ubuntu-latest
             cypress_cache_folder: ~/.cache/Cypress
-          - os: macos-latest
-            cypress_cache_folder: ~/Library/Caches/Cypress
 
     name: Test and Build Dashboards Maps on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -59,10 +57,6 @@ jobs:
       - name: Run Opensearch with plugin
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          # Install coreutils for macOS since timeout doesn't seem to available on that OS even when forcing bash shell
-          if [ "$RUNNER_OS" == "macOS" ]; then
-              brew install coreutils
-          fi
           cd geospatial
           ./gradlew run &
           timeout 600 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
@@ -135,7 +129,7 @@ jobs:
       - name: Install Cypress
         run: |
           cd OpenSearch-Dashboards/plugins/dashboards-maps
-          # This will install Cypress in case the binary is missing which can happen on Windows and Mac
+          # This will install Cypress in case the binary is missing which can happen on Windows
           # If the binary exists, this will exit quickly so it should not be an expensive operation
           npx cypress install
         shell: bash
