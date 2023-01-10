@@ -99,13 +99,6 @@ export const LayerBasicSettings = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiForm>
-        <EuiFormRow label="Type">
-          <EuiFieldText
-            name="layerType"
-            value={layersTypeNameMap[selectedLayerConfig.type]}
-            readOnly={true}
-          />
-        </EuiFormRow>
         <EuiFormRow label="Name" error={errors} isInvalid={invalid}>
           <EuiFieldText
             name="layerName"
