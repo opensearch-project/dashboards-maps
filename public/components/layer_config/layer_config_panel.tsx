@@ -21,6 +21,7 @@ import {
   EuiModalHeader,
   EuiModalHeaderTitle,
   EuiIcon,
+  EuiSpacer,
 } from '@elastic/eui';
 
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -28,7 +29,7 @@ import { BaseMapLayerConfigPanel } from './index';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap } from '../../model/layersFunctions';
-import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
+import { CustomMapConfigPanel, layersTypeNameMap } from './custom_map_config/custom_map_config_panel';
 
 interface Props {
   closeLayerConfigPanel: Function;
@@ -104,12 +105,18 @@ export const LayerConfigPanel = ({
       className="layerConfigPanel"
     >
       <EuiFlyoutHeader hasBorder={true}>
-        <EuiFlexGroup gutterSize="s" justifyContent="spaceAround">
+        <EuiFlexGroup gutterSize="s" alignItems="center">
           <EuiFlexItem grow={false}>
             <EuiIcon type={layersTypeIconMap[selectedLayerConfig.type]} size="m" />
           </EuiFlexItem>
           <EuiFlexItem>
             <strong>{selectedLayerConfig.name}</strong>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+        <EuiSpacer size="s" />
+        <EuiFlexGroup gutterSize="s" alignItems="center">
+          <EuiFlexItem grow={false}>
+            <small>Type: {layersTypeNameMap[selectedLayerConfig.type]}</small>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutHeader>
