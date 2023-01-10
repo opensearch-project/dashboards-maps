@@ -179,12 +179,12 @@ export const CustomMapSource = ({
     <div>
       <EuiPanel paddingSize="s">
         <EuiForm>
-          <EuiFormRow label="Custom type" helpText="Choose custom map type.">
+          <EuiFormRow label="Custom type" helpText="Choose custom map type." fullWidth={true}>
             <EuiSelect
               options={customMapTypeOptions}
               value={customType}
               onChange={onChangeCustomType}
-              fullWidth
+              fullWidth={true}
             />
           </EuiFormRow>
         </EuiForm>
@@ -196,6 +196,7 @@ export const CustomMapSource = ({
               helpText="Raster tile map service URL."
               isInvalid={isInvalidURL(customMapURL)}
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
+              fullWidth={true}
             >
               <EuiFieldText
                 placeholder="https://www.example.com/tiles/{z}/{x}/{y}.png"
@@ -209,6 +210,7 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="TMS attribution"
               helpText="The attribution for this TMS layer, displayed at right-bottom map."
+              fullWidth={true}
             >
               <EuiFieldText
                 value={customMapAttribution}
@@ -225,6 +227,7 @@ export const CustomMapSource = ({
               helpText="Web map service URL"
               isInvalid={isInvalidURL(customMapURL)}
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
+              fullWidth={true}
             >
               <EuiFieldText
                 placeholder="https://www.example.com/wms/dataset"
@@ -238,17 +241,19 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="WMS layers*"
               helpText="The names of the layers to include in the map image. For more than one name, use a comma-separated list."
+              fullWidth={true}
             >
               <EuiFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
             </EuiFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow label="WMS version*">
+            <EuiFormRow label="WMS version*" fullWidth={true}>
               <EuiFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
             </EuiFormRow>
             <EuiSpacer size="m" />
             <EuiFormRow
               label="WMS format*"
               helpText="The format of the map image to return. The most common formats are 'image/png' and 'image/jpeg'."
+              fullWidth={true}
             >
               <EuiFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
             </EuiFormRow>
@@ -256,6 +261,7 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="WMS CRS"
               helpText="The coordinate reference system (CRS) to use for the map image."
+              fullWidth={true}
             >
               <EuiFieldText
                 value={WMSCoordinateSystem}
@@ -267,6 +273,7 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="WMS bbox"
               helpText="The bounding box of the region to include in the map image."
+              fullWidth={true}
             >
               <EuiFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
             </EuiFormRow>
@@ -274,6 +281,7 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="WMS attribution"
               helpText="The attribution for this WMS layer, displayed at right-bottom map."
+              fullWidth={true}
             >
               <EuiFieldText
                 value={customMapAttribution}
@@ -285,6 +293,7 @@ export const CustomMapSource = ({
             <EuiFormRow
               label="WMS styles"
               helpText="The styles to be used for each of the layers in the map image."
+              fullWidth={true}
             >
               <EuiFieldText value={WMSStyles} onChange={onChangeWMSStyles} fullWidth={true} />
             </EuiFormRow>
