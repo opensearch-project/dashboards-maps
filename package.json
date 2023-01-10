@@ -1,0 +1,37 @@
+{
+  "name": "customImportMap",
+  "version": "2.5.0.0",
+  "license": "Apache-2.0",
+  "config": {
+    "id": "customImportMapDashboards"
+  },
+  "scripts": {
+    "build": "yarn plugin-helpers build",
+    "plugin-helpers": "node ../../scripts/plugin_helpers",
+    "osd": "node ../../scripts/osd",
+    "lint": "yarn run lint:es && yarn run lint:style",
+    "lint:es": "node ../../scripts/eslint",
+    "lint:style": "node ../../scripts/stylelint",
+    "test:jest": "../../node_modules/.bin/jest --config ./test/jest.config.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "dependencies": {
+    "@cypress/skip-test": "^2.6.1",
+    "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
+    "@types/wellknown": "^0.5.4",
+    "cypress-file-upload": "^5.0.8",
+    "maplibre-gl": "^2.4.0",
+    "prettier": "^2.1.1",
+    "uuid": "3.3.2",
+    "wellknown": "^0.5.0"
+  },
+  "devDependencies": {
+    "cypress": "9.5.4",
+    "cypress-multi-reporters": "^1.5.0",
+    "prettier": "^2.1.1"
+  }
+}
