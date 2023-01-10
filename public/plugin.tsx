@@ -32,7 +32,11 @@ export class CustomImportMapPlugin
     core.application.register({
       id: PLUGIN_NAVIGATION_BAR_ID,
       title: PLUGIN_NAVIGATION_BAR_TILE,
-      category: DEFAULT_APP_CATEGORIES.opensearchDashboards,
+      category: {
+        id: 'opensearch',
+        label: 'OpenSearch Plugins',
+        order: 2000,
+      },
       async mount(params: AppMountParameters) {
         // Load application bundle
         const { renderApp } = await import('./application');
