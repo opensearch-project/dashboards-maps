@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre } from 'maplibre-gl';
+import { LngLatBounds, Map as Maplibre } from 'maplibre-gl';
 import { DocumentLayerSpecification, MapLayerSpecification } from './mapLayerType';
-import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, MAX_LONGITUDE, MIN_LONGITUDE } from '../../common';
 import {
   buildOpenSearchQuery,
   Filter,
@@ -22,16 +22,27 @@ interface MaplibreRef {
   current: Maplibre | null;
 }
 
-// OpenSearch only accepts longitude in range [-180, 180]
-// Maplibre could return value out of the range
-function adjustLongitudeForSearch(lon: number) {
-  if (lon < -180) {
-    return -180;
+// calculate lng limits based on map bounds
+// maps can render more than 1 copies of map at lower zoom level and displays
+// one side from 1 copy and other side from other copy at higher zoom level if
+// screen crosses internation dateline
+function calculateBoundingBoxLngLimit(bounds: LngLatBounds) {
+  const boundsMinLng = bounds.getNorthWest().lng;
+  const boundsMaxLng = bounds.getSouthEast().lng;
+  // if bounds expands more than 360 then, consider complete globe is visible
+  if (boundsMaxLng - boundsMinLng >= MAX_LONGITUDE - MIN_LONGITUDE) {
+    return {
+      right: MAX_LONGITUDE,
+      left: MIN_LONGITUDE,
+    };
   }
-  if (lon > 180) {
-    return 180;
-  }
-  return lon;
+  // wrap bounds if only portion of globe is visible
+  // wrap() returns a new LngLat object whose longitude is
+  // wrapped to the range (-180, 180).
+  return {
+    right: bounds.getSouthEast().wrap().lng,
+    left: bounds.getNorthWest().wrap().lng,
+  };
 }
 
 export const prepareDataLayerSource = (
@@ -112,13 +123,14 @@ export const handleDataLayerRender = (
     maplibreRef.current
   ) {
     const mapBounds = maplibreRef.current.getBounds();
+    const lngLimit = calculateBoundingBoxLngLimit(mapBounds);
     const filterBoundingBox = {
       bottom_right: {
-        lon: adjustLongitudeForSearch(mapBounds.getSouthEast().lng),
+        lon: lngLimit.right,
         lat: mapBounds.getSouthEast().lat,
       },
       top_left: {
-        lon: adjustLongitudeForSearch(mapBounds.getNorthWest().lng),
+        lon: lngLimit.left,
         lat: mapBounds.getNorthWest().lat,
       },
     };
