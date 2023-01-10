@@ -130,7 +130,7 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
 
   const ColorPicker = ({ color, setColor, label }: ColorPickerProps) => {
     return (
-      <EuiFormRow label={label}>
+      <EuiFormRow label={label} fullWidth={true}>
         <EuiColorPicker
           color={color}
           onChange={setColor}
@@ -151,7 +151,7 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
 
   const WidthSelector = ({ label, onWidthChange, size, hasInvalid }: WidthSelectorProps) => {
     return (
-      <EuiFormRow label={label}>
+      <EuiFormRow label={label} fullWidth={true}>
         <EuiFlexItem>
           <EuiFieldNumber
             placeholder="Select thickness"

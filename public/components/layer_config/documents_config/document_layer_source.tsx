@@ -226,6 +226,7 @@ export const DocumentLayerSource = ({
                   isInvalid={!indexPattern}
                   error={errorsMap.datasource}
                   data-test-subj={'indexPatternSelect'}
+                  fullWidth={true}
                 >
                   <IndexPatternSelect
                     savedObjectsClient={savedObjectsClient}
@@ -239,6 +240,7 @@ export const DocumentLayerSource = ({
                     }}
                     isClearable={false}
                     data-test-subj={'indexPatternSelect'}
+                    fullWidth={true}
                   />
                 </EuiFormRow>
               </EuiFlexItem>
@@ -248,6 +250,7 @@ export const DocumentLayerSource = ({
                   isInvalid={!selectedField}
                   error={errorsMap.geoFields}
                   data-test-subj={'geoFieldSelect'}
+                  fullWidth={true}
                 >
                   <EuiComboBox
                     options={formatFieldsToComboBox(geoFields)}
@@ -262,6 +265,7 @@ export const DocumentLayerSource = ({
                       defaultMessage: 'Select data field',
                     })}
                     data-test-subj={'geoFieldSelect'}
+                    fullWidth={true}
                   />
                 </EuiFormRow>
               </EuiFlexItem>
@@ -274,6 +278,7 @@ export const DocumentLayerSource = ({
                   onChange={onDocumentRequestNumberChange}
                   aria-label="Use aria labels when no actual label is in use"
                   isInvalid={hasInvalidRequestNumber}
+                  fullWidth={true}
                 />
                 {hasInvalidRequestNumber && (
                   <EuiFormErrorText>
@@ -347,6 +352,7 @@ export const DocumentLayerSource = ({
                 placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
                   defaultMessage: 'Add tooltip fields',
                 })}
+                fullWidth={true}
               />
             </EuiFlexItem>
           </EuiFlexGrid>
