@@ -208,7 +208,8 @@ export const CustomMapSource = ({
             <EuiSpacer size="m" />
             <EuiFormRow
               label="TMS attribution"
-              helpText="The attribution for this TMS layer, displayed at right-bottom map."
+              helpText="The attribution for the TMS layer, displayed in the lower-right corner of the map."
+              fullWidth={true}
             >
               <EuiFieldText
                 value={customMapAttribution}
