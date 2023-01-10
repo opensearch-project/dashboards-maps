@@ -99,31 +99,34 @@ export const LayerBasicSettings = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiForm>
-        <EuiFormRow label="Type">
+        <EuiFormRow label="Type" fullWidth={true}>
           <EuiFieldText
             name="layerType"
             value={layersTypeNameMap[selectedLayerConfig.type]}
             readOnly={true}
+            fullWidth={true}
           />
         </EuiFormRow>
-        <EuiFormRow label="Name" error={errors} isInvalid={invalid}>
+        <EuiFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
           <EuiFieldText
             name="layerName"
             value={selectedLayerConfig.name}
             onChange={onNameChange}
             isInvalid={invalid}
+            fullWidth={true}
           />
         </EuiFormRow>
 
-        <EuiFormRow label="Description">
+        <EuiFormRow label="Description" fullWidth={true}>
           <EuiTextArea
             placeholder="Enter description"
             value={selectedLayerConfig.description}
             onChange={onDescriptionChange}
+            fullWidth={true}
           />
         </EuiFormRow>
 
-        <EuiFormRow label="Zoom levels">
+        <EuiFormRow label="Zoom levels" fullWidth={true}>
           <EuiDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
@@ -133,9 +136,10 @@ export const LayerBasicSettings = ({
             maxInputProps={{ 'aria-label': 'Max value' }}
             onChange={onZoomChange}
             aria-label="DualRange with inputs for zoom level"
+            fullWidth={true}
           />
         </EuiFormRow>
-        <EuiFormRow label="Opacity">
+        <EuiFormRow label="Opacity" fullWidth={true}>
           <EuiRange
             min={MAP_LAYER_DEFAULT_MIN_OPACITY}
             max={MAP_LAYER_DEFAULT_MAX_OPACITY}
@@ -145,6 +149,7 @@ export const LayerBasicSettings = ({
             showInput
             aria-label="Range for layer opacity"
             append={<EuiFormLabel>%</EuiFormLabel>}
+            fullWidth={true}
           />
         </EuiFormRow>
       </EuiForm>
