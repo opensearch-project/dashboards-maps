@@ -32,6 +32,7 @@ export class CustomImportMapPlugin
     core.application.register({
       id: PLUGIN_NAVIGATION_BAR_ID,
       title: PLUGIN_NAVIGATION_BAR_TILE,
+      order: 5100,
       category: {
         id: 'opensearch',
         label: 'OpenSearch Plugins',
