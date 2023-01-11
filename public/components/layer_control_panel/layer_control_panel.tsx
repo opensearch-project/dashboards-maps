@@ -47,6 +47,7 @@ import {
   handleReferenceLayerRender,
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
+import { ConfigSchema } from '../../config';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -60,6 +61,7 @@ interface Props {
   setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
   mapState: MapState;
   zoom: number;
+  mapConfig: ConfigSchema;
 }
 
 export const LayerControlPanel = memo(
@@ -71,6 +73,7 @@ export const LayerControlPanel = memo(
     setLayersIndexPatterns,
     mapState,
     zoom,
+    mapConfig,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
@@ -500,6 +503,7 @@ export const LayerControlPanel = memo(
                 addLayer={addLayer}
                 newLayerIndex={newLayerIndex()}
                 setIsNewLayer={setIsNewLayer}
+                mapConfig={mapConfig}
               />
               {deleteLayerModal}
             </EuiFlexGroup>
