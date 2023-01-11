@@ -23,9 +23,6 @@ export {
   PLUGIN_NAME,
 };
 
-export const MAP_VECTOR_TILE_BASIC_STYLE = 'https://tiles.maps.opensearch.org/styles/basic.json';
-export const MAP_GLYPHS = 'https://tiles.maps.opensearch.org/fonts/{fontstack}/{range}.pbf';
-export const MAP_VECTOR_TILE_DATA_SOURCE = 'https://tiles.maps.opensearch.org/data/v1.json';
 export const MAP_DEFAULT_MIN_ZOOM = 0;
 export const MAP_DEFAULT_MAX_ZOOM = 22;
 export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 100;

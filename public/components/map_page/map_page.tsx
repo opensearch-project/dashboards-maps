@@ -9,7 +9,6 @@ import { SimpleSavedObject } from 'opensearch-dashboards/public';
 import { Map as Maplibre } from 'maplibre-gl';
 import { MapContainer } from '../map_container';
 import { MapTopNavMenu } from '../map_top_nav';
-import { MapLayerSpecification } from '../../model/mapLayerType';
 import { MapServices } from '../../types';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
@@ -21,8 +20,13 @@ import {
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
+import { ConfigSchema } from '../../config';
 
-export const MapPage = () => {
+interface Props {
+  mapConfig: ConfigSchema;
+}
+
+export const MapPage = ({ mapConfig }: Props) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
@@ -54,7 +58,7 @@ export const MapPage = () => {
         setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
-      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap()[
+      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap(mapConfig)[
         OPENSEARCH_MAP_LAYER.type
       ];
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
@@ -80,6 +84,7 @@ export const MapPage = () => {
         setLayersIndexPatterns={setLayersIndexPatterns}
         maplibreRef={maplibreRef}
         mapState={mapState}
+        mapConfig={mapConfig}
       />
     </div>
   );
