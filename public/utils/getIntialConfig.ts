@@ -16,14 +16,13 @@ import {
   MAP_DEFAULT_MIN_ZOOM,
   MAP_LAYER_DEFAULT_BORDER_THICKNESS,
   MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
-  MAP_VECTOR_TILE_BASIC_STYLE,
-  MAP_VECTOR_TILE_DATA_SOURCE,
   OPENSEARCH_MAP_LAYER,
   CUSTOM_MAP,
 } from '../../common';
 import { MapState } from '../model/mapState';
+import { ConfigSchema } from '../config';
 
-export const getLayerConfigMap = () => ({
+export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
   [OPENSEARCH_MAP_LAYER.type]: {
     name: '',
     description: '',
@@ -33,10 +32,10 @@ export const getLayerConfigMap = () => ({
     opacity: MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
     visibility: LAYER_VISIBILITY.VISIBLE,
     source: {
-      dataURL: MAP_VECTOR_TILE_DATA_SOURCE,
+      dataURL: mapConfig.opensearchVectorTileDataUrl,
     },
     style: {
-      styleURL: MAP_VECTOR_TILE_BASIC_STYLE,
+      styleURL: mapConfig.opensearchVectorTileStyleUrl,
     },
   },
   [DOCUMENTS.type]: {

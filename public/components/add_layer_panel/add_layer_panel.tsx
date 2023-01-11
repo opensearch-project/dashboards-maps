@@ -28,6 +28,7 @@ import {
   NEW_MAP_LAYER_DEFAULT_PREFIX,
 } from '../../../common';
 import { getLayerConfigMap } from '../../utils/getIntialConfig';
+import { ConfigSchema } from '../../config';
 
 interface Props {
   setIsLayerConfigVisible: Function;
@@ -36,6 +37,7 @@ interface Props {
   addLayer: Function;
   setIsNewLayer: Function;
   newLayerIndex: number;
+  mapConfig: ConfigSchema;
 }
 
 export const AddLayerPanel = ({
@@ -45,12 +47,13 @@ export const AddLayerPanel = ({
   addLayer,
   setIsNewLayer,
   newLayerIndex,
+  mapConfig,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
 
   function onClickAddNewLayer(layerType: string) {
-    const initLayerConfig = getLayerConfigMap()[layerType];
+    const initLayerConfig = getLayerConfigMap(mapConfig)[layerType];
     initLayerConfig.name = NEW_MAP_LAYER_DEFAULT_PREFIX + ' ' + newLayerIndex;
     setSelectedLayerConfig(initLayerConfig);
     setIsAddNewLayerModalVisible(false);

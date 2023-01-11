@@ -9,7 +9,7 @@ import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 
 import { debounce } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { MAP_INITIAL_STATE, MAP_GLYPHS, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
@@ -17,6 +17,7 @@ import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/c
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
+import { ConfigSchema } from '../../config';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -25,6 +26,7 @@ interface MapContainerProps {
   setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
   maplibreRef: React.MutableRefObject<Maplibre | null>;
   mapState: MapState;
+  mapConfig: ConfigSchema;
 }
 
 export const MapContainer = ({
@@ -34,6 +36,7 @@ export const MapContainer = ({
   setLayersIndexPatterns,
   maplibreRef,
   mapState,
+  mapConfig,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -47,7 +50,7 @@ export const MapContainer = ({
       version: 8 as 8,
       sources: {},
       layers: [],
-      glyphs: MAP_GLYPHS,
+      glyphs: mapConfig.opensearchVectorTileGlyphsUrl,
     };
 
     maplibreRef.current = new Maplibre({
@@ -180,6 +183,7 @@ export const MapContainer = ({
             setLayersIndexPatterns={setLayersIndexPatterns}
             mapState={mapState}
             zoom={zoom}
+            mapConfig={mapConfig}
           />
         )}
       </div>
