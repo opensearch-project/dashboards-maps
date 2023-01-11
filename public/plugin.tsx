@@ -2,7 +2,6 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
-
 import { i18n } from '@osd/i18n';
 import React from 'react';
 import {
@@ -11,12 +10,20 @@ import {
   CoreStart,
   DEFAULT_APP_CATEGORIES,
   Plugin,
+  PluginInitializerContext,
 } from '../../../src/core/public';
 import {
   AppPluginStartDependencies,
-  MapServices, CustomImportMapPluginSetup, CustomImportMapPluginStart,
+  MapServices,
+  CustomImportMapPluginSetup,
+  CustomImportMapPluginStart,
 } from './types';
-import {PLUGIN_NAME, PLUGIN_NAVIGATION_BAR_ID, PLUGIN_NAVIGATION_BAR_TILE} from '../common/constants/shared';
+import {
+  PLUGIN_NAME,
+  PLUGIN_NAVIGATION_BAR_ID,
+  PLUGIN_NAVIGATION_BAR_TILE,
+} from '../common/constants/shared';
+import { ConfigSchema } from './config';
 
 import { AppPluginSetupDependencies } from './types';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
@@ -24,10 +31,17 @@ import { VectorUploadOptions } from './components/vector_upload_options';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
+  readonly _initializerContext: PluginInitializerContext<ConfigSchema>;
+  constructor(initializerContext: PluginInitializerContext<ConfigSchema>) {
+    this._initializerContext = initializerContext;
+  }
   public setup(
     core: CoreSetup,
     { regionMap }: AppPluginSetupDependencies
   ): CustomImportMapPluginSetup {
+    const mapConfig: ConfigSchema = {
+      ...this._initializerContext.config.get<ConfigSchema>(),
+    };
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_NAVIGATION_BAR_ID,
@@ -45,7 +59,7 @@ export class CustomImportMapPlugin
         const [coreStart, depsStart] = await core.getStartServices();
         const { navigation, data } = depsStart as AppPluginStartDependencies;
 
-        // make sure the index pattern list is up to date
+        // make sure the index pattern list is up-to-date
         data.indexPatterns.clearCache();
         // make sure a default index pattern exists
         // if not, the page will be redirected to management and maps won't be rendered
@@ -62,7 +76,7 @@ export class CustomImportMapPlugin
           data,
         };
         // Render the application
-        return renderApp(params, services);
+        return renderApp(params, services, mapConfig);
       },
     });
 
