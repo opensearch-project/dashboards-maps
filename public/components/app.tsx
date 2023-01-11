@@ -11,8 +11,12 @@ import { MapPage } from './map_page';
 import { APP_PATH } from '../../common';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../types';
+import { ConfigSchema } from '../config';
 
-export const MapsDashboardsApp = () => {
+interface Props {
+  mapConfig: ConfigSchema;
+}
+export const MapsDashboardsApp = ({ mapConfig }: Props) => {
   const {
     services: { appBasePath },
   } = useOpenSearchDashboards<MapServices>();
@@ -22,7 +26,10 @@ export const MapsDashboardsApp = () => {
       <I18nProvider>
         <div>
           <Switch>
-            <Route path={[APP_PATH.CREATE_MAP, APP_PATH.EDIT_MAP]} render={() => <MapPage />} />
+            <Route
+              path={[APP_PATH.CREATE_MAP, APP_PATH.EDIT_MAP]}
+              render={() => <MapPage mapConfig={mapConfig} />}
+            />
             <Route exact path={APP_PATH.LANDING_PAGE_PATH} render={() => <MapsList />} />
           </Switch>
         </div>
