@@ -17,7 +17,7 @@ import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/c
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
-import { ConfigSchema } from '../../config';
+import { ConfigSchema } from '../../../common/config';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
