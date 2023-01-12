@@ -7,7 +7,7 @@ import './index.scss';
 import { PluginInitializerContext } from '../../../src/core/server';
 
 import { CustomImportMapPlugin } from './plugin';
-import { ConfigSchema } from './config';
+import { ConfigSchema } from '../common/config';
 
 // This exports static code and TypeScript types,
 // as well as, OpenSearch Dashboards Platform `plugin()` initializer.

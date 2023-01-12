@@ -20,7 +20,7 @@ import {
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import { ConfigSchema } from '../../config';
+import { ConfigSchema } from '../../../common/config';
 
 interface Props {
   mapConfig: ConfigSchema;

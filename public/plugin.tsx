@@ -23,7 +23,7 @@ import {
   PLUGIN_NAVIGATION_BAR_ID,
   PLUGIN_NAVIGATION_BAR_TILE,
 } from '../common/constants/shared';
-import { ConfigSchema } from './config';
+import { ConfigSchema } from '../common/config';
 
 import { AppPluginSetupDependencies } from './types';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
