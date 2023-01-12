@@ -11,7 +11,7 @@ import { MapPage } from './map_page';
 import { APP_PATH } from '../../common';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../types';
-import { ConfigSchema } from '../config';
+import { ConfigSchema } from '../../common/config';
 
 interface Props {
   mapConfig: ConfigSchema;

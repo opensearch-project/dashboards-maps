@@ -47,7 +47,7 @@ import {
   handleReferenceLayerRender,
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
-import { ConfigSchema } from '../../config';
+import { ConfigSchema } from '../../../common/config';
 
 interface MaplibreRef {
   current: Maplibre | null;
