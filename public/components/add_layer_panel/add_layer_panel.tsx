@@ -28,7 +28,7 @@ import {
   NEW_MAP_LAYER_DEFAULT_PREFIX,
 } from '../../../common';
 import { getLayerConfigMap } from '../../utils/getIntialConfig';
-import { ConfigSchema } from '../../config';
+import { ConfigSchema } from '../../../common/config';
 
 interface Props {
   setIsLayerConfigVisible: Function;

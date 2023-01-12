@@ -20,7 +20,7 @@ import {
   CUSTOM_MAP,
 } from '../../common';
 import { MapState } from '../model/mapState';
-import { ConfigSchema } from '../config';
+import { ConfigSchema } from '../../common/config';
 
 export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
   [OPENSEARCH_MAP_LAYER.type]: {
