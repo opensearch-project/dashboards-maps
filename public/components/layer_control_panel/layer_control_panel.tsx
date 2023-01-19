@@ -504,6 +504,7 @@ export const LayerControlPanel = memo(
                 newLayerIndex={newLayerIndex()}
                 setIsNewLayer={setIsNewLayer}
                 mapConfig={mapConfig}
+                layerCount={layers.length}
               />
               {deleteLayerModal}
             </EuiFlexGroup>
