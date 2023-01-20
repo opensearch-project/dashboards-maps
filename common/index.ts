@@ -23,25 +23,27 @@ export {
   PLUGIN_NAME,
 };
 
-export const MAP_DEFAULT_MIN_ZOOM = 0;
-export const MAP_DEFAULT_MAX_ZOOM = 22;
-export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 100;
-export const MAP_DATA_LAYER_DEFAULT_OPACITY = 70;
-export const MAP_LAYER_DEFAULT_MIN_OPACITY = 0;
-export const MAP_LAYER_DEFAULT_MAX_OPACITY = 100;
-export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
-export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
+export const DOCUMENTS_DEFAULT_MARKER_SIZE = 5;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 1000;
 export const DOCUMENTS_DEFAULT_SHOW_TOOLTIPS: boolean = false;
 export const DOCUMENTS_DEFAULT_TOOLTIPS: string[] = [];
-export const DOCUMENTS_DEFAULT_MARKER_SIZE = 5;
-export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye';
 export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed';
-export const MAX_LAYER_NAME_LIMIT = 35;
+export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye';
+export const MAP_DATA_LAYER_DEFAULT_OPACITY = 70;
+export const MAP_DEFAULT_MAX_ZOOM = 22;
+export const MAP_DEFAULT_MIN_ZOOM = 0;
+export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
+export const MAP_LAYER_DEFAULT_MAX_OPACITY = 100;
+export const MAP_LAYER_DEFAULT_MIN_OPACITY = 0;
 export const MAP_LAYER_DEFAULT_NAME = 'Default map';
-export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
-export const MIN_LONGITUDE = -180;
+export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
+export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 100;
+// Make this configurable from map settings
+export const MAX_LAYER_LIMIT = 20;
+export const MAX_LAYER_NAME_LIMIT = 35;
 export const MAX_LONGITUDE = 180;
+export const MIN_LONGITUDE = -180;
+export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
