@@ -45,6 +45,7 @@ describe('Documents layer', () => {
     cy.wait(5000).get('[data-test-subj="top-nav"]').click();
     cy.wait(5000).get('[data-test-subj="savedObjectTitle"]').type(uniqueName);
     cy.wait(5000).get('[data-test-subj="confirmSaveSavedObjectButton"]').click();
+    cy.wait(5000).get('[data-test-subj="breadcrumb last"]').should('contain', uniqueName);
   });
 
   it('Open saved map with documents layer', () => {
