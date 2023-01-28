@@ -8,6 +8,7 @@ import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
 import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
+import { addCircleLayer, addLineLayer, addPolygonLayer } from './map/operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -129,126 +130,56 @@ const addNewLayer = (
 ) => {
   const maplibreInstance = maplibreRef.current;
   const mbLayerBeforeId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
-  const addLineLayer = (
-    documentLayerConfig: DocumentLayerSpecification,
-    beforeId: string | undefined
-  ) => {
-    const lineLayerId = buildLayerSuffix(documentLayerConfig.id, 'line');
-    maplibreInstance?.addLayer(
-      {
-        id: lineLayerId,
-        type: 'line',
-        source: documentLayerConfig.id,
-        filter: ['==', '$type', 'LineString'],
-        paint: {
-          'line-color': documentLayerConfig.style?.fillColor,
-          'line-opacity': documentLayerConfig.opacity / 100,
-          'line-width': documentLayerConfig.style?.borderThickness,
-        },
-      },
-      beforeId
-    );
-    maplibreInstance?.setLayoutProperty(lineLayerId, 'visibility', documentLayerConfig.visibility);
-    maplibreInstance?.setLayerZoomRange(
-      lineLayerId,
-      documentLayerConfig.zoomRange[0],
-      documentLayerConfig.zoomRange[1]
-    );
-  };
-
-  const addCircleLayer = (
-    documentLayerConfig: DocumentLayerSpecification,
-    beforeId: string | undefined
-  ) => {
-    const circleLayerId = buildLayerSuffix(documentLayerConfig.id, 'circle');
-    maplibreInstance?.addLayer(
-      {
-        id: circleLayerId,
-        type: 'circle',
-        source: layerConfig.id,
-        filter: ['==', '$type', 'Point'],
-        paint: {
-          'circle-radius': documentLayerConfig.style?.markerSize,
-          'circle-color': documentLayerConfig.style?.fillColor,
-          'circle-opacity': documentLayerConfig.opacity / 100,
-          'circle-stroke-width': documentLayerConfig.style?.borderThickness,
-          'circle-stroke-color': documentLayerConfig.style?.borderColor,
-        },
-      },
-      beforeId
-    );
-    maplibreInstance?.setLayoutProperty(
-      circleLayerId,
-      'visibility',
-      documentLayerConfig.visibility
-    );
-    maplibreInstance?.setLayerZoomRange(
-      circleLayerId,
-      documentLayerConfig.zoomRange[0],
-      documentLayerConfig.zoomRange[1]
-    );
-  };
-
-  const addFillLayer = (
-    documentLayerConfig: DocumentLayerSpecification,
-    beforeId: string | undefined
-  ) => {
-    const fillLayerId = buildLayerSuffix(documentLayerConfig.id, 'fill');
-    maplibreInstance?.addLayer(
-      {
-        id: fillLayerId,
-        type: 'fill',
-        source: layerConfig.id,
-        filter: ['==', '$type', 'Polygon'],
-        paint: {
-          'fill-color': documentLayerConfig.style?.fillColor,
-          'fill-opacity': documentLayerConfig.opacity / 100,
-        },
-      },
-      beforeId
-    );
-    maplibreInstance?.setLayoutProperty(fillLayerId, 'visibility', documentLayerConfig.visibility);
-    maplibreInstance?.setLayerZoomRange(
-      fillLayerId,
-      documentLayerConfig.zoomRange[0],
-      documentLayerConfig.zoomRange[1]
-    );
-    // Due to limitations on WebGL, fill can't render outlines with width wider than 1,
-    // so we have to create another style layer with type=line to apply width.
-    const outlineId = buildLayerSuffix(documentLayerConfig.id, 'fill-outline');
-    maplibreInstance?.addLayer(
-      {
-        id: outlineId,
-        type: 'line',
-        source: layerConfig.id,
-        filter: ['==', '$type', 'Polygon'],
-        paint: {
-          'line-color': layerConfig.style?.borderColor,
-          'line-opacity': layerConfig.opacity / 100,
-          'line-width': layerConfig.style?.borderThickness,
-        },
-      },
-      beforeId
-    );
-    maplibreInstance?.setLayoutProperty(outlineId, 'visibility', layerConfig.visibility);
-    maplibreInstance?.setLayerZoomRange(
-      outlineId,
-      documentLayerConfig.zoomRange[0],
-      documentLayerConfig.zoomRange[1]
-    );
-  };
-
   if (maplibreInstance) {
     const source = getLayerSource(data, layerConfig);
     maplibreInstance.addSource(layerConfig.id, {
       type: 'geojson',
       data: source,
     });
-    addCircleLayer(layerConfig, mbLayerBeforeId);
+    addCircleLayer(
+      maplibreInstance,
+      {
+        fillColor: layerConfig.style?.fillColor,
+        maxZoom: layerConfig.zoomRange[1],
+        minZoom: layerConfig.zoomRange[0],
+        opacity: layerConfig.opacity,
+        outlineColor: layerConfig.style?.borderColor,
+        radius: layerConfig.style?.markerSize,
+        sourceId: layerConfig.id,
+        visibility: layerConfig.visibility,
+        width: layerConfig.style?.borderThickness,
+      },
+      mbLayerBeforeId
+    );
     const geoFieldType = getGeoFieldType(layerConfig);
     if (geoFieldType === 'geo_shape') {
-      addLineLayer(layerConfig, mbLayerBeforeId);
-      addFillLayer(layerConfig, mbLayerBeforeId);
+      addLineLayer(
+        maplibreInstance,
+        {
+          width: layerConfig.style?.borderThickness,
+          color: layerConfig.style?.fillColor,
+          maxZoom: layerConfig.zoomRange[1],
+          minZoom: layerConfig.zoomRange[0],
+          opacity: layerConfig.opacity,
+          sourceId: layerConfig.id,
+          visibility: layerConfig.visibility,
+        },
+        mbLayerBeforeId
+      );
+      addPolygonLayer(
+        maplibreInstance,
+        {
+          width: layerConfig.style?.borderThickness,
+          fillColor: layerConfig.style?.fillColor,
+          maxZoom: layerConfig.zoomRange[1],
+          minZoom: layerConfig.zoomRange[0],
+          opacity: layerConfig.opacity,
+          sourceId: layerConfig.id,
+          outlineColor: layerConfig.style?.borderColor,
+          visibility: layerConfig.visibility,
+        },
+        mbLayerBeforeId
+      );
     }
   }
 };
