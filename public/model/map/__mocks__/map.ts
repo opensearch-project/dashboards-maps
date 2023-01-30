@@ -7,14 +7,24 @@ import { LayerSpecification } from 'maplibre-gl';
 import { MockLayer } from './layer';
 
 export class MockMaplibreMap {
-  public _layers: MockLayer[];
+  private _styles: {
+    layers: MockLayer[];
+  };
 
-  constructor() {
-    this._layers = new Array<MockLayer>();
+  constructor(layers: MockLayer[]) {
+    this._styles = {
+      layers: new Array<MockLayer>(...layers),
+    };
   }
 
   getLayer(id: string): MockLayer[] {
-    return this._layers.filter((layer) => (layer.getProperty('id') as string).includes(id));
+    return this._styles.layers.filter((layer) => (layer.getProperty('id') as string).includes(id));
+  }
+
+  getStyle(): { layers: MockLayer[] } {
+    return {
+      layers: [...this._styles.layers],
+    };
   }
 
   public setLayerZoomRange(layerId: string, minZoom: number, maxZoom: number) {
@@ -43,12 +53,12 @@ export class MockMaplibreMap {
       layer.setProperty(key, layerSpec[key]);
     });
     if (!beforeId) {
-      this._layers.push(layer);
+      this._styles.layers.push(layer);
       return;
     }
-    const beforeLayerIndex = this._layers.findIndex((l) => {
+    const beforeLayerIndex = this._styles.layers.findIndex((l) => {
       return l.getProperty('id') === beforeId;
     });
-    this._layers.splice(beforeLayerIndex, 0, layer);
+    this._styles.layers.splice(beforeLayerIndex, 0, layer);
   }
 }

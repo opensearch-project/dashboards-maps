@@ -15,7 +15,7 @@ import { MockMaplibreMap } from './__mocks__/map';
 
 describe('Circle layer', () => {
   it('add new circle layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
     const expectedLayerId: string = sourceId + '-circle';
     expect(mockMap.getLayer(expectedLayerId).length).toBe(0);
@@ -51,7 +51,7 @@ describe('Circle layer', () => {
   });
 
   it('update circle layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
 
     // add layer first
@@ -99,7 +99,7 @@ describe('Circle layer', () => {
 
 describe('Line layer', () => {
   it('add new Line layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
     const expectedLayerId: string = sourceId + '-line';
     expect(mockMap.getLayer(expectedLayerId).length).toBe(0);
@@ -129,7 +129,7 @@ describe('Line layer', () => {
   });
 
   it('update line layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
 
     // add layer first
@@ -171,7 +171,7 @@ describe('Line layer', () => {
 
 describe('Polygon layer', () => {
   it('add new polygon layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
     const expectedFillLayerId = sourceId + '-fill';
     const expectedOutlineLayerId = expectedFillLayerId + '-outline';
@@ -218,7 +218,7 @@ describe('Polygon layer', () => {
   });
 
   it('update polygon layer', () => {
-    const mockMap = new MockMaplibreMap();
+    const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'geojson-source';
 
     const expectedFillLayerId = sourceId + '-fill';

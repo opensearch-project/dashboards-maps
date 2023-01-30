@@ -2,7 +2,24 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Map as Maplibre } from 'maplibre-gl';
+import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
+
+export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSpecification[] => {
+  const layers: LayerSpecification[] = map.getStyle().layers;
+  return dashboardMapsLayerId
+    ? layers.filter((layer) => layer.id.includes(dashboardMapsLayerId))
+    : layers;
+};
+
+export const hasLayer = (map: Maplibre, dashboardMapsLayerId: string) => {
+  const maplibreMapLayers = getLayers(map);
+  for (const layer of maplibreMapLayers) {
+    if (layer.id.includes(dashboardMapsLayerId)) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export interface LineLayerSpecification {
   sourceId: string;
