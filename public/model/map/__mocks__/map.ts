@@ -21,9 +21,14 @@ export class MockMaplibreMap {
     return this._styles.layers.filter((layer) => (layer.getProperty('id') as string).includes(id));
   }
 
-  getStyle(): { layers: MockLayer[] } {
+  getStyle(): { layers: LayerSpecification[] } {
+    const layerSpecs: LayerSpecification[] = this._styles.layers.map((layer) => {
+      return {
+        id: String(layer.getProperty('id')),
+      } as LayerSpecification;
+    });
     return {
-      layers: [...this._styles.layers],
+      layers: layerSpecs,
     };
   }
 

@@ -7,11 +7,11 @@ import { Map as Maplibre } from 'maplibre-gl';
 import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
-import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
+import { getMaplibreBeforeLayerId} from './layersFunctions';
 import {
   addCircleLayer,
   addLineLayer,
-  addPolygonLayer,
+  addPolygonLayer, hasLayer,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
@@ -230,7 +230,7 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
+    if (hasLayer(maplibreRef.current!, layerConfig.id)) {
       updateLayerConfig(layerConfig, maplibreRef, data);
     } else {
       addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);

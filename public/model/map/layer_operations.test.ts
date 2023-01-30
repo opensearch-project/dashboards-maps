@@ -6,12 +6,14 @@ import {
   addCircleLayer,
   addLineLayer,
   addPolygonLayer,
+  getLayers, hasLayer,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
 } from './layer_operations';
 import { Map as Maplibre } from 'maplibre-gl';
 import { MockMaplibreMap } from './__mocks__/map';
+import { MockLayer } from './__mocks__/layer';
 
 describe('Circle layer', () => {
   it('add new circle layer', () => {
@@ -275,5 +277,27 @@ describe('Polygon layer', () => {
     expect(outlineLayer.getProperty('line-opacity')).toBe(0.8);
     expect(outlineLayer.getProperty('line-color')).toBe('yellow');
     expect(outlineLayer.getProperty('line-width')).toBe(7);
+  });
+});
+
+describe('get layer', () => {
+  it('should get layer successfully', function () {
+    const mockLayer: MockLayer = new MockLayer('layer-1');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
+    const actualLayers = getLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    expect(actualLayers.length).toBe(1);
+    expect(actualLayers[0].id).toBe(mockLayer.getProperty('id'));
+  });
+
+  it('should confirm no layer exists', function () {
+    const mockLayer: MockLayer = new MockLayer('layer-1');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
+    expect(hasLayer((mockMap as unknown) as Maplibre, 'layer-2')).toBe(false);
+  });
+
+  it('should confirm layer exists', function () {
+    const mockLayer: MockLayer = new MockLayer('layer-1');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
+    expect(hasLayer((mockMap as unknown) as Maplibre, 'layer-1')).toBe(true);
   });
 });

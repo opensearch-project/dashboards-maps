@@ -1,6 +1,7 @@
 import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
-import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
+import { hasLayer } from './map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -98,7 +99,7 @@ export const OSMLayerFunctions = {
   ) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
-    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
+    if (hasLayer(maplibreRef.current!, layerConfig.id)) {
       updateLayerConfig(layerConfig, maplibreRef);
     } else {
       addNewLayer(layerConfig, maplibreRef, beforeLayerId);

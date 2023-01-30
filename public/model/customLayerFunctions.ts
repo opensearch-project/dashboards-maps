@@ -1,6 +1,7 @@
 import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
-import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
+import { hasLayer } from './map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -97,7 +98,7 @@ export const CustomLayerFunctions = {
     layerConfig: CustomLayerSpecification,
     beforeLayerId: string | undefined
   ) => {
-    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
+    if (hasLayer(maplibreRef.current!, layerConfig.id)) {
       updateLayerConfig(layerConfig, maplibreRef);
     } else {
       addNewLayer(layerConfig, maplibreRef, beforeLayerId);

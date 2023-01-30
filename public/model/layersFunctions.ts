@@ -13,6 +13,7 @@ import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
 import { MapLayerSpecification } from './mapLayerType';
 import { CustomLayerFunctions } from './customLayerFunctions';
+import { getLayers } from './map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -21,25 +22,14 @@ interface MaplibreRef {
 interface MaplibreRef {
   current: Maplibre | null;
 }
-
-const getAllMaplibreLayersIncludesId = (maplibreRef: MaplibreRef, layerId?: string) => {
-  if (!layerId && !maplibreRef) {
-    return [];
-  }
-  return (
-    maplibreRef.current
-      ?.getStyle()
-      .layers.filter((layer) => layer.id?.includes(String(layerId)) === true) || []
-  );
-};
 
 export const LayerActions = {
   move: (maplibreRef: MaplibreRef, sourceId: string, beforeId?: string) => {
-    const sourceMaplibreLayers = getAllMaplibreLayersIncludesId(maplibreRef, sourceId);
+    const sourceMaplibreLayers = getLayers(maplibreRef.current!, sourceId);
     if (!sourceMaplibreLayers) {
       return;
     }
-    const beforeMaplibreLayers = getAllMaplibreLayersIncludesId(maplibreRef, beforeId);
+    const beforeMaplibreLayers = getLayers(maplibreRef.current!, beforeId);
     if (!beforeMaplibreLayers || beforeMaplibreLayers.length < 1) {
       // move to top
       sourceMaplibreLayers.forEach((layer) => maplibreRef.current?.moveLayer(layer.id));
@@ -65,16 +55,12 @@ export const layersTypeNameMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_NAME.CUSTOM_MAP,
 };
 
-const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
-  return maplibreRef.current?.getStyle().layers || [];
-};
-
 export const getMaplibreBeforeLayerId = (
   selectedLayer: MapLayerSpecification,
   maplibreRef: MaplibreRef,
   beforeLayerId: string | undefined
 ): string | undefined => {
-  const currentLoadedMbLayers = getCurrentStyleLayers(maplibreRef);
+  const currentLoadedMbLayers = getLayers(maplibreRef.current!);
   if (beforeLayerId) {
     const beforeMbLayer = currentLoadedMbLayers.find((mbLayer) =>
       mbLayer.id.includes(beforeLayerId)
@@ -82,16 +68,6 @@ export const getMaplibreBeforeLayerId = (
     return beforeMbLayer?.id;
   }
   return undefined;
-};
-
-export const layerExistInMbSource = (layerConfigId: string, maplibreRef: MaplibreRef) => {
-  const layers = getCurrentStyleLayers(maplibreRef);
-  for (const layer in layers) {
-    if (layers[layer].id.includes(layerConfigId)) {
-      return true;
-    }
-  }
-  return false;
 };
 
 export const layersTypeIconMap: { [key: string]: string } = {
