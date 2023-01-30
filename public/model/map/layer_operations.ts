@@ -1,3 +1,7 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { Map as Maplibre } from 'maplibre-gl';
 
 export interface LineLayerSpecification {
@@ -34,9 +38,9 @@ export const updateLineLayer = (
   layerId?: string
 ): string => {
   const lineLayerId = layerId ? layerId : specification.sourceId + '-line';
-  map?.setPaintProperty(lineLayerId, 'line-opacity', specification.opacity / 100);
-  map?.setPaintProperty(lineLayerId, 'line-color', specification.color);
-  map?.setPaintProperty(lineLayerId, 'line-width', specification.width);
+  map.setPaintProperty(lineLayerId, 'line-opacity', specification.opacity / 100);
+  map.setPaintProperty(lineLayerId, 'line-color', specification.color);
+  map.setPaintProperty(lineLayerId, 'line-width', specification.width);
   map.setLayoutProperty(lineLayerId, 'visibility', specification.visibility);
   map.setLayerZoomRange(lineLayerId, specification.minZoom, specification.maxZoom);
   return lineLayerId;
@@ -79,12 +83,13 @@ export const updateCircleLayer = (
 ): string => {
   const circleLayerId = layerId ? layerId : specification.sourceId + '-circle';
   map.setLayoutProperty(circleLayerId, 'visibility', specification.visibility);
-  map?.setLayerZoomRange(circleLayerId, specification.minZoom, specification.maxZoom);
-  map?.setPaintProperty(circleLayerId, 'circle-opacity', specification.opacity / 100);
-  map?.setPaintProperty(circleLayerId, 'circle-color', specification.fillColor);
-  map?.setPaintProperty(circleLayerId, 'circle-stroke-color', specification.outlineColor);
-  map?.setPaintProperty(circleLayerId, 'circle-stroke-width', specification.width);
-  map?.setPaintProperty(circleLayerId, 'circle-radius', specification.radius);
+  map.setLayerZoomRange(circleLayerId, specification.minZoom, specification.maxZoom);
+  map.setPaintProperty(circleLayerId, 'circle-opacity', specification.opacity / 100);
+  map.setPaintProperty(circleLayerId, 'circle-color', specification.fillColor);
+  map.setPaintProperty(circleLayerId, 'circle-stroke-color', specification.outlineColor);
+  map.setPaintProperty(circleLayerId, 'circle-stroke-width', specification.width);
+  map.setPaintProperty(circleLayerId, 'circle-stroke-opacity', specification.opacity / 100);
+  map.setPaintProperty(circleLayerId, 'circle-radius', specification.radius);
   return circleLayerId;
 };
 
@@ -118,7 +123,7 @@ export const addPolygonLayer = (
 
   // Due to limitations on WebGL, fill can't render outlines with width wider than 1,
   // so we have to create another style layer with type=line to apply width.
-  const outlineId = specification.sourceId + '-fill-outline';
+  const outlineId = fillLayerId + '-outline';
   map.addLayer(
     {
       id: outlineId,
@@ -128,35 +133,48 @@ export const addPolygonLayer = (
     },
     beforeId
   );
-  updatePolygonOutlineLayer(map, specification, outlineId);
+  updateLineLayer(
+    map,
+    {
+      width: specification.width,
+      color: specification.outlineColor,
+      maxZoom: specification.maxZoom,
+      minZoom: specification.minZoom,
+      opacity: specification.opacity,
+      sourceId: specification.sourceId,
+      visibility: specification.visibility,
+    },
+    outlineId
+  );
 };
 
 export const updatePolygonLayer = (map: Maplibre, specification: PolygonLayerSpecification) => {
-  updatePolygonFillLayer(map, specification);
-  updatePolygonOutlineLayer(map, specification);
+  const fillLayerId: string = updatePolygonFillLayer(map, specification);
+  const outlineLayerId: string = fillLayerId + '-outline';
+  updateLineLayer(
+    map,
+    {
+      width: specification.width,
+      color: specification.outlineColor,
+      maxZoom: specification.maxZoom,
+      minZoom: specification.minZoom,
+      opacity: specification.opacity,
+      sourceId: specification.sourceId,
+      visibility: specification.visibility,
+    },
+    outlineLayerId
+  );
 };
 
 const updatePolygonFillLayer = (
   map: Maplibre,
   specification: PolygonLayerSpecification,
   layerId?: string
-) => {
+): string => {
   const fillLayerId = layerId ? layerId : specification.sourceId + '-fill';
-  map?.setLayoutProperty(fillLayerId, 'visibility', specification.visibility);
-  map?.setLayerZoomRange(fillLayerId, specification.minZoom, specification.maxZoom);
-  map?.setPaintProperty(fillLayerId, 'fill-opacity', specification.opacity / 100);
-  map?.setPaintProperty(fillLayerId, 'fill-color', specification.fillColor);
+  map.setLayoutProperty(fillLayerId, 'visibility', specification.visibility);
+  map.setLayerZoomRange(fillLayerId, specification.minZoom, specification.maxZoom);
+  map.setPaintProperty(fillLayerId, 'fill-opacity', specification.opacity / 100);
+  map.setPaintProperty(fillLayerId, 'fill-color', specification.fillColor);
   return fillLayerId;
-};
-const updatePolygonOutlineLayer = (
-  map: Maplibre,
-  specification: PolygonLayerSpecification,
-  layerId?: string
-) => {
-  const outlineLayerId = layerId ? layerId : specification.sourceId + '-fill-outline';
-  map?.setPaintProperty(outlineLayerId, 'line-color', specification.outlineColor);
-  map?.setPaintProperty(outlineLayerId, 'line-width', specification.width);
-  map.setLayoutProperty(outlineLayerId, 'visibility', specification.visibility);
-  map?.setLayerZoomRange(outlineLayerId, specification.minZoom, specification.maxZoom);
-  return outlineLayerId;
 };
