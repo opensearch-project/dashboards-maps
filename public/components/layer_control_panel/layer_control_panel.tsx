@@ -48,6 +48,7 @@ import {
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
+import {moveLayers} from "../../model/map/layer_operations";
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -241,7 +242,8 @@ export const LayerControlPanel = memo(
 
         const currentMaplibreLayerId = layers[prevIndex].id;
         const beforeMaplibreLayerId = beforeMaplibreLayerID(prevIndex, newIndex);
-        LayerActions.move(maplibreRef, currentMaplibreLayerId, beforeMaplibreLayerId);
+
+        moveLayers(maplibreRef.current!, currentMaplibreLayerId, beforeMaplibreLayerId);
 
         // update map layers
         const layersClone = [...layers];

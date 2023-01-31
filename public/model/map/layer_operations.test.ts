@@ -6,7 +6,8 @@ import {
   addCircleLayer,
   addLineLayer,
   addPolygonLayer,
-  getLayers, hasLayer,
+  getLayers,
+  hasLayer, moveLayers, removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
@@ -299,5 +300,62 @@ describe('get layer', () => {
     const mockLayer: MockLayer = new MockLayer('layer-1');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
     expect(hasLayer((mockMap as unknown) as Maplibre, 'layer-1')).toBe(true);
+  });
+});
+
+describe('move layer', () => {
+  it('should move to top', function () {
+    const mockLayer1: MockLayer = new MockLayer('layer-1');
+    const mockLayer2: MockLayer = new MockLayer('layer-11');
+    const mockLayer3: MockLayer = new MockLayer('layer-2');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
+    moveLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
+    expect(reorderedLayer).toEqual(['layer-2', 'layer-1', 'layer-11']);
+  });
+  it('should move before middle layer', function () {
+    const mockLayer1: MockLayer = new MockLayer('layer-1');
+    const mockLayer2: MockLayer = new MockLayer('layer-2');
+    const mockLayer3: MockLayer = new MockLayer('layer-3');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
+    moveLayers((mockMap as unknown) as Maplibre, 'layer-1', 'layer-2');
+    const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
+    expect(reorderedLayer).toEqual(['layer-2', 'layer-1', 'layer-3']);
+  });
+  it('should not move if no layer is matched', function () {
+    const mockLayer1: MockLayer = new MockLayer('layer-1');
+    const mockLayer2: MockLayer = new MockLayer('layer-2');
+    const mockLayer3: MockLayer = new MockLayer('layer-3');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
+    moveLayers((mockMap as unknown) as Maplibre, 'layer-4', 'layer-2');
+    const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
+    expect(reorderedLayer).toEqual(['layer-1', 'layer-2', 'layer-3']);
+  });
+});
+
+describe('delete layer', function () {
+  it('should delete layer without source', function () {
+    const mockLayer1: MockLayer = new MockLayer('layer-1');
+    const mockLayer2: MockLayer = new MockLayer('layer-11');
+    const mockLayer3: MockLayer = new MockLayer('layer-2');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
+    mockMap.addSource('layer-1', 'geojson');
+    removeLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    expect(mockMap.getLayers().length).toBe(1);
+    expect(mockMap.getSource('layer-1')).toBeDefined();
+    expect(mockMap.getLayers()[0].getProperty('id')).toBe('layer-2');
+  });
+  it('should delete layer with source', function () {
+    const mockLayer1: MockLayer = new MockLayer('layer-1');
+    const mockLayer2: MockLayer = new MockLayer('layer-11');
+    const mockLayer3: MockLayer = new MockLayer('layer-2');
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
+    mockMap.addSource('layer-2', 'geojson');
+    removeLayers((mockMap as unknown) as Maplibre, 'layer-2', true);
+    expect(mockMap.getLayers().length).toBe(2);
+    expect(mockMap.getSource('layer-2')).toBeUndefined();
+    expect(
+      mockMap.getLayers().filter((layer) => String(layer?.getProperty('id')) === 'layer-2')
+    ).toEqual([]);
   });
 });

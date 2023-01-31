@@ -21,6 +21,27 @@ export const hasLayer = (map: Maplibre, dashboardMapsLayerId: string) => {
   return false;
 };
 
+export const moveLayers = (map: Maplibre, sourceId: string, beforeId?: string) => {
+  const sourceLayers = getLayers(map, sourceId);
+  if (!sourceLayers.length) {
+    return;
+  }
+  const beforeLayers = beforeId ? getLayers(map, beforeId) : [];
+  const topOfBeforeLayer = beforeLayers.length ? beforeLayers[0].id : undefined;
+  sourceLayers.forEach((layer) => map?.moveLayer(layer.id, topOfBeforeLayer));
+  return;
+};
+
+export const removeLayers = (map: Maplibre, layerId: string, removeSource?: boolean) => {
+  getLayers(map, layerId).forEach((layer) => {
+    map.removeLayer(layer.id);
+  });
+  // client might remove source if it is used anymore.
+  if (removeSource && map.getSource(layerId)) {
+    map.removeSource(layerId);
+  }
+};
+
 export interface LineLayerSpecification {
   sourceId: string;
   visibility: string;

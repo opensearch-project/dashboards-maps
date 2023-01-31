@@ -11,7 +11,7 @@ import { getMaplibreBeforeLayerId} from './layersFunctions';
 import {
   addCircleLayer,
   addLineLayer,
-  addPolygonLayer, hasLayer,
+  addPolygonLayer, hasLayer, removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
@@ -237,12 +237,7 @@ export const DocumentLayerFunctions = {
     }
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((layer: { id: any }) => {
-      if (layer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.removeLayer(layer.id);
-      }
-    });
+    removeLayers(maplibreRef.current!, layerConfig.id, true);
   },
   hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
     const layers = getCurrentStyleLayers(maplibreRef);

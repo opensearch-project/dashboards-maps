@@ -23,26 +23,6 @@ interface MaplibreRef {
   current: Maplibre | null;
 }
 
-export const LayerActions = {
-  move: (maplibreRef: MaplibreRef, sourceId: string, beforeId?: string) => {
-    const sourceMaplibreLayers = getLayers(maplibreRef.current!, sourceId);
-    if (!sourceMaplibreLayers) {
-      return;
-    }
-    const beforeMaplibreLayers = getLayers(maplibreRef.current!, beforeId);
-    if (!beforeMaplibreLayers || beforeMaplibreLayers.length < 1) {
-      // move to top
-      sourceMaplibreLayers.forEach((layer) => maplibreRef.current?.moveLayer(layer.id));
-      return;
-    }
-    const topOfBeforeLayer = beforeMaplibreLayers[0];
-    sourceMaplibreLayers.forEach((layer) =>
-      maplibreRef.current?.moveLayer(layer.id, topOfBeforeLayer.id)
-    );
-    return;
-  },
-};
-
 export const layersFunctionMap: { [key: string]: any } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: OSMLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DocumentLayerFunctions,
