@@ -1,7 +1,7 @@
 import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
 import { getMaplibreBeforeLayerId } from './layersFunctions';
-import { hasLayer, removeLayers } from './map/layer_operations';
+import { getLayers, hasLayer } from './map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -18,36 +18,27 @@ const fetchStyleLayers = (url: string) => {
     });
 };
 
-const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
-  return maplibreRef.current?.getStyle().layers || [];
-};
-
 const handleStyleLayers = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
-  const layers = getCurrentStyleLayers(maplibreRef);
-  layers.forEach((mbLayer) => {
-    if (mbLayer.id.includes(layerConfig.id)) {
-      maplibreRef.current?.setLayerZoomRange(
-        mbLayer.id,
-        layerConfig.zoomRange[0],
-        layerConfig.zoomRange[1]
-      );
-      // TODO: figure out error reason
-      if (mbLayer.type === 'symbol') {
-        return;
-      }
-      maplibreRef.current?.setPaintProperty(
-        mbLayer.id,
-        `${mbLayer.type}-opacity`,
-        layerConfig.opacity / 100
-      );
+  getLayers(maplibreRef.current!, layerConfig.id).forEach((mbLayer) => {
+    maplibreRef.current?.setLayerZoomRange(
+      mbLayer.id,
+      layerConfig.zoomRange[0],
+      layerConfig.zoomRange[1]
+    );
+    // TODO: figure out error reason
+    if (mbLayer.type === 'symbol') {
+      return;
     }
+    maplibreRef.current?.setPaintProperty(
+      mbLayer.id,
+      `${mbLayer.type}-opacity`,
+      layerConfig.opacity / 100
+    );
   });
 };
 
 const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
-  if (maplibreRef.current) {
-    handleStyleLayers(layerConfig, maplibreRef);
-  }
+  handleStyleLayers(layerConfig, maplibreRef);
 };
 
 const addNewLayer = (
@@ -56,16 +47,16 @@ const addNewLayer = (
   beforeLayerId: string | undefined
 ) => {
   if (maplibreRef.current) {
-    const layerSource = layerConfig?.source;
-    const layerStyle = layerConfig?.style;
+    const { source, style } = layerConfig;
     maplibreRef.current.addSource(layerConfig.id, {
       type: 'vector',
-      url: layerSource?.dataURL,
+      url: source?.dataURL,
     });
-    fetchStyleLayers(layerStyle?.styleURL).then((styleLayers: LayerSpecification[]) => {
+    fetchStyleLayers(style?.styleURL).then((styleLayers: LayerSpecification[]) => {
       const beforeMbLayerId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
       styleLayers.forEach((styleLayer) => {
         styleLayer.id = styleLayer.id + '_' + layerConfig.id;
+        // TODO: Add comments on why we skip background type
         if (styleLayer.type !== 'background') {
           styleLayer.source = layerConfig.id;
         }
