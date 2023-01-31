@@ -36,13 +36,13 @@ export const removeLayers = (map: Maplibre, layerId: string, removeSource?: bool
   getLayers(map, layerId).forEach((layer) => {
     map.removeLayer(layer.id);
   });
-  // client might remove source if it is used anymore.
+  // client might remove source if it is not required anymore.
   if (removeSource && map.getSource(layerId)) {
     map.removeSource(layerId);
   }
 };
 
-export const updateVisibility = (map: Maplibre, layerId: string, visibility: string) => {
+export const updateLayerVisibility = (map: Maplibre, layerId: string, visibility: string) => {
   getLayers(map, layerId).forEach((layer) => {
     map.setLayoutProperty(layer.id, 'visibility', visibility);
   });

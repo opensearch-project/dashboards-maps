@@ -10,7 +10,7 @@ import {
   hasLayer, moveLayers, removeLayers,
   updateCircleLayer,
   updateLineLayer,
-  updatePolygonLayer, updateVisibility,
+  updatePolygonLayer, updateLayerVisibility,
 } from './layer_operations';
 import { Map as Maplibre } from 'maplibre-gl';
 import { MockMaplibreMap } from './__mocks__/map';
@@ -366,7 +366,7 @@ describe('update visibility', function () {
     const mockLayer2: MockLayer = new MockLayer('layer-11');
     mockLayer1.setProperty('visibility', 'none');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2]);
-    updateVisibility((mockMap as unknown) as Maplibre, 'layer-1', 'visible');
+    updateLayerVisibility((mockMap as unknown) as Maplibre, 'layer-1', 'visible');
     expect(mockMap.getLayers().map((layer) => String(layer.getProperty('visibility')))).toEqual(
       Array(2).fill('visible')
     );

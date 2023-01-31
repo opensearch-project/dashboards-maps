@@ -17,7 +17,7 @@ import {
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
-  updateVisibility,
+  updateLayerVisibility,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -239,8 +239,5 @@ export const DocumentLayerFunctions = {
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
     removeLayers(maplibreRef.current!, layerConfig.id, true);
-  },
-  hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    updateVisibility(maplibreRef.current!, layerConfig.id, layerConfig.visibility);
   },
 };
