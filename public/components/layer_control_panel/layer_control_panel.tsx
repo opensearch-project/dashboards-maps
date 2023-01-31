@@ -48,7 +48,7 @@ import {
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import {moveLayers, updateLayerVisibility} from "../../model/map/layer_operations";
+import {moveLayers, removeLayers, updateLayerVisibility} from "../../model/map/layer_operations";
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -300,7 +300,7 @@ export const LayerControlPanel = memo(
 
     const onDeleteLayerConfirm = () => {
       if (selectedDeleteLayer) {
-        layersFunctionMap[selectedDeleteLayer.type]?.remove(maplibreRef, selectedDeleteLayer);
+        removeLayers(maplibreRef.current!, selectedDeleteLayer.id, true);
         removeLayer(selectedDeleteLayer.id);
         setIsDeleteLayerModalVisible(false);
         setSelectedDeleteLayer(undefined);

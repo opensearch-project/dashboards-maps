@@ -1,7 +1,7 @@
 import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
 import { getMaplibreBeforeLayerId } from './layersFunctions';
-import { hasLayer } from './map/layer_operations';
+import { hasLayer, removeLayers } from './map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -98,26 +98,11 @@ export const CustomLayerFunctions = {
     layerConfig: CustomLayerSpecification,
     beforeLayerId: string | undefined
   ) => {
-    if (hasLayer(maplibreRef.current!, layerConfig.id)) {
-      updateLayerConfig(layerConfig, maplibreRef);
-    } else {
-      addNewLayer(layerConfig, maplibreRef, beforeLayerId);
-    }
+    return hasLayer(maplibreRef.current!, layerConfig.id)
+      ? updateLayerConfig(layerConfig, maplibreRef)
+      : addNewLayer(layerConfig, maplibreRef, beforeLayerId);
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((mbLayer: { id: any }) => {
-      if (mbLayer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.removeLayer(mbLayer.id);
-      }
-    });
-  },
-  hide: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((mbLayer: { id: any }) => {
-      if (mbLayer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.setLayoutProperty(mbLayer.id, 'visibility', layerConfig.visibility);
-      }
-    });
+    removeLayers(maplibreRef.current!, layerConfig.id, true);
   },
 };

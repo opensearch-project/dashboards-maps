@@ -191,21 +191,21 @@ const updateLayer = (
       dataSource.setData(getLayerSource(data, layerConfig));
     }
     updateCircleLayer(maplibreInstance, {
-      fillColor: layerConfig.style?.fillColor,
+      fillColor: layerConfig.style.fillColor,
       maxZoom: layerConfig.zoomRange[1],
       minZoom: layerConfig.zoomRange[0],
       opacity: layerConfig.opacity,
-      outlineColor: layerConfig.style?.borderColor,
+      outlineColor: layerConfig.style.borderColor,
       radius: layerConfig.style?.markerSize,
       sourceId: layerConfig.id,
       visibility: layerConfig.visibility,
-      width: layerConfig.style?.borderThickness,
+      width: layerConfig.style.borderThickness,
     });
     const geoFieldType = getGeoFieldType(layerConfig);
     if (geoFieldType === 'geo_shape') {
       updateLineLayer(maplibreInstance, {
-        width: layerConfig.style?.borderThickness,
-        color: layerConfig.style?.fillColor,
+        width: layerConfig.style.borderThickness,
+        color: layerConfig.style.fillColor,
         maxZoom: layerConfig.zoomRange[1],
         minZoom: layerConfig.zoomRange[0],
         opacity: layerConfig.opacity,
@@ -213,13 +213,13 @@ const updateLayer = (
         visibility: layerConfig.visibility,
       });
       updatePolygonLayer(maplibreInstance, {
-        width: layerConfig.style?.borderThickness,
-        fillColor: layerConfig.style?.fillColor,
+        width: layerConfig.style.borderThickness,
+        fillColor: layerConfig.style.fillColor,
         maxZoom: layerConfig.zoomRange[1],
         minZoom: layerConfig.zoomRange[0],
         opacity: layerConfig.opacity,
         sourceId: layerConfig.id,
-        outlineColor: layerConfig.style?.borderColor,
+        outlineColor: layerConfig.style.borderColor,
         visibility: layerConfig.visibility,
       });
     }
@@ -236,8 +236,5 @@ export const DocumentLayerFunctions = {
     return hasLayer(maplibreRef.current!, layerConfig.id)
       ? updateLayer(layerConfig, maplibreRef, data)
       : addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
-  },
-  remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    removeLayers(maplibreRef.current!, layerConfig.id, true);
   },
 };
