@@ -11,7 +11,7 @@ export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSp
     : layers;
 };
 
-export const hasLayer = (map: Maplibre, dashboardMapsLayerId: string) => {
+export const hasLayer = (map: Maplibre, dashboardMapsLayerId: string): boolean => {
   const maplibreMapLayers = getLayers(map);
   for (const layer of maplibreMapLayers) {
     if (layer.id.includes(dashboardMapsLayerId)) {
@@ -40,6 +40,12 @@ export const removeLayers = (map: Maplibre, layerId: string, removeSource?: bool
   if (removeSource && map.getSource(layerId)) {
     map.removeSource(layerId);
   }
+};
+
+export const updateVisibility = (map: Maplibre, layerId: string, visibility: string) => {
+  getLayers(map, layerId).forEach((layer) => {
+    map.setLayoutProperty(layer.id, 'visibility', visibility);
+  });
 };
 
 export interface LineLayerSpecification {

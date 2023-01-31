@@ -48,7 +48,7 @@ import {
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import {moveLayers} from "../../model/map/layer_operations";
+import {moveLayers, updateVisibility} from "../../model/map/layer_operations";
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -290,7 +290,7 @@ export const LayerControlPanel = memo(
         layer.visibility = LAYER_VISIBILITY.VISIBLE;
         setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
       }
-      layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
+      updateVisibility(maplibreRef.current!, layer.id, layer.visibility);
     };
 
     const onDeleteLayerIconClick = (layer: MapLayerSpecification) => {

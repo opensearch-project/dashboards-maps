@@ -7,14 +7,17 @@ import { Map as Maplibre } from 'maplibre-gl';
 import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
-import { getMaplibreBeforeLayerId} from './layersFunctions';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
 import {
   addCircleLayer,
   addLineLayer,
-  addPolygonLayer, hasLayer, removeLayers,
+  addPolygonLayer,
+  hasLayer,
+  removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
+  updateVisibility,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -175,7 +178,7 @@ const addNewLayer = (
   }
 };
 
-const updateLayerConfig = (
+const updateLayer = (
   layerConfig: DocumentLayerSpecification,
   maplibreRef: MaplibreRef,
   data: any
@@ -230,21 +233,14 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    if (hasLayer(maplibreRef.current!, layerConfig.id)) {
-      updateLayerConfig(layerConfig, maplibreRef, data);
-    } else {
-      addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
-    }
+    return hasLayer(maplibreRef.current!, layerConfig.id)
+      ? updateLayer(layerConfig, maplibreRef, data)
+      : addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
     removeLayers(maplibreRef.current!, layerConfig.id, true);
   },
   hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((layer) => {
-      if (layer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
-      }
-    });
+    updateVisibility(maplibreRef.current!, layerConfig.id, layerConfig.visibility);
   },
 };
