@@ -7,14 +7,17 @@ import { Map as Maplibre } from 'maplibre-gl';
 import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
-import { getMaplibreBeforeLayerId, layerExistInMbSource } from './layersFunctions';
+import { getMaplibreBeforeLayerId } from './layersFunctions';
 import {
   addCircleLayer,
   addLineLayer,
   addPolygonLayer,
+  hasLayer,
+  removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
+  updateLayerVisibility,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -175,7 +178,7 @@ const addNewLayer = (
   }
 };
 
-const updateLayerConfig = (
+const updateLayer = (
   layerConfig: DocumentLayerSpecification,
   maplibreRef: MaplibreRef,
   data: any
@@ -188,21 +191,21 @@ const updateLayerConfig = (
       dataSource.setData(getLayerSource(data, layerConfig));
     }
     updateCircleLayer(maplibreInstance, {
-      fillColor: layerConfig.style?.fillColor,
+      fillColor: layerConfig.style.fillColor,
       maxZoom: layerConfig.zoomRange[1],
       minZoom: layerConfig.zoomRange[0],
       opacity: layerConfig.opacity,
-      outlineColor: layerConfig.style?.borderColor,
+      outlineColor: layerConfig.style.borderColor,
       radius: layerConfig.style?.markerSize,
       sourceId: layerConfig.id,
       visibility: layerConfig.visibility,
-      width: layerConfig.style?.borderThickness,
+      width: layerConfig.style.borderThickness,
     });
     const geoFieldType = getGeoFieldType(layerConfig);
     if (geoFieldType === 'geo_shape') {
       updateLineLayer(maplibreInstance, {
-        width: layerConfig.style?.borderThickness,
-        color: layerConfig.style?.fillColor,
+        width: layerConfig.style.borderThickness,
+        color: layerConfig.style.fillColor,
         maxZoom: layerConfig.zoomRange[1],
         minZoom: layerConfig.zoomRange[0],
         opacity: layerConfig.opacity,
@@ -210,13 +213,13 @@ const updateLayerConfig = (
         visibility: layerConfig.visibility,
       });
       updatePolygonLayer(maplibreInstance, {
-        width: layerConfig.style?.borderThickness,
-        fillColor: layerConfig.style?.fillColor,
+        width: layerConfig.style.borderThickness,
+        fillColor: layerConfig.style.fillColor,
         maxZoom: layerConfig.zoomRange[1],
         minZoom: layerConfig.zoomRange[0],
         opacity: layerConfig.opacity,
         sourceId: layerConfig.id,
-        outlineColor: layerConfig.style?.borderColor,
+        outlineColor: layerConfig.style.borderColor,
         visibility: layerConfig.visibility,
       });
     }
@@ -230,26 +233,8 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    if (layerExistInMbSource(layerConfig.id, maplibreRef)) {
-      updateLayerConfig(layerConfig, maplibreRef, data);
-    } else {
-      addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
-    }
-  },
-  remove: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((layer: { id: any }) => {
-      if (layer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.removeLayer(layer.id);
-      }
-    });
-  },
-  hide: (maplibreRef: MaplibreRef, layerConfig: DocumentLayerSpecification) => {
-    const layers = getCurrentStyleLayers(maplibreRef);
-    layers.forEach((layer) => {
-      if (layer.id.includes(layerConfig.id)) {
-        maplibreRef.current?.setLayoutProperty(layer.id, 'visibility', layerConfig.visibility);
-      }
-    });
+    return hasLayer(maplibreRef.current!, layerConfig.id)
+      ? updateLayer(layerConfig, maplibreRef, data)
+      : addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
   },
 };
