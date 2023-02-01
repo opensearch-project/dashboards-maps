@@ -48,6 +48,7 @@ import {
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
+import {moveLayers, removeLayers, updateLayerVisibility} from "../../model/map/layer_operations";
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -241,7 +242,8 @@ export const LayerControlPanel = memo(
 
         const currentMaplibreLayerId = layers[prevIndex].id;
         const beforeMaplibreLayerId = beforeMaplibreLayerID(prevIndex, newIndex);
-        LayerActions.move(maplibreRef, currentMaplibreLayerId, beforeMaplibreLayerId);
+
+        moveLayers(maplibreRef.current!, currentMaplibreLayerId, beforeMaplibreLayerId);
 
         // update map layers
         const layersClone = [...layers];
@@ -288,7 +290,7 @@ export const LayerControlPanel = memo(
         layer.visibility = LAYER_VISIBILITY.VISIBLE;
         setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
       }
-      layersFunctionMap[layer.type]?.hide(maplibreRef, layer);
+      updateLayerVisibility(maplibreRef.current!, layer.id, layer.visibility);
     };
 
     const onDeleteLayerIconClick = (layer: MapLayerSpecification) => {
@@ -298,7 +300,7 @@ export const LayerControlPanel = memo(
 
     const onDeleteLayerConfirm = () => {
       if (selectedDeleteLayer) {
-        layersFunctionMap[selectedDeleteLayer.type]?.remove(maplibreRef, selectedDeleteLayer);
+        removeLayers(maplibreRef.current!, selectedDeleteLayer.id, true);
         removeLayer(selectedDeleteLayer.id);
         setIsDeleteLayerModalVisible(false);
         setSelectedDeleteLayer(undefined);
