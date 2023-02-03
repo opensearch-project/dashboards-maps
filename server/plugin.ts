@@ -12,7 +12,14 @@ import {
   Logger,
 } from '../../../src/core/server';
 
-import { CustomImportMapPluginSetup, CustomImportMapPluginStart } from './types';
+import { HomeServerPluginSetup } from '../../../src/plugins/home/server';
+import { getFlightsSavedObjects } from './services/sample_data/flights_saved_objects';
+
+import {
+  AppPluginSetupDependencies,
+  CustomImportMapPluginSetup,
+  CustomImportMapPluginStart,
+} from './types';
 import { createGeospatialCluster } from './clusters';
 import { GeospatialService, OpensearchService } from './services';
 import { geospatial, opensearch } from '../server/routes';
@@ -23,13 +30,16 @@ export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
   private readonly logger: Logger;
   private readonly globalConfig$;
-
   constructor(initializerContext: PluginInitializerContext) {
     this.logger = initializerContext.logger.get();
     this.globalConfig$ = initializerContext.config.legacy.globalConfig$;
   }
 
-  public async setup(core: CoreSetup) {
+  addMapsSavedObjects(home: HomeServerPluginSetup) {
+    home.sampleData.addSavedObjectsToSampleDataset('flights', getFlightsSavedObjects());
+  }
+
+  public async setup(core: CoreSetup, plugins: AppPluginSetupDependencies) {
     this.logger.debug('customImportMap: Setup');
     // @ts-ignore
     const globalConfig = await this.globalConfig$.pipe(first()).toPromise();
@@ -40,9 +50,17 @@ export class CustomImportMapPlugin
     const opensearchService = new OpensearchService(geospatialClient);
 
     const router = core.http.createRouter();
+    const { home } = plugins;
+    // const mapConfig = configSchema;
+    // const mapConfig: ConfigSchema = {
+    //   ...this._initializerContext.config.get<ConfigSchema>(),
+    // };
+
     // Register server side APIs
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
+
+    if (home) this.addMapsSavedObjects(home);
 
     // Register saved object types
     core.savedObjects.registerType(mapSavedObjectsType);
