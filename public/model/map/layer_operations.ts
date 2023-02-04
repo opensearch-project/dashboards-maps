@@ -48,14 +48,18 @@ export const updateLayerVisibility = (map: Maplibre, layerId: string, visibility
   });
 };
 
-export interface LineLayerSpecification {
+// Common properties that every DashboardMap layer contains
+interface Layer {
   sourceId: string;
-  visibility: string;
-  color: string;
   opacity: number;
-  width: number;
   minZoom: number;
   maxZoom: number;
+}
+
+export interface LineLayerSpecification extends Layer {
+  visibility: string;
+  color: string;
+  width: number;
 }
 
 export const addLineLayer = (
@@ -90,16 +94,12 @@ export const updateLineLayer = (
   return lineLayerId;
 };
 
-export interface CircleLayerSpecification {
-  sourceId: string;
+export interface CircleLayerSpecification extends Layer {
   visibility: string;
   fillColor: string;
   outlineColor: string;
   radius: number;
-  opacity: number;
   width: number;
-  minZoom: number;
-  maxZoom: number;
 }
 
 export const addCircleLayer = (
@@ -137,15 +137,11 @@ export const updateCircleLayer = (
   return circleLayerId;
 };
 
-export interface PolygonLayerSpecification {
-  sourceId: string;
+export interface PolygonLayerSpecification extends Layer {
   visibility: string;
   fillColor: string;
   outlineColor: string;
-  opacity: number;
   width: number;
-  minZoom: number;
-  maxZoom: number;
 }
 
 export const addPolygonLayer = (
