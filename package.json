@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@cypress/skip-test": "^2.6.1",
+    "@mapbox/mapbox-gl-draw": "^1.4.0",
     "@opensearch-dashboards-test/opensearch-dashboards-test-library": "git+https://github.com/opensearch-project/opensearch-dashboards-test-library.git#main",
+    "@types/mapbox__mapbox-gl-draw": "^1.3.3",
     "@types/wellknown": "^0.5.4",
     "cypress-file-upload": "^5.0.8",
     "maplibre-gl": "^2.4.0",
