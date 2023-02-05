@@ -92,6 +92,7 @@ export const MapContainer = ({
     }
 
     function onMouseMoveMap(e: MapEventType['mousemove']) {
+      // This is required to update coordinates on map only on mouse move
       setCoordinates(e.lngLat.wrap());
 
       // remove previous popup

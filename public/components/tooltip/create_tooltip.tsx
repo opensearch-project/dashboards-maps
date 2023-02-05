@@ -46,9 +46,8 @@ export function getPopupLngLat(geometry: GeoJSON.Geometry) {
   // use mouse position should be better
   if (geometry.type === 'Point') {
     return [geometry.coordinates[0], geometry.coordinates[1]] as [number, number];
-  } else {
-    return null;
   }
+  return null;
 }
 
 export function createPopup({
