@@ -13,7 +13,7 @@ import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import {createPopup, getPopupLngLat, getPopupLocation, isTooltipEnabledLayer} from '../tooltip/create_tooltip';
+import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -167,7 +167,13 @@ export const MapContainer = ({
 
   return (
     <div>
-      <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar" data-test-subj="mapStatusBar">
+      <EuiPanel
+        hasShadow={false}
+        hasBorder={false}
+        color="transparent"
+        className="zoombar"
+        data-test-subj="mapStatusBar"
+      >
         <small>
           {coordinates &&
             `lat: ${coordinates.lat.toFixed(4)}, lon: ${coordinates.lng.toFixed(4)}, `}

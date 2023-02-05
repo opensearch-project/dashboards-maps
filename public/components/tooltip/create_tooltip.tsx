@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Popup, MapGeoJSONFeature, MapEventType, LngLat } from 'maplibre-gl';
+import { Popup, MapGeoJSONFeature, LngLat } from 'maplibre-gl';
 
 import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
 import { FeatureGroupItem, TooltipContainer } from './tooltipContainer';
+import {MAX_LONGITUDE} from "../../../common";
 
 interface Options {
   features: MapGeoJSONFeature[];
@@ -40,16 +41,6 @@ export function groupFeaturesByLayers(
   return featureGroups;
 }
 
-export function getPopupLngLat(geometry: GeoJSON.Geometry) {
-  // geometry.coordinates is different for different geometry.type, here we use the geometry.coordinates
-  // of a Point as the position of the popup. For other types, such as Polygon, MultiPolygon, etc,
-  // use mouse position should be better
-  if (geometry.type === 'Point') {
-    return [geometry.coordinates[0], geometry.coordinates[1]] as [number, number];
-  }
-  return null;
-}
-
 export function getPopupLocation(geometry: GeoJSON.Geometry, mousePoint: LngLat) {
   // geometry.coordinates is different for different geometry.type, here we use the geometry.coordinates
   // of a Point as the position of the popup. For other types, such as Polygon, MultiPolygon, etc,
@@ -58,10 +49,11 @@ export function getPopupLocation(geometry: GeoJSON.Geometry, mousePoint: LngLat)
     return mousePoint;
   }
   const coordinates = geometry.coordinates;
+  // Copied from https://maplibre.org/maplibre-gl-js-docs/example/popup-on-click/
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
   // over the copy being pointed to.
-  while (Math.abs(mousePoint.lng - coordinates[0]) > 180) {
+  while (Math.abs(mousePoint.lng - coordinates[0]) > MAX_LONGITUDE) {
     coordinates[0] += mousePoint.lng > coordinates[0] ? 360 : -360;
   }
   return [coordinates[0], coordinates[1]] as [number, number];
