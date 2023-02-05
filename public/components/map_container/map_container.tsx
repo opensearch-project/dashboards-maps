@@ -13,7 +13,7 @@ import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import {createPopup, getPopupLngLat, getPopupLocation, isTooltipEnabledLayer} from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -86,7 +86,7 @@ export const MapContainer = ({
       if (features && maplibreRef.current) {
         clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
         clickPopup
-          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
           .addTo(maplibreRef.current);
       }
     }
@@ -108,7 +108,7 @@ export const MapContainer = ({
           showLayerSelection: false,
         });
         hoverPopup
-          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
           .addTo(maplibreRef.current);
       }
     }
