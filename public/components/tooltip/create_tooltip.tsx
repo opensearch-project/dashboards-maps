@@ -19,7 +19,8 @@ export function isTooltipEnabledLayer(
   return (
     layer.type !== 'opensearch_vector_tile_map' &&
     layer.type !== 'custom_map' &&
-    layer.source.showTooltips === true
+    layer.source.showTooltips === true &&
+    !!layer.source.tooltipFields?.length
   );
 }
 

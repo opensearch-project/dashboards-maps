@@ -36,7 +36,6 @@ import {
   LAYER_VISIBILITY,
 } from '../../../common';
 import {
-  LayerActions,
   layersFunctionMap,
   referenceLayerTypeLookup,
 } from '../../model/layersFunctions';
