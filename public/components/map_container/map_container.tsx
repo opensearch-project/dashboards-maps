@@ -6,16 +6,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
 import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
 import { ConfigSchema } from '../../../common/config';
 
@@ -27,6 +28,8 @@ interface MapContainerProps {
   maplibreRef: React.MutableRefObject<Maplibre | null>;
   mapState: MapState;
   mapConfig: ConfigSchema;
+  inDashboardMode: boolean;
+  timeRange?: TimeRange;
 }
 
 export const MapContainer = ({
@@ -37,6 +40,8 @@ export const MapContainer = ({
   maplibreRef,
   mapState,
   mapConfig,
+  inDashboardMode,
+  timeRange,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -68,6 +73,25 @@ export const MapContainer = ({
     maplibreInstance.on('move', () => {
       return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
     });
+    const mapContainerElement: HTMLElement | null = document.querySelector('.map-page');
+    let resizeChecker: ResizeChecker;
+    if (mapContainerElement) {
+      resizeChecker = new ResizeChecker(mapContainerElement);
+      if (inDashboardMode) {
+        resizeChecker.on(
+          'resize',
+          throttle(() => {
+            maplibreInstance?.resize();
+          }, 300)
+        );
+      }
+    }
+    return () => {
+      maplibreInstance.remove();
+      if (resizeChecker) {
+        resizeChecker.destroy();
+      }
+    };
   }, []);
 
   // Create onClick tooltip for each layer features that has tooltip enabled
@@ -166,7 +190,7 @@ export const MapContainer = ({
   }, [layers, mapState, services]);
 
   return (
-    <div>
+    <div className="map-main">
       <EuiPanel
         hasShadow={false}
         hasBorder={false}
@@ -191,6 +215,8 @@ export const MapContainer = ({
             mapState={mapState}
             zoom={zoom}
             mapConfig={mapConfig}
+            inDashboardMode={inDashboardMode}
+            timeRange={timeRange}
           />
         )}
       </div>

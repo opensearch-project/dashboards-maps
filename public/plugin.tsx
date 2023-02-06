@@ -17,34 +17,33 @@ import {
   CustomImportMapPluginSetup,
   CustomImportMapPluginStart,
 } from './types';
-import {
-  PLUGIN_NAME,
-  PLUGIN_NAVIGATION_BAR_ID,
-  PLUGIN_NAVIGATION_BAR_TILE,
-} from '../common/constants/shared';
+import { PLUGIN_NAME, MAPS_APP_ID, MAPS_APP_DISPLAY_NAME } from '../common/constants/shared';
 import { ConfigSchema } from '../common/config';
 import { AppPluginSetupDependencies } from './types';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
 import { VectorUploadOptions } from './components/vector_upload_options';
 import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opensearch_dashboards_react/public';
+import { MAP_SAVED_OBJECT_TYPE } from '../common';
+import { MapEmbeddableFactoryDefinition } from './embeddable';
 
 export class CustomImportMapPlugin
-  implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
+  implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart>
+{
   readonly _initializerContext: PluginInitializerContext<ConfigSchema>;
   constructor(initializerContext: PluginInitializerContext<ConfigSchema>) {
     this._initializerContext = initializerContext;
   }
   public setup(
     core: CoreSetup,
-    { regionMap }: AppPluginSetupDependencies
+    { regionMap, embeddable, visualizations }: AppPluginSetupDependencies
   ): CustomImportMapPluginSetup {
     const mapConfig: ConfigSchema = {
       ...this._initializerContext.config.get<ConfigSchema>(),
     };
     // Register an application into the side navigation menu
     core.application.register({
-      id: PLUGIN_NAVIGATION_BAR_ID,
-      title: PLUGIN_NAVIGATION_BAR_TILE,
+      id: MAPS_APP_ID,
+      title: MAPS_APP_DISPLAY_NAME,
       order: 5100,
       category: {
         id: 'opensearch',
@@ -74,10 +73,27 @@ export class CustomImportMapPlugin
           history: params.history,
           data,
         };
+        params.element.classList.add('mapAppContainer');
         // Render the application
         return renderApp(params, services, mapConfig);
       },
     });
+
+    const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
+      const [coreStart, depsStart] = await core.getStartServices();
+      const { navigation, data } = depsStart as AppPluginStartDependencies;
+      return {
+        mapConfig,
+        services: {
+          ...coreStart,
+          navigation,
+          toastNotifications: coreStart.notifications.toasts,
+          data,
+        },
+      };
+    });
+
+    embeddable.registerEmbeddableFactory(MAP_SAVED_OBJECT_TYPE, mapEmbeddableFactory as any);
 
     const customSetup = async () => {
       const [coreStart] = await core.getStartServices();

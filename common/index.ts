@@ -9,7 +9,7 @@ import {
   MAX_FILE_PAYLOAD_SIZE,
   MAX_FILE_PAYLOAD_SIZE_IN_MB,
   PLUGIN_ID,
-  PLUGIN_NAVIGATION_BAR_ID,
+  MAPS_APP_ID,
   PLUGIN_NAME,
 } from './constants/shared';
 
@@ -19,7 +19,7 @@ export {
   MAX_FILE_PAYLOAD_SIZE,
   MAX_FILE_PAYLOAD_SIZE_IN_MB,
   PLUGIN_ID,
-  PLUGIN_NAVIGATION_BAR_ID,
+  MAPS_APP_ID,
   PLUGIN_NAME,
 };
 
@@ -44,6 +44,9 @@ export const MAX_LAYER_NAME_LIMIT = 35;
 export const MAX_LONGITUDE = 180;
 export const MIN_LONGITUDE = -180;
 export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
+export const MAP_SAVED_OBJECT_TYPE = 'map';
+// TODO: Replace with actual app icon
+export const MAPS_APP_ICON = 'globe';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {

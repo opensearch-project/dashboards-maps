@@ -21,7 +21,7 @@ import {
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
 import { MapServices } from '../../types';
 import { getMapsLandingBreadcrumbs } from '../../utils/breadcrumbs';
-import { APP_PATH, PLUGIN_NAVIGATION_BAR_ID } from '../../../common';
+import { APP_PATH, MAPS_APP_ID } from '../../../common';
 
 export const MapsList = () => {
   const {
@@ -39,7 +39,7 @@ export const MapsList = () => {
   }, [docTitle, navigateToApp, setBreadcrumbs]);
 
   const navigateToSavedMapPage = (id: string) => {
-    navigateToApp(PLUGIN_NAVIGATION_BAR_ID, { path: `/${id}` });
+    navigateToApp(MAPS_APP_ID, { path: `/${id}` });
   };
 
   const tableColumns = [
@@ -70,7 +70,7 @@ export const MapsList = () => {
   ];
 
   const navigateToCreateMapPage = () => {
-    navigateToApp(PLUGIN_NAVIGATION_BAR_ID, { path: APP_PATH.CREATE_MAP });
+    navigateToApp(MAPS_APP_ID, { path: APP_PATH.CREATE_MAP });
   };
 
   const fetchMaps = useCallback(async (): Promise<{

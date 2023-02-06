@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { SimpleSavedObject } from 'opensearch-dashboards/public';
 import { IndexPattern, Query, TimeRange } from '../../../../../src/plugins/data/public';
-import { DASHBOARDS_MAPS_LAYER_TYPE, PLUGIN_NAVIGATION_BAR_ID } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, MAPS_APP_ID } from '../../../common';
 import { getTopNavConfig } from './get_top_nav_config';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -24,11 +24,15 @@ interface MapTopNavMenuProps {
   maplibreRef: any;
   mapState: MapState;
   setMapState: (mapState: MapState) => void;
+  inDashboardMode: boolean;
+  timeRange?: TimeRange;
 }
 
 export const MapTopNavMenu = ({
   mapIdFromUrl,
   savedMapObject,
+  inDashboardMode,
+  timeRange,
   layers,
   layersIndexPatterns,
   maplibreRef,
@@ -90,13 +94,18 @@ export const MapTopNavMenu = ({
   };
 
   useEffect(() => {
-    setDateFrom(mapState.timeRange.from);
-    setDateTo(mapState.timeRange.to);
+    if (!inDashboardMode) {
+      setDateFrom(mapState.timeRange.from);
+      setDateTo(mapState.timeRange.to);
+    } else {
+      setDateFrom(timeRange!.from);
+      setDateTo(timeRange!.to);
+    }
     setQueryConfig(mapState.query);
     setIsRefreshPaused(mapState.refreshInterval.pause);
     setRefreshIntervalValue(mapState.refreshInterval.value);
     refreshDataLayerRender();
-  }, [mapState]);
+  }, [mapState, timeRange]);
 
   const onRefreshChange = useCallback(
     ({ isPaused, refreshInterval }: { isPaused: boolean; refreshInterval: number }) => {
@@ -108,7 +117,7 @@ export const MapTopNavMenu = ({
 
   return (
     <TopNavMenu
-      appName={PLUGIN_NAVIGATION_BAR_ID}
+      appName={MAPS_APP_ID}
       config={getTopNavConfig(services, {
         mapIdFromUrl,
         layers,
@@ -120,9 +129,9 @@ export const MapTopNavMenu = ({
       })}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
-      showSearchBar
+      showSearchBar={!inDashboardMode}
       showFilterBar={false}
-      showDatePicker={true}
+      showDatePicker={!inDashboardMode}
       showQueryBar={true}
       showSaveQuery={true}
       showQueryInput={true}

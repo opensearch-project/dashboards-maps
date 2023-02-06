@@ -13,6 +13,8 @@ import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/pub
 import { DataPublicPluginStart } from '../../../src/plugins/data/public';
 
 import { RegionMapPluginSetup } from '../../../src/plugins/region_map/public';
+import { EmbeddableSetup } from '../../../src/plugins/embeddable/public';
+import { VisualizationsSetup } from '../../../src/plugins/visualizations/public';
 
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
@@ -28,12 +30,14 @@ export interface MapServices extends CoreStart {
   toastNotifications: ToastsStart;
   history: AppMountParameters['history'];
   data: DataPublicPluginStart;
+  application: CoreStart['application'];
+  i18n: CoreStart['i18n'];
+  savedObjects: SavedObjectsClient;
+  overlays: CoreStart['overlays'];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CustomImportMapPluginSetup {
-  getGreeting: () => string;
-}
+export interface CustomImportMapPluginSetup {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CustomImportMapPluginStart {}
@@ -44,4 +48,6 @@ export interface AppPluginStartDependencies {
 
 export interface AppPluginSetupDependencies {
   regionMap: RegionMapPluginSetup;
+  embeddable: EmbeddableSetup;
+  visualizations: VisualizationsSetup;
 }

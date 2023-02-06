@@ -24,15 +24,13 @@ export const MapsDashboardsApp = ({ mapConfig }: Props) => {
   return (
     <Router history={appBasePath}>
       <I18nProvider>
-        <div>
-          <Switch>
-            <Route
-              path={[APP_PATH.CREATE_MAP, APP_PATH.EDIT_MAP]}
-              render={() => <MapPage mapConfig={mapConfig} />}
-            />
-            <Route exact path={APP_PATH.LANDING_PAGE_PATH} render={() => <MapsList />} />
-          </Switch>
-        </div>
+        <Switch>
+          <Route
+            path={[APP_PATH.CREATE_MAP, APP_PATH.EDIT_MAP]}
+            render={() => <MapPage mapConfig={mapConfig} />}
+          />
+          <Route exact path={APP_PATH.LANDING_PAGE_PATH} render={() => <MapsList />} />
+        </Switch>
       </I18nProvider>
     </Router>
   );

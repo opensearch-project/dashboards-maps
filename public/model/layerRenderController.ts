@@ -14,6 +14,7 @@ import {
   getTime,
   IOpenSearchDashboardsSearchResponse,
   isCompleteResponse,
+  TimeRange,
 } from '../../../../src/plugins/data/common';
 import { layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
@@ -29,7 +30,8 @@ export const prepareDataLayerSource = (
   layer: MapLayerSpecification,
   mapState: MapState,
   { data, notifications }: MapServices,
-  filters: Filter[] = []
+  filters: Filter[] = [],
+  timeRange?: TimeRange
 ): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
@@ -42,8 +44,14 @@ export const prepareDataLayerSource = (
         sourceFields.push(...sourceConfig.tooltipFields);
       }
       let buildQuery;
+      let selectedTimeRange;
       if (indexPattern) {
-        const timeFilters = getTime(indexPattern, mapState.timeRange);
+        if (timeRange) {
+          selectedTimeRange = timeRange;
+        } else {
+          selectedTimeRange = mapState.timeRange;
+        }
+        const timeFilters = getTime(indexPattern, selectedTimeRange);
         buildQuery = buildOpenSearchQuery(
           indexPattern,
           [],
@@ -90,7 +98,8 @@ export const handleDataLayerRender = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
+  beforeLayerId: string | undefined,
+  timeRange?: TimeRange
 ) => {
   const filters: Filter[] = [];
   const geoField = mapLayer.source.geoFieldName;
@@ -106,7 +115,7 @@ export const handleDataLayerRender = (
   const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
   filters.push(geoBoundingBoxFilter);
 
-  return prepareDataLayerSource(mapLayer, mapState, services, filters).then((result) => {
+  return prepareDataLayerSource(mapLayer, mapState, services, filters, timeRange).then((result) => {
     const { layer, dataSource } = result;
     if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
       layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, beforeLayerId);

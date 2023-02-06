@@ -17,31 +17,39 @@ import {
   MAP_LAYER_DEFAULT_NAME,
   OPENSEARCH_MAP_LAYER,
 } from '../../../common';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 
 interface Props {
   mapConfig: ConfigSchema;
+  mapIdFromSavedObject: string;
+  timeRange?: TimeRange;
+  inDashboardMode: boolean;
 }
-
-export const MapPage = ({ mapConfig }: Props) => {
+export const MapComponent = ({
+  mapIdFromSavedObject,
+  mapConfig,
+  timeRange,
+  inDashboardMode,
+}: Props) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
   } = services;
   const [layers, setLayers] = useState<MapLayerSpecification[]>([]);
-  const { id: mapIdFromUrl } = useParams<{ id: string }>();
-  const [savedMapObject, setSavedMapObject] =
-    useState<SimpleSavedObject<MapSavedObjectAttributes> | null>();
+  const [savedMapObject, setSavedMapObject] = useState<SimpleSavedObject<
+    MapSavedObjectAttributes
+  > | null>();
   const [layersIndexPatterns, setLayersIndexPatterns] = useState<IndexPattern[]>([]);
   const maplibreRef = useRef<Maplibre | null>(null);
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
 
   useEffect(() => {
-    if (mapIdFromUrl) {
-      savedObjectsClient.get<MapSavedObjectAttributes>('map', mapIdFromUrl).then((res) => {
+    if (mapIdFromSavedObject) {
+      savedObjectsClient.get<MapSavedObjectAttributes>('map', mapIdFromSavedObject).then((res) => {
         setSavedMapObject(res);
         const layerList: MapLayerSpecification[] = JSON.parse(res.attributes.layerList as string);
         const savedMapState: MapState = JSON.parse(res.attributes.mapState as string);
@@ -67,16 +75,21 @@ export const MapPage = ({ mapConfig }: Props) => {
   }, []);
 
   return (
-    <div>
-      <MapTopNavMenu
-        mapIdFromUrl={mapIdFromUrl}
-        savedMapObject={savedMapObject}
-        layers={layers}
-        layersIndexPatterns={layersIndexPatterns}
-        maplibreRef={maplibreRef}
-        mapState={mapState}
-        setMapState={setMapState}
-      />
+    <div className="map-page">
+      {inDashboardMode ? null : (
+        <MapTopNavMenu
+          mapIdFromUrl={mapIdFromSavedObject}
+          inDashboardMode={inDashboardMode}
+          timeRange={timeRange}
+          savedMapObject={savedMapObject}
+          layers={layers}
+          layersIndexPatterns={layersIndexPatterns}
+          maplibreRef={maplibreRef}
+          mapState={mapState}
+          setMapState={setMapState}
+        />
+      )}
+
       <MapContainer
         layers={layers}
         setLayers={setLayers}
@@ -85,7 +98,16 @@ export const MapPage = ({ mapConfig }: Props) => {
         maplibreRef={maplibreRef}
         mapState={mapState}
         mapConfig={mapConfig}
+        inDashboardMode={inDashboardMode}
+        timeRange={timeRange}
       />
     </div>
+  );
+};
+
+export const MapPage = ({ mapConfig }: Props) => {
+  const { id: mapId } = useParams<{ id: string }>();
+  return (
+    <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} inDashboardMode={false} />
   );
 };
