@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LayerSpecification } from 'maplibre-gl';
+import { LayerSpecification, LngLatBounds } from 'maplibre-gl';
 import { MockLayer } from './layer';
 
 export type Source = any;
@@ -14,11 +14,16 @@ export class MockMaplibreMap {
     sources: Map<string, Source>;
   };
 
-  constructor(layers: MockLayer[]) {
+  private _bounds: LngLatBounds;
+
+  constructor(layers: MockLayer[], bounds?: LngLatBounds) {
     this._styles = {
       layers: new Array<MockLayer>(...layers),
       sources: new Map<string, Source>(),
     };
+    if (bounds) {
+      this._bounds = bounds;
+    }
   }
 
   public addSource(sourceId: string, source: Source) {
@@ -109,4 +114,12 @@ export class MockMaplibreMap {
       (layer) => !(layer.getProperty('id') as string).includes(layerId)
     );
   }
+
+  setBounds = (bounds: LngLatBounds) => {
+    this._bounds = bounds;
+  };
+
+  getBounds = (): LngLatBounds => {
+    return this._bounds;
+  };
 }
