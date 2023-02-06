@@ -35,11 +35,7 @@ import {
   LAYER_PANEL_SHOW_LAYER_ICON,
   LAYER_VISIBILITY,
 } from '../../../common';
-import {
-  LayerActions,
-  layersFunctionMap,
-  referenceLayerTypeLookup,
-} from '../../model/layersFunctions';
+import { referenceLayerTypeLookup } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import {
@@ -48,7 +44,7 @@ import {
 } from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import {moveLayers, removeLayers, updateLayerVisibility} from "../../model/map/layer_operations";
+import { moveLayers, removeLayers, updateLayerVisibility } from '../../model/map/layer_operations';
 
 interface MaplibreRef {
   current: Maplibre | null;
