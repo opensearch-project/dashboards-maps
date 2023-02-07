@@ -10,8 +10,8 @@ on:
       - main
       - 2.*
 env:
-  OPENSEARCH_DASHBOARDS_BRANCH: '2.5'
-  GEOSPATIAL_PLUGIN_BRANCH: '2.5'
+  OPENSEARCH_DASHBOARDS_BRANCH: '2.x'
+  GEOSPATIAL_PLUGIN_BRANCH: '2.x'
 jobs:
   tests:
     env:
