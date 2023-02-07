@@ -7,10 +7,13 @@ import {
   addLineLayer,
   addPolygonLayer,
   getLayers,
-  hasLayer, moveLayers, removeLayers,
+  hasLayer,
+  moveLayers,
+  removeLayers,
   updateCircleLayer,
   updateLineLayer,
-  updatePolygonLayer, updateLayerVisibility,
+  updatePolygonLayer,
+  updateLayerVisibility,
 } from './layer_operations';
 import { Map as Maplibre } from 'maplibre-gl';
 import { MockMaplibreMap } from './__mocks__/map';

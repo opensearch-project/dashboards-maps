@@ -34,3 +34,4 @@ beforeEach(() => {
 afterEach(() => {
   console.error.mockRestore();
 });
+window.URL.createObjectURL = function () {};
