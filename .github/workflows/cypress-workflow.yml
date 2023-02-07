@@ -10,8 +10,8 @@ on:
       - main
       - 2.*
 env:
-  OPENSEARCH_DASHBOARDS_BRANCH: '2.5'
-  GEOSPATIAL_PLUGIN_BRANCH: '2.5'
+  OPENSEARCH_DASHBOARDS_BRANCH: '2.x'
+  GEOSPATIAL_PLUGIN_BRANCH: '2.x'
 jobs:
   tests:
     env:
@@ -118,7 +118,7 @@ jobs:
       # Window is slow so wait longer
       - name: Sleep until OSD server starts - windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: Start-Sleep -s 400
+        run: Start-Sleep -s 600
         shell: powershell
 
       - name: Sleep until OSD server starts - non-windows

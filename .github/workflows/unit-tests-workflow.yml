@@ -11,7 +11,7 @@ on:
       - feature/**
 
 env:
-  OPENSEARCH_DASHBOARDS_BRANCH: '2.5'
+  OPENSEARCH_DASHBOARDS_BRANCH: '2.x'
 jobs:
   tests:
     strategy:
