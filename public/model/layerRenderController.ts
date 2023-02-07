@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LngLatBounds, Map as Maplibre } from 'maplibre-gl';
+import { Map as Maplibre } from 'maplibre-gl';
 import { DocumentLayerSpecification, MapLayerSpecification } from './mapLayerType';
-import { DASHBOARDS_MAPS_LAYER_TYPE, MAX_LONGITUDE, MIN_LONGITUDE } from '../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
   buildOpenSearchQuery,
   Filter,
+  FilterMeta,
   GeoBoundingBoxFilter,
   getTime,
   IOpenSearchDashboardsSearchResponse,
@@ -17,32 +18,11 @@ import {
 import { layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
+import {GeoBounds, getBounds} from './map/boundary';
+import { buildBBoxFilter } from './geo/filter';
 
 interface MaplibreRef {
   current: Maplibre | null;
-}
-
-// calculate lng limits based on map bounds
-// maps can render more than 1 copies of map at lower zoom level and displays
-// one side from 1 copy and other side from other copy at higher zoom level if
-// screen crosses internation dateline
-function calculateBoundingBoxLngLimit(bounds: LngLatBounds) {
-  const boundsMinLng = bounds.getNorthWest().lng;
-  const boundsMaxLng = bounds.getSouthEast().lng;
-  // if bounds expands more than 360 then, consider complete globe is visible
-  if (boundsMaxLng - boundsMinLng >= MAX_LONGITUDE - MIN_LONGITUDE) {
-    return {
-      right: MAX_LONGITUDE,
-      left: MIN_LONGITUDE,
-    };
-  }
-  // wrap bounds if only portion of globe is visible
-  // wrap() returns a new LngLat object whose longitude is
-  // wrapped to the range (-180, 180).
-  return {
-    right: bounds.getSouthEast().wrap().lng,
-    left: bounds.getNorthWest().wrap().lng,
-  };
 }
 
 export const prepareDataLayerSource = (
@@ -117,36 +97,14 @@ export const handleDataLayerRender = (
   const geoFieldType = mapLayer.source.geoFieldType;
 
   // geo bounding box query supports geo_point fields
-  if (
-    geoFieldType === 'geo_point' &&
-    mapLayer.source.useGeoBoundingBoxFilter &&
-    maplibreRef.current
-  ) {
-    const mapBounds = maplibreRef.current.getBounds();
-    const lngLimit = calculateBoundingBoxLngLimit(mapBounds);
-    const filterBoundingBox = {
-      bottom_right: {
-        lon: lngLimit.right,
-        lat: mapBounds.getSouthEast().lat,
-      },
-      top_left: {
-        lon: lngLimit.left,
-        lat: mapBounds.getNorthWest().lat,
-      },
-    };
-    const geoBoundingBoxFilter: GeoBoundingBoxFilter = {
-      meta: {
-        disabled: false,
-        negate: false,
-        alias: null,
-        params: filterBoundingBox,
-      },
-      geo_bounding_box: {
-        [geoField]: filterBoundingBox,
-      },
-    };
-    filters.push(geoBoundingBoxFilter);
-  }
+  const mapBounds: GeoBounds = getBounds(maplibreRef.current!);
+  const meta: FilterMeta = {
+    alias: null,
+    disabled: !mapLayer.source.useGeoBoundingBoxFilter || geoFieldType !== 'geo_point',
+    negate: false,
+  };
+  const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
+  filters.push(geoBoundingBoxFilter);
 
   return prepareDataLayerSource(mapLayer, mapState, services, filters).then((result) => {
     const { layer, dataSource } = result;
