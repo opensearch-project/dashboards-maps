@@ -115,7 +115,6 @@ jobs:
           yarn start --no-base-path --no-watch &
         shell: bash
 
-      # Window is slow so wait longer
       - name: Sleep until OSD server starts - windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: Start-Sleep -s 600
@@ -123,7 +122,7 @@ jobs:
 
       - name: Sleep until OSD server starts - non-windows
         if: ${{ matrix.os != 'windows-latest' }}
-        run: sleep 400
+        run: sleep 600
         shell: bash
 
       - name: Install Cypress
