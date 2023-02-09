@@ -6,7 +6,7 @@
 // import { SavedObject } from 'opensearch-dashboards/server';
 
 import { i18n } from '@osd/i18n';
-// import { ConfigSchema } from '../../../common/config';
+import { ConfigSchema } from '../../../common/config';
 
 // const layerList = (mapConfig: ConfigSchema) => [
 
@@ -75,7 +75,9 @@ const layerList = [
   },
 ];
 
-export const getFlightsSavedObjects = () => {
+export const getFlightsSavedObjects = (config: ConfigSchema) => {
+  console.log('CONFIGVALUES:')
+  console.log(JSON.stringify(config, null, 2));
   return [
     {
       id: '122713b0-9e70-11ed-9463-35a6f30dbef6',

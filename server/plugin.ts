@@ -25,24 +25,30 @@ import { GeospatialService, OpensearchService } from './services';
 import { geospatial, opensearch } from '../server/routes';
 import { mapSavedObjectsType } from './saved_objects';
 import { capabilitiesProvider } from './saved_objects/capabilities_provider';
+import { ConfigSchema } from '../common/config';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
   private readonly logger: Logger;
   private readonly globalConfig$;
+  private readonly config$;
+
   constructor(initializerContext: PluginInitializerContext) {
     this.logger = initializerContext.logger.get();
     this.globalConfig$ = initializerContext.config.legacy.globalConfig$;
+    this.config$ = initializerContext.config.create<ConfigSchema>();
   }
 
-  addMapsSavedObjects(home: HomeServerPluginSetup) {
-    home.sampleData.addSavedObjectsToSampleDataset('flights', getFlightsSavedObjects());
+  addMapsSavedObjects(home: HomeServerPluginSetup, config: ConfigSchema) {
+    home.sampleData.addSavedObjectsToSampleDataset('flights', getFlightsSavedObjects(config));
   }
 
   public async setup(core: CoreSetup, plugins: AppPluginSetupDependencies) {
     this.logger.debug('customImportMap: Setup');
     // @ts-ignore
     const globalConfig = await this.globalConfig$.pipe(first()).toPromise();
+    // @ts-ignore
+    const config = await this.config$.pipe(first()).toPromise() as ConfigSchema;
 
     const geospatialClient = createGeospatialCluster(core, globalConfig);
     // Initialize services
@@ -60,7 +66,7 @@ export class CustomImportMapPlugin
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
 
-    if (home) this.addMapsSavedObjects(home);
+    if (home) this.addMapsSavedObjects(home, config);
 
     // Register saved object types
     core.savedObjects.registerType(mapSavedObjectsType);
