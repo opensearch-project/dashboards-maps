@@ -5,7 +5,13 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 ## Current Maintainers
 
 | Maintainer              | GitHub ID                                   | Affiliation |
-| ----------------------- | ------------------------------------------- | ----------- |
-| Shivam Dhar             | [Shivamdhar](https://github.com/Shivamdhar) | Amazon      |
+|-------------------------|---------------------------------------------| ----------- |
 | Vijayan Balasubramanian | [VijayanB](https://github.com/VijayanB)     | Amazon      |
 | Vamshi Vijay Nakkirtha  | [vamshin](https://github.com/vamshin)       | Amazon      |
+| Junqiu Lei              | [junqiu-lei](https://github.com/junqiu-lei) | Amazon      |
+
+## Emeritus
+
+| Maintainer              | GitHub ID                                   | Affiliation |
+|-------------------------|---------------------------------------------| ----------- |
+| Shivam Dhar             | [Shivamdhar](https://github.com/Shivamdhar) | Amazon      |
