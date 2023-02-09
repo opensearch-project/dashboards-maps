@@ -27,13 +27,7 @@ describe('Add flights dataset saved object', () => {
   });
 
   after(() => {
-    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory/sampleData`, {
-      retryOnStatusCodeFailure: true,
-      timeout: 60000,
-    });
-    cy.get('div[data-test-subj="sampleDataSetCardflights"]', { timeout: 60000 })
-      .contains(/Remove/)
-      .click();
-    cy.wait(60000);
+    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory`);
+    cy.get('button[data-test-subj="removeSampleDataSetflights"]').should('be.visible').click();
   });
 });

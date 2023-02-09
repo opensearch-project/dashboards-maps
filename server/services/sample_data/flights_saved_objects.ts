@@ -3,18 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// import { SavedObject } from 'opensearch-dashboards/server';
-
 import { i18n } from '@osd/i18n';
 import { ConfigSchema } from '../../../common/config';
 
-// const layerList = (mapConfig: ConfigSchema) => [
-
-// const urls = (mapConfig: ConfigSchema) => ({
-//   dataUrl: mapConfig.opensearchVectorTileDataUrl,
-//   styleUrl: mapConfig.opensearchVectorTileStyleUrl,
-// });
-const layerList = [
+const layerList = (config: ConfigSchema) => [
   {
     name: 'Default map',
     description: '',
@@ -24,10 +16,10 @@ const layerList = [
     opacity: 100,
     visibility: 'visible',
     source: {
-      dataURL: 'https://tiles.maps.opensearch.org/data/v1.json',
+      dataURL: config.opensearchVectorTileDataUrl,
     },
     style: {
-      styleURL: 'https://tiles.maps.opensearch.org/styles/basic.json',
+      styleURL: config.opensearchVectorTileStyleUrl,
     },
   },
   {
@@ -76,8 +68,6 @@ const layerList = [
 ];
 
 export const getFlightsSavedObjects = (config: ConfigSchema) => {
-  console.log('CONFIGVALUES:')
-  console.log(JSON.stringify(config, null, 2));
   return [
     {
       id: '122713b0-9e70-11ed-9463-35a6f30dbef6',
@@ -90,7 +80,7 @@ export const getFlightsSavedObjects = (config: ConfigSchema) => {
           defaultMessage: '[Flights] Maps Cancelled Flights Destination Location',
         }),
         description: 'Sample map to show cancelled flights location at destination',
-        layerList: JSON.stringify(layerList),
+        layerList: JSON.stringify(layerList(config)),
         mapState:
           '{"timeRange":{"from":"now-15d","to":"now"},"query":{"query":"","language":"kuery"},"refreshInterval":{"pause":true,"value":12000}}',
       },

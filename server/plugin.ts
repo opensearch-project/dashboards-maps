@@ -39,7 +39,8 @@ export class CustomImportMapPlugin
     this.config$ = initializerContext.config.create<ConfigSchema>();
   }
 
-  addMapsSavedObjects(home: HomeServerPluginSetup, config: ConfigSchema) {
+  // Adds dashboards-maps saved objects to existing sample datasets using home plugin
+  private addMapsSavedObjects(home: HomeServerPluginSetup, config: ConfigSchema) {
     home.sampleData.addSavedObjectsToSampleDataset('flights', getFlightsSavedObjects(config));
   }
 
@@ -48,7 +49,7 @@ export class CustomImportMapPlugin
     // @ts-ignore
     const globalConfig = await this.globalConfig$.pipe(first()).toPromise();
     // @ts-ignore
-    const config = await this.config$.pipe(first()).toPromise() as ConfigSchema;
+    const config = (await this.config$.pipe(first()).toPromise()) as ConfigSchema;
 
     const geospatialClient = createGeospatialCluster(core, globalConfig);
     // Initialize services
@@ -57,10 +58,6 @@ export class CustomImportMapPlugin
 
     const router = core.http.createRouter();
     const { home } = plugins;
-    // const mapConfig = configSchema;
-    // const mapConfig: ConfigSchema = {
-    //   ...this._initializerContext.config.get<ConfigSchema>(),
-    // };
 
     // Register server side APIs
     geospatial(geospatialService, router);
