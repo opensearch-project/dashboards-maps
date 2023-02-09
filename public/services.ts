@@ -4,6 +4,8 @@
  */
 
 import { CoreStart } from '../../../src/core/public';
+import { createGetterSetter } from '../../../src/plugins/opensearch_dashboards_utils/common';
+import { TimefilterContract } from '../../../src/plugins/data/public';
 
 export const postGeojson = async (requestBody: any, http: CoreStart['http']) => {
   try {
@@ -28,3 +30,5 @@ export const getIndex = async (indexName: string, http: CoreStart['http']) => {
     return e;
   }
 };
+
+export const [getTimeFilter, setTimeFilter] = createGetterSetter<TimefilterContract>('TimeFilter');

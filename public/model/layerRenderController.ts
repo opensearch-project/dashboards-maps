@@ -19,7 +19,7 @@ import {
 import { layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
-import {GeoBounds, getBounds} from './map/boundary';
+import { GeoBounds, getBounds } from './map/boundary';
 import { buildBBoxFilter } from './geo/filter';
 
 interface MaplibreRef {
@@ -29,7 +29,7 @@ interface MaplibreRef {
 export const prepareDataLayerSource = (
   layer: MapLayerSpecification,
   mapState: MapState,
-  { data, notifications }: MapServices,
+  { data, toastNotifications }: MapServices,
   filters: Filter[] = [],
   timeRange?: TimeRange
 ): Promise<any> => {
@@ -80,7 +80,7 @@ export const prepareDataLayerSource = (
             search$.unsubscribe();
             resolve({ dataSource, layer });
           } else {
-            notifications.toasts.addWarning('An error has occurred when query dataSource');
+            toastNotifications.addWarning('An error has occurred when query dataSource');
             search$.unsubscribe();
             reject();
           }

@@ -12,15 +12,15 @@ import { MapEmbeddable, MapInput } from './map_embeddable';
 import { MapComponent } from '../components/map_page/';
 import { OpenSearchDashboardsContextProvider } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../types';
+import { TimeRange } from '../../../../src/plugins/data/common';
 
 interface Props {
   embeddable: MapEmbeddable;
   input: MapInput;
   output: EmbeddableOutput;
 }
-export function MapEmbeddableComponentInner({ embeddable, input, output }: Props) {
-  const { savedObjectId } = input;
-  const [timeRange, setTimeRange] = useState(input.timeRange);
+export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
+  const [timeRange, setTimeRange] = useState<TimeRange | undefined>(input.timeRange);
   const services: MapServices = {
     ...embeddable.getServiceSettings(),
   };
@@ -33,7 +33,7 @@ export function MapEmbeddableComponentInner({ embeddable, input, output }: Props
     <OpenSearchDashboardsContextProvider services={services}>
       <MapComponent
         mapConfig={embeddable.getMapConfig()}
-        mapIdFromSavedObject={savedObjectId}
+        mapIdFromSavedObject={input.savedObjectId}
         timeRange={timeRange}
         inDashboardMode={true}
       />

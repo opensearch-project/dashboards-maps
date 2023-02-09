@@ -17,14 +17,25 @@ import {
   CustomImportMapPluginSetup,
   CustomImportMapPluginStart,
 } from './types';
-import { PLUGIN_NAME, MAPS_APP_ID, MAPS_APP_DISPLAY_NAME } from '../common/constants/shared';
+import {
+  PLUGIN_NAME,
+  MAPS_APP_ID,
+  MAPS_APP_DISPLAY_NAME,
+  PLUGIN_ID,
+} from '../common/constants/shared';
 import { ConfigSchema } from '../common/config';
 import { AppPluginSetupDependencies } from './types';
 import { RegionMapVisualizationDependencies } from '../../../src/plugins/region_map/public';
 import { VectorUploadOptions } from './components/vector_upload_options';
 import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opensearch_dashboards_react/public';
-import { MAP_SAVED_OBJECT_TYPE } from '../common';
+import {
+  MAPS_APP_ICON,
+  MAP_SAVED_OBJECT_TYPE,
+  APP_PATH,
+  MAPS_VISUALIZATION_DESCRIPTION,
+} from '../common';
 import { MapEmbeddableFactoryDefinition } from './embeddable';
+import { setTimeFilter } from './services';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart>
@@ -55,7 +66,11 @@ export class CustomImportMapPlugin
         const { renderApp } = await import('./application');
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
-        const { navigation, data } = depsStart as AppPluginStartDependencies;
+        const {
+          navigation,
+          data,
+          embeddable: useEmbeddable,
+        } = depsStart as AppPluginStartDependencies;
 
         // make sure the index pattern list is up-to-date
         data.indexPatterns.clearCache();
@@ -72,6 +87,8 @@ export class CustomImportMapPlugin
           toastNotifications: coreStart.notifications.toasts,
           history: params.history,
           data,
+          embeddable: useEmbeddable,
+          scopedHistory: params.history,
         };
         params.element.classList.add('mapAppContainer');
         // Render the application
@@ -81,19 +98,44 @@ export class CustomImportMapPlugin
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
       const [coreStart, depsStart] = await core.getStartServices();
-      const { navigation, data } = depsStart as AppPluginStartDependencies;
+      const { navigation, data: useData } = depsStart as AppPluginStartDependencies;
       return {
         mapConfig,
         services: {
           ...coreStart,
           navigation,
+          data: useData,
           toastNotifications: coreStart.notifications.toasts,
-          data,
         },
       };
     });
-
     embeddable.registerEmbeddableFactory(MAP_SAVED_OBJECT_TYPE, mapEmbeddableFactory as any);
+
+    visualizations.registerAlias({
+      name: PLUGIN_ID,
+      title: MAPS_APP_DISPLAY_NAME,
+      description: MAPS_VISUALIZATION_DESCRIPTION,
+      icon: MAPS_APP_ICON,
+      aliasApp: MAPS_APP_ID,
+      aliasPath: APP_PATH.CREATE_MAP,
+      stage: 'production',
+      appExtensions: {
+        visualizations: {
+          docTypes: [PLUGIN_ID],
+          toListItem: ({ id, attributes }) => ({
+            description: attributes?.description,
+            editApp: PLUGIN_ID,
+            editUrl: `${encodeURIComponent(id)}`,
+            icon: MAPS_APP_ICON,
+            id,
+            savedObjectType: MAP_SAVED_OBJECT_TYPE,
+            title: attributes?.title,
+            typeTitle: PLUGIN_NAME,
+            stage: 'production',
+          }),
+        },
+      },
+    });
 
     const customSetup = async () => {
       const [coreStart] = await core.getStartServices();
@@ -124,7 +166,8 @@ export class CustomImportMapPlugin
     };
   }
 
-  public start(core: CoreStart): CustomImportMapPluginStart {
+  public start(core: CoreStart, { data }: AppPluginStartDependencies): CustomImportMapPluginStart {
+    setTimeFilter(data.query.timefilter.timefilter);
     return {};
   }
 

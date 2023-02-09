@@ -41,7 +41,6 @@ interface Props {
   newLayerIndex: number;
   mapConfig: ConfigSchema;
   layerCount: number;
-  inDashboardMode: boolean;
 }
 
 export const AddLayerPanel = ({
@@ -53,7 +52,6 @@ export const AddLayerPanel = ({
   newLayerIndex,
   mapConfig,
   layerCount,
-  inDashboardMode,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
@@ -111,33 +109,31 @@ export const AddLayerPanel = ({
 
   return (
     <div className="addLayer">
-      {inDashboardMode ? null : (
-        <EuiFlexItem className="addLayer__button">
-          <EuiToolTip
-            display="block"
-            position="top"
-            content={
-              <p>
-                {isMaxLayerLimitReached()
-                  ? `You've added the maximum number of layers (${MAX_LAYER_LIMIT}).`
-                  : 'Add layer'}
-              </p>
-            }
+      <EuiFlexItem className="addLayer__button">
+        <EuiToolTip
+          display="block"
+          position="top"
+          content={
+            <p>
+              {isMaxLayerLimitReached()
+                ? `You've added the maximum number of layers (${MAX_LAYER_LIMIT}).`
+                : 'Add layer'}
+            </p>
+          }
+        >
+          <EuiButton
+            fullWidth
+            size="s"
+            fill
+            onClick={showModal}
+            aria-label="Add layer"
+            isDisabled={IsLayerConfigVisible || isMaxLayerLimitReached()}
+            data-test-subj="addLayerButton"
           >
-            <EuiButton
-              fullWidth
-              size="s"
-              fill
-              onClick={showModal}
-              aria-label="Add layer"
-              isDisabled={IsLayerConfigVisible || isMaxLayerLimitReached()}
-              data-test-subj="addLayerButton"
-            >
-              Add layer
-            </EuiButton>
-          </EuiToolTip>
-        </EuiFlexItem>
-      )}
+            Add layer
+          </EuiButton>
+        </EuiToolTip>
+      </EuiFlexItem>
       {isAddNewLayerModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>

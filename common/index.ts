@@ -46,7 +46,8 @@ export const MIN_LONGITUDE = -180;
 export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
 export const MAP_SAVED_OBJECT_TYPE = 'map';
 // TODO: Replace with actual app icon
-export const MAPS_APP_ICON = 'globe';
+export const MAPS_APP_ICON = 'gisApp';
+export const MAPS_VISUALIZATION_DESCRIPTION = 'Create map visualization with multiple layers';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {

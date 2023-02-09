@@ -5,8 +5,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { SimpleSavedObject } from 'opensearch-dashboards/public';
 import { Map as Maplibre } from 'maplibre-gl';
+import { SimpleSavedObject } from '../../../../../src/core/public';
 import { MapContainer } from '../map_container';
 import { MapTopNavMenu } from '../map_top_nav';
 import { MapServices } from '../../types';
@@ -17,13 +17,17 @@ import {
   MAP_LAYER_DEFAULT_NAME,
   OPENSEARCH_MAP_LAYER,
 } from '../../../common';
-import { MapLayerSpecification } from '../../model/mapLayerType';
+import {MapLayerSpecification, OSMLayerSpecification} from '../../model/mapLayerType';
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
 import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 
-interface Props {
+interface MapPageProps {
+  mapConfig: ConfigSchema;
+}
+
+interface MapComponentProps {
   mapConfig: ConfigSchema;
   mapIdFromSavedObject: string;
   timeRange?: TimeRange;
@@ -34,7 +38,7 @@ export const MapComponent = ({
   mapConfig,
   timeRange,
   inDashboardMode,
-}: Props) => {
+}: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
@@ -66,9 +70,8 @@ export const MapComponent = ({
         setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
-      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap(mapConfig)[
-        OPENSEARCH_MAP_LAYER.type
-      ];
+      const initialDefaultLayer: MapLayerSpecification =
+        getLayerConfigMap(mapConfig)[OPENSEARCH_MAP_LAYER.type];
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
       setLayers([initialDefaultLayer]);
     }
@@ -105,7 +108,7 @@ export const MapComponent = ({
   );
 };
 
-export const MapPage = ({ mapConfig }: Props) => {
+export const MapPage = ({ mapConfig }: MapPageProps) => {
   const { id: mapId } = useParams<{ id: string }>();
   return (
     <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} inDashboardMode={false} />

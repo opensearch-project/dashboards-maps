@@ -30,7 +30,6 @@ import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
-  DASHBOARDS_MAPS_LAYER_TYPE,
   LAYER_ICON_TYPE_MAP,
   LAYER_PANEL_HIDE_LAYER_ICON,
   LAYER_PANEL_SHOW_LAYER_ICON,
@@ -99,16 +98,17 @@ export const LayerControlPanel = memo(
     >();
     const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
 
+    // Update data layers when state bar changes
     useEffect(() => {
-      if (timeRange) {
-        layers.forEach((layer: MapLayerSpecification) => {
-          if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-            return;
-          }
-          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
-        });
-      }
+      layers.forEach((layer: MapLayerSpecification) => {
+        if (referenceLayerTypeLookup[layer.type]) {
+          return;
+        }
+        handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
+      });
+    }, [timeRange, mapState]);
 
+    useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {
         return;
       }
@@ -139,7 +139,7 @@ export const LayerControlPanel = memo(
         setInitialLayersLoaded(true);
       }
       setIsUpdatingLayerRender(false);
-    }, [layers, timeRange]);
+    }, [layers]);
 
     useEffect(() => {
       const getCurrentVisibleLayers = () => {
@@ -211,9 +211,6 @@ export const LayerControlPanel = memo(
     };
 
     const onClickLayerName = (layer: MapLayerSpecification) => {
-      if (inDashboardMode) {
-        return;
-      }
       if (hasUnsavedChanges()) {
         notifications.toasts.addWarning(
           `You have unsaved changes for ${selectedLayerConfig?.name}`
@@ -338,8 +335,13 @@ export const LayerControlPanel = memo(
       return visibleLayers.includes(layer);
     };
 
+    if (inDashboardMode) {
+      return null;
+    }
+
+    let content;
     if (isLayerControlVisible) {
-      return (
+      content = (
         <I18nProvider>
           <EuiPanel
             paddingSize="none"
@@ -372,11 +374,7 @@ export const LayerControlPanel = memo(
               </EuiFlexGroup>
               <EuiHorizontalRule margin="none" />
               <EuiDragDropContext onDragEnd={onDragEnd}>
-                <EuiDroppable
-                  droppableId="LAYERS_HANDLE_DROPPABLE_AREA"
-                  spacing="none"
-                  isDropDisabled={inDashboardMode}
-                >
+                <EuiDroppable droppableId="LAYERS_HANDLE_DROPPABLE_AREA" spacing="none">
                   {getReverseLayers().map((layer, index) => {
                     const isLayerSelected =
                       isLayerConfigVisible &&
@@ -389,7 +387,6 @@ export const LayerControlPanel = memo(
                         index={index}
                         draggableId={layer.id}
                         customDragHandle={true}
-                        isDragDisabled={inDashboardMode}
                       >
                         {(provided) => (
                           <div key={layer.id}>
@@ -427,58 +424,54 @@ export const LayerControlPanel = memo(
                                   />
                                 </EuiToolTip>
                               </EuiFlexItem>
-                              {!inDashboardMode && (
-                                <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
-                                  <EuiFlexItem
-                                    grow={false}
-                                    className="layerControlPanel__layerFunctionButton"
-                                  >
-                                    <EuiButtonIcon
-                                      iconType={
-                                        layerVisibility.get(layer.id)
-                                          ? LAYER_PANEL_HIDE_LAYER_ICON
-                                          : LAYER_PANEL_SHOW_LAYER_ICON
-                                      }
-                                      size="s"
-                                      onClick={() => onLayerVisibilityChange(layer)}
-                                      aria-label="Hide or show layer"
-                                      color="text"
-                                      title={
-                                        layerVisibility.get(layer.id) ? 'Hide layer' : 'Show layer'
-                                      }
-                                    />
-                                  </EuiFlexItem>
-                                  <EuiFlexItem
-                                    grow={false}
-                                    className="layerControlPanel__layerFunctionButton"
-                                  >
-                                    <EuiButtonIcon
-                                      size="s"
-                                      iconType="trash"
-                                      onClick={() => onDeleteLayerIconClick(layer)}
-                                      aria-label="Delete layer"
-                                      color={
-                                        layer.id === selectedLayerConfig?.id ? 'text' : 'danger'
-                                      }
-                                      title="Delete layer"
-                                      disabled={layer.id === selectedLayerConfig?.id}
-                                    />
-                                  </EuiFlexItem>
-                                  <EuiFlexItem
-                                    grow={false}
-                                    className="layerControlPanel__layerFunctionButton"
-                                  >
-                                    <EuiButtonEmpty
-                                      size="s"
-                                      iconType="grab"
-                                      {...provided.dragHandleProps}
-                                      aria-label="Drag Handle"
-                                      color="text"
-                                      title="Move layer up or down"
-                                    />
-                                  </EuiFlexItem>
-                                </EuiFlexGroup>
-                              )}
+                              <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
+                                <EuiFlexItem
+                                  grow={false}
+                                  className="layerControlPanel__layerFunctionButton"
+                                >
+                                  <EuiButtonIcon
+                                    iconType={
+                                      layerVisibility.get(layer.id)
+                                        ? LAYER_PANEL_HIDE_LAYER_ICON
+                                        : LAYER_PANEL_SHOW_LAYER_ICON
+                                    }
+                                    size="s"
+                                    onClick={() => onLayerVisibilityChange(layer)}
+                                    aria-label="Hide or show layer"
+                                    color="text"
+                                    title={
+                                      layerVisibility.get(layer.id) ? 'Hide layer' : 'Show layer'
+                                    }
+                                  />
+                                </EuiFlexItem>
+                                <EuiFlexItem
+                                  grow={false}
+                                  className="layerControlPanel__layerFunctionButton"
+                                >
+                                  <EuiButtonIcon
+                                    size="s"
+                                    iconType="trash"
+                                    onClick={() => onDeleteLayerIconClick(layer)}
+                                    aria-label="Delete layer"
+                                    color={layer.id === selectedLayerConfig?.id ? 'text' : 'danger'}
+                                    title="Delete layer"
+                                    disabled={layer.id === selectedLayerConfig?.id}
+                                  />
+                                </EuiFlexItem>
+                                <EuiFlexItem
+                                  grow={false}
+                                  className="layerControlPanel__layerFunctionButton"
+                                >
+                                  <EuiButtonEmpty
+                                    size="s"
+                                    iconType="grab"
+                                    {...provided.dragHandleProps}
+                                    aria-label="Drag Handle"
+                                    color="text"
+                                    title="Move layer up or down"
+                                  />
+                                </EuiFlexItem>
+                              </EuiFlexGroup>
                             </EuiFlexGroup>
                             <EuiHorizontalRule margin="none" />
                           </div>
@@ -511,7 +504,6 @@ export const LayerControlPanel = memo(
                 setIsNewLayer={setIsNewLayer}
                 mapConfig={mapConfig}
                 layerCount={layers.length}
-                inDashboardMode={inDashboardMode}
               />
               {isDeleteLayerModalVisible && (
                 <DeleteLayerModal
@@ -524,19 +516,21 @@ export const LayerControlPanel = memo(
           </EuiPanel>
         </I18nProvider>
       );
+    } else {
+      content = (
+        <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
+          <EuiButtonIcon
+            className="layerControlPanel__visButton"
+            size="s"
+            iconType="menuRight"
+            onClick={() => setIsLayerControlVisible((visible) => !visible)}
+            aria-label="Show layer control"
+            title="Expand layers panel"
+          />
+        </EuiFlexItem>
+      );
     }
 
-    return (
-      <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
-        <EuiButtonIcon
-          className="layerControlPanel__visButton"
-          size="s"
-          iconType="menuRight"
-          onClick={() => setIsLayerControlVisible((visible) => !visible)}
-          aria-label="Show layer control"
-          title="Expand layers panel"
-        />
-      </EuiFlexItem>
-    );
+    return <div className="layerControlPanel-container">{content}</div>;
   }
 );

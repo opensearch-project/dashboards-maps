@@ -7,15 +7,15 @@ import { i18n } from '@osd/i18n';
 import {
   IContainer,
   EmbeddableFactoryDefinition,
-  EmbeddableFactory,
   ErrorEmbeddable,
   SavedObjectEmbeddableInput,
 } from '../../../../src/plugins/embeddable/public';
 import { MAP_EMBEDDABLE, MapInput, MapOutput, MapEmbeddable } from './map_embeddable';
-import { APP_PATH, MAPS_APP_ICON, MAPS_APP_ID } from '../../common';
+import { MAPS_APP_ICON, MAPS_APP_ID } from '../../common';
 import { ConfigSchema } from '../../common/config';
 import { MapSavedObjectAttributes } from '../../common/map_saved_object_attributes';
 import { MAPS_APP_DISPLAY_NAME } from '../../common/constants/shared';
+import { getTimeFilter } from '../services';
 
 interface StartServices {
   services: {
@@ -31,8 +31,6 @@ interface StartServices {
   };
   mapConfig: ConfigSchema;
 }
-
-export type MapEmbeddableFactory = EmbeddableFactory<MapInput, MapOutput, MapEmbeddable>;
 
 export class MapEmbeddableFactoryDefinition
   implements EmbeddableFactoryDefinition<MapInput, MapOutput, MapEmbeddable>
@@ -51,8 +49,8 @@ export class MapEmbeddableFactoryDefinition
     return true;
   }
 
+  // Maps app will be created from visualization list
   public canCreateNew() {
-    // TODO: allow users to create a new map from the dashboard.
     return false;
   }
 
@@ -66,6 +64,7 @@ export class MapEmbeddableFactoryDefinition
       const url = services.application.getUrlForApp(MAPS_APP_ID, {
         path: savedObjectId,
       });
+      const timeFilter = getTimeFilter();
       const savedMap = await services.savedObjects.client.get(MAP_EMBEDDABLE, savedObjectId);
       const savedMapAttributes = savedMap.attributes as MapSavedObjectAttributes;
       return new MapEmbeddable(
@@ -80,6 +79,7 @@ export class MapEmbeddableFactoryDefinition
           mapConfig,
           editUrl: url,
           savedMapAttributes,
+          timeFilter,
         }
       );
     } catch (error) {
@@ -88,10 +88,6 @@ export class MapEmbeddableFactoryDefinition
   };
 
   public async create(initialInput: MapInput, parent?: IContainer) {
-    const { services } = await this.getStartServices();
-    await services.application.navigateToApp(MAPS_APP_ID, {
-      path: `${APP_PATH.CREATE_MAP}?originatingApp=dashboards`,
-    });
     return undefined;
   }
 

@@ -204,22 +204,20 @@ export const MapContainer = ({
           zoom: {zoom}
         </small>
       </EuiPanel>
-      <div className="layerControlPanel-container">
-        {mounted && (
-          <LayerControlPanel
-            maplibreRef={maplibreRef}
-            layers={layers}
-            setLayers={setLayers}
-            layersIndexPatterns={layersIndexPatterns}
-            setLayersIndexPatterns={setLayersIndexPatterns}
-            mapState={mapState}
-            zoom={zoom}
-            mapConfig={mapConfig}
-            inDashboardMode={inDashboardMode}
-            timeRange={timeRange}
-          />
-        )}
-      </div>
+      {mounted && (
+        <LayerControlPanel
+          maplibreRef={maplibreRef}
+          layers={layers}
+          setLayers={setLayers}
+          layersIndexPatterns={layersIndexPatterns}
+          setLayersIndexPatterns={setLayersIndexPatterns}
+          mapState={mapState}
+          zoom={zoom}
+          mapConfig={mapConfig}
+          inDashboardMode={inDashboardMode}
+          timeRange={timeRange}
+        />
+      )}
       <div className="map-container" ref={mapContainer} />
     </div>
   );

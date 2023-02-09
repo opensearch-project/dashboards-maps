@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { SimpleSavedObject } from 'opensearch-dashboards/public';
+import { SimpleSavedObject } from '../../../../../src/core/public';
 import { IndexPattern, Query, TimeRange } from '../../../../../src/plugins/data/public';
 import { DASHBOARDS_MAPS_LAYER_TYPE, MAPS_APP_ID } from '../../../common';
 import { getTopNavConfig } from './get_top_nav_config';
@@ -26,6 +26,7 @@ interface MapTopNavMenuProps {
   setMapState: (mapState: MapState) => void;
   inDashboardMode: boolean;
   timeRange?: TimeRange;
+  originatingApp?: string;
 }
 
 export const MapTopNavMenu = ({
@@ -47,6 +48,8 @@ export const MapTopNavMenu = ({
     },
     chrome,
     application: { navigateToApp },
+    embeddable,
+    scopedHistory,
   } = services;
 
   const [title, setTitle] = useState<string>('');
@@ -56,6 +59,7 @@ export const MapTopNavMenu = ({
   const [queryConfig, setQueryConfig] = useState<Query>({ query: '', language: 'kuery' });
   const [refreshIntervalValue, setRefreshIntervalValue] = useState<number>(60000);
   const [isRefreshPaused, setIsRefreshPaused] = useState<boolean>(false);
+  const [originatingApp, setOriginatingApp] = useState<string>();
   const changeTitle = useCallback(
     (newTitle: string) => {
       chrome.setBreadcrumbs(getSavedMapBreadcrumbs(newTitle, navigateToApp));
@@ -63,6 +67,14 @@ export const MapTopNavMenu = ({
     },
     [chrome, navigateToApp]
   );
+
+  useEffect(() => {
+    const { originatingApp: value } =
+      embeddable
+        .getStateTransfer(scopedHistory)
+        .getIncomingEditorState({ keysToRemoveAfterFetch: ['id', 'input'] }) || {};
+    setOriginatingApp(value);
+  }, [embeddable, scopedHistory]);
 
   useEffect(() => {
     if (savedMapObject) {
@@ -77,10 +89,9 @@ export const MapTopNavMenu = ({
 
   const refreshDataLayerRender = () => {
     layers.forEach((layer: MapLayerSpecification) => {
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-        return;
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+        handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
       }
-      handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
     });
   };
 
@@ -104,7 +115,6 @@ export const MapTopNavMenu = ({
     setQueryConfig(mapState.query);
     setIsRefreshPaused(mapState.refreshInterval.pause);
     setRefreshIntervalValue(mapState.refreshInterval.value);
-    refreshDataLayerRender();
   }, [mapState, timeRange]);
 
   const onRefreshChange = useCallback(
@@ -126,6 +136,7 @@ export const MapTopNavMenu = ({
         setTitle,
         setDescription,
         mapState,
+        originatingApp,
       })}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
