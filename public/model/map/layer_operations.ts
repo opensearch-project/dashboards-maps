@@ -2,7 +2,51 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
-import { Map as Maplibre } from 'maplibre-gl';
+import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
+
+export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSpecification[] => {
+  const layers: LayerSpecification[] = map.getStyle().layers;
+  return dashboardMapsLayerId
+    ? layers.filter((layer) => layer.id.includes(dashboardMapsLayerId))
+    : layers;
+};
+
+export const hasLayer = (map: Maplibre, dashboardMapsLayerId: string): boolean => {
+  const maplibreMapLayers = getLayers(map);
+  for (const layer of maplibreMapLayers) {
+    if (layer.id.includes(dashboardMapsLayerId)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+export const moveLayers = (map: Maplibre, sourceId: string, beforeId?: string) => {
+  const sourceLayers = getLayers(map, sourceId);
+  if (!sourceLayers.length) {
+    return;
+  }
+  const beforeLayers = beforeId ? getLayers(map, beforeId) : [];
+  const topOfBeforeLayer = beforeLayers.length ? beforeLayers[0].id : undefined;
+  sourceLayers.forEach((layer) => map?.moveLayer(layer.id, topOfBeforeLayer));
+  return;
+};
+
+export const removeLayers = (map: Maplibre, layerId: string, removeSource?: boolean) => {
+  getLayers(map, layerId).forEach((layer) => {
+    map.removeLayer(layer.id);
+  });
+  // client might remove source if it is not required anymore.
+  if (removeSource && map.getSource(layerId)) {
+    map.removeSource(layerId);
+  }
+};
+
+export const updateLayerVisibility = (map: Maplibre, layerId: string, visibility: string) => {
+  getLayers(map, layerId).forEach((layer) => {
+    map.setLayoutProperty(layer.id, 'visibility', visibility);
+  });
+};
 
 export interface LineLayerSpecification {
   sourceId: string;
