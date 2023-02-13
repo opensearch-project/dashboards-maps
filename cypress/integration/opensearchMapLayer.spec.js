@@ -36,4 +36,9 @@ describe('Default OpenSearch base map layer', () => {
     }
     cy.get('[data-test-subj="mapStatusBar"]').should('contain', 'zoom: 22');
   });
+
+  after(() => {
+    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory`);
+    cy.get('button[data-test-subj="removeSampleDataSetflights"]').should('be.visible').click();
+  });
 });
