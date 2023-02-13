@@ -22,21 +22,21 @@ You will need to install [node.js](https://nodejs.org/en/), [nvm](https://github
 
 ### Setup
 
-1. Download OpenSearch [Geospatial](https://github.com/opensearch-project/geospatial) plugin, which requires same version with OpenSearch-Dashboard and maps-dashboards plugin.
+1. Download OpenSearch [Geospatial](https://github.com/opensearch-project/geospatial) plugin, which requires same version with OpenSearch-Dashboard and dashboards-maps plugin.
 2. Run `./gradlew run` under Geospatial plugin root path to start OpenSearch cluster.
 3. Download the OpenSearch Dashboards source code for the version specified in package.json you want to set up.
 4. Change your node version by `nvm use <version>`to the version specified in `.node-version` inside the OpenSearch Dashboards root directory.
 5. Create a `plugins` directory inside the OpenSearch Dashboards source code directory, if `plugins` directory doesn't exist.
 6. cd into `plugins` directory in the OpenSearch Dashboards source code directory.
 7. Check out this package from version control into the `plugins` directory.
-8. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/maps_dashboards` folder.
+8. Run `yarn osd bootstrap` inside `OpenSearch-Dashboards/plugins/dashboards-maps` folder.
 
 Ultimately, your directory structure should look like this:
 
 ```md
 ├── OpenSearch-Dashboards
 │   ├── plugins
-│   │   └── maps-dashboards
+│   │   └── dashboards-maps
 ```
 
 ### Run
@@ -58,7 +58,7 @@ Example output: ./build/customImportMapDashboards-1.0.0.0.zip
 
 ### Test
 
-From maps-dashboards folder running the following command runs the plugin unit tests:
+From dashboards-maps folder running the following command runs the plugin unit tests:
 
 #### Unit test
 ```
@@ -77,6 +77,6 @@ See [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Backports
 
-The Github backport workflow creates backport PRs automatically for PRs with label `backport <backport-branch-name>`. Label should be attached to the original PR, backport workflow starts when original PR merged to main branch. For example, if a PR on main needs to be backported to `1.x` branch, add a label `backport 1.x` to the PR and make sure the
+The GitHub backport workflow creates backport PRs automatically for PRs with label `backport <backport-branch-name>`. Label should be attached to the original PR, backport workflow starts when original PR merged to main branch. For example, if a PR on main needs to be backported to `1.x` branch, add a label `backport 1.x` to the PR and make sure the
 backport workflow runs on the PR along with other checks. Once this PR is merged to main, the workflow will create a backport PR
 to the `1.x` branch.
