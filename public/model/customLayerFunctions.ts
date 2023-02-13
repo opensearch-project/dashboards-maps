@@ -7,10 +7,6 @@ interface MaplibreRef {
   current: Maplibre | null;
 }
 
-const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
-  return maplibreRef.current?.getStyle().layers || [];
-};
-
 const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
