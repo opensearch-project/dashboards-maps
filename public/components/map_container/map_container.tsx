@@ -13,7 +13,7 @@ import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import { createPopup, getPopupLngLat, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -86,12 +86,13 @@ export const MapContainer = ({
       if (features && maplibreRef.current) {
         clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
         clickPopup
-          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
           .addTo(maplibreRef.current);
       }
     }
 
     function onMouseMoveMap(e: MapEventType['mousemove']) {
+      // This is required to update coordinates on map only on mouse move
       setCoordinates(e.lngLat.wrap());
 
       // remove previous popup
@@ -107,7 +108,7 @@ export const MapContainer = ({
           showLayerSelection: false,
         });
         hoverPopup
-          ?.setLngLat(getPopupLngLat(features[0].geometry) ?? e.lngLat)
+          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
           .addTo(maplibreRef.current);
       }
     }
@@ -166,7 +167,13 @@ export const MapContainer = ({
 
   return (
     <div>
-      <EuiPanel hasShadow={false} hasBorder={false} color="transparent" className="zoombar" data-test-subj="mapStatusBar">
+      <EuiPanel
+        hasShadow={false}
+        hasBorder={false}
+        color="transparent"
+        className="zoombar"
+        data-test-subj="mapStatusBar"
+      >
         <small>
           {coordinates &&
             `lat: ${coordinates.lat.toFixed(4)}, lon: ${coordinates.lng.toFixed(4)}, `}
