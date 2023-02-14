@@ -21,13 +21,15 @@ interface Props {
 }
 export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange | undefined>(input.timeRange);
+  const [refreshConfig, setRefreshConfig] = useState(input.refreshConfig);
   const services: MapServices = {
     ...embeddable.getServiceSettings(),
   };
 
   useEffect(() => {
     setTimeRange(input.timeRange);
-  }, [input.timeRange]);
+    setRefreshConfig(input.refreshConfig);
+  }, [input.refreshConfig, input.timeRange]);
 
   return (
     <OpenSearchDashboardsContextProvider services={services}>
@@ -36,6 +38,7 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
         mapIdFromSavedObject={input.savedObjectId}
         timeRange={timeRange}
         inDashboardMode={true}
+        refreshConfig={refreshConfig}
       />
     </OpenSearchDashboardsContextProvider>
   );

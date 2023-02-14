@@ -8,7 +8,6 @@ import {
   DropResult,
   EuiButtonEmpty,
   EuiButtonIcon,
-  EuiConfirmModal,
   EuiDragDropContext,
   EuiDraggable,
   EuiDroppable,
@@ -25,7 +24,7 @@ import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
-import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
+import { IndexPattern, RefreshInterval, TimeRange } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -62,6 +61,7 @@ interface Props {
   mapConfig: ConfigSchema;
   inDashboardMode: boolean;
   timeRange?: TimeRange;
+  refreshConfig?: RefreshInterval;
 }
 
 export const LayerControlPanel = memo(
@@ -76,6 +76,7 @@ export const LayerControlPanel = memo(
     mapConfig,
     inDashboardMode,
     timeRange,
+    refreshConfig,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
@@ -98,7 +99,7 @@ export const LayerControlPanel = memo(
     >();
     const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
 
-    // Update data layers when state bar changes
+    // Update data layers when state bar time range changes
     useEffect(() => {
       layers.forEach((layer: MapLayerSpecification) => {
         if (referenceLayerTypeLookup[layer.type]) {
@@ -107,6 +108,21 @@ export const LayerControlPanel = memo(
         handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
       });
     }, [timeRange, mapState]);
+
+    useEffect(() => {
+      let intervalId: NodeJS.Timeout | undefined;
+      if (refreshConfig && !refreshConfig.pause) {
+        intervalId = setInterval(() => {
+          layers.forEach((layer: MapLayerSpecification) => {
+            if (referenceLayerTypeLookup[layer.type]) {
+              return;
+            }
+            handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
+          });
+        }, refreshConfig.value);
+      }
+      return () => clearInterval(intervalId);
+    }, [refreshConfig]);
 
     useEffect(() => {
       if (!isUpdatingLayerRender && initialLayersLoaded) {

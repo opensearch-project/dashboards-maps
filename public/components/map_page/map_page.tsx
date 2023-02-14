@@ -17,9 +17,9 @@ import {
   MAP_LAYER_DEFAULT_NAME,
   OPENSEARCH_MAP_LAYER,
 } from '../../../common';
-import {MapLayerSpecification, OSMLayerSpecification} from '../../model/mapLayerType';
+import { MapLayerSpecification } from '../../model/mapLayerType';
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
-import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
+import { IndexPattern, RefreshInterval, TimeRange } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 
@@ -32,21 +32,22 @@ interface MapComponentProps {
   mapIdFromSavedObject: string;
   timeRange?: TimeRange;
   inDashboardMode: boolean;
+  refreshConfig?: RefreshInterval;
 }
 export const MapComponent = ({
   mapIdFromSavedObject,
   mapConfig,
   timeRange,
   inDashboardMode,
+  refreshConfig,
 }: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
   } = services;
   const [layers, setLayers] = useState<MapLayerSpecification[]>([]);
-  const [savedMapObject, setSavedMapObject] = useState<SimpleSavedObject<
-    MapSavedObjectAttributes
-  > | null>();
+  const [savedMapObject, setSavedMapObject] =
+    useState<SimpleSavedObject<MapSavedObjectAttributes> | null>();
   const [layersIndexPatterns, setLayersIndexPatterns] = useState<IndexPattern[]>([]);
   const maplibreRef = useRef<Maplibre | null>(null);
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
@@ -103,6 +104,7 @@ export const MapComponent = ({
         mapConfig={mapConfig}
         inDashboardMode={inDashboardMode}
         timeRange={timeRange}
+        refreshConfig={refreshConfig}
       />
     </div>
   );
