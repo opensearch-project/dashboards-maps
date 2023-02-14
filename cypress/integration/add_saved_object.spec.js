@@ -20,14 +20,14 @@ describe('Add flights dataset saved object', () => {
     cy.wait(60000);
   });
 
+  after(() => {
+    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory`);
+    cy.get('button[data-test-subj="removeSampleDataSetflights"]').should('be.visible').click();
+  });
+
   it('check if maps saved object of flights dataset can be found and open', () => {
     cy.visit(`${BASE_PATH}/app/maps-dashboards`);
     cy.contains('[Flights] Maps Cancelled Flights Destination Location').click();
     cy.get('[data-test-subj="layerControlPanel"]').should('contain', 'Cancelled flights');
-  });
-
-  after(() => {
-    cy.visit(`${BASE_PATH}/app/home#/tutorial_directory`);
-    cy.get('button[data-test-subj="removeSampleDataSetflights"]').should('be.visible').click();
   });
 });

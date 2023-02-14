@@ -63,13 +63,13 @@ export class CustomImportMapPlugin
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
 
-    if (home) this.addMapsSavedObjects(home, config);
-
     // Register saved object types
     core.savedObjects.registerType(mapSavedObjectsType);
 
     // Register capabilities
     core.capabilities.registerProvider(capabilitiesProvider);
+
+    if (home) this.addMapsSavedObjects(home, config);
 
     return {};
   }
