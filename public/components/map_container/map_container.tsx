@@ -16,6 +16,7 @@ import {
   RefreshInterval,
   TimeRange,
   Filter,
+  Query,
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
@@ -37,6 +38,7 @@ interface MapContainerProps {
   timeRange?: TimeRange;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
+  query?: Query;
 }
 
 export const MapContainer = ({
@@ -51,6 +53,7 @@ export const MapContainer = ({
   timeRange,
   refreshConfig,
   filters,
+  query,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -227,6 +230,7 @@ export const MapContainer = ({
           timeRange={timeRange}
           refreshConfig={refreshConfig}
           filters={filters}
+          query={query}
         />
       )}
       <div className="map-container" ref={mapContainer} />

@@ -29,6 +29,7 @@ import {
   RefreshInterval,
   TimeRange,
   Filter,
+  Query,
 } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
@@ -68,6 +69,7 @@ interface Props {
   timeRange?: TimeRange;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
+  query?: Query;
 }
 
 export const LayerControlPanel = memo(
@@ -84,6 +86,7 @@ export const LayerControlPanel = memo(
     timeRange,
     refreshConfig,
     filters,
+    query,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
@@ -106,7 +109,7 @@ export const LayerControlPanel = memo(
     >();
     const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
 
-    // Update data layers when state bar time range changes
+    // Update data layers when state bar time range, filters and query changes
     useEffect(() => {
       layers.forEach((layer: MapLayerSpecification) => {
         if (referenceLayerTypeLookup[layer.type]) {
@@ -119,11 +122,13 @@ export const LayerControlPanel = memo(
           maplibreRef,
           undefined,
           timeRange,
-          filters
+          filters,
+          query
         );
       });
     }, [timeRange, mapState, filters]);
 
+    // Update data layers when state bar enable auto refresh
     useEffect(() => {
       let intervalId: NodeJS.Timeout | undefined;
       if (refreshConfig && !refreshConfig.pause) {

@@ -23,6 +23,7 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
   const [timeRange, setTimeRange] = useState<TimeRange | undefined>(input.timeRange);
   const [refreshConfig, setRefreshConfig] = useState(input.refreshConfig);
   const [filters, setFilters] = useState(input.filters);
+  const [query, setQuery] = useState(input.query);
   const services: MapServices = {
     ...embeddable.getServiceSettings(),
   };
@@ -31,7 +32,8 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
     setTimeRange(input.timeRange);
     setRefreshConfig(input.refreshConfig);
     setFilters(input.filters);
-  }, [input.refreshConfig, input.timeRange, input.filters]);
+    setQuery(input.query);
+  }, [input.refreshConfig, input.timeRange, input.filters, input.query]);
 
   return (
     <OpenSearchDashboardsContextProvider services={services}>
@@ -42,6 +44,7 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
         inDashboardMode={true}
         refreshConfig={refreshConfig}
         filters={filters}
+        query={query}
       />
     </OpenSearchDashboardsContextProvider>
   );

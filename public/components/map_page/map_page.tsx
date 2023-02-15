@@ -24,6 +24,7 @@ import {
   IndexPattern,
   RefreshInterval,
   TimeRange,
+  Query,
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
@@ -39,6 +40,7 @@ interface MapComponentProps {
   inDashboardMode: boolean;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
+  query?: Query;
 }
 export const MapComponent = ({
   mapIdFromSavedObject,
@@ -47,6 +49,7 @@ export const MapComponent = ({
   inDashboardMode,
   refreshConfig,
   filters,
+  query,
 }: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -113,6 +116,7 @@ export const MapComponent = ({
         timeRange={timeRange}
         refreshConfig={refreshConfig}
         filters={filters}
+        query={query}
       />
     </div>
   );

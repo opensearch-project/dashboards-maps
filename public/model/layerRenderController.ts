@@ -15,6 +15,7 @@ import {
   IOpenSearchDashboardsSearchResponse,
   isCompleteResponse,
   TimeRange,
+  Query,
 } from '../../../../src/plugins/data/common';
 import { layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
@@ -31,7 +32,8 @@ export const prepareDataLayerSource = (
   mapState: MapState,
   { data, toastNotifications }: MapServices,
   filters: Filter[] = [],
-  timeRange?: TimeRange
+  timeRange?: TimeRange,
+  query?: Query
 ): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
@@ -52,15 +54,11 @@ export const prepareDataLayerSource = (
           selectedTimeRange = mapState.timeRange;
         }
         const timeFilters = getTime(indexPattern, selectedTimeRange);
-        buildQuery = buildOpenSearchQuery(
-          indexPattern,
-          [],
-          [
-            ...filters,
-            ...(layer.source.filters ? layer.source.filters : []),
-            ...(timeFilters ? [timeFilters] : []),
-          ]
-        );
+        buildQuery = buildOpenSearchQuery(indexPattern, query ? [query] : [], [
+          ...filters,
+          ...(layer.source.filters ? layer.source.filters : []),
+          ...(timeFilters ? [timeFilters] : []),
+        ]);
       }
       const request = {
         params: {
@@ -100,7 +98,8 @@ export const handleDataLayerRender = (
   maplibreRef: MaplibreRef,
   beforeLayerId: string | undefined,
   timeRange?: TimeRange,
-  filtersFromDashboard?: Filter[]
+  filtersFromDashboard?: Filter[],
+  query?: Query
 ) => {
   // filters are passed from dashboard filters and geo bounding box filters
   const filters: Filter[] = [];
@@ -118,12 +117,14 @@ export const handleDataLayerRender = (
   const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
   filters.push(geoBoundingBoxFilter);
 
-  return prepareDataLayerSource(mapLayer, mapState, services, filters, timeRange).then((result) => {
-    const { layer, dataSource } = result;
-    if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-      layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, beforeLayerId);
+  return prepareDataLayerSource(mapLayer, mapState, services, filters, timeRange, query).then(
+    (result) => {
+      const { layer, dataSource } = result;
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, beforeLayerId);
+      }
     }
-  });
+  );
 };
 
 export const handleReferenceLayerRender = (
