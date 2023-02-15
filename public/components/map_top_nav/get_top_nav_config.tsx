@@ -54,6 +54,7 @@ export const getTopNavConfig = (
       label: i18n.translate('maps.topNav.saveMapButtonLabel', {
         defaultMessage: `Save`,
       }),
+      testId: 'mapSaveButton',
       run: (_anchorElement: any) => {
         const documentInfo = {
           title,
