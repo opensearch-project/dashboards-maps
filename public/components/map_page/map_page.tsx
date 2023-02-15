@@ -19,7 +19,12 @@ import {
 } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { getLayerConfigMap, getInitialMapState } from '../../utils/getIntialConfig';
-import { IndexPattern, RefreshInterval, TimeRange } from '../../../../../src/plugins/data/public';
+import {
+  Filter,
+  IndexPattern,
+  RefreshInterval,
+  TimeRange,
+} from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 
@@ -33,6 +38,7 @@ interface MapComponentProps {
   timeRange?: TimeRange;
   inDashboardMode: boolean;
   refreshConfig?: RefreshInterval;
+  filters?: Filter[];
 }
 export const MapComponent = ({
   mapIdFromSavedObject,
@@ -40,6 +46,7 @@ export const MapComponent = ({
   timeRange,
   inDashboardMode,
   refreshConfig,
+  filters,
 }: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -105,6 +112,7 @@ export const MapComponent = ({
         inDashboardMode={inDashboardMode}
         timeRange={timeRange}
         refreshConfig={refreshConfig}
+        filters={filters}
       />
     </div>
   );

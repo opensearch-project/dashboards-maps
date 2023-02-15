@@ -24,7 +24,12 @@ import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
-import { IndexPattern, RefreshInterval, TimeRange } from '../../../../../src/plugins/data/public';
+import {
+  IndexPattern,
+  RefreshInterval,
+  TimeRange,
+  Filter,
+} from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -62,6 +67,7 @@ interface Props {
   inDashboardMode: boolean;
   timeRange?: TimeRange;
   refreshConfig?: RefreshInterval;
+  filters?: Filter[];
 }
 
 export const LayerControlPanel = memo(
@@ -77,6 +83,7 @@ export const LayerControlPanel = memo(
     inDashboardMode,
     timeRange,
     refreshConfig,
+    filters,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
@@ -105,9 +112,17 @@ export const LayerControlPanel = memo(
         if (referenceLayerTypeLookup[layer.type]) {
           return;
         }
-        handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
+        handleDataLayerRender(
+          layer,
+          mapState,
+          services,
+          maplibreRef,
+          undefined,
+          timeRange,
+          filters
+        );
       });
-    }, [timeRange, mapState]);
+    }, [timeRange, mapState, filters]);
 
     useEffect(() => {
       let intervalId: NodeJS.Timeout | undefined;

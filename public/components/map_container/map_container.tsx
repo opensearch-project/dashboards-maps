@@ -11,7 +11,12 @@ import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import { IndexPattern, RefreshInterval, TimeRange } from '../../../../../src/plugins/data/public';
+import {
+  IndexPattern,
+  RefreshInterval,
+  TimeRange,
+  Filter,
+} from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
@@ -31,6 +36,7 @@ interface MapContainerProps {
   inDashboardMode: boolean;
   timeRange?: TimeRange;
   refreshConfig?: RefreshInterval;
+  filters?: Filter[];
 }
 
 export const MapContainer = ({
@@ -44,6 +50,7 @@ export const MapContainer = ({
   inDashboardMode,
   timeRange,
   refreshConfig,
+  filters,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -219,6 +226,7 @@ export const MapContainer = ({
           inDashboardMode={inDashboardMode}
           timeRange={timeRange}
           refreshConfig={refreshConfig}
+          filters={filters}
         />
       )}
       <div className="map-container" ref={mapContainer} />

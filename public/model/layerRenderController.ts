@@ -99,9 +99,12 @@ export const handleDataLayerRender = (
   services: MapServices,
   maplibreRef: MaplibreRef,
   beforeLayerId: string | undefined,
-  timeRange?: TimeRange
+  timeRange?: TimeRange,
+  filtersFromDashboard?: Filter[]
 ) => {
+  // filters are passed from dashboard filters and geo bounding box filters
   const filters: Filter[] = [];
+  filters.push(...(filtersFromDashboard ? filtersFromDashboard : []));
   const geoField = mapLayer.source.geoFieldName;
   const geoFieldType = mapLayer.source.geoFieldType;
 
