@@ -121,17 +121,18 @@ export class CustomImportMapPlugin
       stage: 'production',
       appExtensions: {
         visualizations: {
-          docTypes: [PLUGIN_ID],
-          toListItem: ({ id, attributes }) => ({
+          docTypes: [MAP_SAVED_OBJECT_TYPE],
+          toListItem: ({ id, attributes, updated_at: updatedAt }) => ({
             description: attributes?.description,
-            editApp: PLUGIN_ID,
+            editApp: MAPS_APP_ID,
             editUrl: `${encodeURIComponent(id)}`,
             icon: MAPS_APP_ICON,
             id,
             savedObjectType: MAP_SAVED_OBJECT_TYPE,
             title: attributes?.title,
-            typeTitle: PLUGIN_NAME,
+            typeTitle: MAPS_APP_DISPLAY_NAME,
             stage: 'production',
+            updated_at: updatedAt,
           }),
         },
       },
