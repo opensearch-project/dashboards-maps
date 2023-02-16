@@ -5,5 +5,5 @@
     "server": true,
     "ui": true,
     "requiredPlugins": ["regionMap", "opensearchDashboardsReact", "navigation", "savedObjects", "data"],
-    "optionalPlugins": []
+    "optionalPlugins": ["home"]
   }
