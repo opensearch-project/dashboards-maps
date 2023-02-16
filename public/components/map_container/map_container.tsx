@@ -25,6 +25,7 @@ import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_d
 import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
 import { ConfigSchema } from '../../../common/config';
+import { referenceLayerTypeLookup } from '../../model/layersFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -85,6 +86,9 @@ export const MapContainer = ({
     maplibreInstance.on('move', () => {
       return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
     });
+
+    // By default, Maplibre only auto resize map window when browser size changes, but in dashboard mode, we need
+    // manually resize map window size when map panel size changes
     const mapContainerElement: HTMLElement | null = document.querySelector('.map-page');
     let resizeChecker: ResizeChecker;
     if (mapContainerElement) {
@@ -200,6 +204,41 @@ export const MapContainer = ({
       }
     };
   }, [layers, mapState, services]);
+
+  // Update data layers when state bar time range, filters and query changes
+  useEffect(() => {
+    layers.forEach((layer: MapLayerSpecification) => {
+      if (referenceLayerTypeLookup[layer.type]) {
+        return;
+      }
+      handleDataLayerRender(
+        layer,
+        mapState,
+        services,
+        maplibreRef,
+        undefined,
+        timeRange,
+        filters,
+        query
+      );
+    });
+  }, [timeRange, mapState, filters]);
+
+  // Update data layers when state bar enable auto refresh
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | undefined;
+    if (refreshConfig && !refreshConfig.pause) {
+      intervalId = setInterval(() => {
+        layers.forEach((layer: MapLayerSpecification) => {
+          if (referenceLayerTypeLookup[layer.type]) {
+            return;
+          }
+          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
+        });
+      }, refreshConfig.value);
+    }
+    return () => clearInterval(intervalId);
+  }, [refreshConfig]);
 
   return (
     <div className="map-main">

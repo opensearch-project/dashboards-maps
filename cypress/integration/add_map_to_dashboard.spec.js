@@ -14,7 +14,7 @@ describe('Add map to dashboard', () => {
     cy.get('div[data-test-subj="sampleDataSetCardflights"]', { timeout: 60000 })
       .contains(/(Add|View) data/)
       .click();
-    cy.wait(5000);
+    cy.wait(60000);
   });
 
   it('Add new map to dashboard', () => {
