@@ -103,7 +103,8 @@ export const MapContainer = ({
         hoverPopup = createPopup({
           features,
           layers: tooltipEnabledLayers,
-          showCloseButton: false,
+          // enable close button to avoid occasional dangling tooltip that is not cleared during mouse leave action
+          showCloseButton: true,
           showPagination: false,
           showLayerSelection: false,
         });
