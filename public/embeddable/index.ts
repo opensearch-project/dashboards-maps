@@ -3,4 +3,5 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export { MapPage, MapComponent } from './map_page';
+export * from './map_embeddable';
+export * from './map_embeddable_factory';
