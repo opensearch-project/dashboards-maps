@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SimpleSavedObject } from '../../../../../src/core/public';
 import { IndexPattern, Query, TimeRange } from '../../../../../src/plugins/data/public';
 import { DASHBOARDS_MAPS_LAYER_TYPE, MAPS_APP_ID } from '../../../common';
@@ -125,19 +125,23 @@ export const MapTopNavMenu = ({
     []
   );
 
+  const config = useMemo(() => {
+    return getTopNavConfig(services, {
+      mapIdFromUrl,
+      layers,
+      title,
+      description,
+      setTitle,
+      setDescription,
+      mapState,
+      originatingApp,
+    });
+  }, [services, mapIdFromUrl, layers, title, description, mapState, originatingApp]);
+
   return (
     <TopNavMenu
       appName={MAPS_APP_ID}
-      config={getTopNavConfig(services, {
-        mapIdFromUrl,
-        layers,
-        title,
-        description,
-        setTitle,
-        setDescription,
-        mapState,
-        originatingApp,
-      })}
+      config={config}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
       showSearchBar={!inDashboardMode}

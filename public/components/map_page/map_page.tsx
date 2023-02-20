@@ -86,6 +86,7 @@ export const MapComponent = ({
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
       setLayers([initialDefaultLayer]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
