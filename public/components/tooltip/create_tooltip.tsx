@@ -4,7 +4,7 @@ import { Popup, MapGeoJSONFeature, LngLat } from 'maplibre-gl';
 
 import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
 import { FeatureGroupItem, TooltipContainer } from './tooltipContainer';
-import {MAX_LONGITUDE} from "../../../common";
+import { MAX_LONGITUDE } from '../../../common';
 
 interface Options {
   features: MapGeoJSONFeature[];
