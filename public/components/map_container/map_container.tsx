@@ -6,18 +6,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { EuiPanel } from '@elastic/eui';
 import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
+import {
+  IndexPattern,
+  RefreshInterval,
+  TimeRange,
+  Filter,
+  Query,
+} from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
 import { ConfigSchema } from '../../../common/config';
+import { referenceLayerTypeLookup } from '../../model/layersFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -27,6 +35,11 @@ interface MapContainerProps {
   maplibreRef: React.MutableRefObject<Maplibre | null>;
   mapState: MapState;
   mapConfig: ConfigSchema;
+  inDashboardMode: boolean;
+  timeRange?: TimeRange;
+  refreshConfig?: RefreshInterval;
+  filters?: Filter[];
+  query?: Query;
 }
 
 export const MapContainer = ({
@@ -37,6 +50,11 @@ export const MapContainer = ({
   maplibreRef,
   mapState,
   mapConfig,
+  inDashboardMode,
+  timeRange,
+  refreshConfig,
+  filters,
+  query,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -68,6 +86,28 @@ export const MapContainer = ({
     maplibreInstance.on('move', () => {
       return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
     });
+
+    // By default, Maplibre only auto resize map window when browser size changes, but in dashboard mode, we need
+    // manually resize map window size when map panel size changes
+    const mapContainerElement: HTMLElement | null = document.querySelector('.map-page');
+    let resizeChecker: ResizeChecker;
+    if (mapContainerElement) {
+      resizeChecker = new ResizeChecker(mapContainerElement);
+      if (inDashboardMode) {
+        resizeChecker.on(
+          'resize',
+          throttle(() => {
+            maplibreInstance?.resize();
+          }, 300)
+        );
+      }
+    }
+    return () => {
+      maplibreInstance.remove();
+      if (resizeChecker) {
+        resizeChecker.destroy();
+      }
+    };
   }, []);
 
   // Create onClick tooltip for each layer features that has tooltip enabled
@@ -166,8 +206,43 @@ export const MapContainer = ({
     };
   }, [layers, mapState, services]);
 
+  // Update data layers when state bar time range, filters and query changes
+  useEffect(() => {
+    layers.forEach((layer: MapLayerSpecification) => {
+      if (referenceLayerTypeLookup[layer.type]) {
+        return;
+      }
+      handleDataLayerRender(
+        layer,
+        mapState,
+        services,
+        maplibreRef,
+        undefined,
+        timeRange,
+        filters,
+        query
+      );
+    });
+  }, [timeRange, mapState, filters]);
+
+  // Update data layers when state bar enable auto refresh
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | undefined;
+    if (refreshConfig && !refreshConfig.pause) {
+      intervalId = setInterval(() => {
+        layers.forEach((layer: MapLayerSpecification) => {
+          if (referenceLayerTypeLookup[layer.type]) {
+            return;
+          }
+          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
+        });
+      }, refreshConfig.value);
+    }
+    return () => clearInterval(intervalId);
+  }, [refreshConfig]);
+
   return (
-    <div>
+    <div className="map-main">
       <EuiPanel
         hasShadow={false}
         hasBorder={false}
@@ -181,20 +256,23 @@ export const MapContainer = ({
           zoom: {zoom}
         </small>
       </EuiPanel>
-      <div className="layerControlPanel-container">
-        {mounted && (
-          <LayerControlPanel
-            maplibreRef={maplibreRef}
-            layers={layers}
-            setLayers={setLayers}
-            layersIndexPatterns={layersIndexPatterns}
-            setLayersIndexPatterns={setLayersIndexPatterns}
-            mapState={mapState}
-            zoom={zoom}
-            mapConfig={mapConfig}
-          />
-        )}
-      </div>
+      {mounted && (
+        <LayerControlPanel
+          maplibreRef={maplibreRef}
+          layers={layers}
+          setLayers={setLayers}
+          layersIndexPatterns={layersIndexPatterns}
+          setLayersIndexPatterns={setLayersIndexPatterns}
+          mapState={mapState}
+          zoom={zoom}
+          mapConfig={mapConfig}
+          inDashboardMode={inDashboardMode}
+          timeRange={timeRange}
+          refreshConfig={refreshConfig}
+          filters={filters}
+          query={query}
+        />
+      )}
       <div className="map-container" ref={mapContainer} />
     </div>
   );
