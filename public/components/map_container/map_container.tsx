@@ -20,12 +20,20 @@ import {
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
-import { handleDataLayerRender } from '../../model/layerRenderController';
+import {
+  handleDataLayerRender,
+  handleReferenceLayerRender,
+} from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
 import { ConfigSchema } from '../../../common/config';
-import { referenceLayerTypeLookup } from '../../model/layersFunctions';
+import {
+  getDataLayers,
+  getMapBeforeLayerId,
+  getReferenceLayers,
+  referenceLayerTypeLookup,
+} from '../../model/layersFunctions';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -35,11 +43,13 @@ interface MapContainerProps {
   maplibreRef: React.MutableRefObject<Maplibre | null>;
   mapState: MapState;
   mapConfig: ConfigSchema;
-  inDashboardMode: boolean;
+  isReadOnlyMode: boolean;
   timeRange?: TimeRange;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
   query?: Query;
+  isUpdatingLayerRender: boolean;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const MapContainer = ({
@@ -50,17 +60,22 @@ export const MapContainer = ({
   maplibreRef,
   mapState,
   mapConfig,
-  inDashboardMode,
+  isReadOnlyMode,
   timeRange,
   refreshConfig,
   filters,
   query,
+  isUpdatingLayerRender,
+  setIsUpdatingLayerRender,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
   const [coordinates, setCoordinates] = useState<LngLat>();
+  const [selectedLayerConfig, setSelectedLayerConfig] = useState<
+    MapLayerSpecification | undefined
+  >();
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -93,7 +108,7 @@ export const MapContainer = ({
     let resizeChecker: ResizeChecker;
     if (mapContainerElement) {
       resizeChecker = new ResizeChecker(mapContainerElement);
-      if (inDashboardMode) {
+      if (isReadOnlyMode) {
         resizeChecker.on(
           'resize',
           throttle(() => {
@@ -206,25 +221,6 @@ export const MapContainer = ({
     };
   }, [layers, mapState, services]);
 
-  // Update data layers when state bar time range, filters and query changes
-  useEffect(() => {
-    layers.forEach((layer: MapLayerSpecification) => {
-      if (referenceLayerTypeLookup[layer.type]) {
-        return;
-      }
-      handleDataLayerRender(
-        layer,
-        mapState,
-        services,
-        maplibreRef,
-        undefined,
-        timeRange,
-        filters,
-        query
-      );
-    });
-  }, [timeRange, mapState, filters]);
-
   // Update data layers when state bar enable auto refresh
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
@@ -240,6 +236,65 @@ export const MapContainer = ({
     }
     return () => clearInterval(intervalId);
   }, [refreshConfig]);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    if (layers.length <= 0) {
+      return;
+    }
+
+    if (isUpdatingLayerRender || isReadOnlyMode) {
+      if (selectedLayerConfig) {
+        if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
+          handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
+        } else {
+          updateIndexPatterns();
+          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
+        }
+      } else {
+        getDataLayers(layers).forEach((layer: MapLayerSpecification) => {
+          const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
+          handleDataLayerRender(
+            layer,
+            mapState,
+            services,
+            maplibreRef,
+            beforeLayerId,
+            timeRange,
+            filters,
+            query
+          );
+        });
+        getReferenceLayers(layers).forEach((layer: MapLayerSpecification) => {
+          const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
+          handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
+        });
+      }
+      setIsUpdatingLayerRender(false);
+    }
+  }, [layers, mounted, timeRange, filters, query, mapState, isReadOnlyMode]);
+
+  const updateIndexPatterns = async () => {
+    if (!selectedLayerConfig) {
+      return;
+    }
+    if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
+      return;
+    }
+    const findIndexPattern = layersIndexPatterns.find(
+      // @ts-ignore
+      (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
+    );
+    if (!findIndexPattern) {
+      // @ts-ignore
+      const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
+      const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
+      setLayersIndexPatterns(cloneLayersIndexPatterns);
+    }
+  };
 
   return (
     <div className="map-main">
@@ -266,11 +321,10 @@ export const MapContainer = ({
           mapState={mapState}
           zoom={zoom}
           mapConfig={mapConfig}
-          inDashboardMode={inDashboardMode}
-          timeRange={timeRange}
-          refreshConfig={refreshConfig}
-          filters={filters}
-          query={query}
+          isReadOnlyMode={isReadOnlyMode}
+          selectedLayerConfig={selectedLayerConfig}
+          setSelectedLayerConfig={setSelectedLayerConfig}
+          setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
       )}
       <div className="map-container" ref={mapContainer} />

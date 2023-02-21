@@ -34,13 +34,8 @@ import {
   LAYER_PANEL_SHOW_LAYER_ICON,
   LAYER_VISIBILITY,
 } from '../../../common';
-import { referenceLayerTypeLookup } from '../../model/layersFunctions';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
-import {
-  handleDataLayerRender,
-  handleReferenceLayerRender,
-} from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 import { moveLayers, removeLayers, updateLayerVisibility } from '../../model/map/layer_operations';
@@ -59,7 +54,10 @@ interface Props {
   mapState: MapState;
   zoom: number;
   mapConfig: ConfigSchema;
-  inDashboardMode: boolean;
+  isReadOnlyMode: boolean;
+  selectedLayerConfig: MapLayerSpecification | undefined;
+  setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const LayerControlPanel = memo(
@@ -67,26 +65,17 @@ export const LayerControlPanel = memo(
     maplibreRef,
     setLayers,
     layers,
-    layersIndexPatterns,
-    setLayersIndexPatterns,
-    mapState,
     zoom,
     mapConfig,
-    inDashboardMode,
+    isReadOnlyMode,
+    selectedLayerConfig,
+    setSelectedLayerConfig,
+    setIsUpdatingLayerRender,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
-    const {
-      data: { indexPatterns },
-      notifications,
-    } = services;
 
     const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
     const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
-    const [selectedLayerConfig, setSelectedLayerConfig] = useState<
-      MapLayerSpecification | undefined
-    >();
-    const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
-    const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
     const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
@@ -94,39 +83,6 @@ export const LayerControlPanel = memo(
       MapLayerSpecification | undefined
     >();
     const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
-
-    useEffect(() => {
-      if (!isUpdatingLayerRender && initialLayersLoaded) {
-        return;
-      }
-      if (layers.length <= 0) {
-        return;
-      }
-
-      if (initialLayersLoaded) {
-        if (!selectedLayerConfig) {
-          return;
-        }
-        if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
-          handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
-        } else {
-          updateIndexPatterns();
-          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
-        }
-        setSelectedLayerConfig(undefined);
-      } else {
-        layers.forEach((layer) => {
-          const beforeLayerId = getMapBeforeLayerId(layer);
-          if (referenceLayerTypeLookup[layer.type]) {
-            handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
-          } else {
-            handleDataLayerRender(layer, mapState, services, maplibreRef, beforeLayerId);
-          }
-        });
-        setInitialLayersLoaded(true);
-      }
-      setIsUpdatingLayerRender(false);
-    }, [layers]);
 
     useEffect(() => {
       const getCurrentVisibleLayers = () => {
@@ -137,16 +93,6 @@ export const LayerControlPanel = memo(
       };
       setVisibleLayers(getCurrentVisibleLayers());
     }, [layers, zoom]);
-
-    // Get layer id from layers that is above the selected layer
-    function getMapBeforeLayerId(selectedLayer: MapLayerSpecification): string | undefined {
-      const selectedLayerIndex = layers.findIndex((layer) => layer.id === selectedLayer.id);
-      const beforeLayers = layers.slice(selectedLayerIndex + 1);
-      if (beforeLayers.length === 0) {
-        return undefined;
-      }
-      return beforeLayers[0]?.id;
-    }
 
     const closeLayerConfigPanel = () => {
       setIsLayerConfigVisible(false);
@@ -178,7 +124,6 @@ export const LayerControlPanel = memo(
         };
       }
       setLayers(layersClone);
-      setIsUpdatingLayerRender(true);
     };
 
     const removeLayer = (layerId: string) => {
@@ -199,7 +144,7 @@ export const LayerControlPanel = memo(
 
     const onClickLayerName = (layer: MapLayerSpecification) => {
       if (hasUnsavedChanges()) {
-        notifications.toasts.addWarning(
+        services.toastNotifications.addWarning(
           `You have unsaved changes for ${selectedLayerConfig?.name}`
         );
       } else {
@@ -261,25 +206,6 @@ export const LayerControlPanel = memo(
       return layersClone.reverse();
     };
 
-    const updateIndexPatterns = async () => {
-      if (!selectedLayerConfig) {
-        return;
-      }
-      if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
-        return;
-      }
-      const findIndexPattern = layersIndexPatterns.find(
-        // @ts-ignore
-        (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
-      );
-      if (!findIndexPattern) {
-        // @ts-ignore
-        const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
-        const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
-        setLayersIndexPatterns(cloneLayersIndexPatterns);
-      }
-    };
-
     const onLayerVisibilityChange = (layer: MapLayerSpecification) => {
       if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
         layer.visibility = LAYER_VISIBILITY.NONE;
@@ -322,7 +248,7 @@ export const LayerControlPanel = memo(
       return visibleLayers.includes(layer);
     };
 
-    if (inDashboardMode) {
+    if (isReadOnlyMode) {
       return null;
     }
 
@@ -480,6 +406,7 @@ export const LayerControlPanel = memo(
                   isLayerExists={isLayerExists}
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
+                  setIsUpdatingLayerRender={setIsUpdatingLayerRender}
                 />
               )}
               <AddLayerPanel

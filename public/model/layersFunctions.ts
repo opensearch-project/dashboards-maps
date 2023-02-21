@@ -61,3 +61,24 @@ export const referenceLayerTypeLookup = {
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: true,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: false,
 };
+
+export const getDataLayers = (layers: MapLayerSpecification[]) => {
+  return layers.filter((layer) => !referenceLayerTypeLookup[layer.type]);
+};
+
+export const getReferenceLayers = (layers: MapLayerSpecification[]) => {
+  return layers.filter((layer) => referenceLayerTypeLookup[layer.type]);
+};
+
+// Get layer id from layers that is above the selected layer
+export const getMapBeforeLayerId = (
+  layers: MapLayerSpecification[],
+  selectedLayerId: string
+): string | undefined => {
+  const selectedLayerIndex = layers.findIndex((layer) => layer.id === selectedLayerId);
+  const beforeLayers = layers.slice(selectedLayerIndex + 1);
+  if (beforeLayers.length === 0) {
+    return undefined;
+  }
+  return beforeLayers[0]?.id;
+};
