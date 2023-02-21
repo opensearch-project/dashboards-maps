@@ -13,11 +13,9 @@ import {
   addLineLayer,
   addPolygonLayer,
   hasLayer,
-  removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
-  updateLayerVisibility,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -36,16 +34,12 @@ const openSearchGeoJSONMap = new Map<string, string>([
 
 const getFieldValue = (data: any, name: string) => {
   if (!name) {
-    return null;
+    return undefined;
   }
   const keys = name.split('.');
   return keys.reduce((pre, cur) => {
     return pre?.[cur];
   }, data);
-};
-
-const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
-  return maplibreRef.current?.getStyle().layers || [];
 };
 
 const getGeoFieldType = (layerConfig: DocumentLayerSpecification) => {
@@ -86,8 +80,8 @@ const buildProperties = (document: any, fields: string[]) => {
     return property;
   }
   fields.forEach((field) => {
-    const fieldValue = getFieldValue(document._source, field);
-    if (fieldValue) {
+    const fieldValue: string | undefined = getFieldValue(document._source, field);
+    if (fieldValue !== undefined) {
       property[field] = fieldValue;
     }
   });
