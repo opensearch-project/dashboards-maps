@@ -22,6 +22,12 @@
   .euiListGroupItem__label {
     width: $euiSizeL * 6;
   }
+
+  .euiDroppable {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: $euiSizeL * 8;
+  }
 }
 
 .layerControlPanel--hide {
