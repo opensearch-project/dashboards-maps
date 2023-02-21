@@ -44,6 +44,7 @@ import {
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
 import { moveLayers, removeLayers, updateLayerVisibility } from '../../model/map/layer_operations';
+import { DeleteLayerModal } from './delete_layer_modal';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -309,25 +310,6 @@ export const LayerControlPanel = memo(
       setSelectedDeleteLayer(undefined);
     };
 
-    let deleteLayerModal;
-    if (isDeleteLayerModalVisible) {
-      deleteLayerModal = (
-        <EuiConfirmModal
-          title="Delete layer"
-          onCancel={onCancelDeleteLayer}
-          onConfirm={onDeleteLayerConfirm}
-          cancelButtonText="Cancel"
-          confirmButtonText="Delete"
-          buttonColor="danger"
-          defaultFocusedButton="confirm"
-        >
-          <p>
-            Do you want to delete layer <strong>{selectedDeleteLayer?.name}</strong>?
-          </p>
-        </EuiConfirmModal>
-      );
-    }
-
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
       if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
         return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
@@ -510,7 +492,13 @@ export const LayerControlPanel = memo(
                 mapConfig={mapConfig}
                 layerCount={layers.length}
               />
-              {deleteLayerModal}
+              {isDeleteLayerModalVisible && (
+                <DeleteLayerModal
+                  onCancel={onCancelDeleteLayer}
+                  onConfirm={onDeleteLayerConfirm}
+                  layerName={selectedDeleteLayer?.name!}
+                />
+              )}
             </EuiFlexGroup>
           </EuiPanel>
         </I18nProvider>
