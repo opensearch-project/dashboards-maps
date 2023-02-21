@@ -41,7 +41,7 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
         mapConfig={embeddable.getMapConfig()}
         mapIdFromSavedObject={input.savedObjectId}
         timeRange={timeRange}
-        inDashboardMode={true}
+        isReadOnlyMode={true}
         refreshConfig={refreshConfig}
         filters={filters}
         query={query}

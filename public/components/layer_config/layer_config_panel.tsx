@@ -42,6 +42,7 @@ interface Props {
   isLayerExists: Function;
   originLayerConfig: MapLayerSpecification | null;
   setOriginLayerConfig: Function;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const LayerConfigPanel = ({
@@ -55,6 +56,7 @@ export const LayerConfigPanel = ({
   isLayerExists,
   originLayerConfig,
   setOriginLayerConfig,
+  setIsUpdatingLayerRender,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
   const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
@@ -84,9 +86,11 @@ export const LayerConfigPanel = ({
     }
   };
   const onUpdate = () => {
+    setIsUpdatingLayerRender(true);
     updateLayer();
     closeLayerConfigPanel(false);
     setOriginLayerConfig(null);
+    setSelectedLayerConfig(undefined);
     if (isNewLayer) {
       setIsNewLayer(false);
     }
