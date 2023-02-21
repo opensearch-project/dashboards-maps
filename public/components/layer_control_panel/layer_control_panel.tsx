@@ -8,7 +8,6 @@ import {
   DropResult,
   EuiButtonEmpty,
   EuiButtonIcon,
-  EuiConfirmModal,
   EuiDragDropContext,
   EuiDraggable,
   EuiDroppable,
@@ -59,6 +58,7 @@ interface Props {
   mapState: MapState;
   zoom: number;
   mapConfig: ConfigSchema;
+  inDashboardMode: boolean;
 }
 
 export const LayerControlPanel = memo(
@@ -71,6 +71,7 @@ export const LayerControlPanel = memo(
     mapState,
     zoom,
     mapConfig,
+    inDashboardMode,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
     const {
@@ -339,8 +340,13 @@ export const LayerControlPanel = memo(
       return visibleLayers.includes(layer);
     };
 
+    if (inDashboardMode) {
+      return null;
+    }
+
+    let content;
     if (isLayerControlVisible) {
-      return (
+      content = (
         <I18nProvider>
           <EuiPanel
             paddingSize="none"
@@ -509,19 +515,21 @@ export const LayerControlPanel = memo(
           </EuiPanel>
         </I18nProvider>
       );
+    } else {
+      content = (
+        <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
+          <EuiButtonIcon
+            className="layerControlPanel__visButton"
+            size="s"
+            iconType="menuRight"
+            onClick={() => setIsLayerControlVisible((visible) => !visible)}
+            aria-label="Show layer control"
+            title="Expand layers panel"
+          />
+        </EuiFlexItem>
+      );
     }
 
-    return (
-      <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
-        <EuiButtonIcon
-          className="layerControlPanel__visButton"
-          size="s"
-          iconType="menuRight"
-          onClick={() => setIsLayerControlVisible((visible) => !visible)}
-          aria-label="Show layer control"
-          title="Expand layers panel"
-        />
-      </EuiFlexItem>
-    );
+    return <div className="layerControlPanel-container">{content}</div>;
   }
 );
