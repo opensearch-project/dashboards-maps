@@ -19,6 +19,7 @@ import {
   EuiKeyPadMenuItem,
   EuiSpacer,
   EuiText,
+  EuiKeyPadMenu,
 } from '@elastic/eui';
 import './add_layer_panel.scss';
 import {
@@ -77,6 +78,7 @@ export const AddLayerPanel = ({
         onMouseEnter={() => setHighlightItem(layerItem)}
         onMouseLeave={() => setHighlightItem(null)}
         onBlur={() => setHighlightItem(null)}
+        className={'addLayer__types'}
       >
         <EuiIcon type={layerItem.icon} size="xl" color="secondary" />
       </EuiKeyPadMenuItem>
@@ -95,6 +97,7 @@ export const AddLayerPanel = ({
         onMouseEnter={() => setHighlightItem(layerItem)}
         onMouseLeave={() => setHighlightItem(null)}
         onBlur={() => setHighlightItem(null)}
+        className="addLayer__types"
       >
         <EuiIcon type={layerItem.icon} size="xl" color="secondary" />
       </EuiKeyPadMenuItem>
@@ -141,27 +144,24 @@ export const AddLayerPanel = ({
               <h2>Add layer</h2>
             </EuiModalHeaderTitle>
           </EuiModalHeader>
-          <EuiModalBody>
+          <EuiModalBody className="addLayer__modalBody">
             <EuiFlexGroup>
-              <EuiFlexItem>
+              <EuiFlexItem className="addLayer__selection">
                 <EuiTitle size="s">
                   <h6>Data layer</h6>
                 </EuiTitle>
-                <EuiSpacer size="s" />
-                <EuiFlexGroup gutterSize="xs">{dataLayerItems}</EuiFlexGroup>
-                <EuiSpacer size="s" />
+                <EuiKeyPadMenu>{dataLayerItems}</EuiKeyPadMenu>
                 <EuiHorizontalRule margin="xs" />
+                <EuiSpacer size="m" />
                 <EuiTitle size="s">
                   <h6>Base layer</h6>
                 </EuiTitle>
-                <EuiSpacer size="s" />
-                <EuiFlexGroup gutterSize="xs">{baseLayersItems}</EuiFlexGroup>
+                <EuiKeyPadMenu>{baseLayersItems}</EuiKeyPadMenu>
               </EuiFlexItem>
               <EuiFlexItem className="addLayerDialog__description">
                 <EuiTitle size="s">
                   <h6>{highlightItem?.name ? highlightItem.name : 'Select a layer type'}</h6>
                 </EuiTitle>
-                <EuiSpacer size="m" />
                 <EuiText>
                   {highlightItem?.description
                     ? highlightItem.description
