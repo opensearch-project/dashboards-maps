@@ -37,7 +37,7 @@ interface MapComponentProps {
   mapConfig: ConfigSchema;
   mapIdFromSavedObject: string;
   timeRange?: TimeRange;
-  inDashboardMode: boolean;
+  isReadOnlyMode: boolean;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
   query?: Query;
@@ -46,7 +46,7 @@ export const MapComponent = ({
   mapIdFromSavedObject,
   mapConfig,
   timeRange,
-  inDashboardMode,
+  isReadOnlyMode,
   refreshConfig,
   filters,
   query,
@@ -61,6 +61,7 @@ export const MapComponent = ({
   const [layersIndexPatterns, setLayersIndexPatterns] = useState<IndexPattern[]>([]);
   const maplibreRef = useRef<Maplibre | null>(null);
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
+  const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(true);
 
   useEffect(() => {
     if (mapIdFromSavedObject) {
@@ -91,10 +92,10 @@ export const MapComponent = ({
 
   return (
     <div className="map-page">
-      {inDashboardMode ? null : (
+      {isReadOnlyMode ? null : (
         <MapTopNavMenu
           mapIdFromUrl={mapIdFromSavedObject}
-          inDashboardMode={inDashboardMode}
+          isReadOnlyMode={isReadOnlyMode}
           timeRange={timeRange}
           savedMapObject={savedMapObject}
           layers={layers}
@@ -102,6 +103,7 @@ export const MapComponent = ({
           maplibreRef={maplibreRef}
           mapState={mapState}
           setMapState={setMapState}
+          setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
       )}
 
@@ -113,11 +115,13 @@ export const MapComponent = ({
         maplibreRef={maplibreRef}
         mapState={mapState}
         mapConfig={mapConfig}
-        inDashboardMode={inDashboardMode}
+        isReadOnlyMode={isReadOnlyMode}
         timeRange={timeRange}
         refreshConfig={refreshConfig}
         filters={filters}
         query={query}
+        isUpdatingLayerRender={isUpdatingLayerRender}
+        setIsUpdatingLayerRender={setIsUpdatingLayerRender}
       />
     </div>
   );
@@ -125,7 +129,5 @@ export const MapComponent = ({
 
 export const MapPage = ({ mapConfig }: MapPageProps) => {
   const { id: mapId } = useParams<{ id: string }>();
-  return (
-    <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} inDashboardMode={false} />
-  );
+  return <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} isReadOnlyMode={false} />;
 };

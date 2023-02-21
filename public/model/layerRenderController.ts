@@ -4,7 +4,7 @@
  */
 
 import { Map as Maplibre } from 'maplibre-gl';
-import { DocumentLayerSpecification, MapLayerSpecification } from './mapLayerType';
+import { MapLayerSpecification } from './mapLayerType';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
   buildOpenSearchQuery,
@@ -92,7 +92,7 @@ export const prepareDataLayerSource = (
 };
 
 export const handleDataLayerRender = (
-  mapLayer: DocumentLayerSpecification,
+  mapLayer: MapLayerSpecification,
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
@@ -101,6 +101,9 @@ export const handleDataLayerRender = (
   filtersFromDashboard?: Filter[],
   query?: Query
 ) => {
+  if (mapLayer.type !== DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+    return;
+  }
   // filters are passed from dashboard filters and geo bounding box filters
   const filters: Filter[] = [];
   filters.push(...(filtersFromDashboard ? filtersFromDashboard : []));

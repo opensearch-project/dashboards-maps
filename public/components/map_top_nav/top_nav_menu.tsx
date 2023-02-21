@@ -24,21 +24,23 @@ interface MapTopNavMenuProps {
   maplibreRef: any;
   mapState: MapState;
   setMapState: (mapState: MapState) => void;
-  inDashboardMode: boolean;
+  isReadOnlyMode: boolean;
   timeRange?: TimeRange;
   originatingApp?: string;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const MapTopNavMenu = ({
   mapIdFromUrl,
   savedMapObject,
-  inDashboardMode,
+  isReadOnlyMode,
   timeRange,
   layers,
   layersIndexPatterns,
   maplibreRef,
   mapState,
   setMapState,
+  setIsUpdatingLayerRender,
 }: MapTopNavMenuProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -96,6 +98,7 @@ export const MapTopNavMenu = ({
   };
 
   const handleQuerySubmit = ({ query, dateRange }: { query?: Query; dateRange: TimeRange }) => {
+    setIsUpdatingLayerRender(true);
     if (query) {
       setMapState({ ...mapState, query });
     }
@@ -105,7 +108,7 @@ export const MapTopNavMenu = ({
   };
 
   useEffect(() => {
-    if (!inDashboardMode) {
+    if (!isReadOnlyMode) {
       setDateFrom(mapState.timeRange.from);
       setDateTo(mapState.timeRange.to);
     } else {
@@ -144,9 +147,9 @@ export const MapTopNavMenu = ({
       config={config}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
-      showSearchBar={!inDashboardMode}
+      showSearchBar={!isReadOnlyMode}
       showFilterBar={false}
-      showDatePicker={!inDashboardMode}
+      showDatePicker={!isReadOnlyMode}
       showQueryBar={true}
       showSaveQuery={true}
       showQueryInput={true}
