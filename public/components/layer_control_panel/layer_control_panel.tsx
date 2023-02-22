@@ -28,18 +28,14 @@ import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import {
-  LAYER_ICON_TYPE_MAP,
-  LAYER_PANEL_HIDE_LAYER_ICON,
-  LAYER_PANEL_SHOW_LAYER_ICON,
-  LAYER_VISIBILITY,
-} from '../../../common';
+import { LAYER_ICON_TYPE_MAP } from '../../../common';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import { moveLayers, removeLayers, updateLayerVisibility } from '../../model/map/layer_operations';
+import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
+import { HideLayer } from './hide_layer_button';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -126,6 +122,15 @@ export const LayerControlPanel = memo(
       setLayers(layersClone);
     };
 
+    const updateLayerVisibility = (layerId: string, visibility: string) => {
+      const layersClone = [...layers];
+      const index = layersClone.findIndex((layer) => layer.id === layerId);
+      if (index > -1) {
+        layersClone[index].visibility = String(visibility);
+        setLayers(layersClone);
+      }
+    };
+
     const removeLayer = (layerId: string) => {
       const layersClone = [...layers];
       const index = layersClone.findIndex((layer) => layer.id === layerId);
@@ -156,11 +161,6 @@ export const LayerControlPanel = memo(
     const isLayerExists = (name: string) => {
       return layers.findIndex((layer) => layer.name === name) > -1;
     };
-
-    const [layerVisibility, setLayerVisibility] = useState(new Map<string, boolean>([]));
-    layers.forEach((layer) => {
-      layerVisibility.set(layer.id, layer.visibility === LAYER_VISIBILITY.VISIBLE);
-    });
 
     const beforeMaplibreLayerID = (source: number, destination: number) => {
       if (source > destination) {
@@ -204,17 +204,6 @@ export const LayerControlPanel = memo(
     const getReverseLayers = () => {
       const layersClone = [...layers];
       return layersClone.reverse();
-    };
-
-    const onLayerVisibilityChange = (layer: MapLayerSpecification) => {
-      if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
-        layer.visibility = LAYER_VISIBILITY.NONE;
-        setLayerVisibility(new Map(layerVisibility.set(layer.id, false)));
-      } else {
-        layer.visibility = LAYER_VISIBILITY.VISIBLE;
-        setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
-      }
-      updateLayerVisibility(maplibreRef.current!, layer.id, layer.visibility);
     };
 
     const onDeleteLayerIconClick = (layer: MapLayerSpecification) => {
@@ -338,25 +327,11 @@ export const LayerControlPanel = memo(
                                 </EuiToolTip>
                               </EuiFlexItem>
                               <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
-                                <EuiFlexItem
-                                  grow={false}
-                                  className="layerControlPanel__layerFunctionButton"
-                                >
-                                  <EuiButtonIcon
-                                    iconType={
-                                      layerVisibility.get(layer.id)
-                                        ? LAYER_PANEL_HIDE_LAYER_ICON
-                                        : LAYER_PANEL_SHOW_LAYER_ICON
-                                    }
-                                    size="s"
-                                    onClick={() => onLayerVisibilityChange(layer)}
-                                    aria-label="Hide or show layer"
-                                    color="text"
-                                    title={
-                                      layerVisibility.get(layer.id) ? 'Hide layer' : 'Show layer'
-                                    }
-                                  />
-                                </EuiFlexItem>
+                                <HideLayer
+                                  layer={layer}
+                                  maplibreRef={maplibreRef}
+                                  updateLayerVisibility={updateLayerVisibility}
+                                />
                                 <EuiFlexItem
                                   grow={false}
                                   className="layerControlPanel__layerFunctionButton"
