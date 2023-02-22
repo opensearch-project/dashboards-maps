@@ -16,7 +16,7 @@ import {
 import { MapEmbeddableComponent } from './map_component';
 import { ConfigSchema } from '../../common/config';
 import { MapSavedObjectAttributes } from '../../common/map_saved_object_attributes';
-import { RefreshInterval } from '../../../../src/plugins/data/public';
+import { IndexPattern, RefreshInterval } from '../../../../src/plugins/data/public';
 
 export const MAP_EMBEDDABLE = MAP_SAVED_OBJECT_TYPE;
 
@@ -25,15 +25,28 @@ export interface MapInput extends EmbeddableInput {
   refreshConfig?: RefreshInterval;
 }
 
-export type MapOutput = EmbeddableOutput;
+export interface MapOutput extends EmbeddableOutput {
+  editable: boolean;
+  editUrl: string;
+  defaultTitle: string;
+  editApp: string;
+  editPath: string;
+  indexPatterns: IndexPattern[];
+}
 
-function getOutput(input: MapInput, editUrl: string, tittle: string): MapOutput {
+function getOutput(
+  input: MapInput,
+  editUrl: string,
+  tittle: string,
+  indexPatterns: IndexPattern[]
+): MapOutput {
   return {
     editable: true,
     editUrl,
     defaultTitle: tittle,
     editApp: MAPS_APP_ID,
     editPath: input.savedObjectId,
+    indexPatterns,
   };
 }
 
@@ -51,19 +64,25 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
       mapConfig,
       editUrl,
       savedMapAttributes,
+      indexPatterns,
     }: {
       parent?: IContainer;
       services: any;
       mapConfig: ConfigSchema;
       editUrl: string;
       savedMapAttributes: MapSavedObjectAttributes;
+      indexPatterns: IndexPattern[];
     }
   ) {
-    super(initialInput, getOutput(initialInput, editUrl, savedMapAttributes.title), parent);
+    super(
+      initialInput,
+      getOutput(initialInput, editUrl, savedMapAttributes.title, indexPatterns),
+      parent
+    );
     this.mapConfig = mapConfig;
     this.services = services;
     this.subscription = this.getInput$().subscribe(() => {
-      this.updateOutput(getOutput(this.input, editUrl, savedMapAttributes.title));
+      this.updateOutput(getOutput(this.input, editUrl, savedMapAttributes.title, indexPatterns));
     });
   }
 
