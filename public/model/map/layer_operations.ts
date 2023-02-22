@@ -42,7 +42,11 @@ export const removeLayers = (map: Maplibre, layerId: string, removeSource?: bool
   }
 };
 
-export const updateLayerVisibility = (map: Maplibre, layerId: string, visibility: string) => {
+export const updateLayerVisibilityHandler = (
+  map: Maplibre,
+  layerId: string,
+  visibility: string
+) => {
   getLayers(map, layerId).forEach((layer) => {
     map.setLayoutProperty(layer.id, 'visibility', visibility);
   });
