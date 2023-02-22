@@ -13,11 +13,9 @@ import {
   addLineLayer,
   addPolygonLayer,
   hasLayer,
-  removeLayers,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
-  updateLayerVisibility,
 } from './map/layer_operations';
 
 interface MaplibreRef {
