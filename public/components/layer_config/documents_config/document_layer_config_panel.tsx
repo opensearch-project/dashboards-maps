@@ -55,7 +55,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <DocumentLayerSource {...newProps} />
         </Fragment>
       ),
-      testSubj: 'dataTab',
+      testsubj: 'dataTab',
     },
     {
       id: 'style--id',
@@ -66,7 +66,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <DocumentLayerStyle {...newProps} />
         </Fragment>
       ),
-      testSubj: 'styleTab',
+      testsubj: 'styleTab',
     },
     {
       id: 'settings--id',
@@ -77,7 +77,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <LayerBasicSettings {...newProps} />
         </Fragment>
       ),
-      testSubj: 'settingsTab',
+      testsubj: 'settingsTab',
     },
   ];
   return <EuiTabbedContent tabs={tabs} initialSelectedTab={tabs[0]} />;
