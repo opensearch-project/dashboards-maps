@@ -73,6 +73,7 @@ const addNewLayer = (
       layerConfig.zoomRange[0],
       layerConfig.zoomRange[1]
     );
+    maplibreInstance.setPaintProperty(layerConfig.id, 'raster-opacity', layerConfig.opacity / 100);
   }
 };
 
