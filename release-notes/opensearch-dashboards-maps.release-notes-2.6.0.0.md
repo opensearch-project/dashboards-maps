@@ -20,3 +20,6 @@ Compatible with OpenSearch and OpenSearch Dashboards Version 2.6.0
 * Add scroll bar when more layers added ([#254](https://github.com/opensearch-project/dashboards-maps/pull/254))
 * Align items in add new layer modal ([#256](https://github.com/opensearch-project/dashboards-maps/pull/256))
 * Add indexPatterns to map embeddable output for dashboard filters ([#272](https://github.com/opensearch-project/dashboards-maps/pull/272))
+
+### Bug Fixes
+* Fix custom layer render opacity config ([#289](https://github.com/opensearch-project/dashboards-maps/pull/289))
