@@ -1,3 +1,5 @@
+@import "../../variables";
+
 .layerControlPanel--show {
   pointer-events: auto;
   width: $euiSizeL * 11;
@@ -26,7 +28,10 @@
   .euiDroppable {
     overflow-y: auto;
     overflow-x: hidden;
-    max-height: $euiSizeL * 8;
+  }
+
+  .euiFlexGroup--directionColumn {
+    max-height: calc(100vh - #{$mapHeaderOffset} - #{$euiSizeL});
   }
 }
 
@@ -39,4 +44,3 @@
     border-color: $euiColorLightShade;
   }
 }
-
