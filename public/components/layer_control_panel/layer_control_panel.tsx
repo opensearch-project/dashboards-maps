@@ -226,14 +226,20 @@ export const LayerControlPanel = memo(
     };
 
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
+      if (layer.visibility === 'none') {
+        return 'Layer is hidden';
+      }
+
       if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
         return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
-      } else {
-        return `Layer is visible within zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
       }
+      return '';
     };
 
-    const layerIsVisible = (layer: MapLayerSpecification) => {
+    const layerIsVisible = (layer: MapLayerSpecification): boolean => {
+      if (layer.visibility === 'none') {
+        return false;
+      }
       return visibleLayers.includes(layer);
     };
 
@@ -310,16 +316,11 @@ export const LayerControlPanel = memo(
                                 />
                               </EuiFlexItem>
                               <EuiFlexItem>
-                                <EuiToolTip
-                                  position="top"
-                                  title={layerIsVisible(layer) ? '' : layer.name}
-                                  content={
-                                    layerIsVisible(layer) ? '' : getLayerTooltipContent(layer)
-                                  }
-                                >
+                                <EuiToolTip position="top" content={getLayerTooltipContent(layer)}>
                                   <EuiListGroupItem
                                     key={layer.id}
                                     label={layer.name}
+                                    color={layerIsVisible(layer) ? 'text' : 'subdued'}
                                     aria-label="layer in the map layers list"
                                     onClick={() => onClickLayerName(layer)}
                                     showToolTip={false}
