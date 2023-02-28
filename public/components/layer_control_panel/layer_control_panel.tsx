@@ -24,6 +24,7 @@ import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
+import { i18n } from '@osd/i18n';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
@@ -226,14 +227,24 @@ export const LayerControlPanel = memo(
     };
 
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
-      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
-        return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
-      } else {
-        return `Layer is visible within zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
+      if (layer.visibility !== 'visible') {
+        return i18n.translate('maps.layerControl.layerIsHidden', {
+          defaultMessage: 'Layer is hidden',
+        });
       }
+
+      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
+        return i18n.translate('maps.layerControl.layerNotVisibleZoom', {
+          defaultMessage: `Layer is hidden outside of zoom range ${layer.zoomRange[0]}–${layer.zoomRange[1]}`,
+        });
+      }
+      return '';
     };
 
-    const layerIsVisible = (layer: MapLayerSpecification) => {
+    const layerIsVisible = (layer: MapLayerSpecification): boolean => {
+      if (layer.visibility !== 'visible') {
+        return false;
+      }
       return visibleLayers.includes(layer);
     };
 
@@ -310,16 +321,11 @@ export const LayerControlPanel = memo(
                                 />
                               </EuiFlexItem>
                               <EuiFlexItem>
-                                <EuiToolTip
-                                  position="top"
-                                  title={layerIsVisible(layer) ? '' : layer.name}
-                                  content={
-                                    layerIsVisible(layer) ? '' : getLayerTooltipContent(layer)
-                                  }
-                                >
+                                <EuiToolTip position="top" content={getLayerTooltipContent(layer)}>
                                   <EuiListGroupItem
                                     key={layer.id}
                                     label={layer.name}
+                                    color={layerIsVisible(layer) ? 'text' : 'subdued'}
                                     aria-label="layer in the map layers list"
                                     onClick={() => onClickLayerName(layer)}
                                     showToolTip={false}
