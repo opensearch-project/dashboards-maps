@@ -227,7 +227,7 @@ export const LayerControlPanel = memo(
     };
 
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
-      if (layer.visibility === 'none') {
+      if (layer.visibility !== 'visible') {
         return i18n.translate('maps.layerControl.layerIsHidden', {
           defaultMessage: 'Layer is hidden',
         });
@@ -242,7 +242,7 @@ export const LayerControlPanel = memo(
     };
 
     const layerIsVisible = (layer: MapLayerSpecification): boolean => {
-      if (layer.visibility === 'none') {
+      if (layer.visibility !== 'visible') {
         return false;
       }
       return visibleLayers.includes(layer);
