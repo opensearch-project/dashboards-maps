@@ -1,0 +1,8 @@
+node_modules/
+target/
+build/
+coverage/
+cypress/videos/
+cypress/screenshots/
+yarn-error.log
+.DS_Store
