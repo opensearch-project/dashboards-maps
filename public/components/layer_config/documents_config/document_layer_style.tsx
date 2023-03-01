@@ -20,6 +20,12 @@ import {
 } from '@elastic/eui';
 import { FormattedMessage } from '@osd/i18n/react';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
+import {
+  DOCUMENTS_MAX_MARKER_BORDER_THICKNESS,
+  DOCUMENTS_MAX_MARKER_SIZE,
+  DOCUMENTS_MIN_MARKER_BORDER_THICKNESS,
+  DOCUMENTS_MIN_MARKER_SIZE,
+} from '../../../../common';
 
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
@@ -117,13 +123,16 @@ export const DocumentLayerStyle = ({
 
   useEffect(() => {
     const borderThickness = selectedLayerConfig?.style?.borderThickness;
-    const invalidThickness = borderThickness < 0 || borderThickness > 100;
+    const invalidThickness =
+      borderThickness < DOCUMENTS_MIN_MARKER_BORDER_THICKNESS ||
+      borderThickness > DOCUMENTS_MAX_MARKER_BORDER_THICKNESS;
     setHasInvalidThickness(invalidThickness);
   }, [selectedLayerConfig?.style?.borderThickness]);
 
   useEffect(() => {
     const markerSize = selectedLayerConfig?.style?.markerSize;
-    const invalidSize = markerSize < 0 || markerSize > 100;
+    const invalidSize =
+      markerSize < DOCUMENTS_MIN_MARKER_SIZE || markerSize > DOCUMENTS_MAX_MARKER_SIZE;
     setHasInvalidSize(invalidSize);
   }, [selectedLayerConfig?.style?.markerSize]);
 
