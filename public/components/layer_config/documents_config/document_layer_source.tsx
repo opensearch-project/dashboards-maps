@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   EuiComboBox,
   EuiFlexItem,
@@ -32,6 +32,15 @@ interface Props {
   setIsUpdateDisabled: Function;
 }
 
+interface MemorizedForm {
+  [indexPatternId: string]:
+    | {
+        filters?: Filter[];
+        geoField?: IndexPatternField;
+      }
+    | undefined;
+}
+
 export const DocumentLayerSource = ({
   setSelectedLayerConfig,
   selectedLayerConfig,
@@ -47,11 +56,59 @@ export const DocumentLayerSource = ({
     },
   } = useOpenSearchDashboards<MapServices>();
   const [indexPattern, setIndexPattern] = useState<IndexPattern | null>();
-  const [geoFields, setGeoFields] = useState<IndexPatternField[]>();
-  const [selectedField, setSelectedField] = useState<IndexPatternField | null | undefined>();
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
   const [showTooltips, setShowTooltips] = useState<boolean>(
     selectedLayerConfig.source.showTooltips
+  );
+  const memorizedForm = useRef<MemorizedForm>({});
+
+  const geoFields = useMemo(() => {
+    const acceptedFieldTypes = ['geo_point', 'geo_shape'];
+    return indexPattern?.fields.filter((field) => acceptedFieldTypes.indexOf(field.type) !== -1);
+  }, [indexPattern]);
+
+  const selectedField = useMemo(() => {
+    return geoFields?.find((field) => field.name === selectedLayerConfig.source.geoFieldName);
+  }, [geoFields, selectedLayerConfig]);
+
+  // We want to memorize the filters and geoField selection when a map layer config is opened
+  useEffect(() => {
+    if (
+      indexPattern &&
+      indexPattern.id &&
+      indexPattern.id === selectedLayerConfig.source.indexPatternId
+    ) {
+      if (!memorizedForm.current[indexPattern.id]) {
+        memorizedForm.current[indexPattern.id] = {
+          filters: selectedLayerConfig.source.filters,
+          geoField: selectedField,
+        };
+      }
+    }
+  }, [indexPattern, selectedLayerConfig, selectedField]);
+
+  const onGeoFieldChange = useCallback(
+    (field: IndexPatternField | null) => {
+      if (field) {
+        setSelectedLayerConfig({
+          ...selectedLayerConfig,
+          source: {
+            ...selectedLayerConfig.source,
+            geoFieldName: field.displayName,
+            geoFieldType: field.type,
+          },
+        });
+        // We'd like to memorize the geo field selection so that the selection
+        // can be restored when changing index pattern back and forth
+        if (indexPattern?.id) {
+          memorizedForm.current[indexPattern.id] = {
+            ...memorizedForm.current[indexPattern.id],
+            geoField: field,
+          };
+        }
+      }
+    },
+    [selectedLayerConfig, setSelectedLayerConfig, indexPattern]
   );
 
   const errorsMap = {
@@ -135,8 +192,16 @@ export const DocumentLayerSource = ({
         ...selectedLayerConfig,
         source: { ...selectedLayerConfig.source, filters },
       });
+      // We'd like to memorize the fields selection so that the selection
+      // can be restored when changing index pattern back and forth
+      if (indexPattern?.id) {
+        memorizedForm.current[indexPattern.id] = {
+          ...memorizedForm.current[indexPattern.id],
+          filters,
+        };
+      }
     },
-    [selectedLayerConfig]
+    [selectedLayerConfig, indexPattern]
   );
 
   useEffect(() => {
@@ -151,34 +216,31 @@ export const DocumentLayerSource = ({
     selectIndexPattern();
   }, [indexPatterns, selectedLayerConfig.source.indexPatternId]);
 
-  // Update the fields list every time the index pattern is modified.
+  // Handle the side effects of index pattern change
   useEffect(() => {
-    const acceptedFieldTypes = ['geo_point', 'geo_shape'];
-    const fields = indexPattern?.fields.filter(
-      (field) => acceptedFieldTypes.indexOf(field.type) !== -1
-    );
-    setGeoFields(fields);
-    fields?.filter((field) => field.displayName === selectedLayerConfig.source.geoFieldName);
-    const savedField = fields?.find(
-      (field) => field.name === selectedLayerConfig.source.geoFieldName
-    );
-    setSelectedField(savedField);
-  }, [indexPattern]);
+    const source = { ...selectedLayerConfig.source };
+    // when index pattern changed, reset filters and geo field
+    if (indexPattern && indexPattern.id !== selectedLayerConfig.source.indexPatternId) {
+      source.indexPatternId = indexPattern.id ?? '';
+      source.indexPatternRefName = indexPattern.title;
+      // Use memorized filters, otherwise, set filter selection to empty
+      const filters = indexPattern.id ? memorizedForm.current[indexPattern.id]?.filters ?? [] : [];
+      source.filters = filters;
 
-  useEffect(() => {
-    const setLayerSource = () => {
-      if (!indexPattern || !selectedField) return;
-      const source = {
-        ...selectedLayerConfig.source,
-        indexPatternRefName: indexPattern?.title,
-        indexPatternId: indexPattern?.id,
-        geoFieldName: selectedField?.displayName,
-        geoFieldType: selectedField?.type,
-      };
-      setSelectedLayerConfig({ ...selectedLayerConfig, source });
-    };
-    setLayerSource();
-  }, [selectedField]);
+      // Use memorized geo field, otherwise, set geo filter to empty
+      const geoField = indexPattern.id
+        ? memorizedForm.current[indexPattern.id]?.geoField
+        : undefined;
+      if (geoField) {
+        source.geoFieldName = geoField.displayName;
+        source.geoFieldType = geoField.type as 'geo_point' | 'geo_shape';
+      }
+      setSelectedLayerConfig({
+        ...selectedLayerConfig,
+        source,
+      });
+    }
+  }, [indexPattern]);
 
   useEffect(() => {
     setHasInvalidRequestNumber(
@@ -258,7 +320,7 @@ export const DocumentLayerSource = ({
                     singleSelection={true}
                     onChange={(option) => {
                       const field = indexPattern?.getFieldByName(option[0].label);
-                      setSelectedField(field || null);
+                      onGeoFieldChange(field || null);
                     }}
                     sortMatchesBy="startsWith"
                     placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
