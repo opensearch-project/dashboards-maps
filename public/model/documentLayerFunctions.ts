@@ -12,10 +12,15 @@ import {
   addCircleLayer,
   addLineLayer,
   addPolygonLayer,
+  addSymbolLayer,
   hasLayer,
+  hasSymbolLayer,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
+  updateSymbolLayer,
+  removeSymbolLayer,
+  createSymbolLayerSpecification,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -220,6 +225,43 @@ const updateLayer = (
   }
 };
 
+// The function to render label for document layer
+const renderLabelLayer = (
+  layerConfig: DocumentLayerSpecification,
+  maplibreRef: MaplibreRef,
+  beforeLayerId: string | undefined
+) => {
+  const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
+  // If the label set to enabled, add the label layer
+  if (layerConfig.style?.enableLabel) {
+    const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
+    if (hasLabelLayer) {
+      updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
+    } else {
+      addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
+    }
+  } else {
+    // If the label set to disabled, remove the label layer if it exists
+    if (hasLabelLayer) {
+      removeSymbolLayer(maplibreRef.current!, layerConfig.id);
+    }
+  }
+};
+
+// The function to render point, line and shape layer for document layer
+const renderMarkerLayer = (
+  maplibreRef: MaplibreRef,
+  layerConfig: DocumentLayerSpecification,
+  data: any,
+  beforeLayerId: string | undefined
+) => {
+  if (hasLayer(maplibreRef.current!, layerConfig.id)) {
+    updateLayer(layerConfig, maplibreRef, data);
+  } else {
+    addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
+  }
+};
+
 export const DocumentLayerFunctions = {
   render: (
     maplibreRef: MaplibreRef,
@@ -227,8 +269,7 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    return hasLayer(maplibreRef.current!, layerConfig.id)
-      ? updateLayer(layerConfig, maplibreRef, data)
-      : addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
+    renderMarkerLayer(maplibreRef, layerConfig, data, beforeLayerId);
+    renderLabelLayer(layerConfig, maplibreRef, beforeLayerId);
   },
 };

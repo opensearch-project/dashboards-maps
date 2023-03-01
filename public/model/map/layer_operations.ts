@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
+import { DocumentLayerSpecification } from '../mapLayerType';
 
 export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSpecification[] => {
   const layers: LayerSpecification[] = map.getStyle().layers;
@@ -40,6 +41,10 @@ export const removeLayers = (map: Maplibre, layerId: string, removeSource?: bool
   if (removeSource && map.getSource(layerId)) {
     map.removeSource(layerId);
   }
+};
+
+export const removeMbLayer = (map: Maplibre, mbLayerId: string) => {
+  map.removeLayer(mbLayerId);
 };
 
 export const updateLayerVisibilityHandler = (
@@ -221,4 +226,74 @@ const updatePolygonFillLayer = (
   map.setPaintProperty(fillLayerId, 'fill-opacity', specification.opacity / 100);
   map.setPaintProperty(fillLayerId, 'fill-color', specification.fillColor);
   return fillLayerId;
+};
+
+export interface SymbolLayerSpecification extends Layer {
+  visibility: string;
+  textFont: string[];
+  textField: string;
+  textSize: number;
+  textColor: string;
+  symbolBorderWidth: number;
+  symbolBorderColor: string;
+}
+
+export const createSymbolLayerSpecification = (
+  layerConfig: DocumentLayerSpecification
+): SymbolLayerSpecification => {
+  return {
+    sourceId: layerConfig.id,
+    visibility: layerConfig.visibility,
+    textFont: ['Noto Sans Regular'],
+    textField: layerConfig.style.labelTittle,
+    textSize: layerConfig.style.labelSize,
+    textColor: layerConfig.style.labelColor,
+    minZoom: layerConfig.zoomRange[0],
+    maxZoom: layerConfig.zoomRange[1],
+    opacity: layerConfig.opacity,
+    symbolBorderWidth: layerConfig.style.labelBorderWidth,
+    symbolBorderColor: layerConfig.style.labelBorderColor,
+  };
+};
+
+export const hasSymbolLayer = (map: Maplibre, layerId: string) => {
+  return !!map.getLayer(layerId + '-symbol');
+};
+
+export const removeSymbolLayer = (map: Maplibre, layerId: string) => {
+  map.removeLayer(layerId + '-symbol');
+};
+
+export const addSymbolLayer = (
+  map: Maplibre,
+  specification: SymbolLayerSpecification,
+  beforeId?: string
+): string => {
+  const symbolLayerId = specification.sourceId + '-symbol';
+  map.addLayer(
+    {
+      id: symbolLayerId,
+      type: 'symbol',
+      source: specification.sourceId,
+    },
+    beforeId
+  );
+  return updateSymbolLayer(map, specification);
+};
+
+export const updateSymbolLayer = (
+  map: Maplibre,
+  specification: SymbolLayerSpecification
+): string => {
+  const symbolLayerId = specification.sourceId + '-symbol';
+  map.setLayoutProperty(symbolLayerId, 'text-font', specification.textFont);
+  map.setLayoutProperty(symbolLayerId, 'text-field', specification.textField);
+  map.setLayoutProperty(symbolLayerId, 'visibility', specification.visibility);
+  map.setPaintProperty(symbolLayerId, 'text-opacity', specification.opacity / 100);
+  map.setLayerZoomRange(symbolLayerId, specification.minZoom, specification.maxZoom);
+  map.setPaintProperty(symbolLayerId, 'text-color', specification.textColor);
+  map.setLayoutProperty(symbolLayerId, 'text-size', specification.textSize);
+  map.setPaintProperty(symbolLayerId, 'text-halo-width', specification.symbolBorderWidth);
+  map.setPaintProperty(symbolLayerId, 'text-halo-color', specification.symbolBorderColor);
+  return symbolLayerId;
 };
