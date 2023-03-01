@@ -82,13 +82,7 @@ export const DocumentLayerStyle = ({
     const disableUpdate =
       !!fillColorErrors || !!borderColorErrors || hasInvalidSize || hasInvalidThickness;
     setIsUpdateDisabled(disableUpdate);
-  }, [
-    setIsUpdateDisabled,
-    fillColorErrors,
-    borderColorErrors,
-    hasInvalidSize,
-    hasInvalidThickness,
-  ]);
+  }, [fillColorErrors, borderColorErrors, hasInvalidSize, hasInvalidThickness]);
 
   useEffect(() => {
     setSelectedLayerConfig({
