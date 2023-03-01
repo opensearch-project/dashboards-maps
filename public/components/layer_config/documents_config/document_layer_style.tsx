@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import {
   EuiColorPicker,
-  useColorPickerState,
   EuiFieldNumber,
   EuiFormLabel,
   EuiFormErrorText,
@@ -17,6 +16,7 @@ import {
   EuiTitle,
   EuiFormRow,
   EuiForm,
+  useColorPickerState,
 } from '@elastic/eui';
 import { FormattedMessage } from '@osd/i18n/react';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
@@ -24,11 +24,35 @@ import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
+  setIsUpdateDisabled: Function;
 }
 
-export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig }: Props) => {
-  const [fillColor, setFillColor] = useState(selectedLayerConfig?.style?.fillColor);
-  const [borderColor, setBorderColor] = useState(selectedLayerConfig?.style?.borderColor);
+interface ColorPickerProps {
+  color: string;
+  setColor: (text: string, { isValid }: { isValid: boolean }) => void;
+  label: string;
+  colorError: (text: string, { isValid }: { isValid: boolean }) => void;
+}
+
+const ColorPicker = memo(({ color, setColor, label, colorError }: ColorPickerProps) => {
+  return (
+    <EuiFormRow label={label} fullWidth={true} isInvalid={!!colorError} error={colorError}>
+      <EuiColorPicker color={color} onChange={setColor} isInvalid={!!colorError} fullWidth={true} />
+    </EuiFormRow>
+  );
+});
+
+export const DocumentLayerStyle = ({
+  setSelectedLayerConfig,
+  selectedLayerConfig,
+  setIsUpdateDisabled,
+}: Props) => {
+  const [fillColor, setFillColor, fillColorErrors] = useColorPickerState(
+    selectedLayerConfig?.style?.fillColor
+  );
+  const [borderColor, setBorderColor, borderColorErrors] = useColorPickerState(
+    selectedLayerConfig?.style?.borderColor
+  );
   const [hasInvalidThickness, setHasInvalidThickness] = useState<boolean>(false);
   const [hasInvalidSize, setHasInvalidSize] = useState<boolean>(false);
   const geoTypeToggleButtonGroupPrefix = 'geoTypeToggleButtonGroup';
@@ -36,10 +60,29 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
     `${geoTypeToggleButtonGroupPrefix}__Point`
   );
 
+  // It's used to update the style color when switch layer config between different document layers
   useEffect(() => {
-    setFillColor(selectedLayerConfig?.style?.fillColor);
-    setBorderColor(selectedLayerConfig?.style?.borderColor);
-  }, [selectedLayerConfig]);
+    setFillColor(
+      selectedLayerConfig?.style?.fillColor,
+      !!fillColorErrors ? { isValid: false } : { isValid: true }
+    );
+    setBorderColor(
+      selectedLayerConfig?.style?.borderColor,
+      !!borderColorErrors ? { isValid: false } : { isValid: true }
+    );
+  }, [selectedLayerConfig.id]);
+
+  useEffect(() => {
+    const disableUpdate =
+      !!fillColorErrors || !!borderColorErrors || hasInvalidSize || hasInvalidThickness;
+    setIsUpdateDisabled(disableUpdate);
+  }, [
+    setIsUpdateDisabled,
+    fillColorErrors,
+    borderColorErrors,
+    hasInvalidSize,
+    hasInvalidThickness,
+  ]);
 
   useEffect(() => {
     setSelectedLayerConfig({
@@ -47,19 +90,10 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
       style: {
         ...selectedLayerConfig?.style,
         fillColor,
-      },
-    });
-  }, [fillColor]);
-
-  useEffect(() => {
-    setSelectedLayerConfig({
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig?.style,
         borderColor,
       },
     });
-  }, [borderColor]);
+  }, [fillColor, borderColor]);
 
   const onBorderThicknessChange = (e: any) => {
     setSelectedLayerConfig({
@@ -82,25 +116,15 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
   };
 
   useEffect(() => {
-    if (
-      selectedLayerConfig?.style?.borderThickness < 0 ||
-      selectedLayerConfig?.style?.borderThickness > 100
-    ) {
-      setHasInvalidThickness(true);
-    } else {
-      setHasInvalidThickness(false);
-    }
+    const borderThickness = selectedLayerConfig?.style?.borderThickness;
+    const invalidThickness = borderThickness < 0 || borderThickness > 100;
+    setHasInvalidThickness(invalidThickness);
   }, [selectedLayerConfig?.style?.borderThickness]);
 
   useEffect(() => {
-    if (
-      selectedLayerConfig?.style?.markerSize < 0 ||
-      selectedLayerConfig?.style?.markerSize > 100
-    ) {
-      setHasInvalidSize(true);
-    } else {
-      setHasInvalidSize(false);
-    }
+    const markerSize = selectedLayerConfig?.style?.markerSize;
+    const invalidSize = markerSize < 0 || markerSize > 100;
+    setHasInvalidSize(invalidSize);
   }, [selectedLayerConfig?.style?.markerSize]);
 
   const toggleButtonsGeoType = [
@@ -120,26 +144,6 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
 
   const onChangeGeoTypeSelected = (optionId: string) => {
     setToggleGeoTypeIdSelected(optionId);
-  };
-
-  interface ColorPickerProps {
-    color: string;
-    setColor: Function;
-    label: string;
-  }
-
-  const ColorPicker = ({ color, setColor, label }: ColorPickerProps) => {
-    return (
-      <EuiFormRow label={label} fullWidth={true}>
-        <EuiColorPicker
-          color={color}
-          onChange={setColor}
-          isInvalid={false}
-          onBlur={() => {}}
-          fullWidth={true}
-        />
-      </EuiFormRow>
-    );
   };
 
   interface WidthSelectorProps {
@@ -192,8 +196,18 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
       <EuiForm>
         {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Point` && (
           <EuiForm>
-            <ColorPicker color={fillColor} setColor={setFillColor} label="Fill color" />
-            <ColorPicker color={borderColor} setColor={setBorderColor} label="Border color" />
+            <ColorPicker
+              color={fillColor}
+              setColor={setFillColor}
+              label="Fill color"
+              colorError={fillColorErrors}
+            />
+            <ColorPicker
+              color={borderColor}
+              setColor={setBorderColor}
+              label="Border color"
+              colorError={borderColorErrors}
+            />
             <WidthSelector
               label="Border thickness"
               size={selectedLayerConfig?.style?.borderThickness}
@@ -210,7 +224,12 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
         )}
         {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Line` && (
           <EuiForm>
-            <ColorPicker color={fillColor} setColor={setFillColor} label="Fill color" />
+            <ColorPicker
+              color={fillColor}
+              setColor={setFillColor}
+              label="Fill color"
+              colorError={fillColorErrors}
+            />
             <WidthSelector
               label="Border thickness"
               size={selectedLayerConfig?.style?.borderThickness}
@@ -221,8 +240,18 @@ export const DocumentLayerStyle = ({ setSelectedLayerConfig, selectedLayerConfig
         )}
         {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Polygon` && (
           <EuiForm>
-            <ColorPicker color={fillColor} setColor={setFillColor} label="Fill color" />
-            <ColorPicker color={borderColor} setColor={setBorderColor} label="Border color" />
+            <ColorPicker
+              color={fillColor}
+              setColor={setFillColor}
+              label="Fill color"
+              colorError={fillColorErrors}
+            />
+            <ColorPicker
+              color={borderColor}
+              setColor={setBorderColor}
+              label="Border color"
+              colorError={borderColorErrors}
+            />
             <WidthSelector
               label="Border thickness"
               size={selectedLayerConfig?.style?.borderThickness}
