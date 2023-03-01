@@ -4,7 +4,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { EuiPanel } from '@elastic/eui';
 import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
@@ -34,6 +33,7 @@ import {
   getReferenceLayers,
   referenceLayerTypeLookup,
 } from '../../model/layersFunctions';
+import { MapsFooter } from './mapsFooter';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -298,19 +298,7 @@ export const MapContainer = ({
 
   return (
     <div className="map-main">
-      <EuiPanel
-        hasShadow={false}
-        hasBorder={false}
-        color="transparent"
-        className="zoombar"
-        data-test-subj="mapStatusBar"
-      >
-        <small>
-          {coordinates &&
-            `lat: ${coordinates.lat.toFixed(4)}, lon: ${coordinates.lng.toFixed(4)}, `}
-          zoom: {zoom}
-        </small>
-      </EuiPanel>
+      <MapsFooter coordinates={coordinates} zoom={zoom} />
       {mounted && (
         <LayerControlPanel
           maplibreRef={maplibreRef}
