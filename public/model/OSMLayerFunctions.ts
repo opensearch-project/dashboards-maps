@@ -1,7 +1,8 @@
-import { Map as Maplibre, LayerSpecification } from 'maplibre-gl';
+import { Map as Maplibre, LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
 import { getMaplibreBeforeLayerId } from './layersFunctions';
 import { getLayers, hasLayer } from './map/layer_operations';
+import { getMapLanguage } from '../../common/util';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -41,6 +42,17 @@ const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
   handleStyleLayers(layerConfig, maplibreRef);
 };
 
+const localizationMapLayer = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) => {
+  const language = getMapLanguage();
+  // if a layer contains label, we will set its language.
+  if (styleLayer.layout && (styleLayer as SymbolLayerSpecification).layout?.['text-field']) {
+    maplibreRef.current?.setLayoutProperty(styleLayer.id, 'text-field', [
+      'get',
+      'name:' + language,
+    ]);
+  }
+};
+
 const addNewLayer = (
   layerConfig: OSMLayerSpecification,
   maplibreRef: MaplibreRef,
@@ -61,6 +73,7 @@ const addNewLayer = (
           styleLayer.source = layerConfig.id;
         }
         maplibreRef.current?.addLayer(styleLayer, beforeMbLayerId);
+        localizationMapLayer(maplibreRef, styleLayer);
         maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
         maplibreRef.current?.setLayerZoomRange(
           styleLayer.id,
