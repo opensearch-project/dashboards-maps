@@ -43,9 +43,9 @@ const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
 };
 
 const localizationMapLayer = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) => {
-  const language = getMapLanguage();
   // if a layer contains label, we will set its language.
   if (styleLayer.layout && (styleLayer as SymbolLayerSpecification).layout?.['text-field']) {
+    const language = getMapLanguage();
     maplibreRef.current?.setLayoutProperty(styleLayer.id, 'text-field', [
       'get',
       'name:' + language,
