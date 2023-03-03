@@ -31,6 +31,7 @@ export const DOCUMENTS_MIN_MARKER_BORDER_THICKNESS = 0;
 export const DOCUMENTS_MAX_MARKER_BORDER_THICKNESS = 100;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 1000;
 export const DOCUMENTS_DEFAULT_SHOW_TOOLTIPS: boolean = false;
+export const DOCUMENTS_DEFAULT_DISABLE_TOOLTIPS_ON_HOVER: boolean = false;
 export const DOCUMENTS_DEFAULT_TOOLTIPS: string[] = [];
 export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed';
 export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye';
