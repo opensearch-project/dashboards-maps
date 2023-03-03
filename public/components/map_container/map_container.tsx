@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { LngLat, Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
+import { Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
@@ -38,7 +38,7 @@ import {
   getReferenceLayers,
   referenceLayerTypeLookup,
 } from '../../model/layersFunctions';
-import { MapsFooter } from './mapsFooter';
+import { MapsFooter } from './maps_footer';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -77,7 +77,6 @@ export const MapContainer = ({
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
-  const [coordinates, setCoordinates] = useState<LngLat>();
   const [selectedLayerConfig, setSelectedLayerConfig] = useState<
     MapLayerSpecification | undefined
   >();
@@ -152,9 +151,6 @@ export const MapContainer = ({
     }
 
     function onMouseMoveMap(e: MapEventType['mousemove']) {
-      // This is required to update coordinates on map only on mouse move
-      setCoordinates(e.lngLat.wrap());
-
       // remove previous popup
       hoverPopup?.remove();
 
@@ -304,7 +300,7 @@ export const MapContainer = ({
 
   return (
     <div className="map-main">
-      <MapsFooter coordinates={coordinates} zoom={zoom} />
+      {mounted && <MapsFooter map={maplibreRef.current!} zoom={zoom} />}
       {mounted && (
         <LayerControlPanel
           maplibreRef={maplibreRef}
