@@ -42,6 +42,7 @@ export type DocumentLayerSpecification = {
     geoFieldName: string;
     documentRequestNumber: number;
     showTooltips: boolean;
+    disableTooltipsOnHover?: boolean;
     tooltipFields: string[];
     useGeoBoundingBoxFilter: boolean;
     filters: Filter[];

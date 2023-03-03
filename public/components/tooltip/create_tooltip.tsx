@@ -25,6 +25,12 @@ export function isTooltipEnabledLayer(
   );
 }
 
+export function isTooltipEnabledOnHover(
+  layer: MapLayerSpecification
+): layer is DocumentLayerSpecification {
+  return isTooltipEnabledLayer(layer) && !layer.source?.disableTooltipsOnHover;
+}
+
 export function groupFeaturesByLayers(
   features: MapGeoJSONFeature[],
   layers: DocumentLayerSpecification[]
