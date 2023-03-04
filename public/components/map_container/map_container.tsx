@@ -18,7 +18,12 @@ import {
   Query,
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import { createPopup, getPopupLocation, isTooltipEnabledLayer } from '../tooltip/create_tooltip';
+import {
+  createPopup,
+  getPopupLocation,
+  isTooltipEnabledLayer,
+  isTooltipEnabledOnHover,
+} from '../tooltip/create_tooltip';
 import {
   handleDataLayerRender,
   handleReferenceLayerRender,
@@ -149,11 +154,12 @@ export const MapContainer = ({
       // remove previous popup
       hoverPopup?.remove();
 
+      const tooltipEnabledLayersOnHover = layers.filter(isTooltipEnabledOnHover);
       const features = maplibreRef.current?.queryRenderedFeatures(e.point);
       if (features && maplibreRef.current) {
         hoverPopup = createPopup({
           features,
-          layers: tooltipEnabledLayers,
+          layers: tooltipEnabledLayersOnHover,
           // enable close button to avoid occasional dangling tooltip that is not cleared during mouse leave action
           showCloseButton: true,
           showPagination: false,
