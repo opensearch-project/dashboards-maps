@@ -28,7 +28,7 @@ export function isTooltipEnabledLayer(
 export function isTooltipEnabledOnHover(
   layer: MapLayerSpecification
 ): layer is DocumentLayerSpecification {
-  return isTooltipEnabledLayer(layer) && !layer.source?.disableTooltipsOnHover;
+  return isTooltipEnabledLayer(layer) && (layer.source?.displayTooltipsOnHover ?? true);
 }
 
 export function groupFeaturesByLayers(
