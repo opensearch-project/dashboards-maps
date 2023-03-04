@@ -18,7 +18,7 @@ import {
   MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
   OPENSEARCH_MAP_LAYER,
   CUSTOM_MAP,
-  DOCUMENTS_DEFAULT_DISABLE_TOOLTIPS_ON_HOVER,
+  DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER,
 } from '../../common';
 import { MapState } from '../model/mapState';
 import { ConfigSchema } from '../../common/config';
@@ -54,7 +54,7 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       documentRequestNumber: DOCUMENTS_DEFAULT_REQUEST_NUMBER,
       tooltipFields: DOCUMENTS_DEFAULT_TOOLTIPS,
       showTooltips: DOCUMENTS_DEFAULT_SHOW_TOOLTIPS,
-      disableTooltipsOnHover: DOCUMENTS_DEFAULT_DISABLE_TOOLTIPS_ON_HOVER,
+      displayTooltipsOnHover: DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER,
     },
     style: {
       ...getStyleColor(),
