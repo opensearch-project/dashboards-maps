@@ -15,6 +15,7 @@ import {
   EuiSpacer,
   EuiPanel,
   EuiForm,
+  EuiSwitch,
   EuiCheckbox,
   EuiFormRow,
 } from '@elastic/eui';
@@ -57,7 +58,7 @@ export const DocumentLayerSource = ({
   } = useOpenSearchDashboards<MapServices>();
   const [indexPattern, setIndexPattern] = useState<IndexPattern | null>();
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
-  const [showTooltips, setShowTooltips] = useState<boolean>(
+  const [enableTooltips, setEnableTooltips] = useState<boolean>(
     selectedLayerConfig.source.showTooltips
   );
   const memorizedForm = useRef<MemorizedForm>({});
@@ -249,9 +250,16 @@ export const DocumentLayerSource = ({
     );
   }, [selectedLayerConfig.source.documentRequestNumber]);
 
-  const onShowTooltipsChange = (event: { target: { checked: React.SetStateAction<boolean> } }) => {
-    setShowTooltips(event.target.checked);
+  const onEnableTooltipsChange = (event: { target: { checked: React.SetStateAction<boolean> } }) => {
+    setEnableTooltips(event.target.checked);
     const source = { ...selectedLayerConfig.source, showTooltips: event.target.checked };
+    setSelectedLayerConfig({ ...selectedLayerConfig, source });
+  };
+
+  const onDisplayTooltipsOnHoverChange = (event: {
+    target: { checked: React.SetStateAction<boolean> };
+  }) => {
+    const source = { ...selectedLayerConfig.source, displayTooltipsOnHover: event.target.checked };
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
 
@@ -394,10 +402,12 @@ export const DocumentLayerSource = ({
           <EuiFlexGrid columns={1}>
             <EuiFlexItem>
               <EuiCheckbox
-                id="toggle-tooltip"
-                label="Show tooltips"
-                checked={showTooltips}
-                onChange={onShowTooltipsChange}
+                id="enable-tooltip"
+                label={i18n.translate('documentLayer.enableTooltips', {
+                  defaultMessage: 'Enable tooltips',
+                })}
+                checked={enableTooltips}
+                onChange={onEnableTooltipsChange}
               />
             </EuiFlexItem>
             <EuiFlexItem>
@@ -411,10 +421,20 @@ export const DocumentLayerSource = ({
                 singleSelection={false}
                 onChange={onTooltipSelectionChange}
                 sortMatchesBy="startsWith"
-                placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
+                placeholder={i18n.translate('documentLayer.addedTooltipFields', {
                   defaultMessage: 'Add tooltip fields',
                 })}
                 fullWidth={true}
+              />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiSwitch
+                label={i18n.translate('documentLayer.displayTooltipsOnHover', {
+                  defaultMessage: 'Display tooltips on hover',
+                })}
+                checked={selectedLayerConfig.source?.displayTooltipsOnHover ?? true}
+                onChange={onDisplayTooltipsOnHoverChange}
+                disabled={!enableTooltips}
               />
             </EuiFlexItem>
           </EuiFlexGrid>
