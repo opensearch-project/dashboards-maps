@@ -142,3 +142,7 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
 };
+
+export enum TOOLTIP_STATE {
+  DISPLAY_FEATURES = 'DISPLAY_FEATURES',
+}
