@@ -11,14 +11,17 @@ export type MapLayerSpecification =
   | DocumentLayerSpecification
   | CustomLayerSpecification;
 
-export type OSMLayerSpecification = {
+export type AbstractLayerSpecification = {
   name: string;
   id: string;
-  type: 'opensearch_vector_tile_map';
   description: string;
   zoomRange: number[];
   opacity: number;
   visibility: string;
+};
+
+export type OSMLayerSpecification = AbstractLayerSpecification & {
+  type: 'opensearch_vector_tile_map';
   source: {
     dataURL: string;
   };
@@ -27,14 +30,8 @@ export type OSMLayerSpecification = {
   };
 };
 
-export type DocumentLayerSpecification = {
-  name: string;
-  id: string;
+export type DocumentLayerSpecification = AbstractLayerSpecification & {
   type: 'documents';
-  description: string;
-  zoomRange: number[];
-  opacity: number;
-  visibility: string;
   source: {
     indexPatternRefName: string;
     indexPatternId: string;
@@ -66,14 +63,8 @@ export type DocumentLayerSpecification = {
 
 export type CustomLayerSpecification = CustomTMSLayerSpecification | CustomWMSLayerSpecification;
 
-export type CustomTMSLayerSpecification = {
-  name: string;
-  id: string;
+export type CustomTMSLayerSpecification = AbstractLayerSpecification & {
   type: 'custom_map';
-  description: string;
-  zoomRange: number[];
-  opacity: number;
-  visibility: string;
   source: {
     url: string;
     customType: 'tms';
@@ -81,14 +72,8 @@ export type CustomTMSLayerSpecification = {
   };
 };
 
-export type CustomWMSLayerSpecification = {
-  name: string;
-  id: string;
+export type CustomWMSLayerSpecification = AbstractLayerSpecification & {
   type: 'custom_map';
-  description: string;
-  zoomRange: number[];
-  opacity: number;
-  visibility: string;
   source: {
     url: string;
     customType: 'wms';
