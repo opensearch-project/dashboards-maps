@@ -19,6 +19,13 @@ import {
   OPENSEARCH_MAP_LAYER,
   CUSTOM_MAP,
   DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER,
+  DOCUMENTS_DEFAULT_LABEL_ENABLES,
+  DOCUMENTS_DEFAULT_LABEL_VALUE,
+  DOCUMENTS_DEFAULT_LABEL_TYPE,
+  DOCUMENTS_DEFAULT_LABEL_SIZE,
+  DOCUMENTS_DEFAULT_LABEL_COLOR,
+  DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR,
+  DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
 } from '../../common';
 import { MapState } from '../model/mapState';
 import { ConfigSchema } from '../../common/config';
@@ -60,6 +67,15 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       ...getStyleColor(),
       borderThickness: DOCUMENTS_DEFAULT_MARKER_BORDER_THICKNESS,
       markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
+      label: {
+        enabled: DOCUMENTS_DEFAULT_LABEL_ENABLES,
+        tittle: DOCUMENTS_DEFAULT_LABEL_VALUE,
+        tittleType: DOCUMENTS_DEFAULT_LABEL_TYPE,
+        size: DOCUMENTS_DEFAULT_LABEL_SIZE,
+        borderWidth: DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
+        color: DOCUMENTS_DEFAULT_LABEL_COLOR,
+        borderColor: DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR,
+      },
     },
   },
   [CUSTOM_MAP.type]: {
