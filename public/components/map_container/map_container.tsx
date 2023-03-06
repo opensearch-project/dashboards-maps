@@ -4,26 +4,20 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Map as Maplibre, NavigationControl, Popup, MapEventType } from 'maplibre-gl';
+import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { MAP_INITIAL_STATE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, MAP_INITIAL_STATE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
+  Filter,
   IndexPattern,
+  Query,
   RefreshInterval,
   TimeRange,
-  Filter,
-  Query,
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import {
-  createPopup,
-  getPopupLocation,
-  isTooltipEnabledLayer,
-  isTooltipEnabledOnHover,
-} from '../tooltip/create_tooltip';
 import {
   handleDataLayerRender,
   handleReferenceLayerRender,
@@ -39,6 +33,8 @@ import {
   referenceLayerTypeLookup,
 } from '../../model/layersFunctions';
 import { MapsFooter } from './maps_footer';
+import { DisplayFeatures } from '../tooltip/display_features';
+import { TOOLTIP_STATE } from '../../../common/index';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -80,6 +76,8 @@ export const MapContainer = ({
   const [selectedLayerConfig, setSelectedLayerConfig] = useState<
     MapLayerSpecification | undefined
   >();
+  // start with display feature
+  const [tooltipState, setTooltipState] = useState<TOOLTIP_STATE>(TOOLTIP_STATE.DISPLAY_FEATURES);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -128,71 +126,6 @@ export const MapContainer = ({
       }
     };
   }, []);
-
-  // Create onClick tooltip for each layer features that has tooltip enabled
-  useEffect(() => {
-    let clickPopup: Popup | null = null;
-    let hoverPopup: Popup | null = null;
-
-    // We don't want to show layer information in the popup for the map tile layer
-    const tooltipEnabledLayers = layers.filter(isTooltipEnabledLayer);
-
-    function onClickMap(e: MapEventType['click']) {
-      // remove previous popup
-      clickPopup?.remove();
-
-      const features = maplibreRef.current?.queryRenderedFeatures(e.point);
-      if (features && maplibreRef.current) {
-        clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
-        clickPopup
-          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
-          .addTo(maplibreRef.current);
-      }
-    }
-
-    function onMouseMoveMap(e: MapEventType['mousemove']) {
-      // remove previous popup
-      hoverPopup?.remove();
-
-      const tooltipEnabledLayersOnHover = layers.filter(isTooltipEnabledOnHover);
-      const features = maplibreRef.current?.queryRenderedFeatures(e.point);
-      if (features && maplibreRef.current) {
-        hoverPopup = createPopup({
-          features,
-          layers: tooltipEnabledLayersOnHover,
-          // enable close button to avoid occasional dangling tooltip that is not cleared during mouse leave action
-          showCloseButton: true,
-          showPagination: false,
-          showLayerSelection: false,
-        });
-        hoverPopup
-          ?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat))
-          .addTo(maplibreRef.current);
-      }
-    }
-
-    if (maplibreRef.current) {
-      const map = maplibreRef.current;
-      map.on('click', onClickMap);
-      // reset cursor to default when user is no longer hovering over a clickable feature
-      map.on('mouseleave', () => {
-        map.getCanvas().style.cursor = '';
-        hoverPopup?.remove();
-      });
-      map.on('mouseenter', () => {
-        map.getCanvas().style.cursor = 'pointer';
-      });
-      // add tooltip when users mouse move over a point
-      map.on('mousemove', onMouseMoveMap);
-    }
-
-    return () => {
-      if (maplibreRef.current) {
-        maplibreRef.current.off('click', onClickMap);
-        maplibreRef.current.off('mousemove', onMouseMoveMap);
-      }
-    };
-  }, [layers]);
 
   // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
   useEffect(() => {
@@ -316,6 +249,9 @@ export const MapContainer = ({
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
+      )}
+      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
+        <DisplayFeatures map={maplibreRef.current!} layers={layers} />
       )}
       <div className="map-container" ref={mapContainer} />
     </div>
