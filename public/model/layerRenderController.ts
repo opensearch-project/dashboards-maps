@@ -16,6 +16,7 @@ import {
   isCompleteResponse,
   TimeRange,
   Query,
+  FILTERS,
 } from '../../../../src/plugins/data/common';
 import { layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
@@ -116,6 +117,7 @@ export const handleDataLayerRender = (
     alias: null,
     disabled: !mapLayer.source.useGeoBoundingBoxFilter || geoFieldType !== 'geo_point',
     negate: false,
+    type: FILTERS.GEO_BOUNDING_BOX,
   };
   const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
   filters.push(geoBoundingBoxFilter);
