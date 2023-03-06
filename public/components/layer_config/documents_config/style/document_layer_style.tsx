@@ -186,7 +186,7 @@ export const DocumentLayerStyle = ({
               label={i18n.translate('maps.documents.symbolFillColor', {
                 defaultMessage: 'Fill color',
               })}
-              selectedLayerConfig={selectedLayerConfig}
+              selectedLayerConfigId={selectedLayerConfig.id}
               setIsUpdateDisabled={setIsUpdateDisabled}
               onColorChange={onFillColorChange}
             />
@@ -195,7 +195,7 @@ export const DocumentLayerStyle = ({
               label={i18n.translate('maps.documents.symbolBorderColor', {
                 defaultMessage: 'Border color',
               })}
-              selectedLayerConfig={selectedLayerConfig}
+              selectedLayerConfigId={selectedLayerConfig.id}
               setIsUpdateDisabled={setIsUpdateDisabled}
               onColorChange={onBorderColorChange}
             />
@@ -228,7 +228,7 @@ export const DocumentLayerStyle = ({
               label={i18n.translate('maps.documents.symbolFillColor', {
                 defaultMessage: 'Fill color',
               })}
-              selectedLayerConfig={selectedLayerConfig}
+              selectedLayerConfigId={selectedLayerConfig.id}
               setIsUpdateDisabled={setIsUpdateDisabled}
               onColorChange={onFillColorChange}
             />
@@ -251,7 +251,7 @@ export const DocumentLayerStyle = ({
               label={i18n.translate('maps.documents.symbolFillColor', {
                 defaultMessage: 'Fill color',
               })}
-              selectedLayerConfig={selectedLayerConfig}
+              selectedLayerConfigId={selectedLayerConfig.id}
               setIsUpdateDisabled={setIsUpdateDisabled}
               onColorChange={onFillColorChange}
             />
@@ -260,7 +260,7 @@ export const DocumentLayerStyle = ({
               label={i18n.translate('maps.documents.symbolBorderColor', {
                 defaultMessage: 'Border color',
               })}
-              selectedLayerConfig={selectedLayerConfig}
+              selectedLayerConfigId={selectedLayerConfig.id}
               setIsUpdateDisabled={setIsUpdateDisabled}
               onColorChange={onBorderColorChange}
             />

@@ -40,13 +40,15 @@ describe('LabelConfig', () => {
       borderColor: '#000000',
       borderThickness: 2,
       markerSize: 10,
-      enableLabel: true,
-      labelTittle: 'My Label',
-      labelTittleType: 'fixed',
-      labelColor: '#FFFFFF',
-      labelSize: 12,
-      labelBorderColor: '#000000',
-      labelBorderWidth: 2,
+      label: {
+        enabled: true,
+        tittle: 'My Label',
+        tittleType: 'fixed',
+        color: '#FFFFFF',
+        size: 12,
+        borderColor: '#000000',
+        borderWidth: 2,
+      },
     },
   };
 
@@ -73,7 +75,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        enableLabel: false,
+        label: {
+          ...selectedLayerConfig.style.label,
+          enabled: false,
+        },
       },
     });
   });
@@ -83,7 +88,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        enableLabel: false,
+        label: {
+          ...selectedLayerConfig.style.label,
+          enabled: false,
+        },
       },
     };
     wrapper.setProps({ selectedLayerConfig: newSelectedLayerConfig });
@@ -98,7 +106,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelTittleType: 'by_field',
+        label: {
+          ...selectedLayerConfig.style.label,
+          tittleType: 'by_field',
+        },
       },
     });
   });
@@ -116,7 +127,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelTittle: 'new label',
+        label: {
+          ...selectedLayerConfig.style.label,
+          tittle: 'new label',
+        },
       },
     });
   });
@@ -135,7 +149,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelSize: 20,
+        label: {
+          ...selectedLayerConfig.style.label,
+          size: 20,
+        },
       },
     });
   });
@@ -143,14 +160,14 @@ describe('LabelConfig', () => {
   it('should render ColorPicker with correct props for label color', () => {
     const colorPicker = wrapper.find({ label: 'Label color' });
     expect(colorPicker.prop('originColor')).toEqual('#FFFFFF');
-    expect(colorPicker.prop('selectedLayerConfig')).toEqual(selectedLayerConfig);
+    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(selectedLayerConfig.id);
     expect(colorPicker.prop('setIsUpdateDisabled')).toEqual(setIsUpdateDisabledMock);
   });
 
   it('should render ColorPicker with correct props for label border color', () => {
     const colorPicker = wrapper.find({ label: 'Label border color' });
     expect(colorPicker.prop('originColor')).toEqual('#000000');
-    expect(colorPicker.prop('selectedLayerConfig')).toEqual(selectedLayerConfig);
+    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(selectedLayerConfig.id);
     expect(colorPicker.prop('setIsUpdateDisabled')).toEqual(setIsUpdateDisabledMock);
   });
 
@@ -174,7 +191,10 @@ describe('LabelConfig', () => {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelBorderWidth: 3,
+        label: {
+          ...selectedLayerConfig.style.label,
+          borderWidth: 3,
+        },
       },
     });
   });

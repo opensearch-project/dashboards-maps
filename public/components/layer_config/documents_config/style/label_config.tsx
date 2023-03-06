@@ -79,17 +79,17 @@ export const LabelConfig = ({
   const [invalidLabelSize, setInvalidLabelSize] = React.useState(false);
 
   useEffect(() => {
-    if (selectedLayerConfig.style.enableLabel) {
-      if (selectedLayerConfig.style.labelTittleType === 'fixed') {
-        if (selectedLayerConfig.style.labelTittle === '') {
+    if (selectedLayerConfig.style?.label?.enabled) {
+      if (selectedLayerConfig.style.label?.tittleType === 'fixed') {
+        if (selectedLayerConfig.style.label?.tittle === '') {
           setInValidLabelTittle(true);
         } else {
           setInValidLabelTittle(false);
         }
       }
       if (
-        selectedLayerConfig.style.labelSize < DOCUMENTS_MIN_LABEL_SIZE ||
-        selectedLayerConfig.style.labelSize > DOCUMENTS_MAX_LABEL_SIZE
+        selectedLayerConfig.style?.label?.size < DOCUMENTS_MIN_LABEL_SIZE ||
+        selectedLayerConfig.style?.label?.size > DOCUMENTS_MAX_LABEL_SIZE
       ) {
         setInvalidLabelSize(true);
       } else {
@@ -106,12 +106,15 @@ export const LabelConfig = ({
     }
   }, [inValidLabelTittle, invalidLabelSize]);
 
-  const onChangeShowLabel = (e: { target: { checked: any } }) => {
+  const onChangeShowLabel = (e: any) => {
     const newLayerConfig = {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        enableLabel: Boolean(e.target.checked),
+        label: {
+          ...selectedLayerConfig.style.label,
+          enabled: Boolean(e.target.checked),
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -122,18 +125,24 @@ export const LabelConfig = ({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelTittleType: String(e.target.value),
+        label: {
+          ...selectedLayerConfig.style.label,
+          tittleType: String(e.target.value),
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
   };
 
-  const onStaticLabelChange = (e: { target: { value: any } }) => {
+  const onStaticLabelTittleChange = (e: { target: { value: any } }) => {
     const newLayerConfig = {
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelTittle: String(e.target.value),
+        label: {
+          ...selectedLayerConfig.style.label,
+          tittle: String(e.target.value),
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -144,7 +153,10 @@ export const LabelConfig = ({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelSize: Number(e.target.value),
+        label: {
+          ...selectedLayerConfig.style.label,
+          size: Number(e.target.value),
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -155,7 +167,10 @@ export const LabelConfig = ({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelBorderWidth: Number(e.target.value),
+        label: {
+          ...selectedLayerConfig.style.label,
+          borderWidth: Number(e.target.value),
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -166,7 +181,10 @@ export const LabelConfig = ({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelBorderColor: color,
+        label: {
+          ...selectedLayerConfig.style.label,
+          borderColor: color,
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -177,7 +195,10 @@ export const LabelConfig = ({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        labelColor: color,
+        label: {
+          ...selectedLayerConfig.style.label,
+          color,
+        },
       },
     };
     setSelectedLayerConfig(newLayerConfig);
@@ -189,11 +210,11 @@ export const LabelConfig = ({
         <EuiCheckbox
           id="add-label"
           label="Add label"
-          checked={selectedLayerConfig.style?.enableLabel ?? false}
+          checked={selectedLayerConfig.style?.label?.enabled ?? false}
           onChange={onChangeShowLabel}
         />
       </EuiFormRow>
-      {selectedLayerConfig.style?.enableLabel && (
+      {selectedLayerConfig.style?.label?.enabled && (
         <>
           <EuiFormRow
             label={i18n.translate('maps.documents.labelTittle', {
@@ -208,20 +229,20 @@ export const LabelConfig = ({
               <EuiFlexItem grow={false}>
                 <EuiSelect
                   options={labelTittleTypeOptions}
-                  value={selectedLayerConfig.style?.labelTittleType ?? 'fixed'}
+                  value={selectedLayerConfig.style?.label?.tittleType ?? 'fixed'}
                   onChange={onChangeLabelTittleType}
-                  disabled={!selectedLayerConfig.style?.enableLabel}
+                  disabled={!selectedLayerConfig.style?.label?.enabled}
                 />
               </EuiFlexItem>
               <EuiFlexItem grow={true}>
-                {selectedLayerConfig.style?.labelTittleType === 'fixed' && (
+                {selectedLayerConfig.style?.label?.tittleType === 'fixed' && (
                   <EuiFieldText
                     placeholder={i18n.translate('maps.documents.labelTittlePlaceholder', {
                       defaultMessage: 'Add label',
                     })}
-                    value={selectedLayerConfig.style?.labelTittle ?? ''}
-                    onChange={onStaticLabelChange}
-                    disabled={!selectedLayerConfig.style?.enableLabel}
+                    value={selectedLayerConfig.style?.label?.tittle ?? ''}
+                    onChange={onStaticLabelTittleChange}
+                    disabled={!selectedLayerConfig.style?.label?.enabled}
                     isInvalid={inValidLabelTittle}
                   />
                 )}
@@ -241,7 +262,7 @@ export const LabelConfig = ({
               placeholder={i18n.translate('maps.documents.labelSizePlaceholder', {
                 defaultMessage: 'Select size',
               })}
-              value={selectedLayerConfig.style?.labelSize ?? DOCUMENTS_DEFAULT_LABEL_SIZE}
+              value={selectedLayerConfig.style?.label?.size ?? DOCUMENTS_DEFAULT_LABEL_SIZE}
               onChange={OnChangeLabelSize}
               append={<EuiFormLabel>px</EuiFormLabel>}
               fullWidth={true}
@@ -250,20 +271,20 @@ export const LabelConfig = ({
             />
           </EuiFormRow>
           <ColorPicker
-            originColor={selectedLayerConfig.style.labelColor ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
+            originColor={selectedLayerConfig.style.label.color ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
             label={i18n.translate('maps.documents.labelColor', {
               defaultMessage: 'Label color',
             })}
-            selectedLayerConfig={selectedLayerConfig}
+            selectedLayerConfigId={selectedLayerConfig.id}
             setIsUpdateDisabled={setIsUpdateDisabled}
             onColorChange={onChangeLabelColor}
           />
           <ColorPicker
             originColor={
-              selectedLayerConfig.style.labelBorderColor ?? DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR
+              selectedLayerConfig.style?.label?.borderColor ?? DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR
             }
             label={'Label border color'}
-            selectedLayerConfig={selectedLayerConfig}
+            selectedLayerConfigId={selectedLayerConfig.id}
             setIsUpdateDisabled={setIsUpdateDisabled}
             onColorChange={onChangeLabelBorderColor}
           />
@@ -275,10 +296,10 @@ export const LabelConfig = ({
             <EuiSelect
               options={labelBorderWidthOptions}
               value={
-                selectedLayerConfig.style?.labelBorderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH
+                selectedLayerConfig.style?.label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH
               }
               onChange={onChangeLabelBorderWidth}
-              disabled={!selectedLayerConfig.style?.enableLabel}
+              disabled={!selectedLayerConfig.style?.label?.enabled}
               fullWidth={true}
             />
           </EuiFormRow>

@@ -5,12 +5,11 @@
 
 import React, { memo, useEffect } from 'react';
 import { EuiColorPicker, EuiFormRow, useColorPickerState } from '@elastic/eui';
-import { DocumentLayerSpecification } from '../../../../model/mapLayerType';
 
 export interface ColorPickerProps {
   originColor: string;
   label: string;
-  selectedLayerConfig: DocumentLayerSpecification;
+  selectedLayerConfigId: string;
   setIsUpdateDisabled: Function;
   onColorChange: (color: string) => void;
 }
@@ -19,7 +18,7 @@ export const ColorPicker = memo(
   ({
     originColor,
     label,
-    selectedLayerConfig,
+    selectedLayerConfigId,
     setIsUpdateDisabled,
     onColorChange,
   }: ColorPickerProps) => {
@@ -36,7 +35,7 @@ export const ColorPicker = memo(
     // It's used to update the style color when switch layer config between different document layers
     useEffect(() => {
       setColor(originColor, !!colorErrors ? { isValid: false } : { isValid: true });
-    }, [selectedLayerConfig.id]);
+    }, [selectedLayerConfigId]);
 
     return (
       <EuiFormRow label={label} fullWidth={true} isInvalid={!!colorErrors} error={colorErrors}>

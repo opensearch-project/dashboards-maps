@@ -241,18 +241,21 @@ export interface SymbolLayerSpecification extends Layer {
 export const createSymbolLayerSpecification = (
   layerConfig: DocumentLayerSpecification
 ): SymbolLayerSpecification => {
+  if (!layerConfig.style.label) {
+    throw new Error('Label style is not defined');
+  }
   return {
     sourceId: layerConfig.id,
     visibility: layerConfig.visibility,
     textFont: ['Noto Sans Regular'],
-    textField: layerConfig.style.labelTittle,
-    textSize: layerConfig.style.labelSize,
-    textColor: layerConfig.style.labelColor,
+    textField: layerConfig.style.label.tittle,
+    textSize: layerConfig.style.label.size,
+    textColor: layerConfig.style.label.color,
     minZoom: layerConfig.zoomRange[0],
     maxZoom: layerConfig.zoomRange[1],
     opacity: layerConfig.opacity,
-    symbolBorderWidth: layerConfig.style.labelBorderWidth,
-    symbolBorderColor: layerConfig.style.labelBorderColor,
+    symbolBorderWidth: layerConfig.style.label.borderWidth,
+    symbolBorderColor: layerConfig.style.label.borderColor,
   };
 };
 

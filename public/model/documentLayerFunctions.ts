@@ -233,7 +233,7 @@ const renderLabelLayer = (
 ) => {
   const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
   // If the label set to enabled, add the label layer
-  if (layerConfig.style?.enableLabel) {
+  if (layerConfig.style?.label?.enabled) {
     const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
     if (hasLabelLayer) {
       updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
