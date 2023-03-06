@@ -42,7 +42,7 @@ const updateLayerConfig = (layerConfig: OSMLayerSpecification, maplibreRef: Mapl
   handleStyleLayers(layerConfig, maplibreRef);
 };
 
-const localizationMapLayer = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) => {
+const setLanguage = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) => {
   // if a layer contains label, we will set its language.
   if (styleLayer.layout && (styleLayer as SymbolLayerSpecification).layout?.['text-field']) {
     const language = getMapLanguage();
@@ -73,7 +73,7 @@ const addNewLayer = (
           styleLayer.source = layerConfig.id;
         }
         maplibreRef.current?.addLayer(styleLayer, beforeMbLayerId);
-        localizationMapLayer(maplibreRef, styleLayer);
+        setLanguage(maplibreRef, styleLayer);
         maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
         maplibreRef.current?.setLayerZoomRange(
           styleLayer.id,
