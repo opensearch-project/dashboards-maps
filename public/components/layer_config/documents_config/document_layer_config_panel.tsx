@@ -8,7 +8,7 @@ import { EuiSpacer, EuiTabbedContent } from '@elastic/eui';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 import { LayerBasicSettings } from '../layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
-import { DocumentLayerStyle } from './document_layer_style';
+import { DocumentLayerStyle } from './style/document_layer_style';
 
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;

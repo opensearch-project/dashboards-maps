@@ -52,6 +52,15 @@ export type DocumentLayerSpecification = {
     borderColor: string;
     borderThickness: number;
     markerSize: number;
+    label?: {
+      enabled: boolean;
+      tittle: string;
+      tittleType: 'fixed' | 'by_field';
+      color: string;
+      size: number;
+      borderColor: string;
+      borderWidth: number;
+    };
   };
 };
 
