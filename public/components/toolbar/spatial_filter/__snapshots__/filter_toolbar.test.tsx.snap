@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders spatial filter before drawing 1`] = `
+<EuiFlexGroup
+  alignItems="flexStart"
+  direction="column"
+  gutterSize="s"
+  responsive={false}
+>
+  <EuiFlexItem>
+    <FilterByPolygon
+      isDrawActive={false}
+      setDrawFilterProperties={[MockFunction]}
+    />
+  </EuiFlexItem>
+</EuiFlexGroup>
+`;
+
+exports[`renders spatial filter while drawing 1`] = `
+<EuiFlexGroup
+  gutterSize="s"
+>
+  <EuiFlexItem
+    grow={false}
+  >
+    <EuiButton
+      fill={true}
+      onClick={[Function]}
+      size="s"
+    >
+      Cancel
+    </EuiButton>
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <FilterByPolygon
+      isDrawActive={true}
+      setDrawFilterProperties={[MockFunction]}
+    />
+  </EuiFlexItem>
+</EuiFlexGroup>
+`;

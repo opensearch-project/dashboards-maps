@@ -1,0 +1,21 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.spatialFilterToolbar__shape{
+  position: relative;
+
+  .euiButtonIcon {
+    border-color:rgba(0,0,0,0.9);
+    color:rgba(255,255,255,0.5);
+    width:30px;
+    height:30px;
+  }
+}
+.spatialFilterGroup__popoverPanel{
+  max-width: 300px;
+  border: hidden;
+}
+
+
