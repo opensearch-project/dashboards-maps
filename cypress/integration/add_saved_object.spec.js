@@ -27,7 +27,7 @@ describe('Add flights dataset saved object', () => {
 
   it('check if maps saved object of flights dataset can be found and open', () => {
     cy.visit(`${BASE_PATH}/app/maps-dashboards`);
-    cy.contains('[Flights] Maps Cancelled Flights Destination Location').click();
-    cy.get('[data-test-subj="layerControlPanel"]').should('contain', 'Cancelled flights');
+    cy.contains('[Flights] Flights Status on Maps Destination Location').click();
+    cy.get('[data-test-subj="layerControlPanel"]').should('contain', 'Flights On Time');
   });
 });

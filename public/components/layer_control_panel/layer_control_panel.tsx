@@ -8,7 +8,6 @@ import {
   DropResult,
   EuiButtonEmpty,
   EuiButtonIcon,
-  EuiConfirmModal,
   EuiDragDropContext,
   EuiDraggable,
   EuiDroppable,
@@ -25,27 +24,19 @@ import { I18nProvider } from '@osd/i18n/react';
 import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
+import { i18n } from '@osd/i18n';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
-import {
-  LAYER_ICON_TYPE_MAP,
-  LAYER_PANEL_HIDE_LAYER_ICON,
-  LAYER_PANEL_SHOW_LAYER_ICON,
-  LAYER_VISIBILITY,
-} from '../../../common';
-import { referenceLayerTypeLookup } from '../../model/layersFunctions';
+import { LAYER_ICON_TYPE_MAP } from '../../../common';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
-import {
-  handleDataLayerRender,
-  handleReferenceLayerRender,
-} from '../../model/layerRenderController';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import { moveLayers, removeLayers, updateLayerVisibility } from '../../model/map/layer_operations';
+import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
+import { HideLayer } from './hide_layer_button';
 
 interface MaplibreRef {
   current: Maplibre | null;
@@ -60,6 +51,10 @@ interface Props {
   mapState: MapState;
   zoom: number;
   mapConfig: ConfigSchema;
+  isReadOnlyMode: boolean;
+  selectedLayerConfig: MapLayerSpecification | undefined;
+  setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const LayerControlPanel = memo(
@@ -67,25 +62,17 @@ export const LayerControlPanel = memo(
     maplibreRef,
     setLayers,
     layers,
-    layersIndexPatterns,
-    setLayersIndexPatterns,
-    mapState,
     zoom,
     mapConfig,
+    isReadOnlyMode,
+    selectedLayerConfig,
+    setSelectedLayerConfig,
+    setIsUpdatingLayerRender,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
-    const {
-      data: { indexPatterns },
-      notifications,
-    } = services;
 
     const [isLayerConfigVisible, setIsLayerConfigVisible] = useState(false);
     const [isLayerControlVisible, setIsLayerControlVisible] = useState(true);
-    const [selectedLayerConfig, setSelectedLayerConfig] = useState<
-      MapLayerSpecification | undefined
-    >();
-    const [initialLayersLoaded, setInitialLayersLoaded] = useState(false);
-    const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(false);
     const [isNewLayer, setIsNewLayer] = useState(false);
     const [isDeleteLayerModalVisible, setIsDeleteLayerModalVisible] = useState(false);
     const [originLayerConfig, setOriginLayerConfig] = useState<MapLayerSpecification | null>(null);
@@ -93,39 +80,6 @@ export const LayerControlPanel = memo(
       MapLayerSpecification | undefined
     >();
     const [visibleLayers, setVisibleLayers] = useState<MapLayerSpecification[]>([]);
-
-    useEffect(() => {
-      if (!isUpdatingLayerRender && initialLayersLoaded) {
-        return;
-      }
-      if (layers.length <= 0) {
-        return;
-      }
-
-      if (initialLayersLoaded) {
-        if (!selectedLayerConfig) {
-          return;
-        }
-        if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
-          handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
-        } else {
-          updateIndexPatterns();
-          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
-        }
-        setSelectedLayerConfig(undefined);
-      } else {
-        layers.forEach((layer) => {
-          const beforeLayerId = getMapBeforeLayerId(layer);
-          if (referenceLayerTypeLookup[layer.type]) {
-            handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
-          } else {
-            handleDataLayerRender(layer, mapState, services, maplibreRef, beforeLayerId);
-          }
-        });
-        setInitialLayersLoaded(true);
-      }
-      setIsUpdatingLayerRender(false);
-    }, [layers]);
 
     useEffect(() => {
       const getCurrentVisibleLayers = () => {
@@ -136,16 +90,6 @@ export const LayerControlPanel = memo(
       };
       setVisibleLayers(getCurrentVisibleLayers());
     }, [layers, zoom]);
-
-    // Get layer id from layers that is above the selected layer
-    function getMapBeforeLayerId(selectedLayer: MapLayerSpecification): string | undefined {
-      const selectedLayerIndex = layers.findIndex((layer) => layer.id === selectedLayer.id);
-      const beforeLayers = layers.slice(selectedLayerIndex + 1);
-      if (beforeLayers.length === 0) {
-        return undefined;
-      }
-      return beforeLayers[0]?.id;
-    }
 
     const closeLayerConfigPanel = () => {
       setIsLayerConfigVisible(false);
@@ -177,7 +121,15 @@ export const LayerControlPanel = memo(
         };
       }
       setLayers(layersClone);
-      setIsUpdatingLayerRender(true);
+    };
+
+    const updateLayerVisibility = (layerId: string, visibility: string) => {
+      const layersClone = [...layers];
+      const index = layersClone.findIndex((layer) => layer.id === layerId);
+      if (index > -1) {
+        layersClone[index].visibility = String(visibility);
+        setLayers(layersClone);
+      }
     };
 
     const removeLayer = (layerId: string) => {
@@ -198,7 +150,7 @@ export const LayerControlPanel = memo(
 
     const onClickLayerName = (layer: MapLayerSpecification) => {
       if (hasUnsavedChanges()) {
-        notifications.toasts.addWarning(
+        services.toastNotifications.addWarning(
           `You have unsaved changes for ${selectedLayerConfig?.name}`
         );
       } else {
@@ -210,11 +162,6 @@ export const LayerControlPanel = memo(
     const isLayerExists = (name: string) => {
       return layers.findIndex((layer) => layer.name === name) > -1;
     };
-
-    const [layerVisibility, setLayerVisibility] = useState(new Map<string, boolean>([]));
-    layers.forEach((layer) => {
-      layerVisibility.set(layer.id, layer.visibility === LAYER_VISIBILITY.VISIBLE);
-    });
 
     const beforeMaplibreLayerID = (source: number, destination: number) => {
       if (source > destination) {
@@ -260,36 +207,6 @@ export const LayerControlPanel = memo(
       return layersClone.reverse();
     };
 
-    const updateIndexPatterns = async () => {
-      if (!selectedLayerConfig) {
-        return;
-      }
-      if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
-        return;
-      }
-      const findIndexPattern = layersIndexPatterns.find(
-        // @ts-ignore
-        (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
-      );
-      if (!findIndexPattern) {
-        // @ts-ignore
-        const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
-        const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
-        setLayersIndexPatterns(cloneLayersIndexPatterns);
-      }
-    };
-
-    const onLayerVisibilityChange = (layer: MapLayerSpecification) => {
-      if (layer.visibility === LAYER_VISIBILITY.VISIBLE) {
-        layer.visibility = LAYER_VISIBILITY.NONE;
-        setLayerVisibility(new Map(layerVisibility.set(layer.id, false)));
-      } else {
-        layer.visibility = LAYER_VISIBILITY.VISIBLE;
-        setLayerVisibility(new Map(layerVisibility.set(layer.id, true)));
-      }
-      updateLayerVisibility(maplibreRef.current!, layer.id, layer.visibility);
-    };
-
     const onDeleteLayerIconClick = (layer: MapLayerSpecification) => {
       setSelectedDeleteLayer(layer);
       setIsDeleteLayerModalVisible(true);
@@ -310,19 +227,34 @@ export const LayerControlPanel = memo(
     };
 
     const getLayerTooltipContent = (layer: MapLayerSpecification) => {
-      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
-        return `Layer is not visible outside of zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
-      } else {
-        return `Layer is visible within zoom range ${layer.zoomRange[0]} - ${layer.zoomRange[1]}`;
+      if (layer.visibility !== 'visible') {
+        return i18n.translate('maps.layerControl.layerIsHidden', {
+          defaultMessage: 'Layer is hidden',
+        });
       }
+
+      if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
+        return i18n.translate('maps.layerControl.layerNotVisibleZoom', {
+          defaultMessage: `Layer is hidden outside of zoom range ${layer.zoomRange[0]}–${layer.zoomRange[1]}`,
+        });
+      }
+      return '';
     };
 
-    const layerIsVisible = (layer: MapLayerSpecification) => {
+    const layerIsVisible = (layer: MapLayerSpecification): boolean => {
+      if (layer.visibility !== 'visible') {
+        return false;
+      }
       return visibleLayers.includes(layer);
     };
 
+    if (isReadOnlyMode) {
+      return null;
+    }
+
+    let content;
     if (isLayerControlVisible) {
-      return (
+      content = (
         <I18nProvider>
           <EuiPanel
             paddingSize="none"
@@ -389,16 +321,11 @@ export const LayerControlPanel = memo(
                                 />
                               </EuiFlexItem>
                               <EuiFlexItem>
-                                <EuiToolTip
-                                  position="top"
-                                  title={layerIsVisible(layer) ? '' : layer.name}
-                                  content={
-                                    layerIsVisible(layer) ? '' : getLayerTooltipContent(layer)
-                                  }
-                                >
+                                <EuiToolTip position="top" content={getLayerTooltipContent(layer)}>
                                   <EuiListGroupItem
                                     key={layer.id}
                                     label={layer.name}
+                                    color={layerIsVisible(layer) ? 'text' : 'subdued'}
                                     aria-label="layer in the map layers list"
                                     onClick={() => onClickLayerName(layer)}
                                     showToolTip={false}
@@ -406,25 +333,11 @@ export const LayerControlPanel = memo(
                                 </EuiToolTip>
                               </EuiFlexItem>
                               <EuiFlexGroup justifyContent="flexEnd" gutterSize="none">
-                                <EuiFlexItem
-                                  grow={false}
-                                  className="layerControlPanel__layerFunctionButton"
-                                >
-                                  <EuiButtonIcon
-                                    iconType={
-                                      layerVisibility.get(layer.id)
-                                        ? LAYER_PANEL_HIDE_LAYER_ICON
-                                        : LAYER_PANEL_SHOW_LAYER_ICON
-                                    }
-                                    size="s"
-                                    onClick={() => onLayerVisibilityChange(layer)}
-                                    aria-label="Hide or show layer"
-                                    color="text"
-                                    title={
-                                      layerVisibility.get(layer.id) ? 'Hide layer' : 'Show layer'
-                                    }
-                                  />
-                                </EuiFlexItem>
+                                <HideLayer
+                                  layer={layer}
+                                  maplibreRef={maplibreRef}
+                                  updateLayerVisibility={updateLayerVisibility}
+                                />
                                 <EuiFlexItem
                                   grow={false}
                                   className="layerControlPanel__layerFunctionButton"
@@ -474,6 +387,7 @@ export const LayerControlPanel = memo(
                   isLayerExists={isLayerExists}
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
+                  setIsUpdatingLayerRender={setIsUpdatingLayerRender}
                 />
               )}
               <AddLayerPanel
@@ -497,19 +411,21 @@ export const LayerControlPanel = memo(
           </EuiPanel>
         </I18nProvider>
       );
+    } else {
+      content = (
+        <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
+          <EuiButtonIcon
+            className="layerControlPanel__visButton"
+            size="s"
+            iconType="menuRight"
+            onClick={() => setIsLayerControlVisible((visible) => !visible)}
+            aria-label="Show layer control"
+            title="Expand layers panel"
+          />
+        </EuiFlexItem>
+      );
     }
 
-    return (
-      <EuiFlexItem grow={false} className="layerControlPanel layerControlPanel--hide">
-        <EuiButtonIcon
-          className="layerControlPanel__visButton"
-          size="s"
-          iconType="menuRight"
-          onClick={() => setIsLayerControlVisible((visible) => !visible)}
-          aria-label="Show layer control"
-          title="Expand layers panel"
-        />
-      </EuiFlexItem>
-    );
+    return <div className="layerControlPanel-container">{content}</div>;
   }
 );

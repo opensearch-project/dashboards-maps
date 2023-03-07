@@ -12,12 +12,15 @@ import {
   addCircleLayer,
   addLineLayer,
   addPolygonLayer,
+  addSymbolLayer,
   hasLayer,
-  removeLayers,
+  hasSymbolLayer,
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
-  updateLayerVisibility,
+  updateSymbolLayer,
+  removeSymbolLayer,
+  createSymbolLayerSpecification,
 } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -36,16 +39,12 @@ const openSearchGeoJSONMap = new Map<string, string>([
 
 const getFieldValue = (data: any, name: string) => {
   if (!name) {
-    return null;
+    return undefined;
   }
   const keys = name.split('.');
   return keys.reduce((pre, cur) => {
     return pre?.[cur];
   }, data);
-};
-
-const getCurrentStyleLayers = (maplibreRef: MaplibreRef) => {
-  return maplibreRef.current?.getStyle().layers || [];
 };
 
 const getGeoFieldType = (layerConfig: DocumentLayerSpecification) => {
@@ -86,8 +85,8 @@ const buildProperties = (document: any, fields: string[]) => {
     return property;
   }
   fields.forEach((field) => {
-    const fieldValue = getFieldValue(document._source, field);
-    if (fieldValue) {
+    const fieldValue: string | undefined = getFieldValue(document._source, field);
+    if (fieldValue !== undefined) {
       property[field] = fieldValue;
     }
   });
@@ -226,6 +225,43 @@ const updateLayer = (
   }
 };
 
+// The function to render label for document layer
+const renderLabelLayer = (
+  layerConfig: DocumentLayerSpecification,
+  maplibreRef: MaplibreRef,
+  beforeLayerId: string | undefined
+) => {
+  const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
+  // If the label set to enabled, add the label layer
+  if (layerConfig.style?.label?.enabled) {
+    const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
+    if (hasLabelLayer) {
+      updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
+    } else {
+      addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
+    }
+  } else {
+    // If the label set to disabled, remove the label layer if it exists
+    if (hasLabelLayer) {
+      removeSymbolLayer(maplibreRef.current!, layerConfig.id);
+    }
+  }
+};
+
+// The function to render point, line and shape layer for document layer
+const renderMarkerLayer = (
+  maplibreRef: MaplibreRef,
+  layerConfig: DocumentLayerSpecification,
+  data: any,
+  beforeLayerId: string | undefined
+) => {
+  if (hasLayer(maplibreRef.current!, layerConfig.id)) {
+    updateLayer(layerConfig, maplibreRef, data);
+  } else {
+    addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
+  }
+};
+
 export const DocumentLayerFunctions = {
   render: (
     maplibreRef: MaplibreRef,
@@ -233,8 +269,7 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    return hasLayer(maplibreRef.current!, layerConfig.id)
-      ? updateLayer(layerConfig, maplibreRef, data)
-      : addNewLayer(layerConfig, maplibreRef, data, beforeLayerId);
+    renderMarkerLayer(maplibreRef, layerConfig, data, beforeLayerId);
+    renderLabelLayer(layerConfig, maplibreRef, beforeLayerId);
   },
 };

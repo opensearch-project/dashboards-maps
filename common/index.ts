@@ -9,7 +9,7 @@ import {
   MAX_FILE_PAYLOAD_SIZE,
   MAX_FILE_PAYLOAD_SIZE_IN_MB,
   PLUGIN_ID,
-  PLUGIN_NAVIGATION_BAR_ID,
+  MAPS_APP_ID,
   PLUGIN_NAME,
 } from './constants/shared';
 
@@ -19,20 +19,38 @@ export {
   MAX_FILE_PAYLOAD_SIZE,
   MAX_FILE_PAYLOAD_SIZE_IN_MB,
   PLUGIN_ID,
-  PLUGIN_NAVIGATION_BAR_ID,
+  MAPS_APP_ID,
   PLUGIN_NAME,
 };
 
 export const DOCUMENTS_DEFAULT_MARKER_SIZE = 5;
+export const DOCUMENTS_MIN_MARKER_SIZE = 0;
+export const DOCUMENTS_MAX_MARKER_SIZE = 100;
+export const DOCUMENTS_DEFAULT_MARKER_BORDER_THICKNESS = 1;
+export const DOCUMENTS_MIN_MARKER_BORDER_THICKNESS = 0;
+export const DOCUMENTS_MAX_MARKER_BORDER_THICKNESS = 100;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 1000;
 export const DOCUMENTS_DEFAULT_SHOW_TOOLTIPS: boolean = false;
+export const DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER: boolean = true;
 export const DOCUMENTS_DEFAULT_TOOLTIPS: string[] = [];
+export const DOCUMENTS_DEFAULT_LABEL_ENABLES: boolean = false;
+export const DOCUMENTS_DEFAULT_LABEL_VALUE: string = '';
+export const DOCUMENTS_DEFAULT_LABEL_TYPE: string = 'fixed';
+export const DOCUMENTS_DEFAULT_LABEL_SIZE: number = 20;
+export const DOCUMENTS_MIN_LABEL_SIZE: number = 1;
+export const DOCUMENTS_MAX_LABEL_SIZE: number = 100;
+export const DOCUMENTS_DEFAULT_LABEL_COLOR: string = '#000000';
+export const DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR: string = '#FFFFFF';
+export const DOCUMENTS_DEFAULT_LABEL_BORDER_WIDTH: number = 20;
+export const DOCUMENTS_NONE_LABEL_BORDER_WIDTH: number = 0;
+export const DOCUMENTS_SMALL_LABEL_BORDER_WIDTH: number = 2;
+export const DOCUMENTS_MEDIUM_LABEL_BORDER_WIDTH: number = 5;
+export const DOCUMENTS_LARGE_LABEL_BORDER_WIDTH: number = 10;
 export const LAYER_PANEL_HIDE_LAYER_ICON = 'eyeClosed';
 export const LAYER_PANEL_SHOW_LAYER_ICON = 'eye';
 export const MAP_DATA_LAYER_DEFAULT_OPACITY = 70;
 export const MAP_DEFAULT_MAX_ZOOM = 22;
 export const MAP_DEFAULT_MIN_ZOOM = 0;
-export const MAP_LAYER_DEFAULT_BORDER_THICKNESS = 1;
 export const MAP_LAYER_DEFAULT_MAX_OPACITY = 100;
 export const MAP_LAYER_DEFAULT_MIN_OPACITY = 0;
 export const MAP_LAYER_DEFAULT_NAME = 'Default map';
@@ -44,6 +62,10 @@ export const MAX_LAYER_NAME_LIMIT = 35;
 export const MAX_LONGITUDE = 180;
 export const MIN_LONGITUDE = -180;
 export const NEW_MAP_LAYER_DEFAULT_PREFIX = 'New layer';
+export const MAP_SAVED_OBJECT_TYPE = 'map';
+// TODO: Replace with actual app icon
+export const MAPS_APP_ICON = 'gisApp';
+export const MAPS_VISUALIZATION_DESCRIPTION = 'Create map visualization with multiple layers';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
@@ -124,3 +146,7 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
 //refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages
 export const OSD_LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'ko', 'zh']; // all these codes are also supported in vector tiles map
 export const FALLBACK_LANGUAGE = 'en';
+
+export enum TOOLTIP_STATE {
+  DISPLAY_FEATURES = 'DISPLAY_FEATURES',
+}

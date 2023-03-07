@@ -8,7 +8,7 @@ import { EuiSpacer, EuiTabbedContent } from '@elastic/eui';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 import { LayerBasicSettings } from '../layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
-import { DocumentLayerStyle } from './document_layer_style';
+import { DocumentLayerStyle } from './style/document_layer_style';
 
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
@@ -55,7 +55,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <DocumentLayerSource {...newProps} />
         </Fragment>
       ),
-      testSubj: 'dataTab',
+      testsubj: 'dataTab',
     },
     {
       id: 'style--id',
@@ -66,7 +66,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <DocumentLayerStyle {...newProps} />
         </Fragment>
       ),
-      testSubj: 'styleTab',
+      testsubj: 'styleTab',
     },
     {
       id: 'settings--id',
@@ -77,7 +77,7 @@ export const DocumentLayerConfigPanel = (props: Props) => {
           <LayerBasicSettings {...newProps} />
         </Fragment>
       ),
-      testSubj: 'settingsTab',
+      testsubj: 'settingsTab',
     },
   ];
   return <EuiTabbedContent tabs={tabs} initialSelectedTab={tabs[0]} />;

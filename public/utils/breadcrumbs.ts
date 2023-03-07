@@ -4,7 +4,7 @@
  */
 
 import { i18n } from '@osd/i18n';
-import {PLUGIN_NAVIGATION_BAR_ID} from '../../common';
+import { MAPS_APP_ID } from '../../common';
 
 export function getMapsLandingBreadcrumbs(navigateToApp: any) {
   return [
@@ -12,7 +12,7 @@ export function getMapsLandingBreadcrumbs(navigateToApp: any) {
       text: i18n.translate('maps.listing.breadcrumb', {
         defaultMessage: 'Maps',
       }),
-      onClick: () => navigateToApp(PLUGIN_NAVIGATION_BAR_ID),
+      onClick: () => navigateToApp(MAPS_APP_ID),
     },
   ];
 }

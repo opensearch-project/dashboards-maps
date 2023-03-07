@@ -7,15 +7,14 @@ import React from 'react';
 import { i18n } from '@osd/i18n';
 import { TopNavMenuData } from '../../../../../src/plugins/navigation/public';
 import {
-  OnSaveProps,
   SavedObjectSaveModalOrigin,
   showSaveModal,
   checkForDuplicateTitle,
+  SavedObjectSaveOpts,
 } from '../../../../../src/plugins/saved_objects/public';
 import { MapServices } from '../../types';
 import { MapState } from '../../model/mapState';
-
-const SAVED_OBJECT_TYPE = 'map';
+import { MAP_SAVED_OBJECT_TYPE } from '../../../common';
 
 interface GetTopNavConfigParams {
   mapIdFromUrl: string;
@@ -25,16 +24,11 @@ interface GetTopNavConfigParams {
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
   mapState: MapState;
+  originatingApp?: string;
 }
 
 export const getTopNavConfig = (
-  {
-    notifications: { toasts },
-    i18n: { Context: I18nContext },
-    savedObjects: { client: savedObjectsClient },
-    history,
-    overlays,
-  }: MapServices,
+  services: MapServices,
   {
     mapIdFromUrl,
     layers,
@@ -43,8 +37,15 @@ export const getTopNavConfig = (
     setTitle,
     setDescription,
     mapState,
+    originatingApp,
   }: GetTopNavConfigParams
 ) => {
+  const {
+    embeddable,
+    i18n: { Context: I18nContext },
+    scopedHistory,
+  } = services;
+  const stateTransfer = embeddable.getStateTransfer(scopedHistory);
   const topNavConfig: TopNavMenuData[] = [
     {
       iconType: 'save',
@@ -53,65 +54,8 @@ export const getTopNavConfig = (
       label: i18n.translate('maps.topNav.saveMapButtonLabel', {
         defaultMessage: `Save`,
       }),
-      run: (_anchorElement) => {
-        const onModalSave = async ({ newTitle, newDescription, onTitleDuplicate }: OnSaveProps) => {
-          let newlySavedMap;
-          const saveAttributes = {
-            title: newTitle,
-            description: newDescription,
-            layerList: JSON.stringify(layers),
-            mapState: JSON.stringify(mapState),
-          };
-          try {
-            await checkForDuplicateTitle(
-              {
-                title: newTitle,
-                lastSavedTitle: title,
-                copyOnSave: false,
-                getDisplayName: () => SAVED_OBJECT_TYPE,
-                getOpenSearchType: () => SAVED_OBJECT_TYPE,
-              },
-              false,
-              onTitleDuplicate,
-              {
-                savedObjectsClient,
-                overlays,
-              }
-            );
-          } catch (_error) {
-            return {};
-          }
-          if (mapIdFromUrl) {
-            // edit existing map
-            newlySavedMap = await savedObjectsClient.update(
-              SAVED_OBJECT_TYPE,
-              mapIdFromUrl,
-              saveAttributes
-            );
-          } else {
-            // save new map
-            newlySavedMap = await savedObjectsClient.create(SAVED_OBJECT_TYPE, saveAttributes);
-          }
-          const id = newlySavedMap.id;
-          if (id) {
-            history.push({
-              ...history.location,
-              pathname: `${id}`,
-            });
-            setTitle(newTitle);
-            setDescription(newDescription);
-            toasts.addSuccess({
-              title: i18n.translate('map.topNavMenu.saveMap.successNotificationText', {
-                defaultMessage: `Saved ${newTitle}`,
-                values: {
-                  visTitle: newTitle,
-                },
-              }),
-            });
-          }
-          return { id };
-        };
-
+      testId: 'mapSaveButton',
+      run: (_anchorElement: any) => {
         const documentInfo = {
           title,
           description,
@@ -120,9 +64,20 @@ export const getTopNavConfig = (
         const saveModal = (
           <SavedObjectSaveModalOrigin
             documentInfo={documentInfo}
-            onSave={onModalSave}
+            onSave={onGetSave(
+              title,
+              originatingApp,
+              mapIdFromUrl,
+              services,
+              layers,
+              mapState,
+              setTitle,
+              setDescription
+            )}
             objectType={'map'}
             onClose={() => {}}
+            originatingApp={originatingApp}
+            getAppNameFromId={stateTransfer.getAppNameFromId}
           />
         );
         showSaveModal(saveModal, I18nContext);
@@ -130,4 +85,122 @@ export const getTopNavConfig = (
     },
   ];
   return topNavConfig;
+};
+
+export const onGetSave = (
+  title: string,
+  originatingApp: string | undefined,
+  mapIdFromUrl: string,
+  services: MapServices,
+  layers: any,
+  mapState: MapState,
+  setTitle: (title: string) => void,
+  setDescription: (description: string) => void
+) => {
+  const onSave = async ({
+    newTitle,
+    newDescription,
+    onTitleDuplicate,
+    returnToOrigin,
+  }: SavedObjectSaveOpts & {
+    newTitle: string;
+    newCopyOnSave: boolean;
+    returnToOrigin: boolean;
+    newDescription?: string;
+  }) => {
+    const {
+      savedObjects: { client: savedObjectsClient },
+      history,
+      toastNotifications,
+      overlays,
+      embeddable,
+      application,
+    } = services;
+    const stateTransfer = embeddable.getStateTransfer();
+    let newlySavedMap;
+    const saveAttributes = {
+      title: newTitle,
+      description: newDescription,
+      layerList: JSON.stringify(layers),
+      mapState: JSON.stringify(mapState),
+    };
+    try {
+      await checkForDuplicateTitle(
+        {
+          title: newTitle,
+          lastSavedTitle: title,
+          copyOnSave: false,
+          getDisplayName: () => MAP_SAVED_OBJECT_TYPE,
+          getOpenSearchType: () => MAP_SAVED_OBJECT_TYPE,
+        },
+        false,
+        onTitleDuplicate,
+        {
+          savedObjectsClient,
+          overlays,
+        }
+      );
+    } catch (_error) {
+      return {};
+    }
+    try {
+      if (mapIdFromUrl) {
+        // edit existing map
+        newlySavedMap = await savedObjectsClient.update(
+          MAP_SAVED_OBJECT_TYPE,
+          mapIdFromUrl,
+          saveAttributes
+        );
+      } else {
+        // save new map
+        newlySavedMap = await savedObjectsClient.create(MAP_SAVED_OBJECT_TYPE, saveAttributes);
+      }
+      const id = newlySavedMap.id;
+      if (id) {
+        history.push({
+          ...history.location,
+          pathname: `${id}`,
+        });
+        setTitle(newTitle);
+        if (newDescription) {
+          setDescription(newDescription);
+        }
+        toastNotifications.addSuccess({
+          title: i18n.translate('map.topNavMenu.saveMap.successNotificationText', {
+            defaultMessage: `Saved ${newTitle}`,
+            values: {
+              visTitle: newTitle,
+            },
+          }),
+        });
+        if (originatingApp && returnToOrigin) {
+          // create or edit map directly from another app, such as `dashboard`
+          if (!mapIdFromUrl && stateTransfer) {
+            // create new embeddable to transfer to originatingApp
+            await stateTransfer.navigateToWithEmbeddablePackage(originatingApp, {
+              state: { type: MAP_SAVED_OBJECT_TYPE, input: { savedObjectId: id } },
+            });
+            return { id };
+          } else {
+            // update an existing visBuilder from another app
+            application.navigateToApp(originatingApp);
+          }
+        }
+      }
+      return { id };
+    } catch (error: any) {
+      toastNotifications.addDanger({
+        title: i18n.translate('maps.topNavMenu.saveVisualization.failureNotificationText', {
+          defaultMessage: `Error on saving ${newTitle}`,
+          values: {
+            visTitle: newTitle,
+          },
+        }),
+        text: error.message,
+        'data-test-subj': 'saveMapError',
+      });
+      return { error };
+    }
+  };
+  return onSave;
 };

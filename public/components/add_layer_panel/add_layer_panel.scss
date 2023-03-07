@@ -8,5 +8,18 @@
 }
 
 .addLayerDialog__description {
-  width: 272px;
+  width: 16 * $euiSizeM;
+}
+
+.addLayer__types {
+  width: 5 * $euiSizeL;
+  height: 5 * $euiSizeL;
+}
+
+.addLayer__modalBody {
+  padding: 0;
+
+  .addLayer__selection {
+    width: 10 * $euiSizeL
+  }
 }

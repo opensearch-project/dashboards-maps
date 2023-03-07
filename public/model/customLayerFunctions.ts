@@ -65,13 +65,16 @@ const addNewLayer = (
         id: layerConfig.id,
         type: 'raster',
         source: layerConfig.id,
+        paint: {
+          'raster-opacity': layerConfig.opacity / 100,
+        },
+        layout: {
+          visibility: layerConfig.visibility === 'visible' ? 'visible' : 'none',
+        },
+        minzoom: layerConfig.zoomRange[0],
+        maxzoom: layerConfig.zoomRange[1],
       },
       beforeMbLayerId
-    );
-    maplibreInstance.setLayerZoomRange(
-      layerConfig.id,
-      layerConfig.zoomRange[0],
-      layerConfig.zoomRange[1]
     );
   }
 };

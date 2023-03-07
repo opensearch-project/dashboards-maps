@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { SimpleSavedObject } from 'opensearch-dashboards/public';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SimpleSavedObject } from '../../../../../src/core/public';
 import { IndexPattern, Query, TimeRange } from '../../../../../src/plugins/data/public';
-import { DASHBOARDS_MAPS_LAYER_TYPE, PLUGIN_NAVIGATION_BAR_ID } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, MAPS_APP_ID } from '../../../common';
 import { getTopNavConfig } from './get_top_nav_config';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
@@ -24,16 +24,23 @@ interface MapTopNavMenuProps {
   maplibreRef: any;
   mapState: MapState;
   setMapState: (mapState: MapState) => void;
+  isReadOnlyMode: boolean;
+  timeRange?: TimeRange;
+  originatingApp?: string;
+  setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
 
 export const MapTopNavMenu = ({
   mapIdFromUrl,
   savedMapObject,
+  isReadOnlyMode,
+  timeRange,
   layers,
   layersIndexPatterns,
   maplibreRef,
   mapState,
   setMapState,
+  setIsUpdatingLayerRender,
 }: MapTopNavMenuProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -43,6 +50,8 @@ export const MapTopNavMenu = ({
     },
     chrome,
     application: { navigateToApp },
+    embeddable,
+    scopedHistory,
   } = services;
 
   const [title, setTitle] = useState<string>('');
@@ -52,6 +61,7 @@ export const MapTopNavMenu = ({
   const [queryConfig, setQueryConfig] = useState<Query>({ query: '', language: 'kuery' });
   const [refreshIntervalValue, setRefreshIntervalValue] = useState<number>(60000);
   const [isRefreshPaused, setIsRefreshPaused] = useState<boolean>(false);
+  const [originatingApp, setOriginatingApp] = useState<string>();
   const changeTitle = useCallback(
     (newTitle: string) => {
       chrome.setBreadcrumbs(getSavedMapBreadcrumbs(newTitle, navigateToApp));
@@ -59,6 +69,14 @@ export const MapTopNavMenu = ({
     },
     [chrome, navigateToApp]
   );
+
+  useEffect(() => {
+    const { originatingApp: value } =
+      embeddable
+        .getStateTransfer(scopedHistory)
+        .getIncomingEditorState({ keysToRemoveAfterFetch: ['id', 'input'] }) || {};
+    setOriginatingApp(value);
+  }, [embeddable, scopedHistory]);
 
   useEffect(() => {
     if (savedMapObject) {
@@ -73,14 +91,14 @@ export const MapTopNavMenu = ({
 
   const refreshDataLayerRender = () => {
     layers.forEach((layer: MapLayerSpecification) => {
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP) {
-        return;
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+        handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
       }
-      handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
     });
   };
 
   const handleQuerySubmit = ({ query, dateRange }: { query?: Query; dateRange: TimeRange }) => {
+    setIsUpdatingLayerRender(true);
     if (query) {
       setMapState({ ...mapState, query });
     }
@@ -90,13 +108,17 @@ export const MapTopNavMenu = ({
   };
 
   useEffect(() => {
-    setDateFrom(mapState.timeRange.from);
-    setDateTo(mapState.timeRange.to);
+    if (!isReadOnlyMode) {
+      setDateFrom(mapState.timeRange.from);
+      setDateTo(mapState.timeRange.to);
+    } else {
+      setDateFrom(timeRange!.from);
+      setDateTo(timeRange!.to);
+    }
     setQueryConfig(mapState.query);
     setIsRefreshPaused(mapState.refreshInterval.pause);
     setRefreshIntervalValue(mapState.refreshInterval.value);
-    refreshDataLayerRender();
-  }, [mapState]);
+  }, [mapState, timeRange]);
 
   const onRefreshChange = useCallback(
     ({ isPaused, refreshInterval }: { isPaused: boolean; refreshInterval: number }) => {
@@ -106,23 +128,28 @@ export const MapTopNavMenu = ({
     []
   );
 
+  const config = useMemo(() => {
+    return getTopNavConfig(services, {
+      mapIdFromUrl,
+      layers,
+      title,
+      description,
+      setTitle,
+      setDescription,
+      mapState,
+      originatingApp,
+    });
+  }, [services, mapIdFromUrl, layers, title, description, mapState, originatingApp]);
+
   return (
     <TopNavMenu
-      appName={PLUGIN_NAVIGATION_BAR_ID}
-      config={getTopNavConfig(services, {
-        mapIdFromUrl,
-        layers,
-        title,
-        description,
-        setTitle,
-        setDescription,
-        mapState,
-      })}
+      appName={MAPS_APP_ID}
+      config={config}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
-      showSearchBar
+      showSearchBar={!isReadOnlyMode}
       showFilterBar={false}
-      showDatePicker={true}
+      showDatePicker={!isReadOnlyMode}
       showQueryBar={true}
       showSaveQuery={true}
       showQueryInput={true}

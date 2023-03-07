@@ -4,7 +4,7 @@ import { Popup, MapGeoJSONFeature, LngLat } from 'maplibre-gl';
 
 import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
 import { FeatureGroupItem, TooltipContainer } from './tooltipContainer';
-import {MAX_LONGITUDE} from "../../../common";
+import { MAX_LONGITUDE } from '../../../common';
 
 interface Options {
   features: MapGeoJSONFeature[];
@@ -23,6 +23,12 @@ export function isTooltipEnabledLayer(
     layer.source.showTooltips === true &&
     !!layer.source.tooltipFields?.length
   );
+}
+
+export function isTooltipEnabledOnHover(
+  layer: MapLayerSpecification
+): layer is DocumentLayerSpecification {
+  return isTooltipEnabledLayer(layer) && (layer.source?.displayTooltipsOnHover ?? true);
 }
 
 export function groupFeaturesByLayers(

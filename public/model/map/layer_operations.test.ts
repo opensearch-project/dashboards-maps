@@ -13,7 +13,9 @@ import {
   updateCircleLayer,
   updateLineLayer,
   updatePolygonLayer,
-  updateLayerVisibility,
+  updateLayerVisibilityHandler,
+  addSymbolLayer,
+  updateSymbolLayer,
 } from './layer_operations';
 import { Map as Maplibre } from 'maplibre-gl';
 import { MockMaplibreMap } from './__mocks__/map';
@@ -26,7 +28,7 @@ describe('Circle layer', () => {
     const expectedLayerId: string = sourceId + '-circle';
     expect(mockMap.getLayer(expectedLayerId).length).toBe(0);
     expect(
-      addCircleLayer((mockMap as unknown) as Maplibre, {
+      addCircleLayer(mockMap as unknown as Maplibre, {
         maxZoom: 10,
         minZoom: 2,
         opacity: 60,
@@ -61,7 +63,7 @@ describe('Circle layer', () => {
     const sourceId: string = 'geojson-source';
 
     // add layer first
-    const addedLayerId: string = addCircleLayer((mockMap as unknown) as Maplibre, {
+    const addedLayerId: string = addCircleLayer(mockMap as unknown as Maplibre, {
       maxZoom: 10,
       minZoom: 2,
       opacity: 60,
@@ -73,7 +75,7 @@ describe('Circle layer', () => {
       fillColor: 'red',
     });
     expect(
-      updateCircleLayer((mockMap as unknown) as Maplibre, {
+      updateCircleLayer(mockMap as unknown as Maplibre, {
         maxZoom: 12,
         minZoom: 4,
         opacity: 80,
@@ -110,7 +112,7 @@ describe('Line layer', () => {
     const expectedLayerId: string = sourceId + '-line';
     expect(mockMap.getLayer(expectedLayerId).length).toBe(0);
     expect(
-      addLineLayer((mockMap as unknown) as Maplibre, {
+      addLineLayer(mockMap as unknown as Maplibre, {
         color: 'red',
         maxZoom: 10,
         minZoom: 2,
@@ -139,7 +141,7 @@ describe('Line layer', () => {
     const sourceId: string = 'geojson-source';
 
     // add layer first
-    const addedLineLayerId: string = addLineLayer((mockMap as unknown) as Maplibre, {
+    const addedLineLayerId: string = addLineLayer(mockMap as unknown as Maplibre, {
       color: 'red',
       maxZoom: 10,
       minZoom: 2,
@@ -149,7 +151,7 @@ describe('Line layer', () => {
       width: 2,
     });
     expect(
-      updateLineLayer((mockMap as unknown) as Maplibre, {
+      updateLineLayer(mockMap as unknown as Maplibre, {
         color: 'blue',
         maxZoom: 12,
         minZoom: 4,
@@ -183,7 +185,7 @@ describe('Polygon layer', () => {
     const expectedOutlineLayerId = expectedFillLayerId + '-outline';
     expect(mockMap.getLayer(expectedFillLayerId).length).toBe(0);
     expect(mockMap.getLayer(expectedOutlineLayerId).length).toBe(0);
-    addPolygonLayer((mockMap as unknown) as Maplibre, {
+    addPolygonLayer(mockMap as unknown as Maplibre, {
       maxZoom: 10,
       minZoom: 2,
       opacity: 60,
@@ -230,7 +232,7 @@ describe('Polygon layer', () => {
     const expectedFillLayerId = sourceId + '-fill';
     const expectedOutlineLayerId = expectedFillLayerId + '-outline';
     // add layer first
-    addPolygonLayer((mockMap as unknown) as Maplibre, {
+    addPolygonLayer(mockMap as unknown as Maplibre, {
       maxZoom: 10,
       minZoom: 2,
       opacity: 60,
@@ -243,7 +245,7 @@ describe('Polygon layer', () => {
 
     expect(mockMap.getLayer(sourceId).length).toBe(2);
     // update polygon for test
-    updatePolygonLayer((mockMap as unknown) as Maplibre, {
+    updatePolygonLayer(mockMap as unknown as Maplibre, {
       maxZoom: 12,
       minZoom: 4,
       opacity: 80,
@@ -284,11 +286,102 @@ describe('Polygon layer', () => {
   });
 });
 
+describe('Symbol layer', () => {
+  it('should add symbol layer successfully', () => {
+    const mockMap = new MockMaplibreMap([]);
+    const sourceId: string = 'symbol-layer-source';
+    const expectedLayerId = sourceId + '-symbol';
+    addSymbolLayer(mockMap as unknown as Maplibre, {
+      sourceId,
+      visibility: 'visible',
+      textFont: ['Noto Sans Regular'],
+      textField: 'test text',
+      textColor: '#af938a',
+      textSize: 12,
+      minZoom: 2,
+      maxZoom: 10,
+      opacity: 60,
+      symbolBorderWidth: 2,
+      symbolBorderColor: '#D6BF57',
+    });
+
+    const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
+    expect(layer.getProperty('visibility')).toBe('visible');
+    expect(layer.getProperty('source')).toBe(sourceId);
+    expect(layer.getProperty('type')).toBe('symbol');
+    expect(layer.getProperty('minZoom')).toBe(2);
+    expect(layer.getProperty('maxZoom')).toBe(10);
+    expect(layer.getProperty('text-font')).toEqual(['Noto Sans Regular']);
+    expect(layer.getProperty('text-field')).toBe('test text');
+    expect(layer.getProperty('text-opacity')).toBe(0.6);
+    expect(layer.getProperty('text-color')).toBe('#af938a');
+    expect(layer.getProperty('text-size')).toBe(12);
+    expect(layer.getProperty('text-halo-width')).toBe(2);
+    expect(layer.getProperty('text-halo-color')).toBe('#D6BF57');
+  });
+
+  it('should update symbol layer successfully', () => {
+    const mockMap = new MockMaplibreMap([]);
+    const sourceId: string = 'symbol-layer-source';
+    const expectedLayerId = sourceId + '-symbol';
+    // add layer first
+    addSymbolLayer(mockMap as unknown as Maplibre, {
+      sourceId,
+      visibility: 'visible',
+      textFont: ['Noto Sans Regular'],
+      textSize: 12,
+      textColor: '#251914',
+      textField: 'test text',
+      minZoom: 2,
+      maxZoom: 10,
+      opacity: 60,
+      symbolBorderWidth: 2,
+      symbolBorderColor: '#D6BF57',
+    });
+
+    expect(mockMap.getLayer(expectedLayerId).length).toBe(1);
+    // update symbol for test
+    const updatedText = 'updated text';
+    const updatedTextColor = '#29d95b';
+    const updatedTextSize = 14;
+    const updatedVisibility = 'none';
+    const updatedOpacity = 80;
+    const updatedMinZoom = 4;
+    const updatedMaxZoom = 12;
+    const updatedSymbolBorderColor = '#D6BF57';
+    const updatedSymbolBorderWidth = 4;
+    updateSymbolLayer(mockMap as unknown as Maplibre, {
+      sourceId,
+      visibility: updatedVisibility,
+      textFont: ['Noto Sans Regular'],
+      textSize: updatedTextSize,
+      textColor: updatedTextColor,
+      textField: updatedText,
+      minZoom: updatedMinZoom,
+      maxZoom: updatedMaxZoom,
+      opacity: updatedOpacity,
+      symbolBorderWidth: updatedSymbolBorderWidth,
+      symbolBorderColor: updatedSymbolBorderColor,
+    });
+    const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
+    expect(layer.getProperty('source')).toBe(sourceId);
+    expect(layer.getProperty('minZoom')).toBe(updatedMinZoom);
+    expect(layer.getProperty('maxZoom')).toBe(updatedMaxZoom);
+    expect(layer.getProperty('visibility')).toBe(updatedVisibility);
+    expect(layer.getProperty('text-field')).toBe(updatedText);
+    expect(layer.getProperty('text-opacity')).toBe(updatedOpacity / 100);
+    expect(layer.getProperty('text-color')).toBe(updatedTextColor);
+    expect(layer.getProperty('text-size')).toBe(updatedTextSize);
+    expect(layer.getProperty('text-halo-width')).toBe(updatedSymbolBorderWidth);
+    expect(layer.getProperty('text-halo-color')).toBe(updatedSymbolBorderColor);
+  });
+});
+
 describe('get layer', () => {
   it('should get layer successfully', function () {
     const mockLayer: MockLayer = new MockLayer('layer-1');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
-    const actualLayers = getLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    const actualLayers = getLayers(mockMap as unknown as Maplibre, 'layer-1');
     expect(actualLayers.length).toBe(1);
     expect(actualLayers[0].id).toBe(mockLayer.getProperty('id'));
   });
@@ -296,13 +389,13 @@ describe('get layer', () => {
   it('should confirm no layer exists', function () {
     const mockLayer: MockLayer = new MockLayer('layer-1');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
-    expect(hasLayer((mockMap as unknown) as Maplibre, 'layer-2')).toBe(false);
+    expect(hasLayer(mockMap as unknown as Maplibre, 'layer-2')).toBe(false);
   });
 
   it('should confirm layer exists', function () {
     const mockLayer: MockLayer = new MockLayer('layer-1');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer]);
-    expect(hasLayer((mockMap as unknown) as Maplibre, 'layer-1')).toBe(true);
+    expect(hasLayer(mockMap as unknown as Maplibre, 'layer-1')).toBe(true);
   });
 });
 
@@ -312,7 +405,7 @@ describe('move layer', () => {
     const mockLayer2: MockLayer = new MockLayer('layer-11');
     const mockLayer3: MockLayer = new MockLayer('layer-2');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
-    moveLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    moveLayers(mockMap as unknown as Maplibre, 'layer-1');
     const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
     expect(reorderedLayer).toEqual(['layer-2', 'layer-1', 'layer-11']);
   });
@@ -321,7 +414,7 @@ describe('move layer', () => {
     const mockLayer2: MockLayer = new MockLayer('layer-2');
     const mockLayer3: MockLayer = new MockLayer('layer-3');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
-    moveLayers((mockMap as unknown) as Maplibre, 'layer-1', 'layer-2');
+    moveLayers(mockMap as unknown as Maplibre, 'layer-1', 'layer-2');
     const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
     expect(reorderedLayer).toEqual(['layer-2', 'layer-1', 'layer-3']);
   });
@@ -330,7 +423,7 @@ describe('move layer', () => {
     const mockLayer2: MockLayer = new MockLayer('layer-2');
     const mockLayer3: MockLayer = new MockLayer('layer-3');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
-    moveLayers((mockMap as unknown) as Maplibre, 'layer-4', 'layer-2');
+    moveLayers(mockMap as unknown as Maplibre, 'layer-4', 'layer-2');
     const reorderedLayer: string[] = mockMap.getLayers().map((layer) => layer.getProperty('id'));
     expect(reorderedLayer).toEqual(['layer-1', 'layer-2', 'layer-3']);
   });
@@ -343,7 +436,7 @@ describe('delete layer', function () {
     const mockLayer3: MockLayer = new MockLayer('layer-2');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
     mockMap.addSource('layer-1', 'geojson');
-    removeLayers((mockMap as unknown) as Maplibre, 'layer-1');
+    removeLayers(mockMap as unknown as Maplibre, 'layer-1');
     expect(mockMap.getLayers().length).toBe(1);
     expect(mockMap.getSource('layer-1')).toBeDefined();
     expect(mockMap.getLayers()[0].getProperty('id')).toBe('layer-2');
@@ -354,7 +447,7 @@ describe('delete layer', function () {
     const mockLayer3: MockLayer = new MockLayer('layer-2');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2, mockLayer3]);
     mockMap.addSource('layer-2', 'geojson');
-    removeLayers((mockMap as unknown) as Maplibre, 'layer-2', true);
+    removeLayers(mockMap as unknown as Maplibre, 'layer-2', true);
     expect(mockMap.getLayers().length).toBe(2);
     expect(mockMap.getSource('layer-2')).toBeUndefined();
     expect(
@@ -369,7 +462,7 @@ describe('update visibility', function () {
     const mockLayer2: MockLayer = new MockLayer('layer-11');
     mockLayer1.setProperty('visibility', 'none');
     const mockMap: MockMaplibreMap = new MockMaplibreMap([mockLayer1, mockLayer2]);
-    updateLayerVisibility((mockMap as unknown) as Maplibre, 'layer-1', 'visible');
+    updateLayerVisibilityHandler(mockMap as unknown as Maplibre, 'layer-1', 'visible');
     expect(mockMap.getLayers().map((layer) => String(layer.getProperty('visibility')))).toEqual(
       Array(2).fill('visible')
     );

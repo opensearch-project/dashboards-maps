@@ -4,6 +4,6 @@
     "opensearchDashboardsVersion": "3.0.0",
     "server": true,
     "ui": true,
-    "requiredPlugins": ["regionMap", "opensearchDashboardsReact", "navigation", "savedObjects", "data"],
+    "requiredPlugins": ["regionMap", "opensearchDashboardsReact", "opensearchDashboardsUtils", "navigation", "savedObjects", "data", "embeddable", "visualizations"],
     "optionalPlugins": ["home"]
   }
