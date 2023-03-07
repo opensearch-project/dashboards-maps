@@ -21,16 +21,22 @@ import {
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
-import _, { Dictionary } from 'lodash';
 import { Filter, IndexPattern, IndexPatternField } from '../../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../../types';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
+import {
+  formatFieldStringToComboBox,
+  formatFieldsStringToComboBox,
+  getFieldsOptions,
+} from '../../../utils/fields_options';
 
 interface Props {
   setSelectedLayerConfig: Function;
   selectedLayerConfig: DocumentLayerSpecification;
   setIsUpdateDisabled: Function;
+  indexPattern: IndexPattern | null | undefined;
+  setIndexPattern: Function;
 }
 
 interface MemorizedForm {
@@ -46,6 +52,8 @@ export const DocumentLayerSource = ({
   setSelectedLayerConfig,
   selectedLayerConfig,
   setIsUpdateDisabled,
+  indexPattern,
+  setIndexPattern,
 }: Props) => {
   const {
     services: {
@@ -56,16 +64,15 @@ export const DocumentLayerSource = ({
       },
     },
   } = useOpenSearchDashboards<MapServices>();
-  const [indexPattern, setIndexPattern] = useState<IndexPattern | null>();
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
   const [enableTooltips, setEnableTooltips] = useState<boolean>(
     selectedLayerConfig.source.showTooltips
   );
   const memorizedForm = useRef<MemorizedForm>({});
+  const acceptedFieldTypes = ['geo_point', 'geo_shape'];
   const cacheKey = `${selectedLayerConfig.id}/${indexPattern?.id}`;
 
   const geoFields = useMemo(() => {
-    const acceptedFieldTypes = ['geo_point', 'geo_shape'];
     return indexPattern?.fields.filter((field) => acceptedFieldTypes.indexOf(field.type) !== -1);
   }, [indexPattern]);
 
@@ -87,23 +94,21 @@ export const DocumentLayerSource = ({
 
   const onGeoFieldChange = useCallback(
     (field: IndexPatternField | null) => {
-      if (field) {
-        setSelectedLayerConfig({
-          ...selectedLayerConfig,
-          source: {
-            ...selectedLayerConfig.source,
-            geoFieldName: field.displayName,
-            geoFieldType: field.type,
-          },
-        });
-        // We'd like to memorize the geo field selection so that the selection
-        // can be restored when changing index pattern back and forth
-        if (indexPattern?.id) {
-          memorizedForm.current[cacheKey] = {
-            ...memorizedForm.current[cacheKey],
-            geoField: field,
-          };
-        }
+      setSelectedLayerConfig({
+        ...selectedLayerConfig,
+        source: {
+          ...selectedLayerConfig.source,
+          geoFieldName: field?.displayName || undefined,
+          geoFieldType: field?.type || undefined,
+        },
+      });
+      // We'd like to memorize the geo field selection so that the selection
+      // can be restored when changing index pattern back and forth
+      if (indexPattern?.id) {
+        memorizedForm.current[cacheKey] = {
+          ...memorizedForm.current[cacheKey],
+          geoField: field || undefined,
+        };
       }
     },
     [selectedLayerConfig, setSelectedLayerConfig, indexPattern]
@@ -118,55 +123,6 @@ export const DocumentLayerSource = ({
     const disableUpdate = !indexPattern || !selectedField || hasInvalidRequestNumber;
     setIsUpdateDisabled(disableUpdate);
   }, [setIsUpdateDisabled, indexPattern, selectedField, hasInvalidRequestNumber]);
-
-  const formatFieldToComboBox = (field?: IndexPatternField | null) => {
-    if (!field) return [];
-    return formatFieldsToComboBox([field]);
-  };
-
-  const formatFieldsToComboBox = (fields?: IndexPatternField[]) => {
-    if (!fields) return [];
-
-    return fields?.map((field) => {
-      return {
-        label: field.displayName || field.name,
-      };
-    });
-  };
-
-  const tooltipFieldsOptions = () => {
-    const fieldList = indexPattern?.fields;
-    if (!fieldList) return [];
-    const fieldTypeMap: Dictionary<IndexPatternField[]> = _.groupBy(
-      fieldList,
-      (field) => field.type
-    );
-
-    const fieldOptions: Array<{ label: string; options: Array<{ label: string }> }> = [];
-    let fieldsOfSameType: Array<{ label: string }> = [];
-
-    Object.entries(fieldTypeMap).forEach(([fieldType, fieldEntries]) => {
-      for (const field of fieldEntries) {
-        fieldsOfSameType.push({ label: `${field.displayName || field.name}` });
-      }
-      fieldOptions.push({
-        label: `${fieldType}`,
-        options: fieldsOfSameType,
-      });
-      fieldsOfSameType = [];
-    });
-    return fieldOptions;
-  };
-
-  const formatTooltipFieldsToComboBox = (fields: string[]) => {
-    if (!fields) return [];
-
-    return fields?.map((field) => {
-      return {
-        label: field,
-      };
-    });
-  };
 
   const onDocumentRequestNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -320,11 +276,11 @@ export const DocumentLayerSource = ({
                   fullWidth={true}
                 >
                   <EuiComboBox
-                    options={formatFieldsToComboBox(geoFields)}
-                    selectedOptions={formatFieldToComboBox(selectedField)}
+                    options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
+                    selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
                     singleSelection={true}
                     onChange={(option) => {
-                      const field = indexPattern?.getFieldByName(option[0].label);
+                      const field = indexPattern?.getFieldByName(option[0]?.label);
                       onGeoFieldChange(field || null);
                     }}
                     sortMatchesBy="startsWith"
@@ -333,6 +289,7 @@ export const DocumentLayerSource = ({
                     })}
                     data-test-subj={'geoFieldSelect'}
                     fullWidth={true}
+                    isClearable={false}
                   />
                 </EuiFormRow>
               </EuiFlexItem>
@@ -411,8 +368,8 @@ export const DocumentLayerSource = ({
               <EuiFormLabel>Tooltip fields</EuiFormLabel>
               <EuiSpacer size="xs" />
               <EuiComboBox
-                options={tooltipFieldsOptions()}
-                selectedOptions={formatTooltipFieldsToComboBox(
+                options={getFieldsOptions(indexPattern)}
+                selectedOptions={formatFieldsStringToComboBox(
                   selectedLayerConfig.source.tooltipFields
                 )}
                 singleSelection={false}

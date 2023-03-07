@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { EuiSpacer, EuiTabbedContent } from '@elastic/eui';
 import { DocumentLayerSpecification } from '../../../model/mapLayerType';
 import { LayerBasicSettings } from '../layer_basic_settings';
 import { DocumentLayerSource } from './document_layer_source';
 import { DocumentLayerStyle } from './style/document_layer_style';
+import { IndexPattern } from '../../../../../../src/plugins/data/common';
 
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
@@ -40,9 +41,13 @@ export const DocumentLayerConfigPanel = (props: Props) => {
     props.setIsUpdateDisabled(check(selectedLayerConfig, checkKeys) || isUpdateDisabled);
   };
 
+  const [indexPattern, setIndexPattern] = useState<IndexPattern | null | undefined>();
+
   const newProps = {
     ...props,
     setIsUpdateDisabled,
+    indexPattern,
+    setIndexPattern,
   };
 
   const tabs = [
