@@ -62,6 +62,7 @@ export const DocumentLayerSource = ({
     selectedLayerConfig.source.showTooltips
   );
   const memorizedForm = useRef<MemorizedForm>({});
+  const cacheKey = `${selectedLayerConfig.id}/${indexPattern?.id}`;
 
   const geoFields = useMemo(() => {
     const acceptedFieldTypes = ['geo_point', 'geo_shape'];
@@ -74,13 +75,9 @@ export const DocumentLayerSource = ({
 
   // We want to memorize the filters and geoField selection when a map layer config is opened
   useEffect(() => {
-    if (
-      indexPattern &&
-      indexPattern.id &&
-      indexPattern.id === selectedLayerConfig.source.indexPatternId
-    ) {
-      if (!memorizedForm.current[indexPattern.id]) {
-        memorizedForm.current[indexPattern.id] = {
+    if (indexPattern?.id && indexPattern.id === selectedLayerConfig.source.indexPatternId) {
+      if (!memorizedForm.current[cacheKey]) {
+        memorizedForm.current[cacheKey] = {
           filters: selectedLayerConfig.source.filters,
           geoField: selectedField,
         };
@@ -102,8 +99,8 @@ export const DocumentLayerSource = ({
         // We'd like to memorize the geo field selection so that the selection
         // can be restored when changing index pattern back and forth
         if (indexPattern?.id) {
-          memorizedForm.current[indexPattern.id] = {
-            ...memorizedForm.current[indexPattern.id],
+          memorizedForm.current[cacheKey] = {
+            ...memorizedForm.current[cacheKey],
             geoField: field,
           };
         }
@@ -193,11 +190,11 @@ export const DocumentLayerSource = ({
         ...selectedLayerConfig,
         source: { ...selectedLayerConfig.source, filters },
       });
-      // We'd like to memorize the fields selection so that the selection
+      // We'd like to memorize the filter selection so that the selection
       // can be restored when changing index pattern back and forth
       if (indexPattern?.id) {
-        memorizedForm.current[indexPattern.id] = {
-          ...memorizedForm.current[indexPattern.id],
+        memorizedForm.current[cacheKey] = {
+          ...memorizedForm.current[cacheKey],
           filters,
         };
       }
@@ -225,13 +222,11 @@ export const DocumentLayerSource = ({
       source.indexPatternId = indexPattern.id ?? '';
       source.indexPatternRefName = indexPattern.title;
       // Use memorized filters, otherwise, set filter selection to empty
-      const filters = indexPattern.id ? memorizedForm.current[indexPattern.id]?.filters ?? [] : [];
+      const filters = indexPattern.id ? memorizedForm.current[cacheKey]?.filters ?? [] : [];
       source.filters = filters;
 
       // Use memorized geo field, otherwise, set geo filter to empty
-      const geoField = indexPattern.id
-        ? memorizedForm.current[indexPattern.id]?.geoField
-        : undefined;
+      const geoField = indexPattern.id ? memorizedForm.current[cacheKey]?.geoField : undefined;
       if (geoField) {
         source.geoFieldName = geoField.displayName;
         source.geoFieldType = geoField.type as 'geo_point' | 'geo_shape';
@@ -250,7 +245,9 @@ export const DocumentLayerSource = ({
     );
   }, [selectedLayerConfig.source.documentRequestNumber]);
 
-  const onEnableTooltipsChange = (event: { target: { checked: React.SetStateAction<boolean> } }) => {
+  const onEnableTooltipsChange = (event: {
+    target: { checked: React.SetStateAction<boolean> };
+  }) => {
     setEnableTooltips(event.target.checked);
     const source = { ...selectedLayerConfig.source, showTooltips: event.target.checked };
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
