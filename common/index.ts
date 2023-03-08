@@ -57,7 +57,7 @@ export const MAP_LAYER_DEFAULT_NAME = 'Default map';
 export const MAP_LAYER_DEFAULT_OPACITY_STEP = 1;
 export const MAP_REFERENCE_LAYER_DEFAULT_OPACITY = 100;
 // Make this configurable from map settings
-export const MAX_LAYER_LIMIT = 20;
+export const MAX_LAYER_LIMIT = 100;
 export const MAX_LAYER_NAME_LIMIT = 35;
 export const MAX_LONGITUDE = 180;
 export const MIN_LONGITUDE = -180;
