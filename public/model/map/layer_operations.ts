@@ -248,7 +248,7 @@ export const createSymbolLayerSpecification = (
     sourceId: layerConfig.id,
     visibility: layerConfig.visibility,
     textFont: ['Noto Sans Regular'],
-    textField: layerConfig.style.label.tittle,
+    textField: layerConfig.style.label.titleByFixed,
     textSize: layerConfig.style.label.size,
     textColor: layerConfig.style.label.color,
     minZoom: layerConfig.zoomRange[0],

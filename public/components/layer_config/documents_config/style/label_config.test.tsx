@@ -9,6 +9,7 @@ import {
   DOCUMENTS_SMALL_LABEL_BORDER_WIDTH,
 } from '../../../../../common';
 import { DocumentLayerSpecification } from '../../../../model/mapLayerType';
+import { IndexPattern } from '../../../../../../../src/plugins/data/common';
 
 describe('LabelConfig', () => {
   let wrapper: ShallowWrapper;
@@ -16,7 +17,7 @@ describe('LabelConfig', () => {
   const setSelectedLayerConfigMock = jest.fn();
   const setIsUpdateDisabledMock = jest.fn();
 
-  const selectedLayerConfig: DocumentLayerSpecification = {
+  const mockLayerConfig: DocumentLayerSpecification = {
     name: 'My Document Layer',
     id: 'document-layer-1',
     type: 'documents',
@@ -42,8 +43,9 @@ describe('LabelConfig', () => {
       markerSize: 10,
       label: {
         enabled: true,
-        tittle: 'My Label',
-        tittleType: 'fixed',
+        titleByFixed: 'My Label',
+        titleByField: 'field1',
+        titleType: 'fixed',
         color: '#FFFFFF',
         size: 12,
         borderColor: '#000000',
@@ -52,12 +54,28 @@ describe('LabelConfig', () => {
     },
   };
 
+  const mockIndexPattern = {
+    fields: [
+      {
+        name: 'field1',
+        displayName: 'Field 1',
+        type: 'text',
+      },
+      {
+        name: 'field2',
+        displayName: 'Field 2',
+        type: 'geo_point',
+      },
+    ],
+  } as IndexPattern;
+
   beforeEach(() => {
     wrapper = shallow(
       <LabelConfig
-        selectedLayerConfig={selectedLayerConfig}
+        selectedLayerConfig={mockLayerConfig}
         setSelectedLayerConfig={setSelectedLayerConfigMock}
         setIsUpdateDisabled={setIsUpdateDisabledMock}
+        indexPattern={mockIndexPattern}
       />
     );
   });
@@ -72,11 +90,11 @@ describe('LabelConfig', () => {
     const checkbox = wrapper.find(EuiCheckbox);
     checkbox.simulate('change', { target: { checked: false } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
+          ...mockLayerConfig.style.label,
           enabled: false,
         },
       },
@@ -85,11 +103,11 @@ describe('LabelConfig', () => {
 
   it('should render EuiCheckbox with correct props when enableLabel is false', () => {
     const newSelectedLayerConfig = {
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
+          ...mockLayerConfig.style.label,
           enabled: false,
         },
       },
@@ -99,37 +117,54 @@ describe('LabelConfig', () => {
     expect(checkbox.prop('checked')).toEqual(false);
   });
 
-  it('should call setSelectedLayerConfig with updated config when onChangeLabelTittleType is called', () => {
+  it('should call setSelectedLayerConfig with updated config when onChangeLabelTitleType is called', () => {
     const select = wrapper.find('EuiSelect').at(0);
     select.simulate('change', { target: { value: 'by_field' } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
-          tittleType: 'by_field',
+          ...mockLayerConfig.style.label,
+          titleType: 'by_field',
         },
       },
     });
   });
 
-  it('should render EuiFieldText with correct props when labelTittleType is "fixed"', () => {
+  it('should render EuiFieldText with correct props when labelTitleType is "fixed"', () => {
     const fieldText = wrapper.find('EuiFieldText');
     expect(fieldText.prop('value')).toEqual('My Label');
     expect(fieldText.prop('disabled')).toEqual(false);
+  });
+
+  it('should render EuiComboBox with correct props when labelTitleType is "By field', () => {
+    const newSelectedLayerConfig = {
+      ...mockLayerConfig,
+      style: {
+        ...mockLayerConfig.style,
+        label: {
+          ...mockLayerConfig.style.label,
+          titleType: 'by_field',
+          titleByField: 'Field 1',
+        },
+      },
+    };
+    wrapper.setProps({ selectedLayerConfig: newSelectedLayerConfig });
+    const fieldText = wrapper.find('EuiComboBox');
+    expect(fieldText.prop('selectedOptions')).toEqual([{ label: 'Field 1' }]);
   });
 
   it('should call setSelectedLayerConfig with updated config when onStaticLabelChange is called', () => {
     const fieldText = wrapper.find('EuiFieldText');
     fieldText.simulate('change', { target: { value: 'new label' } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
-          tittle: 'new label',
+          ...mockLayerConfig.style.label,
+          titleByFixed: 'new label',
         },
       },
     });
@@ -146,11 +181,11 @@ describe('LabelConfig', () => {
     const fieldNumber = wrapper.find('EuiFieldNumber');
     fieldNumber.simulate('change', { target: { value: 20 } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
+          ...mockLayerConfig.style.label,
           size: 20,
         },
       },
@@ -160,14 +195,14 @@ describe('LabelConfig', () => {
   it('should render ColorPicker with correct props for label color', () => {
     const colorPicker = wrapper.find({ label: 'Label color' });
     expect(colorPicker.prop('originColor')).toEqual('#FFFFFF');
-    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(selectedLayerConfig.id);
+    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(mockLayerConfig.id);
     expect(colorPicker.prop('setIsUpdateDisabled')).toEqual(setIsUpdateDisabledMock);
   });
 
   it('should render ColorPicker with correct props for label border color', () => {
     const colorPicker = wrapper.find({ label: 'Label border color' });
     expect(colorPicker.prop('originColor')).toEqual('#000000');
-    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(selectedLayerConfig.id);
+    expect(colorPicker.prop('selectedLayerConfigId')).toEqual(mockLayerConfig.id);
     expect(colorPicker.prop('setIsUpdateDisabled')).toEqual(setIsUpdateDisabledMock);
   });
 
@@ -188,11 +223,11 @@ describe('LabelConfig', () => {
     const select = wrapper.find('EuiSelect').at(1);
     select.simulate('change', { target: { value: 3 } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
-      ...selectedLayerConfig,
+      ...mockLayerConfig,
       style: {
-        ...selectedLayerConfig.style,
+        ...mockLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
+          ...mockLayerConfig.style.label,
           borderWidth: 3,
         },
       },
