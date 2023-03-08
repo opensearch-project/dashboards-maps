@@ -25,17 +25,20 @@ import {
 } from '../../../../../common';
 import { LabelConfig } from './label_config';
 import { ColorPicker } from './color_picker';
+import { IndexPattern } from '../../../../../../../src/plugins/data/common';
 
 interface Props {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  indexPattern: IndexPattern | null | undefined;
 }
 
 export const DocumentLayerStyle = ({
   setSelectedLayerConfig,
   selectedLayerConfig,
   setIsUpdateDisabled,
+  indexPattern,
 }: Props) => {
   const [hasInvalidThickness, setHasInvalidThickness] = useState<boolean>(false);
   const [hasInvalidSize, setHasInvalidSize] = useState<boolean>(false);
@@ -281,6 +284,7 @@ export const DocumentLayerStyle = ({
           selectedLayerConfig={selectedLayerConfig}
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdateDisabled={setIsUpdateDisabled}
+          indexPattern={indexPattern}
         />
       </EuiForm>
     </EuiPanel>

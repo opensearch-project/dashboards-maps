@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, ChangeEventHandler, ChangeEvent } from 'react';
 import {
   EuiFormRow,
   EuiFieldText,
@@ -13,8 +13,10 @@ import {
   EuiFlexGroup,
   EuiFieldNumber,
   EuiFormLabel,
+  EuiComboBox,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
+import { EuiComboBoxOptionOption } from '@opensearch-project/oui/src/eui_components/combo_box/types';
 import { DocumentLayerSpecification } from '../../../../model/mapLayerType';
 import { ColorPicker } from './color_picker';
 import {
@@ -28,181 +30,124 @@ import {
   DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
   DOCUMENTS_SMALL_LABEL_BORDER_WIDTH,
 } from '../../../../../common';
+import { formatFieldStringToComboBox, getFieldsOptions } from '../../../../utils/fields_options';
+import { IndexPattern } from '../../../../../../../src/plugins/data/common';
+import './label_config.scss';
 
 interface LabelProps {
   selectedLayerConfig: DocumentLayerSpecification;
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
+  indexPattern: IndexPattern | null | undefined;
 }
+
+const labelTitleTypeOptions = [
+  {
+    value: 'fixed',
+    text: i18n.translate('maps.documents.labelFixedTitle', { defaultMessage: 'Fixed' }),
+  },
+  {
+    value: 'by_field',
+    text: i18n.translate('maps.documents.labelByFieldTitle', { defaultMessage: 'By field' }),
+  },
+];
+
+const labelBorderWidthOptions = [
+  {
+    value: DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
+    text: i18n.translate('maps.documents.labelNoneBorderWidth', {
+      defaultMessage: 'None',
+    }),
+  },
+  {
+    value: DOCUMENTS_SMALL_LABEL_BORDER_WIDTH,
+    text: i18n.translate('maps.documents.labelSmallBorderWidth', {
+      defaultMessage: 'Small',
+    }),
+  },
+  {
+    value: DOCUMENTS_MEDIUM_LABEL_BORDER_WIDTH,
+    text: i18n.translate('maps.documents.labelMediumBorderWidth', {
+      defaultMessage: 'Medium',
+    }),
+  },
+  {
+    value: DOCUMENTS_LARGE_LABEL_BORDER_WIDTH,
+    text: i18n.translate('maps.documents.labelLargeBorderWidth', {
+      defaultMessage: 'Large',
+    }),
+  },
+];
 
 export const LabelConfig = ({
   selectedLayerConfig,
   setSelectedLayerConfig,
   setIsUpdateDisabled,
+  indexPattern,
 }: LabelProps) => {
-  const labelTittleTypeOptions = [
-    {
-      value: 'fixed',
-      text: i18n.translate('maps.documents.label.fixedTittle', { defaultMessage: 'Fixed' }),
-    },
-    // TODO: add support for using index pattern field as label
-  ];
+  const invalidLabelSize = useMemo(() => {
+    const { size = 0, enabled } = selectedLayerConfig.style?.label || {};
+    return enabled && (size < DOCUMENTS_MIN_LABEL_SIZE || size > DOCUMENTS_MAX_LABEL_SIZE);
+  }, [selectedLayerConfig]);
 
-  const labelBorderWidthOptions = [
-    {
-      value: DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
-      text: i18n.translate('maps.documents.labelNoneBorderWidth', {
-        defaultMessage: 'None',
-      }),
-    },
-    {
-      value: DOCUMENTS_SMALL_LABEL_BORDER_WIDTH,
-      text: i18n.translate('maps.documents.labelSmallBorderWidth', {
-        defaultMessage: 'Small',
-      }),
-    },
-    {
-      value: DOCUMENTS_MEDIUM_LABEL_BORDER_WIDTH,
-      text: i18n.translate('maps.documents.labelMediumBorderWidth', {
-        defaultMessage: 'Medium',
-      }),
-    },
-    {
-      value: DOCUMENTS_LARGE_LABEL_BORDER_WIDTH,
-      text: i18n.translate('maps.documents.labelLargeBorderWidth', {
-        defaultMessage: 'Large',
-      }),
-    },
-  ];
-
-  const [inValidLabelTittle, setInValidLabelTittle] = React.useState(false);
-  const [invalidLabelSize, setInvalidLabelSize] = React.useState(false);
-
-  useEffect(() => {
-    if (selectedLayerConfig.style?.label?.enabled) {
-      if (selectedLayerConfig.style.label?.tittleType === 'fixed') {
-        if (selectedLayerConfig.style.label?.tittle === '') {
-          setInValidLabelTittle(true);
-        } else {
-          setInValidLabelTittle(false);
-        }
-      }
-      if (
-        selectedLayerConfig.style?.label?.size < DOCUMENTS_MIN_LABEL_SIZE ||
-        selectedLayerConfig.style?.label?.size > DOCUMENTS_MAX_LABEL_SIZE
-      ) {
-        setInvalidLabelSize(true);
-      } else {
-        setInvalidLabelSize(false);
-      }
-    }
+  const invalidLabelTitle = useMemo(() => {
+    const label = selectedLayerConfig.style?.label;
+    return label && label.enabled
+      ? label.titleType === 'by_field'
+        ? label.titleByField === ''
+        : label.titleByFixed === ''
+      : false;
   }, [selectedLayerConfig]);
 
   useEffect(() => {
-    if (inValidLabelTittle || invalidLabelSize) {
-      setIsUpdateDisabled(true);
-    } else {
-      setIsUpdateDisabled(false);
-    }
-  }, [inValidLabelTittle, invalidLabelSize]);
+    setIsUpdateDisabled(invalidLabelTitle || invalidLabelSize);
+  }, [invalidLabelTitle, invalidLabelSize, setIsUpdateDisabled]);
 
-  const onChangeShowLabel = (e: any) => {
-    const newLayerConfig = {
+  const onChangeLabel = (propName: string, propValue: boolean | number | string) => {
+    setSelectedLayerConfig({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
         label: {
-          ...selectedLayerConfig.style.label,
-          enabled: Boolean(e.target.checked),
+          ...selectedLayerConfig.style?.label,
+          [propName]: propValue,
         },
       },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+    });
   };
 
-  const onChangeLabelTittleType = (e: any) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          tittleType: String(e.target.value),
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+  const onChangeShowLabel = (event: ChangeEvent<HTMLInputElement>) => {
+    onChangeLabel('enabled', Boolean(event.target.checked));
   };
 
-  const onStaticLabelTittleChange = (e: { target: { value: any } }) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          tittle: String(e.target.value),
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+  const onChangeLabelTitleType: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) =>
+    onChangeLabel('titleType', event.target.value);
+
+  const onFixedLabelTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChangeLabel('titleByFixed', String(event.target.value));
   };
 
-  const OnChangeLabelSize = (e: { target: { value: any } }) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          size: Number(e.target.value),
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+  const OnChangeLabelSize = (event: ChangeEvent<HTMLInputElement>) => {
+    onChangeLabel('size', Number(event.target.value));
   };
 
-  const onChangeLabelBorderWidth = (e: any) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          borderWidth: Number(e.target.value),
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+  const onChangeLabelBorderWidth: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    onChangeLabel('borderWidth', Number(event.target.value));
   };
 
   const onChangeLabelBorderColor = (color: string) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          borderColor: color,
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+    onChangeLabel('borderColor', color);
   };
 
   const onChangeLabelColor = (color: string) => {
-    const newLayerConfig = {
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        label: {
-          ...selectedLayerConfig.style.label,
-          color,
-        },
-      },
-    };
-    setSelectedLayerConfig(newLayerConfig);
+    onChangeLabel('color', color);
   };
+
+  const onChangeFieldLabelTitle = (options: EuiComboBoxOptionOption[]) => {
+    onChangeLabel('titleByField', options[0]?.label || '');
+  };
+
+  const label = selectedLayerConfig.style?.label;
 
   return (
     <>
@@ -210,40 +155,55 @@ export const LabelConfig = ({
         <EuiCheckbox
           id="add-label"
           label="Add label"
-          checked={selectedLayerConfig.style?.label?.enabled ?? false}
+          checked={label?.enabled ?? false}
           onChange={onChangeShowLabel}
         />
       </EuiFormRow>
-      {selectedLayerConfig.style?.label?.enabled && (
+      {label?.enabled && (
         <>
           <EuiFormRow
-            label={i18n.translate('maps.documents.labelTittle', {
-              defaultMessage: 'Label tittle',
+            label={i18n.translate('maps.documents.labelTitle', {
+              defaultMessage: 'Label title',
             })}
-            isInvalid={inValidLabelTittle}
-            error={i18n.translate('maps.documents.tittleError', {
-              defaultMessage: 'Label tittle is required',
+            isInvalid={invalidLabelTitle}
+            error={i18n.translate('maps.documents.titleError', {
+              defaultMessage: 'Label title cannot be empty',
             })}
           >
             <EuiFlexGroup responsive={false} alignItems="center" gutterSize="s">
               <EuiFlexItem grow={false}>
                 <EuiSelect
-                  options={labelTittleTypeOptions}
-                  value={selectedLayerConfig.style?.label?.tittleType ?? 'fixed'}
-                  onChange={onChangeLabelTittleType}
-                  disabled={!selectedLayerConfig.style?.label?.enabled}
+                  options={labelTitleTypeOptions}
+                  value={label?.titleType ?? 'fixed'}
+                  onChange={onChangeLabelTitleType}
+                  disabled={!label?.enabled}
                 />
               </EuiFlexItem>
-              <EuiFlexItem grow={true}>
-                {selectedLayerConfig.style?.label?.tittleType === 'fixed' && (
+              <EuiFlexItem className={'documentsLabel__title'}>
+                {label?.titleType === 'fixed' && (
                   <EuiFieldText
-                    placeholder={i18n.translate('maps.documents.labelTittlePlaceholder', {
+                    placeholder={i18n.translate('maps.documents.labelTitlePlaceholder', {
                       defaultMessage: 'Add label',
                     })}
-                    value={selectedLayerConfig.style?.label?.tittle ?? ''}
-                    onChange={onStaticLabelTittleChange}
-                    disabled={!selectedLayerConfig.style?.label?.enabled}
-                    isInvalid={inValidLabelTittle}
+                    value={label?.titleByFixed ?? ''}
+                    onChange={onFixedLabelTitleChange}
+                    disabled={!label?.enabled}
+                    isInvalid={invalidLabelTitle}
+                  />
+                )}
+                {selectedLayerConfig.style?.label?.titleType === 'by_field' && (
+                  <EuiComboBox
+                    options={getFieldsOptions(indexPattern)}
+                    selectedOptions={formatFieldStringToComboBox(label?.titleByField)}
+                    singleSelection={{ asPlainText: true }}
+                    onChange={onChangeFieldLabelTitle}
+                    sortMatchesBy="startsWith"
+                    placeholder={i18n.translate('maps.documents.labelByField', {
+                      defaultMessage: 'Select index pattern field',
+                    })}
+                    fullWidth={true}
+                    isClearable={false}
+                    isInvalid={invalidLabelTitle}
                   />
                 )}
               </EuiFlexItem>
@@ -271,7 +231,7 @@ export const LabelConfig = ({
             />
           </EuiFormRow>
           <ColorPicker
-            originColor={selectedLayerConfig.style.label.color ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
+            originColor={label?.color ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
             label={i18n.translate('maps.documents.labelColor', {
               defaultMessage: 'Label color',
             })}
@@ -280,9 +240,7 @@ export const LabelConfig = ({
             onColorChange={onChangeLabelColor}
           />
           <ColorPicker
-            originColor={
-              selectedLayerConfig.style?.label?.borderColor ?? DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR
-            }
+            originColor={label?.borderColor ?? DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR}
             label={'Label border color'}
             selectedLayerConfigId={selectedLayerConfig.id}
             setIsUpdateDisabled={setIsUpdateDisabled}
@@ -295,11 +253,9 @@ export const LabelConfig = ({
           >
             <EuiSelect
               options={labelBorderWidthOptions}
-              value={
-                selectedLayerConfig.style?.label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH
-              }
+              value={label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH}
               onChange={onChangeLabelBorderWidth}
-              disabled={!selectedLayerConfig.style?.label?.enabled}
+              disabled={!label?.enabled}
               fullWidth={true}
             />
           </EuiFormRow>
