@@ -8,7 +8,7 @@ import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { DASHBOARDS_MAPS_LAYER_TYPE, MAP_INITIAL_STATE } from '../../../common';
+import { DASHBOARDS_MAPS_LAYER_TYPE, DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
   Filter,
@@ -34,7 +34,8 @@ import {
 } from '../../model/layersFunctions';
 import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
-import { TOOLTIP_STATE } from '../../../common/index';
+import { TOOLTIP_STATE } from '../../../common';
+import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -78,6 +79,9 @@ export const MapContainer = ({
   >();
   // start with display feature
   const [tooltipState, setTooltipState] = useState<TOOLTIP_STATE>(TOOLTIP_STATE.DISPLAY_FEATURES);
+  const [filterProperties, setFilterProperties] = useState<DrawFilterProperties>({
+    mode: FILTER_DRAW_MODE.NONE,
+  });
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -212,6 +216,14 @@ export const MapContainer = ({
     }
   }, [layers, mounted, timeRange, filters, query, mapState, isReadOnlyMode]);
 
+  useEffect(() => {
+    const currentTooltipState: TOOLTIP_STATE =
+      filterProperties?.mode === FILTER_DRAW_MODE.NONE
+        ? TOOLTIP_STATE.DISPLAY_FEATURES
+        : TOOLTIP_STATE.FILTER_DRAW_SHAPE;
+    setTooltipState(currentTooltipState);
+  }, [filterProperties]);
+
   const updateIndexPatterns = async () => {
     if (!selectedLayerConfig) {
       return;
@@ -253,6 +265,14 @@ export const MapContainer = ({
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
         <DisplayFeatures map={maplibreRef.current!} layers={layers} />
       )}
+      <div className="SpatialFilterToolbar-container">
+        {mounted && (
+          <SpatialFilterToolbar
+            setFilterProperties={setFilterProperties}
+            isDrawActive={filterProperties.mode !== FILTER_DRAW_MODE.NONE}
+          />
+        )}
+      </div>
       <div className="map-container" ref={mapContainer} />
     </div>
   );
