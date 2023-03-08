@@ -25,7 +25,6 @@ import {
   MAP_LAYER_DEFAULT_OPACITY_STEP,
   MAX_LAYER_NAME_LIMIT,
 } from '../../../common';
-import { layersTypeNameMap } from '../../model/layersFunctions';
 
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
