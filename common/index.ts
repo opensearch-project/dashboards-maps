@@ -145,4 +145,22 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
 
 export enum TOOLTIP_STATE {
   DISPLAY_FEATURES = 'DISPLAY_FEATURES',
+  FILTER_DRAW_SHAPE = 'FILTER_DRAW_SHAPE',
 }
+
+export enum FILTER_DRAW_MODE {
+  NONE = 'none', // draw filter is inactive
+  POLYGON = 'polygon', // Filter is active and set to draw polygon
+}
+
+export interface DrawFilterProperties {
+  relation?: string;
+  mode: FILTER_DRAW_MODE;
+  filterLabel?: string;
+}
+
+export const DRAW_FILTER_SHAPE_TITLE = 'DRAW SHAPE';
+export const DRAW_FILTER_POLYGON_DEFAULT_LABEL = 'polygon';
+export const DRAW_FILTER_POLYGON = 'Draw Polygon';
+export const DRAW_FILTER_POLYGON_RELATIONS = ['intersects', 'disjoint', 'within'];
+
