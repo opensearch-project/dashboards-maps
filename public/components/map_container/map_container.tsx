@@ -36,6 +36,7 @@ import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
+import {DrawTooltip} from "../toolbar/spatial_filter/draw_tooltip";
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -265,6 +266,7 @@ export const MapContainer = ({
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
         <DisplayFeatures map={maplibreRef.current!} layers={layers} />
       )}
+      {mounted && <DrawTooltip map={maplibreRef.current!} mode={filterProperties.mode} />}
       <div className="SpatialFilterToolbar-container">
         {mounted && (
           <SpatialFilterToolbar
