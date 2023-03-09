@@ -8,7 +8,12 @@ import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import { DASHBOARDS_MAPS_LAYER_TYPE, DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
+import {
+  DASHBOARDS_MAPS_LAYER_TYPE,
+  DrawFilterProperties,
+  FILTER_DRAW_MODE,
+  MAP_INITIAL_STATE,
+} from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
   Filter,
@@ -36,7 +41,7 @@ import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
-import {DrawTooltip} from "../toolbar/spatial_filter/draw_tooltip";
+import { DrawTooltip } from '../toolbar/spatial_filter/draw_tooltip';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -266,7 +271,9 @@ export const MapContainer = ({
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
         <DisplayFeatures map={maplibreRef.current!} layers={layers} />
       )}
-      {mounted && <DrawTooltip map={maplibreRef.current!} mode={filterProperties.mode} />}
+      {mounted && Boolean(maplibreRef.current) && (
+        <DrawTooltip map={maplibreRef.current!} mode={filterProperties.mode} />
+      )}
       <div className="SpatialFilterToolbar-container">
         {mounted && (
           <SpatialFilterToolbar

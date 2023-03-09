@@ -13,7 +13,8 @@ interface Props {
   mode: FILTER_DRAW_MODE;
 }
 
-const gapBetweenCursorAndPopupOnXAxis: number = -12;
+const X_AXIS_GAP_BETWEEN_CURSOR_AND_POPUP = -12;
+const Y_AXIS_GAP_BETWEEN_CURSOR_AND_POPUP = 0;
 
 const getTooltipContent = (mode: FILTER_DRAW_MODE): string => {
   switch (mode) {
@@ -42,34 +43,36 @@ export const DrawTooltip = ({ map, mode }: Props) => {
     // remove previous popup
     function onMouseMoveMap(e: MapEventType['mousemove']) {
       map.getCanvas().style.cursor = 'crosshair'; // Changes cursor to '+'
-      if (map) {
-        hoverPopupRef.current
-          .setLngLat(e.lngLat)
-          .setOffset([gapBetweenCursorAndPopupOnXAxis, 0]) // add some gap between cursor and pop up
-          .setText(getTooltipContent(mode))
-          .addTo(map);
-      }
+      hoverPopupRef.current
+        .setLngLat(e.lngLat)
+        .setOffset([X_AXIS_GAP_BETWEEN_CURSOR_AND_POPUP, Y_AXIS_GAP_BETWEEN_CURSOR_AND_POPUP]) // add some gap between cursor and pop up
+        .setText(getTooltipContent(mode))
+        .addTo(map);
     }
 
-    map.on('mouseout', (ev) => {
+    function onMouseMoveOut() {
       hoverPopupRef.current.remove();
-    });
+    }
 
-    if (map && mode === FILTER_DRAW_MODE.NONE) {
+    function resetAction() {
       map.getCanvas().style.cursor = '';
-      hoverPopupRef?.current.remove();
+      hoverPopupRef.current.remove();
       // remove tooltip when users mouse move over a point
       map.off('mousemove', onMouseMoveMap);
+      map.off('mouseout', onMouseMoveOut);
+    }
+
+    if (map && mode === FILTER_DRAW_MODE.NONE) {
+      resetAction();
     } else {
       // add tooltip when users mouse move over a point
       map.on('mousemove', onMouseMoveMap);
+      map.on('mouseout', onMouseMoveOut);
     }
     return () => {
-      if (map) {
-        // remove tooltip when users mouse move over a point
-        // when component is unmounted
-        map.off('mousemove', onMouseMoveMap);
-      }
+      // remove tooltip when users mouse move over a point
+      // when component is unmounted
+      resetAction();
     };
   }, [mode]);
 
