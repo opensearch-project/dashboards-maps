@@ -11,6 +11,10 @@ export class MockLayer {
   }
 
   public setProperty(name: string, value: any): this {
+    if (Array.isArray(value) && value.length !== 0 && value[0] === 'get') {
+      this.layerProperties.set(name, value[1]);
+      return this;
+    }
     this.layerProperties.set(name, value);
     return this;
   }

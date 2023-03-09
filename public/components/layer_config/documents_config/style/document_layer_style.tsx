@@ -10,10 +10,9 @@ import {
   EuiSpacer,
   EuiButtonGroup,
   EuiPanel,
-  EuiTitle,
   EuiFormRow,
   EuiForm,
-  EuiHorizontalRule,
+  EuiCollapsibleNavGroup,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { DocumentLayerSpecification } from '../../../../model/mapLayerType';
@@ -167,126 +166,141 @@ export const DocumentLayerStyle = ({
   };
 
   return (
-    <EuiPanel paddingSize="m">
-      <EuiTitle size="xs">
-        <h2>Layer style</h2>
-      </EuiTitle>
+    <>
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Layer style"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={true}
+        >
+          <EuiButtonGroup
+            name="DocumentLayerStyleGroupButton"
+            legend="Group button of layer style"
+            options={toggleButtonsGeoType}
+            idSelected={toggleGeoTypeIdSelected}
+            onChange={(id) => onChangeGeoTypeSelected(id)}
+            buttonSize="compressed"
+          />
+          <EuiSpacer size="s" />
+          <EuiForm>
+            {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Point` && (
+              <EuiForm>
+                <ColorPicker
+                  originColor={selectedLayerConfig?.style?.fillColor}
+                  label={i18n.translate('maps.documents.symbolFillColor', {
+                    defaultMessage: 'Fill color',
+                  })}
+                  selectedLayerConfigId={selectedLayerConfig.id}
+                  setIsUpdateDisabled={setIsUpdateDisabled}
+                  onColorChange={onFillColorChange}
+                />
+                <ColorPicker
+                  originColor={selectedLayerConfig?.style?.borderColor}
+                  label={i18n.translate('maps.documents.symbolBorderColor', {
+                    defaultMessage: 'Border color',
+                  })}
+                  selectedLayerConfigId={selectedLayerConfig.id}
+                  setIsUpdateDisabled={setIsUpdateDisabled}
+                  onColorChange={onBorderColorChange}
+                />
+                <WidthSelector
+                  label={i18n.translate('maps.documents.symbolBorderThickness', {
+                    defaultMessage: 'Border thickness',
+                  })}
+                  size={selectedLayerConfig?.style?.borderThickness}
+                  onWidthChange={onBorderThicknessChange}
+                  hasInvalid={hasInvalidThickness}
+                  min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
+                  max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
+                />
+                <WidthSelector
+                  label={i18n.translate('maps.documents.symbolMarkerSize', {
+                    defaultMessage: 'Marker size',
+                  })}
+                  size={selectedLayerConfig?.style?.markerSize}
+                  onWidthChange={onMarkerSizeChange}
+                  hasInvalid={hasInvalidSize}
+                  min={DOCUMENTS_MIN_MARKER_SIZE}
+                  max={DOCUMENTS_MAX_MARKER_SIZE}
+                />
+              </EuiForm>
+            )}
+            {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Line` && (
+              <EuiForm>
+                <ColorPicker
+                  originColor={selectedLayerConfig?.style?.fillColor}
+                  label={i18n.translate('maps.documents.symbolFillColor', {
+                    defaultMessage: 'Fill color',
+                  })}
+                  selectedLayerConfigId={selectedLayerConfig.id}
+                  setIsUpdateDisabled={setIsUpdateDisabled}
+                  onColorChange={onFillColorChange}
+                />
+                <WidthSelector
+                  label={i18n.translate('maps.documents.symbolBorderColor', {
+                    defaultMessage: 'Border color',
+                  })}
+                  size={selectedLayerConfig?.style?.borderThickness}
+                  onWidthChange={onBorderThicknessChange}
+                  hasInvalid={hasInvalidThickness}
+                  min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
+                  max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
+                />
+              </EuiForm>
+            )}
+            {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Polygon` && (
+              <EuiForm>
+                <ColorPicker
+                  originColor={selectedLayerConfig?.style?.fillColor}
+                  label={i18n.translate('maps.documents.symbolFillColor', {
+                    defaultMessage: 'Fill color',
+                  })}
+                  selectedLayerConfigId={selectedLayerConfig.id}
+                  setIsUpdateDisabled={setIsUpdateDisabled}
+                  onColorChange={onFillColorChange}
+                />
+                <ColorPicker
+                  originColor={selectedLayerConfig?.style?.borderColor}
+                  label={i18n.translate('maps.documents.symbolBorderColor', {
+                    defaultMessage: 'Border color',
+                  })}
+                  selectedLayerConfigId={selectedLayerConfig.id}
+                  setIsUpdateDisabled={setIsUpdateDisabled}
+                  onColorChange={onBorderColorChange}
+                />
+                <WidthSelector
+                  label={i18n.translate('maps.documents.symbolBorderThickness', {
+                    defaultMessage: 'Border thickness',
+                  })}
+                  size={selectedLayerConfig?.style?.borderThickness}
+                  onWidthChange={onBorderThicknessChange}
+                  hasInvalid={hasInvalidThickness}
+                  min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
+                  max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
+                />
+              </EuiForm>
+            )}
+          </EuiForm>
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
       <EuiSpacer size="m" />
-      <EuiButtonGroup
-        name="DocumentLayerStyleGroupButton"
-        legend="Group button of layer style"
-        options={toggleButtonsGeoType}
-        idSelected={toggleGeoTypeIdSelected}
-        onChange={(id) => onChangeGeoTypeSelected(id)}
-        buttonSize="compressed"
-      />
-      <EuiSpacer size="s" />
-      <EuiForm>
-        {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Point` && (
-          <EuiForm>
-            <ColorPicker
-              originColor={selectedLayerConfig?.style?.fillColor}
-              label={i18n.translate('maps.documents.symbolFillColor', {
-                defaultMessage: 'Fill color',
-              })}
-              selectedLayerConfigId={selectedLayerConfig.id}
-              setIsUpdateDisabled={setIsUpdateDisabled}
-              onColorChange={onFillColorChange}
-            />
-            <ColorPicker
-              originColor={selectedLayerConfig?.style?.borderColor}
-              label={i18n.translate('maps.documents.symbolBorderColor', {
-                defaultMessage: 'Border color',
-              })}
-              selectedLayerConfigId={selectedLayerConfig.id}
-              setIsUpdateDisabled={setIsUpdateDisabled}
-              onColorChange={onBorderColorChange}
-            />
-            <WidthSelector
-              label={i18n.translate('maps.documents.symbolBorderThickness', {
-                defaultMessage: 'Border thickness',
-              })}
-              size={selectedLayerConfig?.style?.borderThickness}
-              onWidthChange={onBorderThicknessChange}
-              hasInvalid={hasInvalidThickness}
-              min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
-              max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
-            />
-            <WidthSelector
-              label={i18n.translate('maps.documents.symbolMarkerSize', {
-                defaultMessage: 'Marker size',
-              })}
-              size={selectedLayerConfig?.style?.markerSize}
-              onWidthChange={onMarkerSizeChange}
-              hasInvalid={hasInvalidSize}
-              min={DOCUMENTS_MIN_MARKER_SIZE}
-              max={DOCUMENTS_MAX_MARKER_SIZE}
-            />
-          </EuiForm>
-        )}
-        {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Line` && (
-          <EuiForm>
-            <ColorPicker
-              originColor={selectedLayerConfig?.style?.fillColor}
-              label={i18n.translate('maps.documents.symbolFillColor', {
-                defaultMessage: 'Fill color',
-              })}
-              selectedLayerConfigId={selectedLayerConfig.id}
-              setIsUpdateDisabled={setIsUpdateDisabled}
-              onColorChange={onFillColorChange}
-            />
-            <WidthSelector
-              label={i18n.translate('maps.documents.symbolBorderColor', {
-                defaultMessage: 'Border color',
-              })}
-              size={selectedLayerConfig?.style?.borderThickness}
-              onWidthChange={onBorderThicknessChange}
-              hasInvalid={hasInvalidThickness}
-              min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
-              max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
-            />
-          </EuiForm>
-        )}
-        {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Polygon` && (
-          <EuiForm>
-            <ColorPicker
-              originColor={selectedLayerConfig?.style?.fillColor}
-              label={i18n.translate('maps.documents.symbolFillColor', {
-                defaultMessage: 'Fill color',
-              })}
-              selectedLayerConfigId={selectedLayerConfig.id}
-              setIsUpdateDisabled={setIsUpdateDisabled}
-              onColorChange={onFillColorChange}
-            />
-            <ColorPicker
-              originColor={selectedLayerConfig?.style?.borderColor}
-              label={i18n.translate('maps.documents.symbolBorderColor', {
-                defaultMessage: 'Border color',
-              })}
-              selectedLayerConfigId={selectedLayerConfig.id}
-              setIsUpdateDisabled={setIsUpdateDisabled}
-              onColorChange={onBorderColorChange}
-            />
-            <WidthSelector
-              label={i18n.translate('maps.documents.symbolBorderThickness', {
-                defaultMessage: 'Border thickness',
-              })}
-              size={selectedLayerConfig?.style?.borderThickness}
-              onWidthChange={onBorderThicknessChange}
-              hasInvalid={hasInvalidThickness}
-              min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
-              max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
-            />
-          </EuiForm>
-        )}
-        <EuiHorizontalRule />
-        <LabelConfig
-          selectedLayerConfig={selectedLayerConfig}
-          setSelectedLayerConfig={setSelectedLayerConfig}
-          setIsUpdateDisabled={setIsUpdateDisabled}
-          indexPattern={indexPattern}
-        />
-      </EuiForm>
-    </EuiPanel>
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Label"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={selectedLayerConfig.style.label?.enabled ?? false}
+        >
+          <LabelConfig
+            selectedLayerConfig={selectedLayerConfig}
+            setSelectedLayerConfig={setSelectedLayerConfig}
+            setIsUpdateDisabled={setIsUpdateDisabled}
+            indexPattern={indexPattern}
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+      <EuiSpacer size="m" />
+    </>
   );
 };

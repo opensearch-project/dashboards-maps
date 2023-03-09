@@ -80,6 +80,13 @@ export const DocumentLayerSource = ({
     return geoFields?.find((field) => field.name === selectedLayerConfig.source.geoFieldName);
   }, [geoFields, selectedLayerConfig]);
 
+  const hasInvalidTooltipFields = useMemo(() => {
+    return (
+      selectedLayerConfig.source.tooltipFields?.length === 0 &&
+      selectedLayerConfig.source.showTooltips
+    );
+  }, [selectedLayerConfig.source.showTooltips, selectedLayerConfig.source.tooltipFields?.length]);
+
   // We want to memorize the filters and geoField selection when a map layer config is opened
   useEffect(() => {
     if (indexPattern?.id && indexPattern.id === selectedLayerConfig.source.indexPatternId) {
@@ -120,9 +127,16 @@ export const DocumentLayerSource = ({
   };
 
   useEffect(() => {
-    const disableUpdate = !indexPattern || !selectedField || hasInvalidRequestNumber;
+    const disableUpdate =
+      !indexPattern || !selectedField || hasInvalidRequestNumber || hasInvalidTooltipFields;
     setIsUpdateDisabled(disableUpdate);
-  }, [setIsUpdateDisabled, indexPattern, selectedField, hasInvalidRequestNumber]);
+  }, [
+    setIsUpdateDisabled,
+    indexPattern,
+    selectedField,
+    hasInvalidRequestNumber,
+    hasInvalidTooltipFields,
+  ]);
 
   const onDocumentRequestNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -364,33 +378,38 @@ export const DocumentLayerSource = ({
                 onChange={onEnableTooltipsChange}
               />
             </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiFormLabel>Tooltip fields</EuiFormLabel>
-              <EuiSpacer size="xs" />
-              <EuiComboBox
-                options={getFieldsOptions(indexPattern)}
-                selectedOptions={formatFieldsStringToComboBox(
-                  selectedLayerConfig.source.tooltipFields
-                )}
-                singleSelection={false}
-                onChange={onTooltipSelectionChange}
-                sortMatchesBy="startsWith"
-                placeholder={i18n.translate('documentLayer.addedTooltipFields', {
-                  defaultMessage: 'Add tooltip fields',
-                })}
-                fullWidth={true}
-              />
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiSwitch
-                label={i18n.translate('documentLayer.displayTooltipsOnHover', {
-                  defaultMessage: 'Display tooltips on hover',
-                })}
-                checked={selectedLayerConfig.source?.displayTooltipsOnHover ?? true}
-                onChange={onDisplayTooltipsOnHoverChange}
-                disabled={!enableTooltips}
-              />
-            </EuiFlexItem>
+            {enableTooltips && (
+              <>
+                <EuiFlexItem>
+                  <EuiFormLabel>Tooltip fields</EuiFormLabel>
+                  <EuiSpacer size="xs" />
+                  <EuiComboBox
+                    options={getFieldsOptions(indexPattern)}
+                    selectedOptions={formatFieldsStringToComboBox(
+                      selectedLayerConfig.source.tooltipFields
+                    )}
+                    singleSelection={false}
+                    onChange={onTooltipSelectionChange}
+                    sortMatchesBy="startsWith"
+                    placeholder={i18n.translate('documentLayer.addedTooltipFields', {
+                      defaultMessage: 'Add tooltip fields',
+                    })}
+                    fullWidth={true}
+                    isInvalid={hasInvalidTooltipFields}
+                  />
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiSwitch
+                    label={i18n.translate('documentLayer.displayTooltipsOnHover', {
+                      defaultMessage: 'Display tooltips on hover',
+                    })}
+                    checked={selectedLayerConfig.source?.displayTooltipsOnHover ?? true}
+                    onChange={onDisplayTooltipsOnHoverChange}
+                    disabled={!enableTooltips}
+                  />
+                </EuiFlexItem>
+              </>
+            )}
           </EuiFlexGrid>
         </EuiCollapsibleNavGroup>
       </EuiPanel>

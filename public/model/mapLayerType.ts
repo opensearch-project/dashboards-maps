@@ -51,9 +51,9 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
     markerSize: number;
     label?: {
       enabled: boolean;
-      titleByFixed: string;
-      titleByField: string;
-      titleType: 'fixed' | 'by_field';
+      textByFixed: string;
+      textByField: string;
+      textType: 'fixed' | 'by_field';
       color: string;
       size: number;
       borderColor: string;
