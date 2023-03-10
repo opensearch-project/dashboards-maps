@@ -229,13 +229,15 @@ const updatePolygonFillLayer = (
 };
 
 export interface SymbolLayerSpecification extends Layer {
-  visibility: string;
-  textFont: string[];
-  textField: string;
+  textType: 'fixed' | 'by_field';
+  textByFixed: string;
+  textByField: string;
   textSize: number;
   textColor: string;
   symbolBorderWidth: number;
   symbolBorderColor: string;
+  visibility: string;
+  textFont: string[];
 }
 
 export const createSymbolLayerSpecification = (
@@ -248,7 +250,9 @@ export const createSymbolLayerSpecification = (
     sourceId: layerConfig.id,
     visibility: layerConfig.visibility,
     textFont: ['Noto Sans Regular'],
-    textField: layerConfig.style.label.titleByFixed,
+    textByFixed: layerConfig.style.label.textByFixed,
+    textType: layerConfig.style.label.textType,
+    textByField: layerConfig.style.label.textByField,
     textSize: layerConfig.style.label.size,
     textColor: layerConfig.style.label.color,
     minZoom: layerConfig.zoomRange[0],
@@ -289,8 +293,12 @@ export const updateSymbolLayer = (
   specification: SymbolLayerSpecification
 ): string => {
   const symbolLayerId = specification.sourceId + '-symbol';
+  if (specification.textType === 'by_field') {
+    map.setLayoutProperty(symbolLayerId, 'text-field', ['get', specification.textByField]);
+  } else {
+    map.setLayoutProperty(symbolLayerId, 'text-field', specification.textByFixed);
+  }
   map.setLayoutProperty(symbolLayerId, 'text-font', specification.textFont);
-  map.setLayoutProperty(symbolLayerId, 'text-field', specification.textField);
   map.setLayoutProperty(symbolLayerId, 'visibility', specification.visibility);
   map.setPaintProperty(symbolLayerId, 'text-opacity', specification.opacity / 100);
   map.setLayerZoomRange(symbolLayerId, specification.minZoom, specification.maxZoom);

@@ -295,7 +295,7 @@ describe('Symbol layer', () => {
       sourceId,
       visibility: 'visible',
       textFont: ['Noto Sans Regular'],
-      textField: 'test text',
+      textByFixed: 'test text',
       textColor: '#af938a',
       textSize: 12,
       minZoom: 2,
@@ -303,6 +303,8 @@ describe('Symbol layer', () => {
       opacity: 60,
       symbolBorderWidth: 2,
       symbolBorderColor: '#D6BF57',
+      textType: 'fixed',
+      textByField: '',
     });
 
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
@@ -313,6 +315,41 @@ describe('Symbol layer', () => {
     expect(layer.getProperty('maxZoom')).toBe(10);
     expect(layer.getProperty('text-font')).toEqual(['Noto Sans Regular']);
     expect(layer.getProperty('text-field')).toBe('test text');
+    expect(layer.getProperty('text-opacity')).toBe(0.6);
+    expect(layer.getProperty('text-color')).toBe('#af938a');
+    expect(layer.getProperty('text-size')).toBe(12);
+    expect(layer.getProperty('text-halo-width')).toBe(2);
+    expect(layer.getProperty('text-halo-color')).toBe('#D6BF57');
+  });
+
+  it('should add symbol layer successfully when label text is field type', () => {
+    const mockMap = new MockMaplibreMap([]);
+    const sourceId: string = 'symbol-layer-source';
+    const expectedLayerId = sourceId + '-symbol';
+    addSymbolLayer(mockMap as unknown as Maplibre, {
+      sourceId,
+      visibility: 'visible',
+      textFont: ['Noto Sans Regular'],
+      textByFixed: '',
+      textColor: '#af938a',
+      textSize: 12,
+      minZoom: 2,
+      maxZoom: 10,
+      opacity: 60,
+      symbolBorderWidth: 2,
+      symbolBorderColor: '#D6BF57',
+      textType: 'by_field',
+      textByField: 'name_by_field',
+    });
+
+    const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
+    expect(layer.getProperty('visibility')).toBe('visible');
+    expect(layer.getProperty('source')).toBe(sourceId);
+    expect(layer.getProperty('type')).toBe('symbol');
+    expect(layer.getProperty('minZoom')).toBe(2);
+    expect(layer.getProperty('maxZoom')).toBe(10);
+    expect(layer.getProperty('text-font')).toEqual(['Noto Sans Regular']);
+    expect(layer.getProperty('text-field')).toBe('name_by_field');
     expect(layer.getProperty('text-opacity')).toBe(0.6);
     expect(layer.getProperty('text-color')).toBe('#af938a');
     expect(layer.getProperty('text-size')).toBe(12);
@@ -331,17 +368,19 @@ describe('Symbol layer', () => {
       textFont: ['Noto Sans Regular'],
       textSize: 12,
       textColor: '#251914',
-      textField: 'test text',
+      textByFixed: 'test text by fixed',
       minZoom: 2,
       maxZoom: 10,
       opacity: 60,
       symbolBorderWidth: 2,
       symbolBorderColor: '#D6BF57',
+      textType: 'fixed',
+      textByField: '',
     });
 
     expect(mockMap.getLayer(expectedLayerId).length).toBe(1);
     // update symbol for test
-    const updatedText = 'updated text';
+    const updatedTextByFixed = 'updated text';
     const updatedTextColor = '#29d95b';
     const updatedTextSize = 14;
     const updatedVisibility = 'none';
@@ -356,19 +395,21 @@ describe('Symbol layer', () => {
       textFont: ['Noto Sans Regular'],
       textSize: updatedTextSize,
       textColor: updatedTextColor,
-      textField: updatedText,
+      textByFixed: updatedTextByFixed,
       minZoom: updatedMinZoom,
       maxZoom: updatedMaxZoom,
       opacity: updatedOpacity,
       symbolBorderWidth: updatedSymbolBorderWidth,
       symbolBorderColor: updatedSymbolBorderColor,
+      textType: 'fixed',
+      textByField: '',
     });
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
     expect(layer.getProperty('source')).toBe(sourceId);
     expect(layer.getProperty('minZoom')).toBe(updatedMinZoom);
     expect(layer.getProperty('maxZoom')).toBe(updatedMaxZoom);
     expect(layer.getProperty('visibility')).toBe(updatedVisibility);
-    expect(layer.getProperty('text-field')).toBe(updatedText);
+    expect(layer.getProperty('text-field')).toBe(updatedTextByFixed);
     expect(layer.getProperty('text-opacity')).toBe(updatedOpacity / 100);
     expect(layer.getProperty('text-color')).toBe(updatedTextColor);
     expect(layer.getProperty('text-size')).toBe(updatedTextSize);

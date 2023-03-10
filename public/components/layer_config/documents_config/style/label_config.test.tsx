@@ -43,9 +43,9 @@ describe('LabelConfig', () => {
       markerSize: 10,
       label: {
         enabled: true,
-        titleByFixed: 'My Label',
-        titleByField: 'field1',
-        titleType: 'fixed',
+        textByFixed: 'My Label',
+        textByField: 'field1',
+        textType: 'fixed',
         color: '#FFFFFF',
         size: 12,
         borderColor: '#000000',
@@ -117,7 +117,7 @@ describe('LabelConfig', () => {
     expect(checkbox.prop('checked')).toEqual(false);
   });
 
-  it('should call setSelectedLayerConfig with updated config when onChangeLabelTitleType is called', () => {
+  it('should call setSelectedLayerConfig with updated config when onChangeLabelTextType is called', () => {
     const select = wrapper.find('EuiSelect').at(0);
     select.simulate('change', { target: { value: 'by_field' } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
@@ -126,27 +126,26 @@ describe('LabelConfig', () => {
         ...mockLayerConfig.style,
         label: {
           ...mockLayerConfig.style.label,
-          titleType: 'by_field',
+          textType: 'by_field',
         },
       },
     });
   });
 
-  it('should render EuiFieldText with correct props when labelTitleType is "fixed"', () => {
+  it('should render EuiFieldText with correct props when labelTextType is "fixed"', () => {
     const fieldText = wrapper.find('EuiFieldText');
     expect(fieldText.prop('value')).toEqual('My Label');
-    expect(fieldText.prop('disabled')).toEqual(false);
   });
 
-  it('should render EuiComboBox with correct props when labelTitleType is "By field', () => {
+  it('should render EuiComboBox with correct props when labelTextType is "By field', () => {
     const newSelectedLayerConfig = {
       ...mockLayerConfig,
       style: {
         ...mockLayerConfig.style,
         label: {
           ...mockLayerConfig.style.label,
-          titleType: 'by_field',
-          titleByField: 'Field 1',
+          textType: 'by_field',
+          textByField: 'Field 1',
         },
       },
     };
@@ -164,7 +163,7 @@ describe('LabelConfig', () => {
         ...mockLayerConfig.style,
         label: {
           ...mockLayerConfig.style.label,
-          titleByFixed: 'new label',
+          textByFixed: 'new label',
         },
       },
     });
@@ -215,7 +214,6 @@ describe('LabelConfig', () => {
       { value: DOCUMENTS_LARGE_LABEL_BORDER_WIDTH, text: 'Large' },
     ]);
     expect(select.prop('value')).toEqual(2);
-    expect(select.prop('disabled')).toEqual(false);
     expect(select.prop('fullWidth')).toEqual(true);
   });
 
