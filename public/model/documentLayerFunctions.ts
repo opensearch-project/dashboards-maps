@@ -100,10 +100,17 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
   data.forEach((item: any) => {
     const geoFieldValue = getFieldValue(item._source, geoFieldName);
     const geometry = buildGeometry(geoFieldType, geoFieldValue);
+    const fields: string[] = [];
+    if (layerConfig.source.tooltipFields) {
+      fields.push(...layerConfig.source.tooltipFields);
+    }
+    if (layerConfig.style.label?.textByField) {
+      fields.push(layerConfig.style.label.textByField);
+    }
     if (geometry) {
       const feature = {
         geometry,
-        properties: buildProperties(item, layerConfig.source.tooltipFields),
+        properties: buildProperties(item, fields),
       };
       featureList.push(feature);
     }

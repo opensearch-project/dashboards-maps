@@ -46,6 +46,10 @@ export const prepareDataLayerSource = (
       if (sourceConfig.showTooltips && sourceConfig.tooltipFields.length > 0) {
         sourceFields.push(...sourceConfig.tooltipFields);
       }
+      const label = layer.style.label;
+      if (label && label.enabled && label.textType === 'by_field' && label.textByField.length > 0) {
+        sourceFields.push(label.textByField);
+      }
       let buildQuery;
       let selectedTimeRange;
       if (indexPattern) {

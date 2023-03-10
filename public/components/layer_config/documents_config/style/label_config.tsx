@@ -23,6 +23,8 @@ import {
   DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR,
   DOCUMENTS_DEFAULT_LABEL_COLOR,
   DOCUMENTS_DEFAULT_LABEL_SIZE,
+  DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE,
+  DOCUMENTS_LABEL_TEXT_TYPE,
   DOCUMENTS_LARGE_LABEL_BORDER_WIDTH,
   DOCUMENTS_MAX_LABEL_SIZE,
   DOCUMENTS_MEDIUM_LABEL_BORDER_WIDTH,
@@ -41,14 +43,14 @@ interface LabelProps {
   indexPattern: IndexPattern | null | undefined;
 }
 
-const labelTitleTypeOptions = [
+const labelTextTypeOptions = [
   {
-    value: 'fixed',
-    text: i18n.translate('maps.documents.labelFixedTitle', { defaultMessage: 'Fixed' }),
+    value: DOCUMENTS_LABEL_TEXT_TYPE.FIXED,
+    text: i18n.translate('maps.documents.labelFixedText', { defaultMessage: 'Fixed' }),
   },
   {
-    value: 'by_field',
-    text: i18n.translate('maps.documents.labelByFieldTitle', { defaultMessage: 'By field' }),
+    value: DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD,
+    text: i18n.translate('maps.documents.labelByFieldText', { defaultMessage: 'Field value' }),
   },
 ];
 
@@ -86,22 +88,27 @@ export const LabelConfig = ({
   indexPattern,
 }: LabelProps) => {
   const invalidLabelSize = useMemo(() => {
-    const { size = 0, enabled } = selectedLayerConfig.style?.label || {};
+    const { size = DOCUMENTS_DEFAULT_LABEL_SIZE, enabled } = selectedLayerConfig.style?.label || {};
     return enabled && (size < DOCUMENTS_MIN_LABEL_SIZE || size > DOCUMENTS_MAX_LABEL_SIZE);
   }, [selectedLayerConfig]);
 
-  const invalidLabelTitle = useMemo(() => {
-    const label = selectedLayerConfig.style?.label;
-    return label && label.enabled
-      ? label.titleType === 'by_field'
-        ? label.titleByField === ''
-        : label.titleByFixed === ''
-      : false;
+  const invalidLabelText = useMemo(() => {
+    const {
+      enabled,
+      textType = DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE,
+      textByField = '',
+      textByFixed = '',
+    } = selectedLayerConfig.style?.label || {};
+
+    return (
+      enabled &&
+      (textType === DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD ? textByField === '' : textByFixed === '')
+    );
   }, [selectedLayerConfig]);
 
   useEffect(() => {
-    setIsUpdateDisabled(invalidLabelTitle || invalidLabelSize);
-  }, [invalidLabelTitle, invalidLabelSize, setIsUpdateDisabled]);
+    setIsUpdateDisabled(invalidLabelText || invalidLabelSize);
+  }, [invalidLabelText, invalidLabelSize, setIsUpdateDisabled]);
 
   const onChangeLabel = (propName: string, propValue: boolean | number | string) => {
     setSelectedLayerConfig({
@@ -120,11 +127,11 @@ export const LabelConfig = ({
     onChangeLabel('enabled', Boolean(event.target.checked));
   };
 
-  const onChangeLabelTitleType: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) =>
-    onChangeLabel('titleType', event.target.value);
+  const onChangeLabelTextType: ChangeEventHandler = (event: ChangeEvent<HTMLInputElement>) =>
+    onChangeLabel('textType', event.target.value);
 
-  const onFixedLabelTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    onChangeLabel('titleByFixed', String(event.target.value));
+  const onFixedLabelTextChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChangeLabel('textByFixed', String(event.target.value));
   };
 
   const OnChangeLabelSize = (event: ChangeEvent<HTMLInputElement>) => {
@@ -143,8 +150,8 @@ export const LabelConfig = ({
     onChangeLabel('color', color);
   };
 
-  const onChangeFieldLabelTitle = (options: EuiComboBoxOptionOption[]) => {
-    onChangeLabel('titleByField', options[0]?.label || '');
+  const onChangeLabelFieldText = (options: EuiComboBoxOptionOption[]) => {
+    onChangeLabel('textByField', options[0]?.label || '');
   };
 
   const label = selectedLayerConfig.style?.label;
@@ -153,7 +160,7 @@ export const LabelConfig = ({
     <>
       <EuiFormRow>
         <EuiCheckbox
-          id="add-label"
+          id="show-label"
           label="Add label"
           checked={label?.enabled ?? false}
           onChange={onChangeShowLabel}
@@ -162,48 +169,46 @@ export const LabelConfig = ({
       {label?.enabled && (
         <>
           <EuiFormRow
-            label={i18n.translate('maps.documents.labelTitle', {
-              defaultMessage: 'Label title',
+            label={i18n.translate('maps.documents.labelText', {
+              defaultMessage: 'Label text',
             })}
-            isInvalid={invalidLabelTitle}
-            error={i18n.translate('maps.documents.titleError', {
-              defaultMessage: 'Label title cannot be empty',
+            isInvalid={invalidLabelText}
+            error={i18n.translate('maps.documents.textError', {
+              defaultMessage: 'Label text cannot be empty',
             })}
           >
             <EuiFlexGroup responsive={false} alignItems="center" gutterSize="s">
               <EuiFlexItem grow={false}>
                 <EuiSelect
-                  options={labelTitleTypeOptions}
-                  value={label?.titleType ?? 'fixed'}
-                  onChange={onChangeLabelTitleType}
-                  disabled={!label?.enabled}
+                  options={labelTextTypeOptions}
+                  value={label?.textType ?? DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE}
+                  onChange={onChangeLabelTextType}
                 />
               </EuiFlexItem>
-              <EuiFlexItem className={'documentsLabel__title'}>
-                {label?.titleType === 'fixed' && (
+              <EuiFlexItem className={'documentsLabel__text'}>
+                {label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.FIXED && (
                   <EuiFieldText
-                    placeholder={i18n.translate('maps.documents.labelTitlePlaceholder', {
-                      defaultMessage: 'Add label',
+                    placeholder={i18n.translate('maps.documents.labelTextPlaceholder', {
+                      defaultMessage: 'Enter label text',
                     })}
-                    value={label?.titleByFixed ?? ''}
-                    onChange={onFixedLabelTitleChange}
-                    disabled={!label?.enabled}
-                    isInvalid={invalidLabelTitle}
+                    value={label?.textByFixed ?? ''}
+                    onChange={onFixedLabelTextChange}
+                    isInvalid={invalidLabelText}
                   />
                 )}
-                {selectedLayerConfig.style?.label?.titleType === 'by_field' && (
+                {(!label?.textType || label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD) && (
                   <EuiComboBox
                     options={getFieldsOptions(indexPattern)}
-                    selectedOptions={formatFieldStringToComboBox(label?.titleByField)}
+                    selectedOptions={formatFieldStringToComboBox(label?.textByField)}
                     singleSelection={{ asPlainText: true }}
-                    onChange={onChangeFieldLabelTitle}
+                    onChange={onChangeLabelFieldText}
                     sortMatchesBy="startsWith"
                     placeholder={i18n.translate('maps.documents.labelByField', {
                       defaultMessage: 'Select index pattern field',
                     })}
                     fullWidth={true}
                     isClearable={false}
-                    isInvalid={invalidLabelTitle}
+                    isInvalid={invalidLabelText}
                   />
                 )}
               </EuiFlexItem>
@@ -222,7 +227,7 @@ export const LabelConfig = ({
               placeholder={i18n.translate('maps.documents.labelSizePlaceholder', {
                 defaultMessage: 'Select size',
               })}
-              value={selectedLayerConfig.style?.label?.size ?? DOCUMENTS_DEFAULT_LABEL_SIZE}
+              value={label?.size ?? DOCUMENTS_DEFAULT_LABEL_SIZE}
               onChange={OnChangeLabelSize}
               append={<EuiFormLabel>px</EuiFormLabel>}
               fullWidth={true}
@@ -255,7 +260,6 @@ export const LabelConfig = ({
               options={labelBorderWidthOptions}
               value={label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH}
               onChange={onChangeLabelBorderWidth}
-              disabled={!label?.enabled}
               fullWidth={true}
             />
           </EuiFormRow>
