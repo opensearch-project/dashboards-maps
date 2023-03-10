@@ -53,7 +53,7 @@ export const FilterInputPanel = ({
   };
 
   return (
-    <EuiPanel className={"spatialFilterGroup__popoverPanel"}>
+    <EuiPanel className={'spatialFilterGroup__popoverPanel'}>
       <EuiForm>
         <EuiFormRow label="Filter label" display="rowCompressed">
           <EuiFieldText
