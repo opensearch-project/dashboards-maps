@@ -8,12 +8,7 @@ import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
-import {
-  DASHBOARDS_MAPS_LAYER_TYPE,
-  DrawFilterProperties,
-  FILTER_DRAW_MODE,
-  MAP_INITIAL_STATE,
-} from '../../../common';
+import { DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
   Filter,
@@ -24,19 +19,16 @@ import {
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import {
+  renderDataLayers,
+  renderBaseLayers,
   handleDataLayerRender,
-  handleReferenceLayerRender,
+  handleBaseLayerRender,
 } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
 import { ConfigSchema } from '../../../common/config';
-import {
-  getDataLayers,
-  getMapBeforeLayerId,
-  getReferenceLayers,
-  referenceLayerTypeLookup,
-} from '../../model/layersFunctions';
+import { baseLayerTypeLookup } from '../../model/layersFunctions';
 import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
@@ -139,21 +131,11 @@ export const MapContainer = ({
 
   // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
   useEffect(() => {
-    function renderLayers() {
-      layers.forEach((layer: MapLayerSpecification) => {
-        // We don't send search query if the layer doesn't have "request data around map extent" enabled
-        if (
-          layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS &&
-          layer.source.useGeoBoundingBoxFilter
-        ) {
-          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
-        }
-      });
-    }
-
     // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
     // resizing the window, the "moveend" event could be fired constantly
-    const debouncedRenderLayers = debounce(renderLayers, 200);
+    const debouncedRenderLayers = debounce(() => {
+      renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+    }, 200);
 
     if (maplibreRef.current) {
       maplibreRef.current.on('moveend', debouncedRenderLayers);
@@ -171,52 +153,28 @@ export const MapContainer = ({
     let intervalId: NodeJS.Timeout | undefined;
     if (refreshConfig && !refreshConfig.pause) {
       intervalId = setInterval(() => {
-        layers.forEach((layer: MapLayerSpecification) => {
-          if (referenceLayerTypeLookup[layer.type]) {
-            return;
-          }
-          handleDataLayerRender(layer, mapState, services, maplibreRef, undefined, timeRange);
-        });
+        renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
       }, refreshConfig.value);
     }
     return () => clearInterval(intervalId);
   }, [refreshConfig]);
 
   useEffect(() => {
-    if (!mounted) {
-      return;
-    }
-
-    if (layers.length <= 0) {
+    if (!mounted || layers.length <= 0) {
       return;
     }
 
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
-        if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
-          handleReferenceLayerRender(selectedLayerConfig, maplibreRef, undefined);
+        if (baseLayerTypeLookup[selectedLayerConfig.type]) {
+          handleBaseLayerRender(selectedLayerConfig, maplibreRef, undefined);
         } else {
           updateIndexPatterns();
           handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
         }
       } else {
-        getDataLayers(layers).forEach((layer: MapLayerSpecification) => {
-          const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
-          handleDataLayerRender(
-            layer,
-            mapState,
-            services,
-            maplibreRef,
-            beforeLayerId,
-            timeRange,
-            filters,
-            query
-          );
-        });
-        getReferenceLayers(layers).forEach((layer: MapLayerSpecification) => {
-          const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
-          handleReferenceLayerRender(layer, maplibreRef, beforeLayerId);
-        });
+        renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+        renderBaseLayers(layers, maplibreRef);
       }
       setIsUpdatingLayerRender(false);
     }
@@ -234,7 +192,7 @@ export const MapContainer = ({
     if (!selectedLayerConfig) {
       return;
     }
-    if (referenceLayerTypeLookup[selectedLayerConfig.type]) {
+    if (baseLayerTypeLookup[selectedLayerConfig.type]) {
       return;
     }
     const findIndexPattern = layersIndexPatterns.find(
