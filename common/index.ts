@@ -34,8 +34,12 @@ export const DOCUMENTS_DEFAULT_SHOW_TOOLTIPS: boolean = false;
 export const DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER: boolean = true;
 export const DOCUMENTS_DEFAULT_TOOLTIPS: string[] = [];
 export const DOCUMENTS_DEFAULT_LABEL_ENABLES: boolean = false;
-export const DOCUMENTS_DEFAULT_LABEL_TYPE: string = 'fixed';
-export const DOCUMENTS_DEFAULT_LABEL_SIZE: number = 20;
+export enum DOCUMENTS_LABEL_TEXT_TYPE {
+  BY_FIELD = 'by_field',
+  FIXED = 'fixed',
+}
+export const DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE: string = DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD;
+export const DOCUMENTS_DEFAULT_LABEL_SIZE: number = 15;
 export const DOCUMENTS_MIN_LABEL_SIZE: number = 1;
 export const DOCUMENTS_MAX_LABEL_SIZE: number = 100;
 export const DOCUMENTS_DEFAULT_LABEL_COLOR: string = '#000000';
@@ -162,4 +166,3 @@ export const DRAW_FILTER_SHAPE_TITLE = 'DRAW SHAPE';
 export const DRAW_FILTER_POLYGON_DEFAULT_LABEL = 'polygon';
 export const DRAW_FILTER_POLYGON = 'Draw Polygon';
 export const DRAW_FILTER_POLYGON_RELATIONS = ['intersects', 'disjoint', 'within'];
-
