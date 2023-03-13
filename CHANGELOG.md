@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Introduce disable tooltip on hover property ([#313](https://github.com/opensearch-project/dashboards-maps/pull/313))
 * Update tooltip behavior change ([#317](https://github.com/opensearch-project/dashboards-maps/pull/317))
 * Update max supported layer count ([#332](https://github.com/opensearch-project/dashboards-maps/pull/332))
+* BWC for document layer label textType ([#340](https://github.com/opensearch-project/dashboards-maps/pull/340))
 ### Bug Fixes
 * Fix property value undefined check ([#276](https://github.com/opensearch-project/dashboards-maps/pull/276))
 * Show scroll bar when panel height reaches container bottom ([#295](https://github.com/opensearch-project/dashboards-maps/pull/295))
