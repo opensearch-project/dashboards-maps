@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Enhancements
 
 ### Bug Fixes
-* Fix data query in dashboard mode when enable around map filter ([#](https://github.com/opensearch-project/dashboards-maps/pull/))
+* Fix data query in dashboard mode when enable around map filter ([#346](https://github.com/opensearch-project/dashboards-maps/pull/346))
 
 ### Infrastructure
 
