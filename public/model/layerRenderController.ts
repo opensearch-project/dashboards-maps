@@ -17,7 +17,12 @@ import {
   TimeRange,
   Query,
 } from '../../../../src/plugins/data/common';
-import { layersFunctionMap } from './layersFunctions';
+import {
+  getBaseLayers,
+  getDataLayers,
+  getMapBeforeLayerId,
+  layersFunctionMap,
+} from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
@@ -130,10 +135,44 @@ export const handleDataLayerRender = (
   );
 };
 
-export const handleReferenceLayerRender = (
+export const handleBaseLayerRender = (
   layer: MapLayerSpecification,
   maplibreRef: MaplibreRef,
   beforeLayerId: string | undefined
-) => {
+): void => {
   layersFunctionMap[layer.type].render(maplibreRef, layer, beforeLayerId);
+};
+
+export const renderDataLayers = (
+  layers: MapLayerSpecification[],
+  mapState: MapState,
+  services: MapServices,
+  maplibreRef: MaplibreRef,
+  timeRange?: TimeRange,
+  filtersFromDashboard?: Filter[],
+  query?: Query
+): void => {
+  getDataLayers(layers).forEach((layer) => {
+    const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
+    handleDataLayerRender(
+      layer,
+      mapState,
+      services,
+      maplibreRef,
+      beforeLayerId,
+      timeRange,
+      filtersFromDashboard,
+      query
+    );
+  });
+};
+
+export const renderBaseLayers = (
+  layers: MapLayerSpecification[],
+  maplibreRef: MaplibreRef
+): void => {
+  getBaseLayers(layers).forEach((layer) => {
+    const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
+    handleBaseLayerRender(layer, maplibreRef, beforeLayerId);
+  });
 };

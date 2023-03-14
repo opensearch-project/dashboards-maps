@@ -11,6 +11,10 @@ export type MapLayerSpecification =
   | DocumentLayerSpecification
   | CustomLayerSpecification;
 
+export type DataLayerSpecification = DocumentLayerSpecification;
+
+export type BaseLayerSpecification = OSMLayerSpecification | CustomLayerSpecification;
+
 export type OSMLayerSpecification = {
   name: string;
   id: string;

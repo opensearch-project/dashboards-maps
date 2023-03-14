@@ -11,7 +11,11 @@ import {
 } from '../../common';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
-import { MapLayerSpecification } from './mapLayerType';
+import {
+  BaseLayerSpecification,
+  DataLayerSpecification,
+  MapLayerSpecification,
+} from './mapLayerType';
 import { CustomLayerFunctions } from './customLayerFunctions';
 import { getLayers } from './map/layer_operations';
 
@@ -56,18 +60,18 @@ export const layersTypeIconMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_ICON.CUSTOM_MAP,
 };
 
-export const referenceLayerTypeLookup = {
+export const baseLayerTypeLookup = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: true,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: true,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: false,
 };
 
-export const getDataLayers = (layers: MapLayerSpecification[]) => {
-  return layers.filter((layer) => !referenceLayerTypeLookup[layer.type]);
+export const getDataLayers = (layers: MapLayerSpecification[]): DataLayerSpecification[] => {
+  return layers.filter((layer) => !baseLayerTypeLookup[layer.type]) as DataLayerSpecification[];
 };
 
-export const getReferenceLayers = (layers: MapLayerSpecification[]) => {
-  return layers.filter((layer) => referenceLayerTypeLookup[layer.type]);
+export const getBaseLayers = (layers: MapLayerSpecification[]): BaseLayerSpecification[] => {
+  return layers.filter((layer) => baseLayerTypeLookup[layer.type]) as BaseLayerSpecification[];
 };
 
 // Get layer id from layers that is above the selected layer
