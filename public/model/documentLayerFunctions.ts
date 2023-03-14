@@ -233,11 +233,7 @@ const updateLayer = (
 };
 
 // The function to render label for document layer
-const renderLabelLayer = (
-  layerConfig: DocumentLayerSpecification,
-  maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
-) => {
+const renderLabelLayer = (layerConfig: DocumentLayerSpecification, maplibreRef: MaplibreRef) => {
   const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
   // If the label set to enabled, add the label layer
   if (layerConfig.style?.label?.enabled) {
@@ -245,7 +241,7 @@ const renderLabelLayer = (
     if (hasLabelLayer) {
       updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
     } else {
-      addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
+      addSymbolLayer(maplibreRef.current!, symbolLayerSpec);
     }
   } else {
     // If the label set to disabled, remove the label layer if it exists
@@ -277,6 +273,6 @@ export const DocumentLayerFunctions = {
     beforeLayerId: string | undefined
   ) => {
     renderMarkerLayer(maplibreRef, layerConfig, data, beforeLayerId);
-    renderLabelLayer(layerConfig, maplibreRef, beforeLayerId);
+    renderLabelLayer(layerConfig, maplibreRef);
   },
 };

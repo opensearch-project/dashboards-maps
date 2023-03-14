@@ -151,7 +151,19 @@ export const LabelConfig = ({
   };
 
   const onChangeLabelFieldText = (options: EuiComboBoxOptionOption[]) => {
-    onChangeLabel('textByField', options[0]?.label || '');
+    const newSelectedLayerConfig = {
+      ...selectedLayerConfig,
+      style: {
+        ...selectedLayerConfig.style,
+        label: {
+          ...selectedLayerConfig.style?.label,
+          textByField: options[0]?.label || '',
+          // For backwards compatibility, set textType to BY_FIELD if textByField is set
+          textType: DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD,
+        },
+      },
+    };
+    setSelectedLayerConfig(newSelectedLayerConfig);
   };
 
   const label = selectedLayerConfig.style?.label;
