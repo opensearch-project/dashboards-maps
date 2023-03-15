@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Update tooltip behavior change ([#317](https://github.com/opensearch-project/dashboards-maps/pull/317))
 * Update max supported layer count ([#332](https://github.com/opensearch-project/dashboards-maps/pull/332))
 * BWC for document layer label textType ([#340](https://github.com/opensearch-project/dashboards-maps/pull/340))
+* Add mapbox-gl draw mode ([#347](https://github.com/opensearch-project/dashboards-maps/pull/347))
 
 ### Bug Fixes
 * Fix property value undefined check ([#276](https://github.com/opensearch-project/dashboards-maps/pull/276))
