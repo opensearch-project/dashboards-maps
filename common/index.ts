@@ -156,6 +156,13 @@ export enum FILTER_DRAW_MODE {
   POLYGON = 'polygon', // Filter is active and set to draw polygon
 }
 
+export const MAPBOX_GL_DRAW_CREATE_LISTENER = 'draw.create';
+
+export enum MAPBOX_GL_DRAW_MODES {
+  DRAW_POLYGON = 'draw_polygon',
+  SIMPLE_SELECT = 'simple_select',
+}
+
 export interface DrawFilterProperties {
   relation?: string;
   mode: FILTER_DRAW_MODE;
@@ -165,4 +172,4 @@ export interface DrawFilterProperties {
 export const DRAW_FILTER_SHAPE_TITLE = 'DRAW SHAPE';
 export const DRAW_FILTER_POLYGON_DEFAULT_LABEL = 'polygon';
 export const DRAW_FILTER_POLYGON = 'Draw Polygon';
-export const DRAW_FILTER_POLYGON_RELATIONS = ['intersects', 'disjoint', 'within'];
+export const DRAW_FILTER_SPATIAL_RELATIONS = ['intersects', 'disjoint', 'within'];
