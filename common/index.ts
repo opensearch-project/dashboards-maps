@@ -156,6 +156,13 @@ export enum FILTER_DRAW_MODE {
   POLYGON = 'polygon', // Filter is active and set to draw polygon
 }
 
+export const MAPBOX_GL_DRAW_CREATE_LISTENER = 'draw.create';
+
+export enum MAPBOX_GL_DRAW_MODES {
+  DRAW_POLYGON = 'draw_polygon',
+  SIMPLE_SELECT = 'simple_select',
+}
+
 export interface DrawFilterProperties {
   relation?: string;
   mode: FILTER_DRAW_MODE;
