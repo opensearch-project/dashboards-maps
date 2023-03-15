@@ -10,6 +10,7 @@ import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
+import { DrawFilterShape } from '../toolbar/spatial_filter/draw_filter_shape';
 import {
   Filter,
   IndexPattern,
@@ -231,6 +232,13 @@ export const MapContainer = ({
       )}
       {mounted && Boolean(maplibreRef.current) && (
         <DrawTooltip map={maplibreRef.current!} mode={filterProperties.mode} />
+      )}
+      {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
+        <DrawFilterShape
+          map={maplibreRef.current}
+          filterProperties={filterProperties}
+          updateFilterProperties={setFilterProperties}
+        />
       )}
       <div className="SpatialFilterToolbar-container">
         {mounted && (
