@@ -22,6 +22,10 @@ const getTooltipContent = (mode: FILTER_DRAW_MODE): string => {
       return i18n.translate('maps.drawFilterPolygon.tooltipContent', {
         defaultMessage: 'Click to start shape. Click for vertex. Double click to finish.',
       });
+    case FILTER_DRAW_MODE.RECTANGLE:
+      return i18n.translate('maps.drawFilterRectangle.tooltipContent', {
+        defaultMessage: 'Click and drag to draw rectangle.',
+      });
     default:
       return i18n.translate('maps.drawFilterDefault.tooltipContent', {
         defaultMessage: 'Click to start shape. Double click to finish.',
