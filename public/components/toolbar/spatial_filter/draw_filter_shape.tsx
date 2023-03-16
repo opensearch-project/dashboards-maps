@@ -21,9 +21,16 @@ interface DrawFilterShapeProps {
   updateFilterProperties: (properties: DrawFilterProperties) => void;
 }
 
-const additionalDrawMode = {
-  DRAW_RECTANGLE: 'draw_rectangle',
-};
+function getMapboxDrawMode(mode: FILTER_DRAW_MODE): string {
+  switch (mode) {
+    case FILTER_DRAW_MODE.POLYGON:
+      return MAPBOX_GL_DRAW_MODES.DRAW_POLYGON;
+    case FILTER_DRAW_MODE.RECTANGLE:
+      return MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE;
+    default:
+      return MAPBOX_GL_DRAW_MODES.SIMPLE_SELECT;
+  }
+}
 
 export const DrawFilterShape = ({
   filterProperties,
@@ -60,14 +67,8 @@ export const DrawFilterShape = ({
   }, []);
 
   useEffect(() => {
-    if (filterProperties.mode === FILTER_DRAW_MODE.POLYGON) {
-      mapboxDrawRef.current.changeMode(MAPBOX_GL_DRAW_MODES.DRAW_POLYGON);
-    } else if (filterProperties.mode === FILTER_DRAW_MODE.RECTANGLE) {
-      mapboxDrawRef.current.changeMode(MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE);
-    } else {
-      // default mode
-      mapboxDrawRef.current.changeMode(MAPBOX_GL_DRAW_MODES.SIMPLE_SELECT);
-    }
+    const mapboxDrawMode: string = getMapboxDrawMode(filterProperties.mode);
+    mapboxDrawRef.current.changeMode(mapboxDrawMode);
   }, [filterProperties.mode]);
 
   return <Fragment />;
