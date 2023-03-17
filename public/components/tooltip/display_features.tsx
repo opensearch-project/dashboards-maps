@@ -32,6 +32,10 @@ export const DisplayFeatures = memo(({ map, layers }: Props) => {
 
       const features = map.queryRenderedFeatures(e.point);
       if (features && map) {
+        // don't show tooltip from labels
+        if (features.length === 1 && features[0].layer?.type === 'symbol') {
+          return;
+        }
         clickPopup = createPopup({ features, layers: tooltipEnabledLayers });
         clickPopup?.setLngLat(getPopupLocation(features[0].geometry, e.lngLat)).addTo(map);
       }
@@ -44,6 +48,10 @@ export const DisplayFeatures = memo(({ map, layers }: Props) => {
       const tooltipEnabledLayersOnHover = layers.filter(isTooltipEnabledOnHover);
       const features = map.queryRenderedFeatures(e.point);
       if (features && map) {
+        // don't show tooltip from labels
+        if (features.length === 1 && features[0].layer?.type === 'symbol') {
+          return;
+        }
         hoverPopup = createPopup({
           features,
           layers: tooltipEnabledLayersOnHover,
