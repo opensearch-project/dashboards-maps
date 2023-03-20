@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Fix color picker component issue ([#305](https://github.com/opensearch-project/dashboards-maps/pull/305))
 * fix: layer filter setting been reset unexpectedly ([#327](https://github.com/opensearch-project/dashboards-maps/pull/327))
 * Fix data query in dashboard mode when enable around map filter ([#339](https://github.com/opensearch-project/dashboards-maps/pull/339))
+* Sync maplibre layer order after layers rendered ([#353](https://github.com/opensearch-project/dashboards-maps/pull/353))
 
 ### Infrastructure
 * Add CHANGELOG ([#342](https://github.com/opensearch-project/dashboards-maps/pull/342))

@@ -1,6 +1,5 @@
 import { Map as Maplibre, LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
-import { getMaplibreBeforeLayerId } from './layersFunctions';
 import { getLayers, hasLayer } from './map/layer_operations';
 import { getMapLanguage } from '../../common/util';
 
@@ -53,11 +52,7 @@ const setLanguage = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) =
   }
 };
 
-const addNewLayer = (
-  layerConfig: OSMLayerSpecification,
-  maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
-) => {
+const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
   if (maplibreRef.current) {
     const { source, style } = layerConfig;
     maplibreRef.current.addSource(layerConfig.id, {
@@ -65,14 +60,13 @@ const addNewLayer = (
       url: source?.dataURL,
     });
     fetchStyleLayers(style?.styleURL).then((styleLayers: LayerSpecification[]) => {
-      const beforeMbLayerId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
       styleLayers.forEach((styleLayer) => {
         styleLayer.id = styleLayer.id + '_' + layerConfig.id;
         // TODO: Add comments on why we skip background type
         if (styleLayer.type !== 'background') {
           styleLayer.source = layerConfig.id;
         }
-        maplibreRef.current?.addLayer(styleLayer, beforeMbLayerId);
+        maplibreRef.current?.addLayer(styleLayer);
         setLanguage(maplibreRef, styleLayer);
         maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
         maplibreRef.current?.setLayerZoomRange(
@@ -96,15 +90,11 @@ const addNewLayer = (
 
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  render: (
-    maplibreRef: MaplibreRef,
-    layerConfig: OSMLayerSpecification,
-    beforeLayerId: string | undefined
-  ) => {
+  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
     return hasLayer(maplibreRef.current!, layerConfig.id)
       ? updateLayerConfig(layerConfig, maplibreRef)
-      : addNewLayer(layerConfig, maplibreRef, beforeLayerId);
+      : addNewLayer(layerConfig, maplibreRef);
   },
 };

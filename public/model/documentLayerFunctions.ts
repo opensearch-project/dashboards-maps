@@ -7,7 +7,6 @@ import { Map as Maplibre } from 'maplibre-gl';
 import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
-import { getMaplibreBeforeLayerId } from './layersFunctions';
 import {
   addCircleLayer,
   addLineLayer,
@@ -131,56 +130,43 @@ const addNewLayer = (
   if (!maplibreInstance) {
     return;
   }
-  const mbLayerBeforeId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
   const source = getLayerSource(data, layerConfig);
   maplibreInstance.addSource(layerConfig.id, {
     type: 'geojson',
     data: source,
   });
-  addCircleLayer(
-    maplibreInstance,
-    {
+  addCircleLayer(maplibreInstance, {
+    fillColor: layerConfig.style?.fillColor,
+    maxZoom: layerConfig.zoomRange[1],
+    minZoom: layerConfig.zoomRange[0],
+    opacity: layerConfig.opacity,
+    outlineColor: layerConfig.style?.borderColor,
+    radius: layerConfig.style?.markerSize,
+    sourceId: layerConfig.id,
+    visibility: layerConfig.visibility,
+    width: layerConfig.style?.borderThickness,
+  });
+  const geoFieldType = getGeoFieldType(layerConfig);
+  if (geoFieldType === 'geo_shape') {
+    addLineLayer(maplibreInstance, {
+      width: layerConfig.style?.borderThickness,
+      color: layerConfig.style?.fillColor,
+      maxZoom: layerConfig.zoomRange[1],
+      minZoom: layerConfig.zoomRange[0],
+      opacity: layerConfig.opacity,
+      sourceId: layerConfig.id,
+      visibility: layerConfig.visibility,
+    });
+    addPolygonLayer(maplibreInstance, {
+      width: layerConfig.style?.borderThickness,
       fillColor: layerConfig.style?.fillColor,
       maxZoom: layerConfig.zoomRange[1],
       minZoom: layerConfig.zoomRange[0],
       opacity: layerConfig.opacity,
-      outlineColor: layerConfig.style?.borderColor,
-      radius: layerConfig.style?.markerSize,
       sourceId: layerConfig.id,
+      outlineColor: layerConfig.style?.borderColor,
       visibility: layerConfig.visibility,
-      width: layerConfig.style?.borderThickness,
-    },
-    mbLayerBeforeId
-  );
-  const geoFieldType = getGeoFieldType(layerConfig);
-  if (geoFieldType === 'geo_shape') {
-    addLineLayer(
-      maplibreInstance,
-      {
-        width: layerConfig.style?.borderThickness,
-        color: layerConfig.style?.fillColor,
-        maxZoom: layerConfig.zoomRange[1],
-        minZoom: layerConfig.zoomRange[0],
-        opacity: layerConfig.opacity,
-        sourceId: layerConfig.id,
-        visibility: layerConfig.visibility,
-      },
-      mbLayerBeforeId
-    );
-    addPolygonLayer(
-      maplibreInstance,
-      {
-        width: layerConfig.style?.borderThickness,
-        fillColor: layerConfig.style?.fillColor,
-        maxZoom: layerConfig.zoomRange[1],
-        minZoom: layerConfig.zoomRange[0],
-        opacity: layerConfig.opacity,
-        sourceId: layerConfig.id,
-        outlineColor: layerConfig.style?.borderColor,
-        visibility: layerConfig.visibility,
-      },
-      mbLayerBeforeId
-    );
+    });
   }
 };
 
