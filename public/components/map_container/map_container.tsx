@@ -24,6 +24,7 @@ import {
   renderBaseLayers,
   handleDataLayerRender,
   handleBaseLayerRender,
+  orderLayers,
 } from '../../model/layerRenderController';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
@@ -165,20 +166,28 @@ export const MapContainer = ({
       return;
     }
 
+    const orderLayersAfterRenderLoaded = () => orderLayers(layers, maplibreRef.current!);
+
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
         if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-          handleBaseLayerRender(selectedLayerConfig, maplibreRef, undefined);
+          handleBaseLayerRender(selectedLayerConfig, maplibreRef);
         } else {
           updateIndexPatterns();
-          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef, undefined);
+          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef);
         }
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
         renderBaseLayers(layers, maplibreRef);
+        // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
+        // after all layers are rendered.
+        maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
       }
       setIsUpdatingLayerRender(false);
     }
+    return () => {
+      maplibreRef.current!.off('idle', orderLayersAfterRenderLoaded);
+    };
   }, [layers, mounted, timeRange, filters, query, mapState, isReadOnlyMode]);
 
   useEffect(() => {
