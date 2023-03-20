@@ -67,9 +67,7 @@ export const baseLayerTypeLookup = {
 };
 
 export const getDataLayers = (layers: MapLayerSpecification[]): DataLayerSpecification[] => {
-  return layers.filter(
-    (layer) => !baseLayerTypeLookup[layer.type]
-  ) as DataLayerSpecification[];
+  return layers.filter((layer) => !baseLayerTypeLookup[layer.type]) as DataLayerSpecification[];
 };
 
 export const getBaseLayers = (layers: MapLayerSpecification[]): BaseLayerSpecification[] => {
