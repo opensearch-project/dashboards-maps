@@ -11,7 +11,7 @@ import {
   DrawFilterProperties,
   DRAW_FILTER_POLYGON,
   DRAW_FILTER_POLYGON_DEFAULT_LABEL,
-  DRAW_FILTER_POLYGON_RELATIONS,
+  DRAW_FILTER_SPATIAL_RELATIONS,
   DRAW_FILTER_SHAPE_TITLE,
 } from '../../../../common';
 import { FILTER_DRAW_MODE } from '../../../../common';
@@ -52,7 +52,7 @@ export const FilterByPolygon = ({
         <FilterInputPanel
           drawLabel={DRAW_FILTER_POLYGON}
           defaultFilterLabel={DRAW_FILTER_POLYGON_DEFAULT_LABEL}
-          relations={DRAW_FILTER_POLYGON_RELATIONS}
+          relations={DRAW_FILTER_SPATIAL_RELATIONS}
           onSubmit={onSubmit}
           mode={FILTER_DRAW_MODE.POLYGON}
         />
