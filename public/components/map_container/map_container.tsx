@@ -166,6 +166,8 @@ export const MapContainer = ({
       return;
     }
 
+    const orderLayersAfterRenderLoaded = () => orderLayers(layers, maplibreRef.current!);
+
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
         if (baseLayerTypeLookup[selectedLayerConfig.type]) {
@@ -179,16 +181,12 @@ export const MapContainer = ({
         renderBaseLayers(layers, maplibreRef);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
-        maplibreRef.current!.once('idle', () => {
-          orderLayers(layers, maplibreRef.current!);
-        });
+        maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
       }
       setIsUpdatingLayerRender(false);
     }
     return () => {
-      maplibreRef.current!.off('idle', () => {
-        orderLayers(layers, maplibreRef.current!);
-      });
+      maplibreRef.current!.off('idle', orderLayersAfterRenderLoaded);
     };
   }, [layers, mounted, timeRange, filters, query, mapState, isReadOnlyMode]);
 
