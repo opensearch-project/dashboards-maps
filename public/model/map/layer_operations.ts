@@ -71,21 +71,14 @@ export interface LineLayerSpecification extends Layer {
   width: number;
 }
 
-export const addLineLayer = (
-  map: Maplibre,
-  specification: LineLayerSpecification,
-  beforeId?: string
-): string => {
+export const addLineLayer = (map: Maplibre, specification: LineLayerSpecification): string => {
   const lineLayerId = specification.sourceId + '-line';
-  map.addLayer(
-    {
-      id: lineLayerId,
-      type: 'line',
-      source: specification.sourceId,
-      filter: ['==', '$type', 'LineString'],
-    },
-    beforeId
-  );
+  map.addLayer({
+    id: lineLayerId,
+    type: 'line',
+    source: specification.sourceId,
+    filter: ['==', '$type', 'LineString'],
+  });
   return updateLineLayer(map, specification, lineLayerId);
 };
 
@@ -111,21 +104,14 @@ export interface CircleLayerSpecification extends Layer {
   width: number;
 }
 
-export const addCircleLayer = (
-  map: Maplibre,
-  specification: CircleLayerSpecification,
-  beforeId?: string
-): string => {
+export const addCircleLayer = (map: Maplibre, specification: CircleLayerSpecification): string => {
   const circleLayerId = specification.sourceId + '-circle';
-  map.addLayer(
-    {
-      id: circleLayerId,
-      type: 'circle',
-      source: specification.sourceId,
-      filter: ['==', '$type', 'Point'],
-    },
-    beforeId
-  );
+  map.addLayer({
+    id: circleLayerId,
+    type: 'circle',
+    source: specification.sourceId,
+    filter: ['==', '$type', 'Point'],
+  });
   return updateCircleLayer(map, specification, circleLayerId);
 };
 
@@ -153,35 +139,25 @@ export interface PolygonLayerSpecification extends Layer {
   width: number;
 }
 
-export const addPolygonLayer = (
-  map: Maplibre,
-  specification: PolygonLayerSpecification,
-  beforeId?: string
-) => {
+export const addPolygonLayer = (map: Maplibre, specification: PolygonLayerSpecification) => {
   const fillLayerId = specification.sourceId + '-fill';
-  map.addLayer(
-    {
-      id: fillLayerId,
-      type: 'fill',
-      source: specification.sourceId,
-      filter: ['==', '$type', 'Polygon'],
-    },
-    beforeId
-  );
+  map.addLayer({
+    id: fillLayerId,
+    type: 'fill',
+    source: specification.sourceId,
+    filter: ['==', '$type', 'Polygon'],
+  });
   updatePolygonFillLayer(map, specification, fillLayerId);
 
   // Due to limitations on WebGL, fill can't render outlines with width wider than 1,
   // so we have to create another style layer with type=line to apply width.
   const outlineId = fillLayerId + '-outline';
-  map.addLayer(
-    {
-      id: outlineId,
-      type: 'line',
-      source: specification.sourceId,
-      filter: ['==', '$type', 'Polygon'],
-    },
-    beforeId
-  );
+  map.addLayer({
+    id: outlineId,
+    type: 'line',
+    source: specification.sourceId,
+    filter: ['==', '$type', 'Polygon'],
+  });
   updateLineLayer(
     map,
     {
