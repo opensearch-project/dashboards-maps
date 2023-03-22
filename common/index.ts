@@ -158,12 +158,14 @@ export enum TOOLTIP_STATE {
 export enum FILTER_DRAW_MODE {
   NONE = 'none', // draw filter is inactive
   POLYGON = 'polygon', // Filter is active and set to draw polygon
+  RECTANGLE = 'rectangle', // Filter is active and set to draw rectangle
 }
 
 export const MAPBOX_GL_DRAW_CREATE_LISTENER = 'draw.create';
 
 export enum MAPBOX_GL_DRAW_MODES {
   DRAW_POLYGON = 'draw_polygon',
+  DRAW_RECTANGLE = 'draw_rectangle',
   SIMPLE_SELECT = 'simple_select',
 }
 
@@ -175,5 +177,7 @@ export interface DrawFilterProperties {
 
 export const DRAW_FILTER_SHAPE_TITLE = 'DRAW SHAPE';
 export const DRAW_FILTER_POLYGON_DEFAULT_LABEL = 'polygon';
+export const DRAW_FILTER_RECTANGLE_DEFAULT_LABEL = 'rectangle';
 export const DRAW_FILTER_POLYGON = 'Draw Polygon';
+export const DRAW_FILTER_RECTANGLE = 'Draw Rectangle';
 export const DRAW_FILTER_SPATIAL_RELATIONS = ['intersects', 'disjoint', 'within'];
