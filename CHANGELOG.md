@@ -45,6 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Documentation
 
 ### Maintenance
+* Bump to 2.7.0 version ([#356](https://github.com/opensearch-project/dashboards-maps/pull/356))
 
 ### Refactoring
 * Move zoom and coordinates as separate component ([#309](https://github.com/opensearch-project/dashboards-maps/pull/309))
