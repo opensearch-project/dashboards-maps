@@ -146,6 +146,10 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
 };
 
+//refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages
+export const OSD_LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'ko', 'zh']; // all these codes are also supported in vector tiles map
+export const FALLBACK_LANGUAGE = 'en';
+
 export enum TOOLTIP_STATE {
   DISPLAY_FEATURES = 'DISPLAY_FEATURES',
   FILTER_DRAW_SHAPE = 'FILTER_DRAW_SHAPE',

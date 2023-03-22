@@ -18,12 +18,7 @@ import {
   Query,
   FILTERS,
 } from '../../../../src/plugins/data/common';
-import {
-  getDataLayers,
-  getMapBeforeLayerId,
-  getBaseLayers,
-  layersFunctionMap,
-} from './layersFunctions';
+import { getDataLayers, getBaseLayers, layersFunctionMap } from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
@@ -106,7 +101,6 @@ export const handleDataLayerRender = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined,
   timeRange?: TimeRange,
   filtersFromDashboard?: Filter[],
   query?: Query
@@ -135,7 +129,7 @@ export const handleDataLayerRender = (
     (result) => {
       const { layer, dataSource } = result;
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, beforeLayerId);
+        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
       }
     }
   );
@@ -143,10 +137,9 @@ export const handleDataLayerRender = (
 
 export const handleBaseLayerRender = (
   layer: MapLayerSpecification,
-  maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
+  maplibreRef: MaplibreRef
 ): void => {
-  layersFunctionMap[layer.type].render(maplibreRef, layer, beforeLayerId);
+  layersFunctionMap[layer.type].render(maplibreRef, layer);
 };
 
 export const renderDataLayers = (
@@ -159,13 +152,11 @@ export const renderDataLayers = (
   query?: Query
 ): void => {
   getDataLayers(layers).forEach((layer) => {
-    const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
     handleDataLayerRender(
       layer,
       mapState,
       services,
       maplibreRef,
-      beforeLayerId,
       timeRange,
       filtersFromDashboard,
       query
@@ -178,7 +169,19 @@ export const renderBaseLayers = (
   maplibreRef: MaplibreRef
 ): void => {
   getBaseLayers(layers).forEach((layer) => {
-    const beforeLayerId = getMapBeforeLayerId(layers, layer.id);
-    handleBaseLayerRender(layer, maplibreRef, beforeLayerId);
+    handleBaseLayerRender(layer, maplibreRef);
+  });
+};
+
+// Order maplibre layers based on the order of dashboard-maps layers
+export const orderLayers = (mapLayers: MapLayerSpecification[], maplibre: Maplibre): void => {
+  const maplibreLayers = maplibre.getStyle().layers;
+  if (!maplibreLayers) return;
+  mapLayers.forEach((layer) => {
+    const layerId = layer.id;
+    const mbLayers = maplibreLayers.filter((mbLayer) => mbLayer.id.includes(layerId));
+    mbLayers.forEach((mbLayer, index) => {
+      maplibre.moveLayer(mbLayer.id);
+    });
   });
 };

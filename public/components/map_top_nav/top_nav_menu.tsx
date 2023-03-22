@@ -92,7 +92,7 @@ export const MapTopNavMenu = ({
   const refreshDataLayerRender = () => {
     layers.forEach((layer: MapLayerSpecification) => {
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        handleDataLayerRender(layer, mapState, services, maplibreRef, undefined);
+        handleDataLayerRender(layer, mapState, services, maplibreRef);
       }
     });
   };

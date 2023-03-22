@@ -1,6 +1,5 @@
 import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
-import { getMaplibreBeforeLayerId } from './layersFunctions';
 import { hasLayer, removeLayers } from './map/layer_operations';
 
 interface MaplibreRef {
@@ -44,11 +43,7 @@ const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: M
   }
 };
 
-const addNewLayer = (
-  layerConfig: CustomLayerSpecification,
-  maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
-) => {
+const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
     const tilesURL = getCustomMapURL(layerConfig);
@@ -59,23 +54,19 @@ const addNewLayer = (
       tileSize: 256,
       attribution: layerSource?.attribution,
     });
-    const beforeMbLayerId = getMaplibreBeforeLayerId(layerConfig, maplibreRef, beforeLayerId);
-    maplibreInstance.addLayer(
-      {
-        id: layerConfig.id,
-        type: 'raster',
-        source: layerConfig.id,
-        paint: {
-          'raster-opacity': layerConfig.opacity / 100,
-        },
-        layout: {
-          visibility: layerConfig.visibility === 'visible' ? 'visible' : 'none',
-        },
-        minzoom: layerConfig.zoomRange[0],
-        maxzoom: layerConfig.zoomRange[1],
+    maplibreInstance.addLayer({
+      id: layerConfig.id,
+      type: 'raster',
+      source: layerConfig.id,
+      paint: {
+        'raster-opacity': layerConfig.opacity / 100,
       },
-      beforeMbLayerId
-    );
+      layout: {
+        visibility: layerConfig.visibility === 'visible' ? 'visible' : 'none',
+      },
+      minzoom: layerConfig.zoomRange[0],
+      maxzoom: layerConfig.zoomRange[1],
+    });
   }
 };
 
@@ -92,14 +83,10 @@ const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
 };
 
 export const CustomLayerFunctions = {
-  render: (
-    maplibreRef: MaplibreRef,
-    layerConfig: CustomLayerSpecification,
-    beforeLayerId: string | undefined
-  ) => {
+  render: (maplibreRef: MaplibreRef, layerConfig: CustomLayerSpecification) => {
     return hasLayer(maplibreRef.current!, layerConfig.id)
       ? updateLayerConfig(layerConfig, maplibreRef)
-      : addNewLayer(layerConfig, maplibreRef, beforeLayerId);
+      : addNewLayer(layerConfig, maplibreRef);
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
     removeLayers(maplibreRef.current!, layerConfig.id, true);
