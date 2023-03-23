@@ -82,7 +82,10 @@ export const APP_PATH = {
   LANDING_PAGE_PATH: '/',
   CREATE_MAP: '/create',
   EDIT_MAP: '/:id',
+  STATS: '/stats',
 };
+
+export const APP_API = '/api/maps-dashboards';
 
 export enum DASHBOARDS_MAPS_LAYER_NAME {
   OPENSEARCH_MAP = 'OpenSearch map',
@@ -94,6 +97,11 @@ export enum DASHBOARDS_MAPS_LAYER_TYPE {
   OPENSEARCH_MAP = 'opensearch_vector_tile_map',
   DOCUMENTS = 'documents',
   CUSTOM_MAP = 'custom_map',
+}
+
+export enum DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE {
+  WMS = 'wms',
+  TMS = 'tms',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_ICON {
@@ -147,7 +155,7 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
 };
 
-//refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages
+// refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages
 export const OSD_LANGUAGES = ['en', 'es', 'fr', 'de', 'ja', 'ko', 'zh']; // all these codes are also supported in vector tiles map
 export const FALLBACK_LANGUAGE = 'en';
 
