@@ -13,11 +13,23 @@ import {
   MAPBOX_GL_DRAW_MODES,
   MAPBOX_GL_DRAW_CREATE_LISTENER,
 } from '../../../../common';
+import { DrawRectangle } from '../../draw/modes/rectangle';
 
 interface DrawFilterShapeProps {
   filterProperties: DrawFilterProperties;
   map: Maplibre;
   updateFilterProperties: (properties: DrawFilterProperties) => void;
+}
+
+function getMapboxDrawMode(mode: FILTER_DRAW_MODE): string {
+  switch (mode) {
+    case FILTER_DRAW_MODE.POLYGON:
+      return MAPBOX_GL_DRAW_MODES.DRAW_POLYGON;
+    case FILTER_DRAW_MODE.RECTANGLE:
+      return MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE;
+    default:
+      return MAPBOX_GL_DRAW_MODES.SIMPLE_SELECT;
+  }
 }
 
 export const DrawFilterShape = ({
@@ -33,6 +45,10 @@ export const DrawFilterShape = ({
   const mapboxDrawRef = useRef<MapboxDraw>(
     new MapboxDraw({
       displayControlsDefault: false,
+      modes: {
+        ...MapboxDraw.modes,
+        [MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE]: DrawRectangle,
+      },
     })
   );
 
@@ -51,12 +67,8 @@ export const DrawFilterShape = ({
   }, []);
 
   useEffect(() => {
-    if (filterProperties.mode === FILTER_DRAW_MODE.POLYGON) {
-      mapboxDrawRef.current.changeMode(MAPBOX_GL_DRAW_MODES.DRAW_POLYGON);
-    } else {
-      // default mode
-      mapboxDrawRef.current.changeMode(MAPBOX_GL_DRAW_MODES.SIMPLE_SELECT);
-    }
+    const mapboxDrawMode: string = getMapboxDrawMode(filterProperties.mode);
+    mapboxDrawRef.current.changeMode(mapboxDrawMode);
   }, [filterProperties.mode]);
 
   return <Fragment />;

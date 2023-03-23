@@ -12,6 +12,10 @@ exports[`renders spatial filter before drawing 1`] = `
       isDrawActive={false}
       setDrawFilterProperties={[MockFunction]}
     />
+    <FilterByRectangle
+      isDrawActive={false}
+      setDrawFilterProperties={[MockFunction]}
+    />
   </EuiFlexItem>
 </EuiFlexGroup>
 `;
@@ -33,6 +37,10 @@ exports[`renders spatial filter while drawing 1`] = `
   </EuiFlexItem>
   <EuiFlexItem>
     <FilterByPolygon
+      isDrawActive={true}
+      setDrawFilterProperties={[MockFunction]}
+    />
+    <FilterByRectangle
       isDrawActive={true}
       setDrawFilterProperties={[MockFunction]}
     />
