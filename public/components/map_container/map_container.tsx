@@ -240,7 +240,11 @@ export const MapContainer = ({
         <DisplayFeatures map={maplibreRef.current!} layers={layers} />
       )}
       {mounted && Boolean(maplibreRef.current) && (
-        <DrawTooltip map={maplibreRef.current!} mode={filterProperties.mode} />
+        <DrawTooltip
+          map={maplibreRef.current!}
+          mode={filterProperties.mode}
+          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
+        />
       )}
       {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
         <DrawFilterShape
@@ -253,7 +257,7 @@ export const MapContainer = ({
         {mounted && (
           <SpatialFilterToolbar
             setFilterProperties={setFilterProperties}
-            isDrawActive={filterProperties.mode !== FILTER_DRAW_MODE.NONE}
+            mode={filterProperties.mode}
           />
         )}
       </div>
