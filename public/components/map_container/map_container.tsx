@@ -257,7 +257,7 @@ export const MapContainer = ({
         {mounted && (
           <SpatialFilterToolbar
             setFilterProperties={setFilterProperties}
-            isDrawActive={filterProperties.mode !== FILTER_DRAW_MODE.NONE}
+            mode={filterProperties.mode}
           />
         )}
       </div>

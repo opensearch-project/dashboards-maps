@@ -17,5 +17,5 @@ export const getMapLanguage = () => {
 };
 
 export function isEscapeKey(e: KeyboardEvent) {
-  return e.key === 'Escape';
+  return e.code === 'Escape';
 }

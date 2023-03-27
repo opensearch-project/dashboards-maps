@@ -6,18 +6,16 @@
 import React from 'react';
 import { EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
 import { FilterByPolygon } from './filter_by_polygon';
-import { DrawFilterProperties } from '../../../../common';
+import { DrawFilterProperties, FILTER_DRAW_MODE } from '../../../../common';
 import { FilterByRectangle } from './filter_by_rectangle';
 
 interface SpatialFilterToolBarProps {
   setFilterProperties: (properties: DrawFilterProperties) => void;
-  isDrawActive: boolean;
+  mode: FILTER_DRAW_MODE;
 }
 
-export const SpatialFilterToolbar = ({
-  setFilterProperties,
-  isDrawActive,
-}: SpatialFilterToolBarProps) => {
+export const SpatialFilterToolbar = ({ setFilterProperties, mode }: SpatialFilterToolBarProps) => {
+  const isDrawActive: boolean = mode !== FILTER_DRAW_MODE.NONE;
   const filterIconGroups = (
     <EuiFlexItem>
       <FilterByPolygon setDrawFilterProperties={setFilterProperties} isDrawActive={isDrawActive} />
