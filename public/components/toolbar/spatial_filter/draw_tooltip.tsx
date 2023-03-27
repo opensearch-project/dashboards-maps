@@ -7,10 +7,12 @@ import maplibregl, { Map as Maplibre, MapEventType, Popup } from 'maplibre-gl';
 import React, { Fragment, useEffect, useRef } from 'react';
 import { i18n } from '@osd/i18n';
 import { FILTER_DRAW_MODE } from '../../../../common';
+import {isEscapeKey} from "../../../../common/util";
 
 interface Props {
   map: Maplibre;
   mode: FILTER_DRAW_MODE;
+  onCancel: () => void;
 }
 
 const X_AXIS_GAP_BETWEEN_CURSOR_AND_POPUP = -12;
@@ -33,7 +35,7 @@ const getTooltipContent = (mode: FILTER_DRAW_MODE): string => {
   }
 };
 
-export const DrawTooltip = ({ map, mode }: Props) => {
+export const DrawTooltip = ({ map, mode, onCancel }: Props) => {
   const hoverPopupRef = useRef<Popup>(
     new maplibregl.Popup({
       closeButton: false,
@@ -58,12 +60,19 @@ export const DrawTooltip = ({ map, mode }: Props) => {
       hoverPopupRef.current.remove();
     }
 
+    function onKeyDown(e: KeyboardEvent) {
+      if (isEscapeKey(e)) {
+        onCancel();
+      }
+    }
+
     function resetAction() {
       map.getCanvas().style.cursor = '';
       hoverPopupRef.current.remove();
       // remove tooltip when users mouse move over a point
       map.off('mousemove', onMouseMoveMap);
       map.off('mouseout', onMouseMoveOut);
+      map.getContainer().removeEventListener('keydown', onKeyDown);
     }
 
     if (map && mode === FILTER_DRAW_MODE.NONE) {
@@ -72,6 +81,7 @@ export const DrawTooltip = ({ map, mode }: Props) => {
       // add tooltip when users mouse move over a point
       map.on('mousemove', onMouseMoveMap);
       map.on('mouseout', onMouseMoveOut);
+      map.getContainer().addEventListener('keydown', onKeyDown);
     }
     return () => {
       // remove tooltip when users mouse move over a point

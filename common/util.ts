@@ -15,3 +15,7 @@ export const getMapLanguage = () => {
   const languageCode = parts.length > 1 ? parts[0] : OSDLanguage;
   return OSD_LANGUAGES.includes(languageCode) ? languageCode : FALLBACK_LANGUAGE;
 };
+
+export function isEscapeKey(e: KeyboardEvent) {
+  return e.code === 'Escape';
+}
