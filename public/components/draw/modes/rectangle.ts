@@ -5,6 +5,7 @@
 
 import { Feature, GeoJSON, Position } from 'geojson';
 import { DrawCustomMode, DrawFeature, DrawPolygon, MapMouseEvent } from '@mapbox/mapbox-gl-draw';
+import {isEscapeKey} from "../../../../common/util";
 
 // converted to typescript from
 // https://github.com/mapbox/geojson.io/blob/main/src/ui/draw/rectangle.js
@@ -96,7 +97,10 @@ export const DrawRectangle: DrawCustomMode<DrawRectangleState, {}> = {
     }
   },
   onKeyUp(state: DrawRectangleState, e: KeyboardEvent) {
-    if (e.code === 'Escape') {
+    if (isEscapeKey(e)) {
+      // delete feature on Escape, else, onStop will append feature and fires draw.create event
+      // @ts-ignore
+      this.deleteFeature([state.id], { silent: true });
       // change mode to simple select if escape is pressed
       // @ts-ignore
       this.changeMode('simple_select');
