@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add support to build GeoShapeFilterMeta and GeoShapeFilter ([#360](https://github.com/opensearch-project/dashboards-maps/pull/360))
 * Remove cancel button on draw shape and use Escape to cancel draw ([#359](https://github.com/opensearch-project/dashboards-maps/pull/359))
 * Add geoshape filter while render data layers ([#365](https://github.com/opensearch-project/dashboards-maps/pull/365)
+* Update listener on KeyUp ([#364](https://github.com/opensearch-project/dashboards-maps/pull/364))
 
 ### Bug Fixes
 * Fix property value undefined check ([#276](https://github.com/opensearch-project/dashboards-maps/pull/276))
