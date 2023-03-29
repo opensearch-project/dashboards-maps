@@ -3,22 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { LatLon } from '@opensearch-project/opensearch/api/types';
-import { Polygon } from 'geojson';
+import { GeoShapeRelation, LatLon } from '@opensearch-project/opensearch/api/types';
 import {
-  Filter,
   FilterMeta,
   FILTERS,
+  FilterState,
+  FilterStateStore,
   GeoBoundingBoxFilter,
+  GeoShapeFilter,
+  GeoShapeFilterMeta,
+  ShapeFilter,
 } from '../../../../../src/plugins/data/common';
 import { GeoBounds } from '../map/boundary';
-
-export type FilterRelations = 'INTERSECTS' | 'DISJOINT' | 'WITHIN';
-
-export type GeoShapeFilter = Filter & {
-  meta: FilterMeta;
-  geo_shape: any;
-};
 
 export const buildBBoxFilter = (
   fieldName: string,
@@ -50,28 +46,39 @@ export const buildBBoxFilter = (
   };
 };
 
-export const buildSpatialGeometryFilter = (
-  fieldName: string,
-  filterShape: Polygon,
-  filterLabel: string,
-  relation: FilterRelations
-): GeoShapeFilter => {
-  const meta: FilterMeta = {
-    negate: false,
-    key: fieldName,
-    alias: filterLabel,
-    type: FILTERS.SPATIAL_FILTER,
-    disabled: false,
-  };
-
+export const buildGeoShapeFilterMeta = (
+  filterLabel: string | null,
+  filterShape: ShapeFilter,
+  relation: GeoShapeRelation
+): GeoShapeFilterMeta => {
   return {
-    meta,
+    type: FILTERS.GEO_SHAPE,
+    alias: filterLabel,
+    disabled: false,
+    params: {
+      relation,
+      shape: filterShape,
+    },
+    negate: false,
+  };
+};
+
+export const buildGeoShapeFilter = (
+  fieldName: string,
+  filterMeta: GeoShapeFilterMeta
+): GeoShapeFilter => {
+  const $state: FilterState = {
+    store: FilterStateStore.APP_STATE,
+  };
+  return {
+    meta: {
+      ...filterMeta,
+      key: fieldName,
+    },
     geo_shape: {
       ignore_unmapped: true,
-      [fieldName]: {
-        relation,
-        shape: filterShape,
-      },
+      [fieldName]: filterMeta.params,
     },
+    $state,
   };
 };

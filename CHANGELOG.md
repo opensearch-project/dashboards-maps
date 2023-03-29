@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add mapbox-gl draw mode ([#347](https://github.com/opensearch-project/dashboards-maps/pull/347))
 * Add support to draw rectangle shape to filter documents ([#348](https://github.com/opensearch-project/dashboards-maps/pull/348))
 * Avoid trigger tooltip from label ([#350](https://github.com/opensearch-project/dashboards-maps/pull/350))
+* Add support to build GeoShapeFilterMeta and GeoShapeFilter ([#360](https://github.com/opensearch-project/dashboards-maps/pull/360))
 * Remove cancel button on draw shape and use Escape to cancel draw ([#359](https://github.com/opensearch-project/dashboards-maps/pull/359))
 
 ### Bug Fixes
