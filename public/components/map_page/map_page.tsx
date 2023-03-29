@@ -6,8 +6,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Map as Maplibre } from 'maplibre-gl';
-import { SimpleSavedObject } from '../../../../../src/core/public';
 import classNames from 'classnames';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
+import { SimpleSavedObject } from '../../../../../src/core/public';
 import { MapContainer } from '../map_container';
 import { MapTopNavMenu } from '../map_top_nav';
 import { MapServices } from '../../types';
@@ -29,32 +30,31 @@ import {
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import { ConfigSchema } from '../../../common/config';
-import {GeoShapeFilterMeta, ShapeFilter} from "../../../../../src/plugins/data/common";
-import {GeoShapeRelation} from "@opensearch-project/opensearch/api/types";
-import {buildGeoShapeFilterMeta} from "../../model/geo/filter";
-import {FilterBar} from "../filter_bar/filter_bar";
+import { GeoShapeFilterMeta, ShapeFilter } from '../../../../../src/plugins/data/common';
+import { buildGeoShapeFilterMeta } from '../../model/geo/filter';
+import { FilterBar } from '../filter_bar/filter_bar';
 
 interface MapPageProps {
   mapConfig: ConfigSchema;
 }
 
-interface MapComponentProps {
-  mapConfig: ConfigSchema;
-  mapIdFromSavedObject: string;
+export interface DashboardProps {
   timeRange?: TimeRange;
-  isReadOnlyMode: boolean;
   refreshConfig?: RefreshInterval;
   filters?: Filter[];
   query?: Query;
 }
+
+interface MapComponentProps {
+  mapConfig: ConfigSchema;
+  mapIdFromSavedObject: string;
+  dashboardProps?: DashboardProps;
+}
+
 export const MapComponent = ({
   mapIdFromSavedObject,
   mapConfig,
-  timeRange,
-  isReadOnlyMode,
-  refreshConfig,
-  filters,
-  query,
+  dashboardProps,
 }: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -67,6 +67,7 @@ export const MapComponent = ({
   const maplibreRef = useRef<Maplibre | null>(null);
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
   const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(true);
+  const isReadOnlyMode = !!dashboardProps;
 
   useEffect(() => {
     if (mapIdFromSavedObject) {
@@ -87,8 +88,9 @@ export const MapComponent = ({
         setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
-      const initialDefaultLayer: MapLayerSpecification =
-        getLayerConfigMap(mapConfig)[OPENSEARCH_MAP_LAYER.type];
+      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap(mapConfig)[
+        OPENSEARCH_MAP_LAYER.type
+      ] as MapLayerSpecification;
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
       setLayers([initialDefaultLayer]);
     }
@@ -125,8 +127,6 @@ export const MapComponent = ({
       {isReadOnlyMode ? null : (
         <MapTopNavMenu
           mapIdFromUrl={mapIdFromSavedObject}
-          isReadOnlyMode={isReadOnlyMode}
-          timeRange={timeRange}
           savedMapObject={savedMapObject}
           layers={layers}
           layersIndexPatterns={layersIndexPatterns}
@@ -156,10 +156,7 @@ export const MapComponent = ({
         mapState={mapState}
         mapConfig={mapConfig}
         isReadOnlyMode={isReadOnlyMode}
-        timeRange={timeRange}
-        refreshConfig={refreshConfig}
-        filters={filters}
-        query={query}
+        dashboardProps={dashboardProps}
         isUpdatingLayerRender={isUpdatingLayerRender}
         setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         addSpatialFilter={addSpatialFilter}
@@ -170,5 +167,5 @@ export const MapComponent = ({
 
 export const MapPage = ({ mapConfig }: MapPageProps) => {
   const { id: mapId } = useParams<{ id: string }>();
-  return <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} isReadOnlyMode={false} />;
+  return <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} />;
 };

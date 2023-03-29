@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add geo shape query filter ([#319](https://github.com/opensearch-project/dashboards-maps/pull/319))
 * Add shape filter UI button ([#329](https://github.com/opensearch-project/dashboards-maps/pull/329))
 * Add tooltip to draw shape filter ([#330](https://github.com/opensearch-project/dashboards-maps/pull/330))
+* Add search query ability on map([#370](https://github.com/opensearch-project/dashboards-maps/pull/370))
 
 ### Enhancements
 * Enhance layer visibility status display ([#299](https://github.com/opensearch-project/dashboards-maps/pull/299))
