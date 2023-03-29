@@ -5,9 +5,18 @@
 
 import { LngLat } from 'maplibre-gl';
 import { GeoBounds } from '../map/boundary';
-import { FilterMeta, FILTERS, GeoBoundingBoxFilter } from '../../../../../src/plugins/data/common';
-import { buildBBoxFilter, buildSpatialGeometryFilter, GeoShapeFilter } from './filter';
+import {
+  FilterMeta,
+  FILTERS,
+  GeoBoundingBoxFilter,
+  GeoShapeFilterMeta,
+  GeoShapeFilter,
+  ShapeFilter,
+  FilterStateStore,
+} from '../../../../../src/plugins/data/common';
+import { buildBBoxFilter, buildGeoShapeFilter, buildGeoShapeFilterMeta } from './filter';
 import { Polygon } from 'geojson';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 
 describe('test bounding box filter', function () {
   it('should return valid bounding box', function () {
@@ -57,25 +66,31 @@ describe('test geo shape filter', function () {
     };
     const mockLabel: string = 'mypolygon';
     const fieldName: string = 'location';
+    const expectedParams: {
+      shape: ShapeFilter;
+      relation: GeoShapeRelation;
+    } = {
+      shape: mockPolygon,
+      relation: 'intersects',
+    };
+    const mockFilterMeta: GeoShapeFilterMeta = {
+      alias: mockLabel,
+      disabled: false,
+      negate: false,
+      type: FILTERS.GEO_SHAPE,
+      params: expectedParams,
+    };
+    const geoShapeFilter: GeoShapeFilter = buildGeoShapeFilter(fieldName, mockFilterMeta);
 
-    const geoShapeFilter: GeoShapeFilter = buildSpatialGeometryFilter(
-      fieldName,
-      mockPolygon,
-      mockLabel,
-      'INTERSECTS'
-    );
-    const expectedFilter: GeoShapeFilter = {
-      meta: {
-        alias: mockLabel,
-        disabled: false,
-        negate: false,
-        key: 'location',
-        type: FILTERS.SPATIAL_FILTER,
-      },
+    const expectedFilterMeta: GeoShapeFilterMeta = {
+      ...mockFilterMeta,
+      key: fieldName,
+    };
+    const expectedFilter = {
       geo_shape: {
         ignore_unmapped: true,
         location: {
-          relation: 'INTERSECTS',
+          relation: 'intersects',
           shape: {
             type: 'Polygon',
             coordinates: [
@@ -90,6 +105,45 @@ describe('test geo shape filter', function () {
         },
       },
     };
-    expect(geoShapeFilter).toEqual(expectedFilter);
+    expect(geoShapeFilter.geo_shape).toEqual(expectedFilter.geo_shape);
+    expect(geoShapeFilter.meta).toEqual(expectedFilterMeta);
+    expect(geoShapeFilter.$state?.store).toEqual(FilterStateStore.APP_STATE);
+  });
+});
+
+describe('build GeoShapeFilterMeta', function () {
+  it('should return valid filter meta', function () {
+
+    const mockPolygon: Polygon = {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [74.006, 40.7128],
+          [71.0589, 42.3601],
+          [73.7562, 42.6526],
+          [74.006, 40.7128],
+        ],
+      ],
+    };
+    const actualFilter: GeoShapeFilterMeta = buildGeoShapeFilterMeta(
+      'label',
+      mockPolygon,
+      'intersects'
+    );
+    const expectedParams: {
+      shape: ShapeFilter;
+      relation: GeoShapeRelation;
+    } = {
+      shape: mockPolygon,
+      relation: 'intersects',
+    };
+    const expectedFilter: GeoShapeFilterMeta = {
+      disabled: false,
+      negate: false,
+      alias: 'label',
+      type: FILTERS.GEO_SHAPE,
+      params: expectedParams,
+    };
+    expect(actualFilter).toEqual(expectedFilter);
   });
 });
