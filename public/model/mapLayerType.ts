@@ -47,6 +47,7 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
     tooltipFields: string[];
     useGeoBoundingBoxFilter: boolean;
     filters: Filter[];
+    applyGlobalFilters?: boolean;
   };
   style: {
     fillColor: string;

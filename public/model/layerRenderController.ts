@@ -4,6 +4,7 @@
  */
 
 import { Map as Maplibre } from 'maplibre-gl';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { MapLayerSpecification } from './mapLayerType';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
@@ -22,11 +23,22 @@ import { getDataLayers, getBaseLayers, layersFunctionMap } from './layersFunctio
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
-import { buildBBoxFilter } from './geo/filter';
+import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
 
 interface MaplibreRef {
   current: Maplibre | null;
 }
+
+const getSupportedOperations = (field: string): GeoShapeRelation[] => {
+  switch (field) {
+    case 'geo_point':
+      return ['intersects'];
+    case 'geo_shape':
+      return ['intersects', 'within', 'disjoint'];
+    default:
+      return [];
+  }
+};
 
 export const prepareDataLayerSource = (
   layer: MapLayerSpecification,
@@ -124,6 +136,15 @@ export const handleDataLayerRender = (
   };
   const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
   filters.push(geoBoundingBoxFilter);
+
+  // build and add GeoShape filters from map state if applicable
+  if (mapLayer.source?.applyGlobalFilter ?? true) {
+    mapState?.spatialMetaFilters?.map((value) => {
+      if (getSupportedOperations(geoFieldType).includes(value.params.relation)) {
+        filters.push(buildGeoShapeFilter(geoField, value));
+      }
+    });
+  }
 
   return prepareDataLayerSource(mapLayer, mapState, services, filters, timeRange, query).then(
     (result) => {

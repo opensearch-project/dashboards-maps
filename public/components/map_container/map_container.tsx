@@ -161,6 +161,11 @@ export const MapContainer = ({
     return () => clearInterval(intervalId);
   }, [refreshConfig]);
 
+  // Update data layers when global filter is updated
+  useEffect(() => {
+    renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+  }, [mapState.spatialMetaFilters]);
+
   useEffect(() => {
     if (!mounted || layers.length <= 0) {
       return;
