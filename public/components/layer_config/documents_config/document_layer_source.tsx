@@ -235,6 +235,11 @@ export const DocumentLayerSource = ({
     setSelectedLayerConfig({ ...selectedLayerConfig, source });
   };
 
+  const onApplyGlobalFilters = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const source = { ...selectedLayerConfig.source, applyGlobalFilters: e.target.checked };
+    setSelectedLayerConfig({ ...selectedLayerConfig, source });
+  };
+
   const shouldTooltipSectionOpen = () => {
     return (
       selectedLayerConfig.source.showTooltips &&
@@ -354,6 +359,17 @@ export const DocumentLayerSource = ({
               label={'Only request data around map extent'}
               checked={selectedLayerConfig.source.useGeoBoundingBoxFilter ? true : false}
               onChange={onToggleGeoBoundingBox}
+              compressed
+            />
+          </EuiFormRow>
+          <EuiFormRow>
+            <EuiCheckbox
+              id={`${selectedLayerConfig.id}-apply-global-filter`}
+              label={i18n.translate('documentLayer.applyGlobalFilters', {
+                defaultMessage: 'Apply global filters',
+              })}
+              checked={selectedLayerConfig.source?.applyGlobalFilters ?? true}
+              onChange={onApplyGlobalFilters}
               compressed
             />
           </EuiFormRow>

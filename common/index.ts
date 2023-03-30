@@ -32,6 +32,7 @@ export const DOCUMENTS_MAX_MARKER_BORDER_THICKNESS = 100;
 export const DOCUMENTS_DEFAULT_REQUEST_NUMBER = 1000;
 export const DOCUMENTS_DEFAULT_SHOW_TOOLTIPS: boolean = false;
 export const DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER: boolean = true;
+export const DOCUMENTS_DEFAULT_APPLY_GLOBAL_FILTERS: boolean = true;
 export const DOCUMENTS_DEFAULT_TOOLTIPS: string[] = [];
 export const DOCUMENTS_DEFAULT_LABEL_ENABLES: boolean = false;
 export enum DOCUMENTS_LABEL_TEXT_TYPE {
