@@ -4,31 +4,37 @@
  */
 
 import React, { useState } from 'react';
-import { EuiPopover, EuiContextMenu, EuiPanel, EuiButtonIcon } from '@elastic/eui';
+import { EuiButtonIcon, EuiContextMenu, EuiPanel, EuiPopover } from '@elastic/eui';
 import { FilterInputPanel } from './filter_input_panel';
-// TODO: replace with rectangle image file once available
-import rectangle from '../../../images/polygon.svg';
 import {
-  DrawFilterProperties,
-  DRAW_FILTER_SPATIAL_RELATIONS,
-  DRAW_FILTER_SHAPE_TITLE,
+  DRAW_FILTER_CANCEL,
   DRAW_FILTER_RECTANGLE,
   DRAW_FILTER_RECTANGLE_DEFAULT_LABEL,
+  DRAW_FILTER_SHAPE_TITLE,
+  DRAW_FILTER_SPATIAL_RELATIONS,
+  DrawFilterProperties,
+  FILTER_DRAW_MODE,
 } from '../../../../common';
-import { FILTER_DRAW_MODE } from '../../../../common';
 
 interface FilterByRectangleProps {
   setDrawFilterProperties: (properties: DrawFilterProperties) => void;
-  isDrawActive: boolean;
+  mode: FILTER_DRAW_MODE;
 }
 
-export const FilterByRectangle = ({
-  setDrawFilterProperties,
-  isDrawActive,
-}: FilterByRectangleProps) => {
+const isFilterActive = (mode: FILTER_DRAW_MODE): boolean => {
+  return mode === FILTER_DRAW_MODE.RECTANGLE;
+};
+
+export const FilterByRectangle = ({ setDrawFilterProperties, mode }: FilterByRectangleProps) => {
   const [isPopoverOpen, setPopover] = useState(false);
 
   const onClick = () => {
+    if (isFilterActive(mode)) {
+      setDrawFilterProperties({
+        mode: FILTER_DRAW_MODE.NONE,
+      });
+      return;
+    }
     setPopover(!isPopoverOpen);
   };
 
@@ -64,13 +70,15 @@ export const FilterByRectangle = ({
   const drawRectangleButton = (
     <EuiPanel paddingSize="none" className="spatialFilterToolbar__shape">
       <EuiButtonIcon
-        color="text"
+        isSelected={isFilterActive(mode)}
+        display={isFilterActive(mode) ? 'fill' : 'empty'}
+        aria-pressed={isFilterActive(mode)}
+        color={'primary'}
         size={'s'}
-        iconType={rectangle}
+        iconType={'vector'}
         onClick={onClick}
         aria-label={'draw_filter_rectangle'}
-        title={DRAW_FILTER_RECTANGLE}
-        isDisabled={isDrawActive}
+        title={isFilterActive(mode) ? DRAW_FILTER_CANCEL : DRAW_FILTER_RECTANGLE}
       />
     </EuiPanel>
   );

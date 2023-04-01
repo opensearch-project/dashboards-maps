@@ -2,18 +2,18 @@
 
 exports[`renders spatial filter before drawing 1`] = `
 <EuiFlexGroup
-  alignItems="flexStart"
+  alignItems="center"
   direction="column"
-  gutterSize="s"
+  gutterSize="none"
   responsive={false}
 >
   <EuiFlexItem>
-    <FilterByPolygon
-      isDrawActive={true}
+    <FilterByRectangle
       setDrawFilterProperties={[MockFunction]}
     />
-    <FilterByRectangle
-      isDrawActive={true}
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <FilterByPolygon
       setDrawFilterProperties={[MockFunction]}
     />
   </EuiFlexItem>
@@ -22,18 +22,18 @@ exports[`renders spatial filter before drawing 1`] = `
 
 exports[`renders spatial filter while drawing 1`] = `
 <EuiFlexGroup
-  alignItems="flexStart"
+  alignItems="center"
   direction="column"
-  gutterSize="s"
+  gutterSize="none"
   responsive={false}
 >
   <EuiFlexItem>
-    <FilterByPolygon
-      isDrawActive={true}
+    <FilterByRectangle
       setDrawFilterProperties={[MockFunction]}
     />
-    <FilterByRectangle
-      isDrawActive={true}
+  </EuiFlexItem>
+  <EuiFlexItem>
+    <FilterByPolygon
       setDrawFilterProperties={[MockFunction]}
     />
   </EuiFlexItem>

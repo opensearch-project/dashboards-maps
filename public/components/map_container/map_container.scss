@@ -37,3 +37,11 @@
   top:  ($euiSizeM + $euiSizeS) + ($euiSizeXL * 5);
   right: $euiSizeS;
 }
+
+.drawFilterShapeHelper {
+  z-index: 1;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  bottom: 1px;
+  left: 50%;
+}

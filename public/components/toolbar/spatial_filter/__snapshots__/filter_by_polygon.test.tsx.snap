@@ -10,9 +10,11 @@ exports[`renders filter by polygon button 1`] = `
     >
       <EuiButtonIcon
         aria-label="draw_filter_polygon"
-        color="text"
+        aria-pressed={false}
+        color="primary"
+        display="empty"
         iconType={Object {}}
-        isDisabled={false}
+        isSelected={false}
         onClick={[Function]}
         size="s"
         title="Draw Polygon"
@@ -66,9 +68,11 @@ exports[`renders filter by polygon in middle of drawing 1`] = `
     >
       <EuiButtonIcon
         aria-label="draw_filter_polygon"
-        color="text"
+        aria-pressed={false}
+        color="primary"
+        display="empty"
         iconType={Object {}}
-        isDisabled={true}
+        isSelected={false}
         onClick={[Function]}
         size="s"
         title="Draw Polygon"

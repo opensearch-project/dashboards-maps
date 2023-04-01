@@ -14,6 +14,7 @@ import {
   MAPBOX_GL_DRAW_CREATE_LISTENER,
 } from '../../../../common';
 import { DrawRectangle } from '../../draw/modes/rectangle';
+import {DRAW_SHAPE_STYLE} from "./draw_style";
 
 interface DrawFilterShapeProps {
   filterProperties: DrawFilterProperties;
@@ -49,6 +50,7 @@ export const DrawFilterShape = ({
         ...MapboxDraw.modes,
         [MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE]: DrawRectangle,
       },
+      styles: DRAW_SHAPE_STYLE,
     })
   );
 

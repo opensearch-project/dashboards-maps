@@ -15,19 +15,14 @@ interface SpatialFilterToolBarProps {
 }
 
 export const SpatialFilterToolbar = ({ setFilterProperties, mode }: SpatialFilterToolBarProps) => {
-  const isDrawActive: boolean = mode !== FILTER_DRAW_MODE.NONE;
-  const filterIconGroups = (
-    <EuiFlexItem>
-      <FilterByPolygon setDrawFilterProperties={setFilterProperties} isDrawActive={isDrawActive} />
-      <FilterByRectangle
-        setDrawFilterProperties={setFilterProperties}
-        isDrawActive={isDrawActive}
-      />
-    </EuiFlexItem>
-  );
   return (
-    <EuiFlexGroup responsive={false} direction="column" alignItems="flexStart" gutterSize="s">
-      {filterIconGroups}
+    <EuiFlexGroup responsive={false} direction="column" alignItems="center" gutterSize="none">
+      <EuiFlexItem>
+        <FilterByRectangle setDrawFilterProperties={setFilterProperties} mode={mode} />
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <FilterByPolygon setDrawFilterProperties={setFilterProperties} mode={mode} />
+      </EuiFlexItem>
     </EuiFlexGroup>
   );
 };

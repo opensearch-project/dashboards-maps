@@ -12,22 +12,29 @@ import {
   DRAW_FILTER_POLYGON,
   DRAW_FILTER_POLYGON_DEFAULT_LABEL,
   DRAW_FILTER_SPATIAL_RELATIONS,
-  DRAW_FILTER_SHAPE_TITLE,
+  DRAW_FILTER_SHAPE_TITLE, DRAW_FILTER_CANCEL,
 } from '../../../../common';
 import { FILTER_DRAW_MODE } from '../../../../common';
 
 interface FilterByPolygonProps {
   setDrawFilterProperties: (properties: DrawFilterProperties) => void;
-  isDrawActive: boolean;
+  mode: FILTER_DRAW_MODE;
 }
 
-export const FilterByPolygon = ({
-  setDrawFilterProperties,
-  isDrawActive,
-}: FilterByPolygonProps) => {
+const isFilterActive = (mode: FILTER_DRAW_MODE): boolean => {
+  return mode === FILTER_DRAW_MODE.POLYGON;
+};
+
+export const FilterByPolygon = ({ setDrawFilterProperties, mode }: FilterByPolygonProps) => {
   const [isPopoverOpen, setPopover] = useState(false);
 
   const onClick = () => {
+    if (isFilterActive(mode)) {
+      setDrawFilterProperties({
+        mode: FILTER_DRAW_MODE.NONE,
+      });
+      return;
+    }
     setPopover(!isPopoverOpen);
   };
 
@@ -63,13 +70,15 @@ export const FilterByPolygon = ({
   const drawPolygonButton = (
     <EuiPanel paddingSize="none" className="spatialFilterToolbar__shape">
       <EuiButtonIcon
-        color="text"
+        isSelected={isFilterActive(mode)}
+        display={isFilterActive(mode) ? 'fill' : 'empty'}
+        aria-pressed={isFilterActive(mode)}
+        color="primary"
         size={'s'}
         iconType={polygon}
         onClick={onClick}
         aria-label={'draw_filter_polygon'}
-        title={DRAW_FILTER_POLYGON}
-        isDisabled={isDrawActive}
+        title={isFilterActive(mode) ? DRAW_FILTER_CANCEL : DRAW_FILTER_POLYGON}
       />
     </EuiPanel>
   );
