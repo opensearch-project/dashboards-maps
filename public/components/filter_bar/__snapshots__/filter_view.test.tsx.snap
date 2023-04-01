@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`test filter display renders filter display on disabled 1`] = `
+<EuiBadge
+  closeButtonProps={
+    Object {
+      "tabIndex": -1,
+    }
+  }
+  color="hollow"
+  iconOnClick={[MockFunction]}
+  iconOnClickAriaLabel="Delete"
+  iconSide="right"
+  iconType="cross"
+  onClick={[MockFunction]}
+  onClickAriaLabel="Filter actions"
+  title="Disabled Filter: mylabel. Select for more filter actions."
+>
+  mylabel
+</EuiBadge>
+`;
+
+exports[`test filter display renders filter display on enabled 1`] = `
+<EuiBadge
+  closeButtonProps={
+    Object {
+      "tabIndex": -1,
+    }
+  }
+  color="hollow"
+  iconOnClick={[MockFunction]}
+  iconOnClickAriaLabel="Delete"
+  iconSide="right"
+  iconType="cross"
+  onClick={[MockFunction]}
+  onClickAriaLabel="Filter actions"
+  title="Filter: mylabel. Select for more filter actions."
+>
+  mylabel
+</EuiBadge>
+`;

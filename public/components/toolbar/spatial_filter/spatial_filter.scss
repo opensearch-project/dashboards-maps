@@ -7,10 +7,9 @@
   position: relative;
 
   .euiButtonIcon {
-    border-color:rgba(0,0,0,0.9);
-    color:rgba(255,255,255,0.5);
     width:30px;
     height:30px;
+    border: transparent;
   }
 }
 .spatialFilterGroup__popoverPanel{

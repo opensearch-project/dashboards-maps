@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
@@ -36,6 +37,7 @@ import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
 import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_helper';
+import { ShapeFilter } from '../../../../../src/plugins/data/common';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -52,6 +54,7 @@ interface MapContainerProps {
   query?: Query;
   isUpdatingLayerRender: boolean;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
 }
 
 export const MapContainer = ({
@@ -69,6 +72,7 @@ export const MapContainer = ({
   query,
   isUpdatingLayerRender,
   setIsUpdatingLayerRender,
+  addSpatialFilter,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -256,10 +260,11 @@ export const MapContainer = ({
           map={maplibreRef.current}
           filterProperties={filterProperties}
           updateFilterProperties={setFilterProperties}
+          addSpatialFilter={addSpatialFilter}
         />
       )}
       <div className="SpatialFilterToolbar-container">
-        {mounted && (
+        {!isReadOnlyMode && mounted && (
           <SpatialFilterToolbar
             setFilterProperties={setFilterProperties}
             mode={filterProperties.mode}
