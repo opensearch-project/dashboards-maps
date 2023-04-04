@@ -1,6 +1,13 @@
 import { Map as Maplibre, LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
-import { getLayers, hasLayer } from './map/layer_operations';
+import {
+  addOSMLayerSource,
+  addOSMStyleLayer,
+  getLayers,
+  hasLayer,
+  getOSMStyleLayerWithMapLayerId,
+  updateOSMStyleLayer,
+} from './map/layer_operations';
 import { getMapLanguage } from '../../common/util';
 
 interface MaplibreRef {
@@ -20,20 +27,7 @@ const fetchStyleLayers = (url: string) => {
 
 const handleStyleLayers = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
   getLayers(maplibreRef.current!, layerConfig.id).forEach((mbLayer) => {
-    maplibreRef.current?.setLayerZoomRange(
-      mbLayer.id,
-      layerConfig.zoomRange[0],
-      layerConfig.zoomRange[1]
-    );
-    // TODO: figure out error reason
-    if (mbLayer.type === 'symbol') {
-      return;
-    }
-    maplibreRef.current?.setPaintProperty(
-      mbLayer.id,
-      `${mbLayer.type}-opacity`,
-      layerConfig.opacity / 100
-    );
+    updateOSMStyleLayer(maplibreRef.current!, layerConfig, mbLayer);
   });
 };
 
@@ -54,35 +48,14 @@ const setLanguage = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) =
 
 const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
   if (maplibreRef.current) {
-    const { source, style } = layerConfig;
-    maplibreRef.current.addSource(layerConfig.id, {
-      type: 'vector',
-      url: source?.dataURL,
-    });
+    const maplibre = maplibreRef.current;
+    const { id, source, style } = layerConfig;
+    addOSMLayerSource(maplibre, id, source.dataURL);
     fetchStyleLayers(style?.styleURL).then((styleLayers: LayerSpecification[]) => {
-      styleLayers.forEach((styleLayer) => {
-        styleLayer.id = styleLayer.id + '_' + layerConfig.id;
-        // TODO: Add comments on why we skip background type
-        if (styleLayer.type !== 'background') {
-          styleLayer.source = layerConfig.id;
-        }
-        maplibreRef.current?.addLayer(styleLayer);
+      styleLayers.forEach((layer) => {
+        const styleLayer = getOSMStyleLayerWithMapLayerId(id, layer);
+        addOSMStyleLayer(maplibre, layerConfig, styleLayer);
         setLanguage(maplibreRef, styleLayer);
-        maplibreRef.current?.setLayoutProperty(styleLayer.id, 'visibility', layerConfig.visibility);
-        maplibreRef.current?.setLayerZoomRange(
-          styleLayer.id,
-          layerConfig.zoomRange[0],
-          layerConfig.zoomRange[1]
-        );
-        // TODO: figure out error reason
-        if (styleLayer.type === 'symbol') {
-          return;
-        }
-        maplibreRef.current?.setPaintProperty(
-          styleLayer.id,
-          `${styleLayer.type}-opacity`,
-          layerConfig.opacity / 100
-        );
       });
     });
   }

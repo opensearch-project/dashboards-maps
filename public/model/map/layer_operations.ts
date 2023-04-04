@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
-import { DocumentLayerSpecification } from '../mapLayerType';
+import { DocumentLayerSpecification, OSMLayerSpecification } from '../mapLayerType';
 
 export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSpecification[] => {
   const layers: LayerSpecification[] = map.getStyle().layers;
@@ -276,4 +276,57 @@ export const updateSymbolLayer = (
   map.setPaintProperty(symbolLayerId, 'text-halo-width', specification.symbolBorderWidth);
   map.setPaintProperty(symbolLayerId, 'text-halo-color', specification.symbolBorderColor);
   return symbolLayerId;
+};
+
+// The function to add a new OSM layer to the map
+export const addOSMLayerSource = (map: Maplibre, sourceId: string, dataURL: string): void => {
+  map.addSource(sourceId, {
+    type: 'vector',
+    url: dataURL,
+  });
+};
+
+export const addOSMStyleLayer = (
+  map: Maplibre,
+  mapLayer: OSMLayerSpecification,
+  styleLayer: LayerSpecification
+) => {
+  map.addLayer(styleLayer);
+  return updateOSMStyleLayer(map, mapLayer, styleLayer);
+};
+
+export const updateOSMStyleLayer = (
+  map: Maplibre,
+  mapLayer: OSMLayerSpecification,
+  styleLayer: LayerSpecification
+) => {
+  const { zoomRange, visibility, opacity } = mapLayer;
+  const { id: styleLayerId, type: styleLayerType } = styleLayer;
+  map.setLayoutProperty(styleLayerId, 'visibility', visibility);
+  map.setLayerZoomRange(styleLayerId, zoomRange[0], zoomRange[1]);
+  if (styleLayerType === 'symbol') {
+    map.setPaintProperty(styleLayerId, 'text-opacity', opacity / 100);
+  } else {
+    map.setPaintProperty(styleLayerId, `${styleLayerType}-opacity`, opacity / 100);
+  }
+};
+
+export const getOSMStyleLayerWithMapLayerId = (
+  mapLayerId: string,
+  styleLayer: LayerSpecification
+): LayerSpecification => {
+  let updatedStyleLayerId = mapLayerId;
+  // non-background layer requires source
+  if (styleLayer.type !== 'background') {
+    updatedStyleLayerId = `${styleLayer.id}_${mapLayerId}`;
+    return {
+      ...styleLayer,
+      id: updatedStyleLayerId,
+      source: mapLayerId,
+    };
+  }
+  return {
+    ...styleLayer,
+    id: updatedStyleLayerId,
+  };
 };
