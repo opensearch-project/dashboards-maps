@@ -225,9 +225,9 @@ export const MapContainer = ({
   return (
     <div className="map-main">
       {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
-      {mounted && (
+      {mounted && maplibreRef.current && (
         <DrawFilterShapeHelper
-          map={maplibreRef.current!}
+          map={maplibreRef.current}
           mode={filterProperties.mode}
           onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
         />
@@ -248,8 +248,8 @@ export const MapContainer = ({
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
       )}
-      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
-        <DisplayFeatures map={maplibreRef.current!} layers={layers} />
+      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
+        <DisplayFeatures map={maplibreRef.current} layers={layers} />
       )}
       {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
         <DrawFilterShape

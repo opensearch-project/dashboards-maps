@@ -33,7 +33,7 @@ const getHelpText = (mode: FILTER_DRAW_MODE): string => {
 };
 export const DrawFilterShapeHelper = memo(({ map, mode, onCancel }: DrawFilterShapeHelper) => {
   useEffect(() => {
-    if (map && mode !== FILTER_DRAW_MODE.NONE) {
+    if (mode !== FILTER_DRAW_MODE.NONE) {
       map.getCanvas().style.cursor = 'crosshair'; // Changes cursor to '+'
     } else {
       map.getCanvas().style.cursor = '';
