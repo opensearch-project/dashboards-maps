@@ -138,7 +138,7 @@ export const handleDataLayerRender = (
   filters.push(geoBoundingBoxFilter);
 
   // build and add GeoShape filters from map state if applicable
-  if (mapLayer.source?.applyGlobalFilter ?? true) {
+  if (mapLayer.source?.applyGlobalFilters ?? true) {
     mapState?.spatialMetaFilters?.map((value) => {
       if (getSupportedOperations(geoFieldType).includes(value.params.relation)) {
         filters.push(buildGeoShapeFilter(geoField, value));
