@@ -3,31 +3,44 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { EuiButtonIcon, EuiContextMenu, EuiPanel, EuiPopover } from '@elastic/eui';
 import React, { useState } from 'react';
-import { EuiPopover, EuiContextMenu, EuiPanel, EuiButtonIcon } from '@elastic/eui';
-import { FilterInputPanel } from './filter_input_panel';
-import polygon from '../../../images/polygon.svg';
 import {
-  DrawFilterProperties,
-  DRAW_FILTER_POLYGON,
-  DRAW_FILTER_POLYGON_DEFAULT_LABEL,
-  DRAW_FILTER_SPATIAL_RELATIONS,
+  DRAW_FILTER_CANCEL,
   DRAW_FILTER_SHAPE_TITLE,
+  DRAW_FILTER_SPATIAL_RELATIONS,
+  DrawFilterProperties,
+  FILTER_DRAW_MODE,
 } from '../../../../common';
-import { FILTER_DRAW_MODE } from '../../../../common';
+import { FilterInputPanel } from './filter_input_panel';
 
-interface FilterByPolygonProps {
+interface FilterByShapeProps {
   setDrawFilterProperties: (properties: DrawFilterProperties) => void;
-  isDrawActive: boolean;
+  mode: FILTER_DRAW_MODE;
+  shapeMode: FILTER_DRAW_MODE;
+  shapeLabel: string;
+  defaultLabel: string;
+  iconType: any;
 }
 
-export const FilterByPolygon = ({
+export const FilterByShape = ({
+  shapeMode,
   setDrawFilterProperties,
-  isDrawActive,
-}: FilterByPolygonProps) => {
+  mode,
+  defaultLabel,
+  iconType,
+  shapeLabel,
+}: FilterByShapeProps) => {
   const [isPopoverOpen, setPopover] = useState(false);
+  const isFilterActive: boolean = mode === shapeMode;
 
   const onClick = () => {
+    if (isFilterActive) {
+      setDrawFilterProperties({
+        mode: FILTER_DRAW_MODE.NONE,
+      });
+      return;
+    }
     setPopover(!isPopoverOpen);
   };
 
@@ -50,38 +63,40 @@ export const FilterByPolygon = ({
       title: DRAW_FILTER_SHAPE_TITLE,
       content: (
         <FilterInputPanel
-          drawLabel={DRAW_FILTER_POLYGON}
-          defaultFilterLabel={DRAW_FILTER_POLYGON_DEFAULT_LABEL}
+          drawLabel={shapeLabel}
+          defaultFilterLabel={defaultLabel}
           relations={DRAW_FILTER_SPATIAL_RELATIONS}
           onSubmit={onSubmit}
-          mode={FILTER_DRAW_MODE.POLYGON}
+          mode={shapeMode}
         />
       ),
     },
   ];
 
-  const drawPolygonButton = (
+  const drawShapeButton = (
     <EuiPanel paddingSize="none" className="spatialFilterToolbar__shape">
       <EuiButtonIcon
-        color="text"
+        isSelected={isFilterActive}
+        display={isFilterActive ? 'fill' : 'empty'}
+        aria-pressed={isFilterActive}
+        color="primary"
         size={'s'}
-        iconType={polygon}
+        iconType={iconType}
         onClick={onClick}
-        aria-label={'draw_filter_polygon'}
-        title={DRAW_FILTER_POLYGON}
-        isDisabled={isDrawActive}
+        aria-label={'draw_filter_shape'}
+        title={isFilterActive ? DRAW_FILTER_CANCEL : shapeLabel}
       />
     </EuiPanel>
   );
   return (
     <EuiPopover
-      id="drawPolygonId"
-      button={drawPolygonButton}
+      id="drawShapeId"
+      button={drawShapeButton}
       isOpen={isPopoverOpen}
       closePopover={closePopover}
       panelPaddingSize="none"
       anchorPosition="leftUp"
-      data-test-subj="drawPolygonPopOver"
+      data-test-subj="drawShapePopOver"
     >
       <EuiContextMenu initialPanelId={0} panels={panels} />
     </EuiPopover>
