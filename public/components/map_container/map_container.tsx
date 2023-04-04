@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
@@ -35,7 +36,8 @@ import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
-import { DrawTooltip } from '../toolbar/spatial_filter/draw_tooltip';
+import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_helper';
+import { ShapeFilter } from '../../../../../src/plugins/data/common';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -52,6 +54,7 @@ interface MapContainerProps {
   query?: Query;
   isUpdatingLayerRender: boolean;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
 }
 
 export const MapContainer = ({
@@ -69,6 +72,7 @@ export const MapContainer = ({
   query,
   isUpdatingLayerRender,
   setIsUpdatingLayerRender,
+  addSpatialFilter,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const mapContainer = useRef(null);
@@ -224,7 +228,14 @@ export const MapContainer = ({
 
   return (
     <div className="map-main">
-      {mounted && <MapsFooter map={maplibreRef.current!} zoom={zoom} />}
+      {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
+      {mounted && maplibreRef.current && (
+        <DrawFilterShapeHelper
+          map={maplibreRef.current}
+          mode={filterProperties.mode}
+          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
+        />
+      )}
       {mounted && (
         <LayerControlPanel
           maplibreRef={maplibreRef}
@@ -241,25 +252,19 @@ export const MapContainer = ({
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
       )}
-      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
-        <DisplayFeatures map={maplibreRef.current!} layers={layers} />
-      )}
-      {mounted && Boolean(maplibreRef.current) && (
-        <DrawTooltip
-          map={maplibreRef.current!}
-          mode={filterProperties.mode}
-          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
-        />
+      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
+        <DisplayFeatures map={maplibreRef.current} layers={layers} />
       )}
       {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
         <DrawFilterShape
           map={maplibreRef.current}
           filterProperties={filterProperties}
           updateFilterProperties={setFilterProperties}
+          addSpatialFilter={addSpatialFilter}
         />
       )}
       <div className="SpatialFilterToolbar-container">
-        {mounted && (
+        {!isReadOnlyMode && mounted && (
           <SpatialFilterToolbar
             setFilterProperties={setFilterProperties}
             mode={filterProperties.mode}

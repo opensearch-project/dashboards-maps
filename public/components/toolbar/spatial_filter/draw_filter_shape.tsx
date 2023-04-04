@@ -7,6 +7,7 @@ import React, { Fragment, useEffect, useRef } from 'react';
 import { IControl, Map as Maplibre } from 'maplibre-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Feature } from 'geojson';
+import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import {
   DrawFilterProperties,
   FILTER_DRAW_MODE,
@@ -14,11 +15,14 @@ import {
   MAPBOX_GL_DRAW_CREATE_LISTENER,
 } from '../../../../common';
 import { DrawRectangle } from '../../draw/modes/rectangle';
+import {DRAW_SHAPE_STYLE} from "./draw_style";
+import { GeoShapeFilter, ShapeFilter } from '../../../../../../src/plugins/data/common';
 
 interface DrawFilterShapeProps {
   filterProperties: DrawFilterProperties;
   map: Maplibre;
   updateFilterProperties: (properties: DrawFilterProperties) => void;
+  addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
 }
 
 function getMapboxDrawMode(mode: FILTER_DRAW_MODE): string {
@@ -31,13 +35,41 @@ function getMapboxDrawMode(mode: FILTER_DRAW_MODE): string {
       return MAPBOX_GL_DRAW_MODES.SIMPLE_SELECT;
   }
 }
+export const isGeoShapeFilter = (filter: any): filter is GeoShapeFilter => filter?.geo_shape;
+
+const isShapeFilter = (geometry: any): geometry is ShapeFilter => {
+  return geometry && (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon');
+};
+
+const toGeoShapeRelation = (relation?: string): GeoShapeRelation => {
+  switch (relation) {
+    case 'intersects':
+      return relation;
+    case 'within':
+      return relation;
+    case 'disjoint':
+      return relation;
+    default:
+      return 'intersects';
+  }
+};
 
 export const DrawFilterShape = ({
   filterProperties,
   map,
   updateFilterProperties,
+  addSpatialFilter,
 }: DrawFilterShapeProps) => {
   const onDraw = (event: { features: Feature[] }) => {
+    event.features.map((feature) => {
+      if (isShapeFilter(feature.geometry)) {
+        addSpatialFilter(
+          feature.geometry,
+          filterProperties.filterLabel || null,
+          toGeoShapeRelation(filterProperties.relation)
+        );
+      }
+    });
     updateFilterProperties({
       mode: FILTER_DRAW_MODE.NONE,
     });
@@ -49,6 +81,7 @@ export const DrawFilterShape = ({
         ...MapboxDraw.modes,
         [MAPBOX_GL_DRAW_MODES.DRAW_RECTANGLE]: DrawRectangle,
       },
+      styles: DRAW_SHAPE_STYLE,
     })
   );
 
