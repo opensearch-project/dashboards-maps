@@ -8,13 +8,21 @@ exports[`renders spatial filter before drawing 1`] = `
   responsive={false}
 >
   <EuiFlexItem>
-    <FilterByRectangle
+    <FilterByShape
+      defaultLabel="rectangle"
+      iconType="vector"
       setDrawFilterProperties={[MockFunction]}
+      shapeLabel="Draw Rectangle"
+      shapeMode="rectangle"
     />
   </EuiFlexItem>
   <EuiFlexItem>
-    <FilterByPolygon
+    <FilterByShape
+      defaultLabel="polygon"
+      iconType={Object {}}
       setDrawFilterProperties={[MockFunction]}
+      shapeLabel="Draw Polygon"
+      shapeMode="polygon"
     />
   </EuiFlexItem>
 </EuiFlexGroup>
@@ -28,13 +36,21 @@ exports[`renders spatial filter while drawing 1`] = `
   responsive={false}
 >
   <EuiFlexItem>
-    <FilterByRectangle
+    <FilterByShape
+      defaultLabel="rectangle"
+      iconType="vector"
       setDrawFilterProperties={[MockFunction]}
+      shapeLabel="Draw Rectangle"
+      shapeMode="rectangle"
     />
   </EuiFlexItem>
   <EuiFlexItem>
-    <FilterByPolygon
+    <FilterByShape
+      defaultLabel="polygon"
+      iconType={Object {}}
       setDrawFilterProperties={[MockFunction]}
+      shapeLabel="Draw Polygon"
+      shapeMode="polygon"
     />
   </EuiFlexItem>
 </EuiFlexGroup>
