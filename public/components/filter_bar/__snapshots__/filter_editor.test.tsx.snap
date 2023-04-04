@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders one filter inside filter bar 1`] = `
+<div>
+  <EuiPopoverTitle>
+    <EuiFlexGroup
+      alignItems="baseline"
+      responsive={false}
+    >
+      <EuiFlexItem>
+        Edit Filter
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </EuiPopoverTitle>
+  <div
+    className="globalFilterItem__editorForm"
+  >
+    <EuiForm>
+      <EuiFormRow
+        describedByIds={Array []}
+        display="row"
+        fullWidth={true}
+        hasChildLabel={true}
+        hasEmptyLabelSpace={false}
+        label="Spatial filter parameters"
+        labelType="label"
+      >
+        <EuiCodeEditor
+          height="250px"
+          mode="json"
+          onChange={[Function]}
+          setOptions={Object {}}
+          value="\\"{}\\""
+          width="100%"
+        />
+      </EuiFormRow>
+      <div>
+        <EuiSpacer
+          size="m"
+        />
+        <EuiFormRow
+          describedByIds={Array []}
+          display="row"
+          fullWidth={true}
+          hasChildLabel={true}
+          hasEmptyLabelSpace={false}
+          label="Custom label"
+          labelType="label"
+        >
+          <EuiFieldText
+            fullWidth={true}
+            onChange={[Function]}
+            value="mylabel"
+          />
+        </EuiFormRow>
+      </div>
+      <EuiSpacer
+        size="m"
+      />
+      <EuiFlexGroup
+        alignItems="center"
+        direction="rowReverse"
+        responsive={false}
+      >
+        <EuiFlexItem
+          grow={false}
+        >
+          <EuiButton
+            data-test-subj="saveFilter"
+            fill={true}
+            isDisabled={false}
+            onClick={[Function]}
+          >
+            Save
+          </EuiButton>
+        </EuiFlexItem>
+        <EuiFlexItem
+          grow={false}
+        >
+          <EuiButtonEmpty
+            data-test-subj="cancelSaveFilter"
+            flush="right"
+            onClick={[MockFunction]}
+          >
+            Cancel
+          </EuiButtonEmpty>
+        </EuiFlexItem>
+        <EuiFlexItem />
+      </EuiFlexGroup>
+    </EuiForm>
+  </div>
+</div>
+`;
