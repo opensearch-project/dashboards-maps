@@ -35,7 +35,7 @@ import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
 import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
-import { DrawTooltip } from '../toolbar/spatial_filter/draw_tooltip';
+import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_helper';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -224,7 +224,14 @@ export const MapContainer = ({
 
   return (
     <div className="map-main">
-      {mounted && <MapsFooter map={maplibreRef.current!} zoom={zoom} />}
+      {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
+      {mounted && maplibreRef.current && (
+        <DrawFilterShapeHelper
+          map={maplibreRef.current}
+          mode={filterProperties.mode}
+          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
+        />
+      )}
       {mounted && (
         <LayerControlPanel
           maplibreRef={maplibreRef}
@@ -241,15 +248,8 @@ export const MapContainer = ({
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         />
       )}
-      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && (
-        <DisplayFeatures map={maplibreRef.current!} layers={layers} />
-      )}
-      {mounted && Boolean(maplibreRef.current) && (
-        <DrawTooltip
-          map={maplibreRef.current!}
-          mode={filterProperties.mode}
-          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
-        />
+      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
+        <DisplayFeatures map={maplibreRef.current} layers={layers} />
       )}
       {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
         <DrawFilterShape
