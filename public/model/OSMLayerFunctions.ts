@@ -10,13 +10,18 @@ import {
 } from './map/layer_operations';
 import { getMapLanguage } from '../../common/util';
 import { MaplibreRef } from './layersFunctions';
+import { MapServices } from '../types';
 
 // Fetch style layers from OpenSearch vector tile service
-const fetchStyleLayers = (url: string) => {
+const fetchStyleLayers = (url: string, services: MapServices) => {
   return fetch(url)
     .then((res) => res.json())
     .then((json) => json.layers)
     .catch((error) => {
+      services.toastNotifications.addWarning(
+        'The default Dashboards Maps Service is currently not available in your region. You can configure OpenSearch Dashboards ' +
+          'to use a custom map server for dashboards maps'
+      );
       // eslint-disable-next-line no-console
       console.log('error', error);
     });
@@ -43,12 +48,16 @@ const setLanguage = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) =
   }
 };
 
-const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+const addNewLayer = (
+  layerConfig: OSMLayerSpecification,
+  maplibreRef: MaplibreRef,
+  services: MapServices
+) => {
   if (maplibreRef.current) {
     const maplibre = maplibreRef.current;
     const { id, source, style } = layerConfig;
     addOSMLayerSource(maplibre, id, source.dataURL);
-    fetchStyleLayers(style?.styleURL).then((styleLayers: LayerSpecification[]) => {
+    fetchStyleLayers(style?.styleURL, services).then((styleLayers: LayerSpecification[]) => {
       styleLayers.forEach((layer) => {
         const styleLayer = getOSMStyleLayerWithMapLayerId(id, layer);
         addOSMStyleLayer(maplibre, layerConfig, styleLayer);
@@ -60,11 +69,11 @@ const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRe
 
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification, services: MapServices) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
     return hasLayer(maplibreRef.current!, layerConfig.id)
       ? updateLayerConfig(layerConfig, maplibreRef)
-      : addNewLayer(layerConfig, maplibreRef);
+      : addNewLayer(layerConfig, maplibreRef, services);
   },
 };

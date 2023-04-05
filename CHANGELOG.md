@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * Add filter bar to display global geospatial filters ([#371](https://github.com/opensearch-project/dashboards-maps/pull/371))
 * Change font opacity along with OpenSearch base map layer ([#373](https://github.com/opensearch-project/dashboards-maps/pull/373))
 * Add before layer id when adding documents label ([#387](https://github.com/opensearch-project/dashboards-maps/pull/387))
+* Toast Warning Message if OpenSearch base map is used in conflicting regions ([#382](https://github.com/opensearch-project/dashboards-maps/pull/382))
 
 ### Bug Fixes
 * Fix property value undefined check ([#276](https://github.com/opensearch-project/dashboards-maps/pull/276))

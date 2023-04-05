@@ -173,7 +173,7 @@ export const MapContainer = ({
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
         if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-          handleBaseLayerRender(selectedLayerConfig, maplibreRef);
+          handleBaseLayerRender(selectedLayerConfig, maplibreRef, services);
         } else {
           updateIndexPatterns();
           handleDataLayerRender(
@@ -186,7 +186,7 @@ export const MapContainer = ({
         setSelectedLayerConfig(undefined);
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-        renderBaseLayers(layers, maplibreRef);
+        renderBaseLayers(layers, maplibreRef, services);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
         maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
