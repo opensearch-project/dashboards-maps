@@ -191,3 +191,5 @@ export const DRAW_FILTER_POLYGON = 'Draw Polygon';
 export const DRAW_FILTER_CANCEL = 'Cancel';
 export const DRAW_FILTER_RECTANGLE = 'Draw Rectangle';
 export const DRAW_FILTER_SPATIAL_RELATIONS = ['intersects', 'disjoint', 'within'];
+
+export const PER_PAGE_REQUEST_NUMBER = 50;

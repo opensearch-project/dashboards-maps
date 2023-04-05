@@ -10,8 +10,8 @@ import {
   IRouter,
   SavedObjectsFindResponse,
 } from '../../../../src/core/server';
-import { APP_API, APP_PATH, MAP_SAVED_OBJECT_TYPE } from '../../common';
-import { getStats } from '../common/stats/stats_helper';
+import { APP_API, APP_PATH, PER_PAGE_REQUEST_NUMBER } from '../../common';
+import { getMapSavedObjects, getStats } from '../common/stats/stats_helper';
 import { MapSavedObjectAttributes } from '../../common/map_saved_object_attributes';
 
 export function statsRoute(router: IRouter, logger: Logger) {
@@ -28,7 +28,7 @@ export function statsRoute(router: IRouter, logger: Logger) {
       try {
         const savedObjectsClient = context.core.savedObjects.client;
         const mapsSavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes> =
-          await savedObjectsClient?.find({ type: MAP_SAVED_OBJECT_TYPE, perPage: 1000, page: 1 });
+          await getMapSavedObjects(savedObjectsClient, PER_PAGE_REQUEST_NUMBER);
         const stats = getStats(mapsSavedObjects);
         return response.ok({
           body: stats,

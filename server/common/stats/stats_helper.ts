@@ -6,7 +6,12 @@
 import { SavedObjectsFindResponse } from '../../../../../src/core/server';
 import { MapLayerSpecification } from '../../../public/model/mapLayerType';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
-import { DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
+import {
+  DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE,
+  DASHBOARDS_MAPS_LAYER_TYPE,
+  MAP_SAVED_OBJECT_TYPE,
+} from '../../../common';
+import { SavedObjectsClientContract } from '../../../../../src/core/server';
 
 interface MapAppStats {
   maps_total: number;
@@ -80,4 +85,32 @@ const buildLayerTypesCountObject = (): { [key: string]: number } => {
     }
   });
   return layersCountByType;
+};
+
+export const getMapSavedObjects = async (
+  savedObjectsClient: SavedObjectsClientContract,
+  perPage: number
+): Promise<SavedObjectsFindResponse<MapSavedObjectAttributes>> => {
+  const mapsSavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes> =
+    await savedObjectsClient?.find({
+      type: MAP_SAVED_OBJECT_TYPE,
+      perPage,
+    });
+  // If there are more than perPage of maps, we need to make additional requests to get all maps.
+  if (mapsSavedObjects.total > perPage) {
+    const iterations = Math.ceil(mapsSavedObjects.total / perPage);
+    for (let i = 1; i < iterations; i++) {
+      const mapsSavedObjectsPage: SavedObjectsFindResponse<MapSavedObjectAttributes> =
+        await savedObjectsClient?.find({
+          type: MAP_SAVED_OBJECT_TYPE,
+          perPage,
+          page: i + 1,
+        });
+      mapsSavedObjects.saved_objects = [
+        ...mapsSavedObjects.saved_objects,
+        ...mapsSavedObjectsPage.saved_objects,
+      ];
+    }
+  }
+  return mapsSavedObjects;
 };

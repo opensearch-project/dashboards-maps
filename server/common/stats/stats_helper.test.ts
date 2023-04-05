@@ -5,7 +5,7 @@
 
 import { SavedObjectsFindResponse } from '../../../../../src/core/server';
 import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attributes';
-import { getStats } from './stats_helper';
+import { getMapSavedObjects, getStats } from './stats_helper';
 
 describe('getStats', () => {
   const mockSavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes> = {
@@ -98,5 +98,67 @@ describe('getStats', () => {
     expect(stats.layers_total.wms).toEqual(0);
     expect(stats.layers_total.tms).toEqual(0);
     expect(stats.maps_list.length).toEqual(0);
+  });
+});
+
+describe('getMapSavedObjects', () => {
+  const mockSavedObjectsClient = {
+    find: jest.fn(),
+  };
+  const perPage = 2;
+
+  it('should fetch and return all saved objects of type MAP_SAVED_OBJECT_TYPE', async () => {
+    // create mock SavedObjectsClientContract
+    mockSavedObjectsClient.find.mockResolvedValueOnce({
+      total: 2,
+      saved_objects: [
+        { id: '1', attributes: { title: 'Map 1' } },
+        { id: '2', attributes: { title: 'Map 2' } },
+      ],
+    });
+
+    // @ts-ignore
+    const result = await getMapSavedObjects(mockSavedObjectsClient, perPage);
+
+    expect(result.total).toBe(2); // total should match what was returned by mockSavedObjectsClient.find()
+    expect(result.saved_objects).toHaveLength(2); // all saved objects should be returned
+    expect(result.saved_objects[0].attributes.title).toBe('Map 1'); // first saved object should have correct title
+    expect(result.saved_objects[1].attributes.title).toBe('Map 2'); // second saved object should have correct title
+  });
+
+  it('should make additional requests if there are more than perPage maps', async () => {
+    mockSavedObjectsClient.find
+      .mockResolvedValueOnce({
+        total: 3,
+        saved_objects: [
+          { id: '1', attributes: { title: 'Map 1' } },
+          { id: '2', attributes: { title: 'Map 2' } },
+        ],
+      })
+      .mockResolvedValueOnce({
+        total: 3,
+        saved_objects: [{ id: '3', attributes: { title: 'Map 3' } }],
+      });
+
+    // @ts-ignore
+    const result = await getMapSavedObjects(mockSavedObjectsClient, perPage);
+
+    expect(mockSavedObjectsClient.find).toHaveBeenCalledTimes(2); // should have made two calls to find()
+    expect(result.saved_objects).toHaveLength(3); // all saved objects should be returned
+    expect(result.saved_objects[0].attributes.title).toBe('Map 1'); // first saved object should have correct title
+    expect(result.saved_objects[1].attributes.title).toBe('Map 2'); // second saved object should have correct title
+    expect(result.saved_objects[2].attributes.title).toBe('Map 3'); // second saved object should have correct title
+  });
+
+  it('should return empty array if no maps are found', async () => {
+    mockSavedObjectsClient.find.mockResolvedValueOnce({
+      total: 0,
+      saved_objects: [],
+    });
+
+    // @ts-ignore
+    const result = await getMapSavedObjects(mockSavedObjectsClient, perPage);
+
+    expect(result.saved_objects).toHaveLength(0); // should return empty array
   });
 });
