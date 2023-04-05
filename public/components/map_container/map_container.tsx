@@ -10,15 +10,9 @@ import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { LayerControlPanel } from '../layer_control_panel';
 import './map_container.scss';
 import { DrawFilterProperties, FILTER_DRAW_MODE, MAP_INITIAL_STATE } from '../../../common';
-import { MapLayerSpecification } from '../../model/mapLayerType';
+import { DataLayerSpecification, MapLayerSpecification } from '../../model/mapLayerType';
 import { DrawFilterShape } from '../toolbar/spatial_filter/draw_filter_shape';
-import {
-  Filter,
-  IndexPattern,
-  Query,
-  RefreshInterval,
-  TimeRange,
-} from '../../../../../src/plugins/data/public';
+import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
 import {
   renderDataLayers,
@@ -38,6 +32,7 @@ import { TOOLTIP_STATE } from '../../../common';
 import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
 import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_helper';
 import { ShapeFilter } from '../../../../../src/plugins/data/common';
+import { DashboardProps } from '../map_page/map_page';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -48,10 +43,7 @@ interface MapContainerProps {
   mapState: MapState;
   mapConfig: ConfigSchema;
   isReadOnlyMode: boolean;
-  timeRange?: TimeRange;
-  refreshConfig?: RefreshInterval;
-  filters?: Filter[];
-  query?: Query;
+  dashboardProps?: DashboardProps;
   isUpdatingLayerRender: boolean;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
   addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
@@ -66,10 +58,7 @@ export const MapContainer = ({
   mapState,
   mapConfig,
   isReadOnlyMode,
-  timeRange,
-  refreshConfig,
-  filters,
-  query,
+  dashboardProps,
   isUpdatingLayerRender,
   setIsUpdatingLayerRender,
   addSpatialFilter,
@@ -140,7 +129,7 @@ export const MapContainer = ({
     // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
     // resizing the window, the "moveend" event could be fired constantly
     const debouncedRenderLayers = debounce(() => {
-      renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+      renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
     }, 200);
 
     if (maplibreRef.current) {
@@ -157,17 +146,21 @@ export const MapContainer = ({
   // Update data layers when state bar enable auto refresh
   useEffect(() => {
     let intervalId: NodeJS.Timeout | undefined;
-    if (refreshConfig && !refreshConfig.pause) {
+    if (dashboardProps && dashboardProps.refreshConfig && !dashboardProps.refreshConfig.pause) {
+      const { refreshConfig } = dashboardProps;
       intervalId = setInterval(() => {
-        renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
       }, refreshConfig.value);
     }
     return () => clearInterval(intervalId);
-  }, [refreshConfig]);
+  }, [dashboardProps?.refreshConfig]);
 
   // Update data layers when global filter is updated
   useEffect(() => {
-    renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+    if (!mapState?.spatialMetaFilters) {
+      return;
+    }
+    renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
   }, [mapState.spatialMetaFilters]);
 
   useEffect(() => {
@@ -183,10 +176,15 @@ export const MapContainer = ({
           handleBaseLayerRender(selectedLayerConfig, maplibreRef);
         } else {
           updateIndexPatterns();
-          handleDataLayerRender(selectedLayerConfig, mapState, services, maplibreRef);
+          handleDataLayerRender(
+            selectedLayerConfig as DataLayerSpecification,
+            mapState,
+            services,
+            maplibreRef
+          );
         }
       } else {
-        renderDataLayers(layers, mapState, services, maplibreRef, timeRange, filters, query);
+        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
         renderBaseLayers(layers, maplibreRef);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
@@ -197,7 +195,15 @@ export const MapContainer = ({
     return () => {
       maplibreRef.current!.off('idle', orderLayersAfterRenderLoaded);
     };
-  }, [layers, mounted, timeRange, filters, query, mapState, isReadOnlyMode]);
+  }, [
+    layers,
+    mounted,
+    dashboardProps?.query,
+    dashboardProps?.timeRange,
+    dashboardProps?.filters,
+    mapState,
+    isReadOnlyMode,
+  ]);
 
   useEffect(() => {
     const currentTooltipState: TOOLTIP_STATE =
