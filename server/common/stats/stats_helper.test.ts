@@ -10,7 +10,7 @@ import { getStats } from './stats_helper';
 describe('getStats', () => {
   const mockSavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes> = {
     page: 1,
-    per_page: 20,
+    per_page: 1000,
     total: 3,
     saved_objects: [
       {
@@ -67,6 +67,13 @@ describe('getStats', () => {
     ],
   };
 
+  const mockEmptySavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes> = {
+    page: 1,
+    per_page: 1000,
+    total: 0,
+    saved_objects: [],
+  };
+
   it('returns expected stats', () => {
     const stats = getStats(mockSavedObjects);
     expect(stats.maps_total).toEqual(3);
@@ -80,5 +87,16 @@ describe('getStats', () => {
     expect(stats.maps_list[0].layers_filters_total).toEqual(1);
     expect(stats.maps_list[0].layers_total.documents).toEqual(1);
     expect(stats.maps_list[0].layers_total.opensearch_vector_tile_map).toEqual(1);
+  });
+
+  it('returns expected stats with empty saved objects', () => {
+    const stats = getStats(mockEmptySavedObjects);
+    expect(stats.maps_total).toEqual(0);
+    expect(stats.layers_filters_total).toEqual(0);
+    expect(stats.layers_total.opensearch_vector_tile_map).toEqual(0);
+    expect(stats.layers_total.documents).toEqual(0);
+    expect(stats.layers_total.wms).toEqual(0);
+    expect(stats.layers_total.tms).toEqual(0);
+    expect(stats.maps_list.length).toEqual(0);
   });
 });

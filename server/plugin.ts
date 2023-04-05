@@ -63,7 +63,7 @@ export class CustomImportMapPlugin
     // Register server side APIs
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
-    statsRoute(router);
+    statsRoute(router, this.logger);
 
     // Register saved object types
     core.savedObjects.registerType(mapSavedObjectsType);

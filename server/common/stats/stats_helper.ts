@@ -22,7 +22,7 @@ interface MapAppStats {
 export const getStats = (
   mapsSavedObjects: SavedObjectsFindResponse<MapSavedObjectAttributes>
 ): MapAppStats => {
-  const totalLayersCountByType = getLayerTypesCountMap();
+  const totalLayersCountByType = buildLayerTypesCountObject();
   let totalLayersFiltersCount = 0;
   const mapsList: Array<{
     id: string;
@@ -30,11 +30,10 @@ export const getStats = (
     layers_total: { [key: string]: number };
   }> = [];
   mapsSavedObjects.saved_objects.forEach((mapRes) => {
-    const layersCountByType = getLayerTypesCountMap();
+    const layersCountByType = buildLayerTypesCountObject();
     let layersFiltersCount = 0;
-    const layerListJsonString = mapRes.attributes.layerList as string;
-    const layerList: MapLayerSpecification[] = layerListJsonString
-      ? JSON.parse(layerListJsonString)
+    const layerList: MapLayerSpecification[] = mapRes?.attributes?.layerList
+      ? JSON.parse(mapRes?.attributes?.layerList)
       : [];
     layerList.forEach((layer) => {
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP) {
@@ -51,7 +50,7 @@ export const getStats = (
     });
 
     mapsList.push({
-      id: mapRes.id,
+      id: mapRes?.id,
       layers_filters_total: layersFiltersCount,
       layers_total: {
         ...layersCountByType,
@@ -69,7 +68,7 @@ export const getStats = (
   };
 };
 
-export const getLayerTypesCountMap = (): { [key: string]: number } => {
+const buildLayerTypesCountObject = (): { [key: string]: number } => {
   const layersCountByType: { [key: string]: number } = {};
   Object.values(DASHBOARDS_MAPS_LAYER_TYPE).forEach((layerType) => {
     if (layerType === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP) {
