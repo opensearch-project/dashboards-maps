@@ -13,6 +13,7 @@ import { MapComponent } from '../components/map_page/';
 import { OpenSearchDashboardsContextProvider } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../types';
 import { TimeRange } from '../../../../src/plugins/data/common';
+import { DashboardProps } from '../components/map_page/map_page';
 
 interface Props {
   embeddable: MapEmbeddable;
@@ -35,16 +36,19 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
     setQuery(input.query);
   }, [input.refreshConfig, input.timeRange, input.filters, input.query]);
 
+  const dashboardProps: DashboardProps = {
+    timeRange,
+    refreshConfig,
+    filters,
+    query,
+  };
+
   return (
     <OpenSearchDashboardsContextProvider services={services}>
       <MapComponent
         mapConfig={embeddable.getMapConfig()}
         mapIdFromSavedObject={input.savedObjectId}
-        timeRange={timeRange}
-        isReadOnlyMode={true}
-        refreshConfig={refreshConfig}
-        filters={filters}
-        query={query}
+        dashboardProps={dashboardProps}
       />
     </OpenSearchDashboardsContextProvider>
   );

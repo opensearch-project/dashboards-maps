@@ -24,8 +24,6 @@ interface MapTopNavMenuProps {
   maplibreRef: any;
   mapState: MapState;
   setMapState: (mapState: MapState) => void;
-  isReadOnlyMode: boolean;
-  timeRange?: TimeRange;
   originatingApp?: string;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
 }
@@ -33,8 +31,6 @@ interface MapTopNavMenuProps {
 export const MapTopNavMenu = ({
   mapIdFromUrl,
   savedMapObject,
-  isReadOnlyMode,
-  timeRange,
   layers,
   layersIndexPatterns,
   maplibreRef,
@@ -99,26 +95,21 @@ export const MapTopNavMenu = ({
 
   const handleQuerySubmit = ({ query, dateRange }: { query?: Query; dateRange: TimeRange }) => {
     setIsUpdatingLayerRender(true);
-    if (query) {
-      setMapState({ ...mapState, query });
-    }
-    if (dateRange) {
-      setMapState({ ...mapState, timeRange: dateRange });
-    }
+    const updatedMapState = {
+      ...mapState,
+      ...(query && { query }),
+      ...(dateRange && { timeRange: dateRange }),
+    };
+    setMapState(updatedMapState);
   };
 
   useEffect(() => {
-    if (!isReadOnlyMode) {
-      setDateFrom(mapState.timeRange.from);
-      setDateTo(mapState.timeRange.to);
-    } else {
-      setDateFrom(timeRange!.from);
-      setDateTo(timeRange!.to);
-    }
+    setDateFrom(mapState.timeRange.from);
+    setDateTo(mapState.timeRange.to);
     setQueryConfig(mapState.query);
     setIsRefreshPaused(mapState.refreshInterval.pause);
     setRefreshIntervalValue(mapState.refreshInterval.value);
-  }, [mapState, timeRange]);
+  }, [mapState.timeRange, mapState.query, mapState.refreshInterval]);
 
   const onRefreshChange = useCallback(
     ({ isPaused, refreshInterval }: { isPaused: boolean; refreshInterval: number }) => {
@@ -142,14 +133,15 @@ export const MapTopNavMenu = ({
   }, [services, mapIdFromUrl, layers, title, description, mapState, originatingApp]);
 
   return (
+    // @ts-ignore
     <TopNavMenu
       appName={MAPS_APP_ID}
       config={config}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
-      showSearchBar={!isReadOnlyMode}
+      showSearchBar={true}
       showFilterBar={false}
-      showDatePicker={!isReadOnlyMode}
+      showDatePicker={true}
       showQueryBar={true}
       showSaveQuery={true}
       showQueryInput={true}
