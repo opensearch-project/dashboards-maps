@@ -4,6 +4,7 @@
  */
 
 import { Filter } from '../../../../src/plugins/data/public';
+import { DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
 export type MapLayerSpecification =
@@ -25,7 +26,7 @@ export type AbstractLayerSpecification = {
 };
 
 export type OSMLayerSpecification = AbstractLayerSpecification & {
-  type: 'opensearch_vector_tile_map';
+  type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP;
   source: {
     dataURL: string;
   };
@@ -35,7 +36,7 @@ export type OSMLayerSpecification = AbstractLayerSpecification & {
 };
 
 export type DocumentLayerSpecification = AbstractLayerSpecification & {
-  type: 'documents';
+  type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS;
   source: {
     indexPatternRefName: string;
     indexPatternId: string;
@@ -70,19 +71,19 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
 export type CustomLayerSpecification = CustomTMSLayerSpecification | CustomWMSLayerSpecification;
 
 export type CustomTMSLayerSpecification = AbstractLayerSpecification & {
-  type: 'custom_map';
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP;
   source: {
     url: string;
-    customType: 'tms';
+    customType: DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE.TMS;
     attribution: string;
   };
 };
 
 export type CustomWMSLayerSpecification = AbstractLayerSpecification & {
-  type: 'custom_map';
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP;
   source: {
     url: string;
-    customType: 'wms';
+    customType: DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE.WMS;
     attribution: string;
     layers: string;
     styles: string;
