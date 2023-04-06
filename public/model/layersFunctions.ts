@@ -19,11 +19,7 @@ import {
 import { CustomLayerFunctions } from './customLayerFunctions';
 import { getLayers } from './map/layer_operations';
 
-interface MaplibreRef {
-  current: Maplibre | null;
-}
-
-interface MaplibreRef {
+export interface MaplibreRef {
   current: Maplibre | null;
 }
 
@@ -37,21 +33,6 @@ export const layersTypeNameMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_NAME.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_NAME.CUSTOM_MAP,
-};
-
-export const getMaplibreBeforeLayerId = (
-  selectedLayer: MapLayerSpecification,
-  maplibreRef: MaplibreRef,
-  beforeLayerId: string | undefined
-): string | undefined => {
-  const currentLoadedMbLayers = getLayers(maplibreRef.current!);
-  if (beforeLayerId) {
-    const beforeMbLayer = currentLoadedMbLayers.find((mbLayer) =>
-      mbLayer.id.includes(beforeLayerId)
-    );
-    return beforeMbLayer?.id;
-  }
-  return undefined;
 };
 
 export const layersTypeIconMap: { [key: string]: string } = {
@@ -74,15 +55,20 @@ export const getBaseLayers = (layers: MapLayerSpecification[]): BaseLayerSpecifi
   return layers.filter((layer) => baseLayerTypeLookup[layer.type]) as BaseLayerSpecification[];
 };
 
-// Get layer id from layers that is above the selected layer
-export const getMapBeforeLayerId = (
-  layers: MapLayerSpecification[],
-  selectedLayerId: string
+export const getMaplibreAboveLayerId = (
+  mapLayerId: string,
+  maplibre: Maplibre
 ): string | undefined => {
-  const selectedLayerIndex = layers.findIndex((layer) => layer.id === selectedLayerId);
-  const beforeLayers = layers.slice(selectedLayerIndex + 1);
-  if (beforeLayers.length === 0) {
-    return undefined;
+  const currentLoadedMbLayers = getLayers(maplibre);
+  const matchingMbLayers = currentLoadedMbLayers.filter((mbLayer) =>
+    mbLayer.id.includes(mapLayerId)
+  );
+  if (matchingMbLayers.length > 0) {
+    const highestMbLayerIndex = currentLoadedMbLayers.indexOf(
+      matchingMbLayers[matchingMbLayers.length - 1]
+    );
+    const aboveMbLayer = currentLoadedMbLayers[highestMbLayerIndex + 1];
+    return aboveMbLayer?.id;
   }
-  return beforeLayers[0]?.id;
+  return undefined;
 };
