@@ -11,6 +11,7 @@ import {
 import { getMapLanguage } from '../../common/util';
 import { MaplibreRef } from './layersFunctions';
 import { MapServices } from '../types';
+import { RegionConflictWarningMsg } from '../components/map_container/maps_messages';
 
 // Fetch style layers from OpenSearch vector tile service
 const fetchStyleLayers = (url: string, services: MapServices) => {
@@ -18,10 +19,7 @@ const fetchStyleLayers = (url: string, services: MapServices) => {
     .then((res) => res.json())
     .then((json) => json.layers)
     .catch((error) => {
-      services.toastNotifications.addWarning(
-        'The default Dashboards Maps Service is currently not available in your region. You can configure OpenSearch Dashboards ' +
-          'to use a custom map server for dashboards maps'
-      );
+      services.toastNotifications.addWarning(RegionConflictWarningMsg);
       // eslint-disable-next-line no-console
       console.log('error', error);
     });
