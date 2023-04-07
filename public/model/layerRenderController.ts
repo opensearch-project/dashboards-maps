@@ -203,9 +203,9 @@ const getGlobalStates = (mapState: MapState, dashboardProps?: DashboardProps): M
 export const handleBaseLayerRender = (
   layer: MapLayerSpecification,
   maplibreRef: MaplibreRef,
-  services: MapServices
+  onError: Function
 ): void => {
-  layersFunctionMap[layer.type].render(maplibreRef, layer, services);
+  layersFunctionMap[layer.type].render(maplibreRef, layer, onError);
 };
 
 export const renderDataLayers = (
@@ -223,10 +223,10 @@ export const renderDataLayers = (
 export const renderBaseLayers = (
   layers: MapLayerSpecification[],
   maplibreRef: MaplibreRef,
-  services: MapServices
+  onError: Function
 ): void => {
   getBaseLayers(layers).forEach((layer) => {
-    handleBaseLayerRender(layer, maplibreRef, services);
+    handleBaseLayerRender(layer, maplibreRef, onError);
   });
 };
 
