@@ -5,7 +5,6 @@
 
 import { EuiButtonIcon, EuiFlexItem } from '@elastic/eui';
 import React, { useState } from 'react';
-import { Map as Maplibre } from 'maplibre-gl';
 import {
   LAYER_PANEL_HIDE_LAYER_ICON,
   LAYER_PANEL_SHOW_LAYER_ICON,
@@ -13,10 +12,8 @@ import {
 } from '../../../common';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { updateLayerVisibilityHandler } from '../../model/map/layer_operations';
+import { MaplibreRef } from '../../model/layersFunctions';
 
-interface MaplibreRef {
-  current: Maplibre | null;
-}
 interface HideLayerProps {
   layer: MapLayerSpecification;
   maplibreRef: MaplibreRef;

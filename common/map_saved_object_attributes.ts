@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { SavedObjectAttributes } from 'opensearch-dashboards/server';
+import { SavedObjectAttributes } from '../../../src/core/types';
 
 export interface MapSavedObjectAttributes extends SavedObjectAttributes {
   /** Title of the map */

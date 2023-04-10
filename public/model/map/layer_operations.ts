@@ -247,13 +247,20 @@ export const removeSymbolLayer = (map: Maplibre, layerId: string) => {
   map.removeLayer(layerId + '-symbol');
 };
 
-export const addSymbolLayer = (map: Maplibre, specification: SymbolLayerSpecification): string => {
+export const addSymbolLayer = (
+  map: Maplibre,
+  specification: SymbolLayerSpecification,
+  beforeMbLayerId: string | undefined
+): string => {
   const symbolLayerId = specification.sourceId + '-symbol';
-  map.addLayer({
-    id: symbolLayerId,
-    type: 'symbol',
-    source: specification.sourceId,
-  });
+  map.addLayer(
+    {
+      id: symbolLayerId,
+      type: 'symbol',
+      source: specification.sourceId,
+    },
+    beforeMbLayerId
+  );
   return updateSymbolLayer(map, specification);
 };
 

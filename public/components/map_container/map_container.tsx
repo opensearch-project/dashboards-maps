@@ -183,6 +183,7 @@ export const MapContainer = ({
             maplibreRef
           );
         }
+        setSelectedLayerConfig(undefined);
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
         renderBaseLayers(layers, maplibreRef);
