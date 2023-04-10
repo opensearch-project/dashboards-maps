@@ -1,4 +1,4 @@
-import { Map as Maplibre, LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
+import { LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
 import {
   addOSMLayerSource,
@@ -9,10 +9,7 @@ import {
   updateOSMStyleLayer,
 } from './map/layer_operations';
 import { getMapLanguage } from '../../common/util';
-
-interface MaplibreRef {
-  current: Maplibre | null;
-}
+import { MaplibreRef } from './layersFunctions';
 
 // Fetch style layers from OpenSearch vector tile service
 const fetchStyleLayers = (url: string) => {

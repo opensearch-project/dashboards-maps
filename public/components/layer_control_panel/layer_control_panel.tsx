@@ -21,10 +21,10 @@ import {
   EuiToolTip,
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
-import { Map as Maplibre } from 'maplibre-gl';
 import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
 import { i18n } from '@osd/i18n';
+import { MaplibreRef } from 'public/model/layersFunctions';
 import { IndexPattern } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
@@ -37,10 +37,6 @@ import { ConfigSchema } from '../../../common/config';
 import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
 import { HideLayer } from './hide_layer_button';
-
-interface MaplibreRef {
-  current: Maplibre | null;
-}
 
 interface Props {
   maplibreRef: MaplibreRef;

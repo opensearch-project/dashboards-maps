@@ -1,10 +1,7 @@
-import { Map as Maplibre, AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
+import { AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
 import { hasLayer, removeLayers } from './map/layer_operations';
-
-interface MaplibreRef {
-  current: Maplibre | null;
-}
+import { MaplibreRef } from './layersFunctions';
 
 const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
