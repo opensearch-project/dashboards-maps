@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Map as Maplibre } from 'maplibre-gl';
 import { parse } from 'wellknown';
 import { DocumentLayerSpecification } from './mapLayerType';
 import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
@@ -21,10 +20,8 @@ import {
   removeSymbolLayer,
   createSymbolLayerSpecification,
 } from './map/layer_operations';
+import { getMaplibreAboveLayerId, MaplibreRef } from './layersFunctions';
 
-interface MaplibreRef {
-  current: Maplibre | null;
-}
 // https://opensearch.org/docs/1.3/opensearch/supported-field-types/geo-shape
 const openSearchGeoJSONMap = new Map<string, string>([
   ['point', 'Point'],
@@ -227,7 +224,8 @@ const renderLabelLayer = (layerConfig: DocumentLayerSpecification, maplibreRef: 
     if (hasLabelLayer) {
       updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
     } else {
-      addSymbolLayer(maplibreRef.current!, symbolLayerSpec);
+      const beforeLayerId = getMaplibreAboveLayerId(layerConfig.id, maplibreRef.current!);
+      addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
     }
   } else {
     // If the label set to disabled, remove the label layer if it exists

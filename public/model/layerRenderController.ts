@@ -19,16 +19,12 @@ import {
   Query,
   TimeRange,
 } from '../../../../src/plugins/data/common';
-import { getBaseLayers, getDataLayers, layersFunctionMap } from './layersFunctions';
+import { getBaseLayers, getDataLayers, layersFunctionMap, MaplibreRef } from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
 import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
 import { DashboardProps } from '../components/map_page/map_page';
-
-interface MaplibreRef {
-  current: Maplibre | null;
-}
 
 interface MapGlobalStates {
   timeRange: TimeRange;
