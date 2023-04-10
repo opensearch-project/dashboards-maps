@@ -295,21 +295,25 @@ describe('Symbol layer', () => {
     const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textByFixed: 'test text',
-      textColor: '#af938a',
-      textSize: 12,
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'fixed',
-      textByField: '',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textByFixed: 'test text',
+        textColor: '#af938a',
+        textSize: 12,
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'fixed',
+        textByField: '',
+      },
+      undefined
+    );
 
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
     expect(layer.getProperty('visibility')).toBe('visible');
@@ -330,21 +334,25 @@ describe('Symbol layer', () => {
     const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textByFixed: '',
-      textColor: '#af938a',
-      textSize: 12,
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'by_field',
-      textByField: 'name_by_field',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textByFixed: '',
+        textColor: '#af938a',
+        textSize: 12,
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'by_field',
+        textByField: 'name_by_field',
+      },
+      undefined
+    );
 
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
     expect(layer.getProperty('visibility')).toBe('visible');
@@ -366,21 +374,25 @@ describe('Symbol layer', () => {
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
     // add layer first
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textSize: 12,
-      textColor: '#251914',
-      textByFixed: 'test text by fixed',
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'fixed',
-      textByField: '',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textSize: 12,
+        textColor: '#251914',
+        textByFixed: 'test text by fixed',
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'fixed',
+        textByField: '',
+      },
+      undefined
+    );
 
     expect(mockMap.getLayer(expectedLayerId).length).toBe(1);
     // update symbol for test
