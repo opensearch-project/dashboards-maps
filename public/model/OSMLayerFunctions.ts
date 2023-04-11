@@ -10,6 +10,17 @@ import {
 } from './map/layer_operations';
 import { getMapLanguage } from '../../common/util';
 import { MaplibreRef } from './layersFunctions';
+import { MapsServiceError } from '../components/map_container/map_container';
+
+const fetchDataLayer = (dataUrl: string) => {
+  return fetch(dataUrl)
+    .then(() => true)
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.log('error', error);
+      throw new MapsServiceError(error.message);
+    });
+};
 
 // Fetch style layers from OpenSearch vector tile service
 const fetchStyleLayers = (url: string) => {
@@ -19,6 +30,7 @@ const fetchStyleLayers = (url: string) => {
     .catch((error) => {
       // eslint-disable-next-line no-console
       console.log('error', error);
+      throw new MapsServiceError(error.message);
     });
 };
 
@@ -43,28 +55,46 @@ const setLanguage = (maplibreRef: MaplibreRef, styleLayer: LayerSpecification) =
   }
 };
 
-const addNewLayer = (layerConfig: OSMLayerSpecification, maplibreRef: MaplibreRef) => {
+const addNewLayer = (
+  layerConfig: OSMLayerSpecification,
+  maplibreRef: MaplibreRef,
+  onError: Function
+) => {
   if (maplibreRef.current) {
     const maplibre = maplibreRef.current;
     const { id, source, style } = layerConfig;
-    addOSMLayerSource(maplibre, id, source.dataURL);
-    fetchStyleLayers(style?.styleURL).then((styleLayers: LayerSpecification[]) => {
-      styleLayers.forEach((layer) => {
-        const styleLayer = getOSMStyleLayerWithMapLayerId(id, layer);
-        addOSMStyleLayer(maplibre, layerConfig, styleLayer);
-        setLanguage(maplibreRef, styleLayer);
+    fetchDataLayer(source.dataURL)
+      .then(() => {
+        addOSMLayerSource(maplibre, id, source.dataURL);
+        fetchStyleLayers(style?.styleURL)
+          .then((styleLayers: LayerSpecification[]) => {
+            styleLayers.forEach((layer) => {
+              const styleLayer = getOSMStyleLayerWithMapLayerId(id, layer);
+              addOSMStyleLayer(maplibre, layerConfig, styleLayer);
+              setLanguage(maplibreRef, styleLayer);
+            });
+          })
+          .catch((e) => {
+            if (onError) {
+              onError(e);
+            }
+          });
+      })
+      .catch((e) => {
+        if (onError) {
+          onError(e);
+        }
       });
-    });
   }
 };
 
 // Functions for OpenSearch maps vector tile layer
 export const OSMLayerFunctions = {
-  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {
+  render: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification, onError: Function) => {
     // If layer already exist in maplibre source, update layer config
     // else add new layer.
     return hasLayer(maplibreRef.current!, layerConfig.id)
       ? updateLayerConfig(layerConfig, maplibreRef)
-      : addNewLayer(layerConfig, maplibreRef);
+      : addNewLayer(layerConfig, maplibreRef, onError);
   },
 };
