@@ -33,6 +33,7 @@ import { SpatialFilterToolbar } from '../toolbar/spatial_filter/filter_toolbar';
 import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_helper';
 import { ShapeFilter } from '../../../../../src/plugins/data/common';
 import { DashboardProps } from '../map_page/map_page';
+import { MapsServiceErrorMsg } from './maps_messages';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -47,6 +48,13 @@ interface MapContainerProps {
   isUpdatingLayerRender: boolean;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
   addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
+}
+
+export class MapsServiceError extends Error {
+  constructor(message?: string) {
+    super(message);
+    this.name = 'MapsServiceError';
+  }
 }
 
 export const MapContainer = ({
@@ -64,6 +72,13 @@ export const MapContainer = ({
   addSpatialFilter,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
+
+  function onError(e: unknown) {
+    if (e instanceof MapsServiceError) {
+      services.toastNotifications.addWarning(MapsServiceErrorMsg);
+    }
+  }
+
   const mapContainer = useRef(null);
   const [mounted, setMounted] = useState(false);
   const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
@@ -173,7 +188,7 @@ export const MapContainer = ({
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
         if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-          handleBaseLayerRender(selectedLayerConfig, maplibreRef);
+          handleBaseLayerRender(selectedLayerConfig, maplibreRef, onError);
         } else {
           updateIndexPatterns();
           handleDataLayerRender(
@@ -186,7 +201,7 @@ export const MapContainer = ({
         setSelectedLayerConfig(undefined);
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-        renderBaseLayers(layers, maplibreRef);
+        renderBaseLayers(layers, maplibreRef, onError);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
         maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
