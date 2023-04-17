@@ -52,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Infrastructure
 * Add CHANGELOG ([#342](https://github.com/opensearch-project/dashboards-maps/pull/342))
 * Add stats API for maps and layers in maps plugin ([#362](https://github.com/opensearch-project/dashboards-maps/pull/362))
+* Fix cypress test failed due to OSD dashboard create button updated ([#393](https://github.com/opensearch-project/dashboards-maps/pull/393))
 
 ### Documentation
 
