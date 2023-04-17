@@ -20,7 +20,7 @@ describe('Add map to dashboard', () => {
   it('Add new map to dashboard', () => {
     const testMapName = 'saved-map-' + Date.now().toString();
     cy.visit(`${BASE_PATH}/app/dashboards`);
-    cy.get('button[data-test-subj="newItemButton"]').click();
+    cy.get('[data-test-subj="newItemButton"]').click();
     cy.get('button[data-test-subj="dashboardAddNewPanelButton"]').click();
     cy.get('button[data-test-subj="visType-customImportMap"]').click();
     cy.wait(5000).get('button[data-test-subj="mapSaveButton"]').click();
