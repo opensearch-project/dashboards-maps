@@ -172,7 +172,7 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'globe',
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
-  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: 'visMapRegion',
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: 'heatmap',
 };
 
 // refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages

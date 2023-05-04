@@ -96,7 +96,7 @@ export type CustomWMSLayerSpecification = AbstractLayerSpecification & {
 };
 
 export type ClusterLayerSpecification = AbstractLayerSpecification & {
-  type: 'cluster';
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER;
   source: {
     indexPatternRefName: string;
     indexPatternId: string;
