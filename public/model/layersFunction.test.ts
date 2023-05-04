@@ -54,24 +54,29 @@ describe('Exported objects', () => {
       opensearch_vector_tile_map: OSMLayerFunctions,
       documents: DocumentLayerFunctions,
       custom_map: CustomLayerFunctions,
+      //TODO: will update with layersFunctionsMap
+      cluster: null,
     });
 
     expect(layersTypeNameMap).toEqual({
       opensearch_vector_tile_map: 'OpenSearch map',
       documents: 'Documents',
       custom_map: 'Custom map',
+      cluster: 'Cluster',
     });
 
     expect(layersTypeIconMap).toEqual({
       opensearch_vector_tile_map: 'globe',
       documents: 'document',
       custom_map: 'globe',
+      cluster: 'heatmap',
     });
 
     expect(baseLayerTypeLookup).toEqual({
       opensearch_vector_tile_map: true,
       custom_map: true,
       documents: false,
+      cluster: false,
     });
   });
 });
