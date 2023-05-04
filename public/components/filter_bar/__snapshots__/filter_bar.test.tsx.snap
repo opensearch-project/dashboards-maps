@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders one filter inside filter bar 1`] = `
+<EuiFlexGroup
+  alignItems="flexStart"
+  className="globalFilterGroup"
+  gutterSize="none"
+  responsive={false}
+>
+  <EuiFlexItem
+    className="globalFilterGroup__branch"
+    grow={false}
+  >
+    <FilterOptions
+      onDisableAll={[Function]}
+      onEnableAll={[Function]}
+      onRemoveAll={[Function]}
+      onToggleAllDisabled={[Function]}
+      onToggleAllNegated={[Function]}
+    />
+  </EuiFlexItem>
+  <EuiFlexItem
+    className="globalFilterGroup__filterFlexItem"
+  >
+    <EuiFlexGroup
+      alignItems="center"
+      className="globalFilterBar some-class-name"
+      gutterSize="xs"
+      responsive={false}
+      wrap={true}
+    >
+      <EuiFlexItem
+        className="globalFilterBar__flexItem"
+        grow={false}
+        key="0"
+      >
+        <FilterItem
+          filterMeta={
+            Object {
+              "alias": "mylabel",
+              "disabled": false,
+              "negate": false,
+              "params": Object {
+                "relation": "intersects",
+                "shape": Object {
+                  "coordinates": Array [
+                    Array [
+                      Array [
+                        74.006,
+                        40.7128,
+                      ],
+                      Array [
+                        71.0589,
+                        42.3601,
+                      ],
+                      Array [
+                        73.7562,
+                        42.6526,
+                      ],
+                      Array [
+                        74.006,
+                        40.7128,
+                      ],
+                    ],
+                  ],
+                  "type": "Polygon",
+                },
+              },
+              "type": "geo_shape",
+            }
+          }
+          id="0"
+          onRemove={[Function]}
+          onUpdate={[Function]}
+        />
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  </EuiFlexItem>
+</EuiFlexGroup>
+`;

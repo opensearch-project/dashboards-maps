@@ -16,10 +16,14 @@ import {
   updateLayerVisibilityHandler,
   addSymbolLayer,
   updateSymbolLayer,
+  addOSMLayerSource,
+  addOSMStyleLayer,
+  getOSMStyleLayerWithMapLayerId,
 } from './layer_operations';
-import { Map as Maplibre } from 'maplibre-gl';
+import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
 import { MockMaplibreMap } from './__mocks__/map';
 import { MockLayer } from './__mocks__/layer';
+import { OSMLayerSpecification } from '../mapLayerType';
 
 describe('Circle layer', () => {
   it('add new circle layer', () => {
@@ -291,21 +295,25 @@ describe('Symbol layer', () => {
     const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textByFixed: 'test text',
-      textColor: '#af938a',
-      textSize: 12,
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'fixed',
-      textByField: '',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textByFixed: 'test text',
+        textColor: '#af938a',
+        textSize: 12,
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'fixed',
+        textByField: '',
+      },
+      undefined
+    );
 
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
     expect(layer.getProperty('visibility')).toBe('visible');
@@ -326,21 +334,25 @@ describe('Symbol layer', () => {
     const mockMap = new MockMaplibreMap([]);
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textByFixed: '',
-      textColor: '#af938a',
-      textSize: 12,
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'by_field',
-      textByField: 'name_by_field',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textByFixed: '',
+        textColor: '#af938a',
+        textSize: 12,
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'by_field',
+        textByField: 'name_by_field',
+      },
+      undefined
+    );
 
     const layer = mockMap.getLayers().filter((l) => l.getProperty('id') === expectedLayerId)[0];
     expect(layer.getProperty('visibility')).toBe('visible');
@@ -362,21 +374,25 @@ describe('Symbol layer', () => {
     const sourceId: string = 'symbol-layer-source';
     const expectedLayerId = sourceId + '-symbol';
     // add layer first
-    addSymbolLayer(mockMap as unknown as Maplibre, {
-      sourceId,
-      visibility: 'visible',
-      textFont: ['Noto Sans Regular'],
-      textSize: 12,
-      textColor: '#251914',
-      textByFixed: 'test text by fixed',
-      minZoom: 2,
-      maxZoom: 10,
-      opacity: 60,
-      symbolBorderWidth: 2,
-      symbolBorderColor: '#D6BF57',
-      textType: 'fixed',
-      textByField: '',
-    });
+    addSymbolLayer(
+      mockMap as unknown as Maplibre,
+      {
+        sourceId,
+        visibility: 'visible',
+        textFont: ['Noto Sans Regular'],
+        textSize: 12,
+        textColor: '#251914',
+        textByFixed: 'test text by fixed',
+        minZoom: 2,
+        maxZoom: 10,
+        opacity: 60,
+        symbolBorderWidth: 2,
+        symbolBorderColor: '#D6BF57',
+        textType: 'fixed',
+        textByField: '',
+      },
+      undefined
+    );
 
     expect(mockMap.getLayer(expectedLayerId).length).toBe(1);
     // update symbol for test
@@ -507,5 +523,68 @@ describe('update visibility', function () {
     expect(mockMap.getLayers().map((layer) => String(layer.getProperty('visibility')))).toEqual(
       Array(2).fill('visible')
     );
+  });
+});
+
+describe('OpenSearch base map', function () {
+  it('should add OpenSearch base map source', function () {
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([]);
+    addOSMLayerSource(mockMap as unknown as Maplibre, 'source-1', 'foo.com');
+    expect(mockMap.getSource('source-1')).toBeDefined();
+  });
+
+  it('should add OpenSearch base map style layer', function () {
+    const mockMap: MockMaplibreMap = new MockMaplibreMap([]);
+    const mockMapLayer: OSMLayerSpecification = {
+      name: 'mock-layer-1',
+      type: 'opensearch_vector_tile_map',
+      id: 'layer-1-id',
+      description: 'layer-1-description',
+      zoomRange: [0, 10],
+      opacity: 80,
+      visibility: 'visible',
+      source: {
+        dataURL: 'foo.data.com',
+      },
+      style: {
+        styleURL: 'foo.style.com',
+      },
+    };
+    const mockStyleLayer = {
+      id: 'style-layer-1',
+      type: 'fill',
+      source: 'source-1',
+    } as unknown as LayerSpecification;
+
+    const mockSymbolStyleLayer = {
+      id: 'style-layer-2',
+      type: 'symbol',
+      source: 'source-1',
+    } as unknown as LayerSpecification;
+
+    addOSMStyleLayer(mockMap as unknown as Maplibre, mockMapLayer, mockStyleLayer);
+    expect(mockMap.getLayers().length).toBe(1);
+    expect(mockMap.getLayers()[0].getProperty('id')).toBe('style-layer-1');
+    expect(mockMap.getLayers()[0].getProperty('type')).toBe('fill');
+    expect(mockMap.getLayers()[0].getProperty('source')).toBe('source-1');
+    expect(mockMap.getLayers()[0].getProperty('visibility')).toBe('visible');
+    expect(mockMap.getLayers()[0].getProperty('minZoom')).toBe(0);
+    expect(mockMap.getLayers()[0].getProperty('maxZoom')).toBe(10);
+    expect(mockMap.getLayers()[0].getProperty('fill-opacity')).toBe(0.8);
+
+    addOSMStyleLayer(mockMap as unknown as Maplibre, mockMapLayer, mockSymbolStyleLayer);
+    expect(mockMap.getLayers().length).toBe(2);
+    expect(mockMap.getLayers()[1].getProperty('id')).toBe('style-layer-2');
+    expect(mockMap.getLayers()[1].getProperty('type')).toBe('symbol');
+    expect(mockMap.getLayers()[1].getProperty('text-opacity')).toBe(0.8);
+  });
+
+  it('should set OSM style layer source ID', function () {
+    const mockMapLayerId = 'layer-1-id';
+    const mockStyleLayer = {
+      id: 'style-layer-1',
+      type: 'fill',
+    } as LayerSpecification;
+    getOSMStyleLayerWithMapLayerId(mockMapLayerId, mockStyleLayer);
   });
 });

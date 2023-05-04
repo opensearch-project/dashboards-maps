@@ -5,28 +5,30 @@
 
 import { Map as Maplibre } from 'maplibre-gl';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
-import { MapLayerSpecification } from './mapLayerType';
+import { DataLayerSpecification, MapLayerSpecification } from './mapLayerType';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
   buildOpenSearchQuery,
   Filter,
   FilterMeta,
+  FILTERS,
   GeoBoundingBoxFilter,
   getTime,
   IOpenSearchDashboardsSearchResponse,
   isCompleteResponse,
-  TimeRange,
   Query,
-  FILTERS,
+  TimeRange,
 } from '../../../../src/plugins/data/common';
-import { getDataLayers, getBaseLayers, layersFunctionMap } from './layersFunctions';
+import { getBaseLayers, getDataLayers, layersFunctionMap, MaplibreRef } from './layersFunctions';
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
 import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
+import { DashboardProps } from '../components/map_page/map_page';
 
-interface MaplibreRef {
-  current: Maplibre | null;
+interface MapGlobalStates {
+  timeRange: TimeRange;
+  query: Query;
 }
 
 const getSupportedOperations = (field: string): GeoShapeRelation[] => {
@@ -44,9 +46,8 @@ export const prepareDataLayerSource = (
   layer: MapLayerSpecification,
   mapState: MapState,
   { data, toastNotifications }: MapServices,
-  filters: Filter[] = [],
-  timeRange?: TimeRange,
-  query?: Query
+  maplibreRef: MaplibreRef,
+  dashboardProps?: DashboardProps
 ): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
@@ -62,18 +63,16 @@ export const prepareDataLayerSource = (
       if (label && label.enabled && label.textType === 'by_field' && label.textByField.length > 0) {
         sourceFields.push(label.textByField);
       }
-      let buildQuery;
-      let selectedTimeRange;
+      let mergedQuery;
       if (indexPattern) {
-        if (timeRange) {
-          selectedTimeRange = timeRange;
-        } else {
-          selectedTimeRange = mapState.timeRange;
-        }
+        const { timeRange: selectedTimeRange, query: selectedSearchQuery } = getGlobalStates(
+          mapState,
+          dashboardProps
+        );
         const timeFilters = getTime(indexPattern, selectedTimeRange);
-        buildQuery = buildOpenSearchQuery(indexPattern, query ? [query] : [], [
-          ...filters,
-          ...(layer.source.filters ? layer.source.filters : []),
+        const mergedFilters = getMergedFilters(layer, mapState, maplibreRef, dashboardProps);
+        mergedQuery = buildOpenSearchQuery(indexPattern, selectedSearchQuery, [
+          ...mergedFilters,
           ...(timeFilters ? [timeFilters] : []),
         ]);
       }
@@ -83,7 +82,7 @@ export const prepareDataLayerSource = (
           size: layer.source.documentRequestNumber,
           body: {
             _source: sourceFields,
-            query: buildQuery,
+            query: mergedQuery,
           },
         },
       };
@@ -109,20 +108,64 @@ export const prepareDataLayerSource = (
 };
 
 export const handleDataLayerRender = (
-  mapLayer: MapLayerSpecification,
+  mapLayer: DataLayerSpecification,
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
-  timeRange?: TimeRange,
-  filtersFromDashboard?: Filter[],
-  query?: Query
+  dashboardProps?: DashboardProps
 ) => {
-  if (mapLayer.type !== DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-    return;
+  return prepareDataLayerSource(mapLayer, mapState, services, maplibreRef, dashboardProps).then(
+    (result) => {
+      const { layer, dataSource } = result;
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
+      }
+    }
+  );
+};
+
+const getMergedFilters = (
+  mapLayer: DataLayerSpecification,
+  mapState: MapState,
+  maplibre: MaplibreRef,
+  dashboardProps?: DashboardProps
+): Filter[] => {
+  const mergedFilters: Filter[] = [];
+
+  // add layer local filters if applicable
+  if (mapLayer.source.filters) {
+    mergedFilters.push(...mapLayer.source.filters);
   }
-  // filters are passed from dashboard filters and geo bounding box filters
-  const filters: Filter[] = [];
-  filters.push(...(filtersFromDashboard ? filtersFromDashboard : []));
+
+  // add dashboard filters if applicable
+  if (dashboardProps?.filters) {
+    mergedFilters.push(...dashboardProps.filters);
+  }
+
+  // add global filters from map state if applicable
+  if (mapLayer.source?.applyGlobalFilters ?? true) {
+    // add spatial filters from map state if applicable
+    if (mapState?.spatialMetaFilters) {
+      const geoField = mapLayer.source.geoFieldName;
+      const geoFieldType = mapLayer.source.geoFieldType;
+      mapState?.spatialMetaFilters?.map((value) => {
+        if (getSupportedOperations(geoFieldType).includes(value.params.relation)) {
+          mergedFilters.push(buildGeoShapeFilter(geoField, value));
+        }
+      });
+    }
+  }
+
+  // build and add GeoBoundingBox filter from map state if applicable
+  const geoBoundingBoxFilter = getGeoBoundingBoxFilter(mapLayer, maplibre);
+  mergedFilters.push(geoBoundingBoxFilter);
+  return mergedFilters;
+};
+
+const getGeoBoundingBoxFilter = (
+  mapLayer: DataLayerSpecification,
+  maplibreRef: MaplibreRef
+): GeoBoundingBoxFilter => {
   const geoField = mapLayer.source.geoFieldName;
   const geoFieldType = mapLayer.source.geoFieldType;
 
@@ -134,33 +177,35 @@ export const handleDataLayerRender = (
     negate: false,
     type: FILTERS.GEO_BOUNDING_BOX,
   };
-  const geoBoundingBoxFilter: GeoBoundingBoxFilter = buildBBoxFilter(geoField, mapBounds, meta);
-  filters.push(geoBoundingBoxFilter);
+  return buildBBoxFilter(geoField, mapBounds, meta);
+};
 
-  // build and add GeoShape filters from map state if applicable
-  if (mapLayer.source?.applyGlobalFilter ?? true) {
-    mapState?.spatialMetaFilters?.map((value) => {
-      if (getSupportedOperations(geoFieldType).includes(value.params.relation)) {
-        filters.push(buildGeoShapeFilter(geoField, value));
-      }
-    });
-  }
-
-  return prepareDataLayerSource(mapLayer, mapState, services, filters, timeRange, query).then(
-    (result) => {
-      const { layer, dataSource } = result;
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
-      }
+const getGlobalStates = (mapState: MapState, dashboardProps?: DashboardProps): MapGlobalStates => {
+  if (!!dashboardProps) {
+    if (!dashboardProps.timeRange) {
+      throw new Error('timeRange is not defined in dashboard mode');
     }
-  );
+    if (!dashboardProps.query) {
+      throw new Error('query is not defined in dashboard mode');
+    }
+    return {
+      timeRange: dashboardProps.timeRange,
+      query: dashboardProps.query,
+    };
+  } else {
+    return {
+      timeRange: mapState.timeRange,
+      query: mapState.query,
+    };
+  }
 };
 
 export const handleBaseLayerRender = (
   layer: MapLayerSpecification,
-  maplibreRef: MaplibreRef
+  maplibreRef: MaplibreRef,
+  onError: Function
 ): void => {
-  layersFunctionMap[layer.type].render(maplibreRef, layer);
+  layersFunctionMap[layer.type].render(maplibreRef, layer, onError);
 };
 
 export const renderDataLayers = (
@@ -168,29 +213,20 @@ export const renderDataLayers = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
-  timeRange?: TimeRange,
-  filtersFromDashboard?: Filter[],
-  query?: Query
+  dashboardProps?: DashboardProps
 ): void => {
   getDataLayers(layers).forEach((layer) => {
-    handleDataLayerRender(
-      layer,
-      mapState,
-      services,
-      maplibreRef,
-      timeRange,
-      filtersFromDashboard,
-      query
-    );
+    handleDataLayerRender(layer, mapState, services, maplibreRef, dashboardProps);
   });
 };
 
 export const renderBaseLayers = (
   layers: MapLayerSpecification[],
-  maplibreRef: MaplibreRef
+  maplibreRef: MaplibreRef,
+  onError: Function
 ): void => {
   getBaseLayers(layers).forEach((layer) => {
-    handleBaseLayerRender(layer, maplibreRef);
+    handleBaseLayerRender(layer, maplibreRef, onError);
   });
 };
 

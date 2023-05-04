@@ -94,7 +94,6 @@ export const LayerConfigPanel = ({
     updateLayer();
     closeLayerConfigPanel(false);
     setOriginLayerConfig(null);
-    setSelectedLayerConfig(undefined);
     if (isNewLayer) {
       setIsNewLayer(false);
     }
