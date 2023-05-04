@@ -35,7 +35,7 @@ import {
   MAPS_VISUALIZATION_DESCRIPTION,
 } from '../common';
 import { MapEmbeddableFactoryDefinition } from './embeddable';
-import { setTimeFilter } from './services';
+import { setTimeFilter, setAggs } from './services';
 
 export class CustomImportMapPlugin
   implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart>
@@ -169,6 +169,7 @@ export class CustomImportMapPlugin
 
   public start(core: CoreStart, { data }: AppPluginStartDependencies): CustomImportMapPluginStart {
     setTimeFilter(data.query.timefilter.timefilter);
+    setAggs(data.search.aggs);
     return {};
   }
 

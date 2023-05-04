@@ -25,7 +25,7 @@ import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
 import { i18n } from '@osd/i18n';
 import { MaplibreRef } from 'public/model/layersFunctions';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -51,6 +51,7 @@ interface Props {
   selectedLayerConfig: MapLayerSpecification | undefined;
   setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  timeRange?: TimeRange;
 }
 
 export const LayerControlPanel = memo(
@@ -64,6 +65,7 @@ export const LayerControlPanel = memo(
     selectedLayerConfig,
     setSelectedLayerConfig,
     setIsUpdatingLayerRender,
+    timeRange,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
 
@@ -384,6 +386,7 @@ export const LayerControlPanel = memo(
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
                   setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+                  timeRange={timeRange}
                 />
               )}
               <AddLayerPanel

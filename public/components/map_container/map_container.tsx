@@ -272,6 +272,7 @@ export const MapContainer = ({
           selectedLayerConfig={selectedLayerConfig}
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+          timeRange={timeRange}
         />
       )}
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
