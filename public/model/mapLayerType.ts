@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Filter } from '../../../../src/plugins/data/public';
-
+import { Filter, IAggConfigs } from '../../../../src/plugins/data/public';
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
 export type MapLayerSpecification =
   | OSMLayerSpecification
   | DocumentLayerSpecification
-  | CustomLayerSpecification;
+  | CustomLayerSpecification
+  | ClusterLayerSpecification;
 
-export type DataLayerSpecification = DocumentLayerSpecification;
+export type DataLayerSpecification = DocumentLayerSpecification | ClusterLayerSpecification;
 
 export type BaseLayerSpecification = OSMLayerSpecification | CustomLayerSpecification;
 
@@ -90,5 +90,22 @@ export type CustomWMSLayerSpecification = AbstractLayerSpecification & {
     format: string;
     crs: string;
     bbox: string;
+  };
+};
+
+export type ClusterLayerSpecification = AbstractLayerSpecification & {
+  type: 'cluster';
+  source: {
+    indexPatternRefName: string;
+    indexPatternId: string;
+    aggs?: IAggConfigs;
+  };
+  style: {
+    fillType: 'gradient' | 'solid';
+    palette: string;
+    fillColor: string;
+    borderColor: string;
+    borderThickness: number;
+    radiusRange: [number, number];
   };
 };

@@ -25,7 +25,12 @@ import {
   DOCUMENTS_DEFAULT_LABEL_COLOR,
   DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR,
   DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
-  DOCUMENTS_DEFAULT_APPLY_GLOBAL_FILTERS,
+  CLUSTER,
+  CLUSTER_DEFAULT_FILL_TYPE,
+  CLUSTER_DEFAULT_PALETTE,
+  CLUSTER_MIN_DEFAULT_RADIUS_SIZE,
+  CLUSTER_MAX_DEFAULT_RADIUS_SIZE,
+  CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
 } from '../../common';
 import { MapState } from '../model/mapState';
 import { ConfigSchema } from '../../common/config';
@@ -62,7 +67,6 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       tooltipFields: DOCUMENTS_DEFAULT_TOOLTIPS,
       showTooltips: DOCUMENTS_DEFAULT_SHOW_TOOLTIPS,
       displayTooltipsOnHover: DOCUMENTS_DEFAULT_DISPLAY_TOOLTIPS_ON_HOVER,
-      applyGlobalFilters: DOCUMENTS_DEFAULT_APPLY_GLOBAL_FILTERS,
     },
     style: {
       ...getStyleColor(),
@@ -98,6 +102,26 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       format: '',
       crs: '',
       bbox: '',
+    },
+  },
+  [CLUSTER.type]: {
+    name: '',
+    description: '',
+    type: CLUSTER.type,
+    id: uuidv4(),
+    zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+    opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
+    visibility: LAYER_VISIBILITY.VISIBLE,
+    source: {
+      indexPatternRefName: undefined,
+      aggs: null,
+    },
+    style: {
+      ...getStyleColor(),
+      borderThickness: CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
+      fillType: CLUSTER_DEFAULT_FILL_TYPE,
+      palette: CLUSTER_DEFAULT_PALETTE,
+      radiusRange: [CLUSTER_MIN_DEFAULT_RADIUS_SIZE, CLUSTER_MAX_DEFAULT_RADIUS_SIZE],
     },
   },
 });
