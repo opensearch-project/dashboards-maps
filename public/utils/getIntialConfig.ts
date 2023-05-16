@@ -114,7 +114,20 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
     visibility: LAYER_VISIBILITY.VISIBLE,
     source: {
       indexPatternRefName: undefined,
-      aggs: null,
+      metric: {
+        agg: 'count',
+        field: '',
+        json: '',
+        custom_label: '',
+      },
+      cluster: {
+        agg: 'geohash',
+        field: '',
+        json: '',
+        custom_label: '',
+        useCentroid: true,
+        changePrecision: true,
+      },
     },
     style: {
       ...getStyleColor(),

@@ -250,7 +250,7 @@ const renderMarkerLayer = (
   }
 };
 
-export const DocumentLayerFunctions = {
+export const ClusterLayerFunctions = {
   render: (
     maplibreRef: MaplibreRef,
     layerConfig: DocumentLayerSpecification,

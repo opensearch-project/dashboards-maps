@@ -9,7 +9,7 @@ import { ClusterLayerSpecification } from '../../../model/mapLayerType';
 import { LayerBasicSettings } from '../layer_basic_settings';
 import { ClusterLayerSource } from './cluster_layer_source';
 import { ClusterLayerStyle } from './style';
-import { IndexPattern, TimeRange } from '../../../../../../src/plugins/data/common';
+import { IndexPattern } from '../../../../../../src/plugins/data/common';
 import { useCallback } from 'react';
 
 interface Props {
@@ -17,7 +17,6 @@ interface Props {
   setSelectedLayerConfig: Function;
   setIsUpdateDisabled: Function;
   isLayerExists: Function;
-  timeRange?: TimeRange;
 }
 
 export const ClusterLayerConfigPanel = (props: Props) => {

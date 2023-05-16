@@ -5,7 +5,12 @@
 
 import { Map as Maplibre } from 'maplibre-gl';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
-import { DataLayerSpecification, MapLayerSpecification } from './mapLayerType';
+import {
+  MapLayerSpecification,
+  DocumentLayerSpecification,
+  ClusterLayerSpecification,
+  DataLayerSpecification,
+} from './mapLayerType';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
   buildOpenSearchQuery,
@@ -23,7 +28,7 @@ import { getBaseLayers, getDataLayers, layersFunctionMap, MaplibreRef } from './
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
-import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
+import { buildBBoxFilter, buildGeoShapeFilter, buildBoundingBox } from './geo/filter';
 import { DashboardProps } from '../components/map_page/map_page';
 
 interface MapGlobalStates {
@@ -107,7 +112,7 @@ export const prepareDataLayerSource = (
   });
 };
 
-export const handleDataLayerRender = (
+const handleDataLayerRender = (
   mapLayer: DataLayerSpecification,
   mapState: MapState,
   services: MapServices,

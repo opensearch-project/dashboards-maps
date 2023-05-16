@@ -18,6 +18,7 @@ import {
 } from './mapLayerType';
 import { CustomLayerFunctions } from './customLayerFunctions';
 import { getLayers } from './map/layer_operations';
+import { ClusterLayerFunctions } from './clusterLayerFunctions';
 
 export interface MaplibreRef {
   current: Maplibre | null;
@@ -27,8 +28,7 @@ export const layersFunctionMap: { [key: string]: any } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: OSMLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DocumentLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: CustomLayerFunctions,
-  //TODO: this part in another PR
-  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: null,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: ClusterLayerFunctions,
 };
 
 export const layersTypeNameMap: { [key: string]: string } = {

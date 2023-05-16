@@ -3,8 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Filter, IAggConfigs } from '../../../../src/plugins/data/public';
+import { Filter } from '../../../../src/plugins/data/public';
 import { DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
+import {
+  MetricAggregations,
+  ClusterAggregations,
+} from '../components/layer_config/cluster_config/config';
+
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
 export type MapLayerSpecification =
   | OSMLayerSpecification
@@ -99,7 +104,23 @@ export type ClusterLayerSpecification = AbstractLayerSpecification & {
   source: {
     indexPatternRefName: string;
     indexPatternId: string;
-    aggs?: IAggConfigs;
+    useGeoBoundingBoxFilter: boolean;
+    filters: Filter[];
+    applyGlobalFilters?: boolean;
+    metric: {
+      agg: (typeof MetricAggregations)[number]['value'];
+      field: string;
+      custom_label: string;
+      json: string;
+    };
+    cluster: {
+      agg: (typeof ClusterAggregations)[number]['value'];
+      field: string;
+      json: string;
+      custom_label: string;
+      useCentroid: boolean;
+      changePrecision: boolean;
+    };
   };
   style: {
     fillType: 'gradient' | 'solid';

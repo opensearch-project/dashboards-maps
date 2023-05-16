@@ -17,13 +17,16 @@ import { IndexPattern } from '../../../../../../src/plugins/data/public';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../../types';
 import { i18n } from '@osd/i18n';
+import { CanUpdateMapType } from './cluster_layer_source';
+import { useEffect } from 'react';
 
 interface Props {
   indexPattern: IndexPattern | null | undefined;
   setIndexPattern: Function;
+  setCanUpdateMap: React.Dispatch<React.SetStateAction<CanUpdateMapType>>;
 }
 
-export const DataSourceSection = ({ indexPattern, setIndexPattern }: Props) => {
+export const DataSourceSection = ({ indexPattern, setIndexPattern, setCanUpdateMap }: Props) => {
   const {
     services: {
       savedObjects: { client: savedObjectsClient },
@@ -33,6 +36,13 @@ export const DataSourceSection = ({ indexPattern, setIndexPattern }: Props) => {
       },
     },
   } = useOpenSearchDashboards<MapServices>();
+  useEffect(() => {
+    setCanUpdateMap((prev) => ({
+      ...prev,
+      index: !!indexPattern,
+    }));
+  }, [indexPattern]);
+
   return (
     <EuiPanel paddingSize="s">
       <EuiTitle size="xs">
@@ -45,7 +55,7 @@ export const DataSourceSection = ({ indexPattern, setIndexPattern }: Props) => {
           <EuiFormRow
             label="Index"
             isInvalid={!indexPattern}
-            error={'Select data source first.'}
+            error={'Required'}
             data-test-subj={'indexPatternSelect'}
             fullWidth={true}
           >

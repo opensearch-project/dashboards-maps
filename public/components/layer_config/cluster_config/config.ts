@@ -3,126 +3,48 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AggGroupNames } from '../../../../../../src/plugins/data/common';
-import { IAggConfig } from '../../../../../../src/plugins/data/public';
-
-const metricsSchema = {
-  group: AggGroupNames.Metrics,
-  name: 'metric',
-  title: 'Value',
-  min: 1,
-  max: 1,
-  aggFilter: ['count', 'avg', 'sum', 'min', 'max', 'cardinality', 'top_hits'],
-  defaults: [
-    {
-      schema: 'metric',
-      type: 'count',
-      id: '1',
-    },
-  ],
-  editor: false,
-  params: [],
-};
-const bucketsSchema = {
-  group: AggGroupNames.Buckets,
-  name: 'segment',
-  title: 'Geo coordinates',
-  aggFilter: ['geohash_grid', 'geotile_grid'],
-  min: 1,
-  max: 1,
-  editor: false,
-  params: [],
-  defaults: null,
-};
-export const schemas = {
-  metrics: [metricsSchema],
-  buckets: [bucketsSchema],
-  all: [metricsSchema, bucketsSchema],
-};
-const defaultMetricsSchema = {
-  group: AggGroupNames.Metrics,
-  name: 'metric',
-  title: 'Value',
-  min: 1,
-  max: 1,
-  aggFilter: [''],
-  defaults: [],
-  editor: false,
-  params: [],
-};
-const defaultBucketsSchema = {
-  group: AggGroupNames.Buckets,
-  name: 'segment',
-  title: 'Geo coordinates',
-  aggFilter: [''],
-  min: 1,
-  max: 1,
-  editor: false,
-  params: [],
-  defaults: null,
-};
-
-//when no indexpattern, we can't create aggs. So we use a default mock schema, this will contain null filters.
-export const defaultSchemas = {
-  metrics: [defaultMetricsSchema],
-  buckets: [defaultBucketsSchema],
-};
-
-//when no indexpattern, we can't create aggs. So we use a default aggConfig.
-export const defaultAggs = [
+export const MetricAggregations = [
   {
-    aggConfigs: {
-      aggs: [
-        {
-          id: '1',
-          enabled: true,
-          type: 'count',
-          params: {},
-          schema: 'metric',
-        },
-        {
-          id: '2',
-          enabled: true,
-          type: 'geotile_grid',
-          params: {},
-          schema: 'segment',
-        },
-      ],
-    },
-    brandNew: undefined,
-    enabled: true,
-    id: '1',
-    params: {},
-    parent: undefined,
-    schema: 'metric',
-    subAggs: [],
+    label: 'Count',
+    value: 'count',
+    acceptedFieldTypes: [''],
   },
   {
-    aggConfigs: {
-      typesRegistry: {},
-      aggs: [
-        {
-          id: '1',
-          enabled: true,
-          type: 'count',
-          params: {},
-          schema: 'metric',
-        },
-        {
-          id: '2',
-          enabled: true,
-          type: 'geotile_grid',
-          params: {},
-          schema: 'segment',
-        },
-      ],
-    },
-    brandNew: undefined,
-    enabled: true,
-    id: '2',
-    params: {},
-    parent: undefined,
-    schema: 'segment',
-    subAggs: [],
+    label: 'Average',
+    value: 'average',
+    acceptedFieldTypes: ['number', 'histogram'],
   },
-] as unknown as IAggConfig[];
+  {
+    label: 'Sum',
+    value: 'sum',
+    acceptedFieldTypes: ['number', 'histogram'],
+  },
+  {
+    label: 'Max',
+    value: 'max',
+    acceptedFieldTypes: ['number', 'date'],
+  },
+  {
+    label: 'Min',
+    value: 'min',
+    acceptedFieldTypes: ['number', 'date'],
+  },
+] as const;
+
+export const ClusterAggregations = [
+  {
+    label: 'Geohash',
+    value: 'geohash',
+  },
+  {
+    label: 'Geotile',
+    value: 'geotile',
+  },
+  {
+    label: 'Geohex',
+    value: 'geohex',
+  },
+] as const;
+export const MetricDocLink = 'https://opensearch.org/docs/latest/aggregations/metric-agg/';
+export const ClusterDocLink = 'https://opensearch.org/docs/latest/aggregations/bucket-agg/';
+export const GeoHexDocLink = 'https://opensearch.org/docs/latest/aggregations/geohexgrid/';
