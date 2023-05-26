@@ -241,8 +241,10 @@ export const MapContainer = ({
       (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
     );
     if (!findIndexPattern) {
-      // @ts-ignore
-      const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
+      const newIndexPattern = await services.data.indexPatterns.get(
+        // @ts-ignore
+        selectedLayerConfig.source.indexPatternId
+      );
       const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
       setLayersIndexPatterns(cloneLayersIndexPatterns);
     }
