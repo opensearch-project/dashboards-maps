@@ -24,6 +24,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Documentation
 
 ### Maintenance
-Remove package-lock.json ([#400](https://github.com/opensearch-project/dashboards-maps/pull/400))
 
 ### Refactoring
