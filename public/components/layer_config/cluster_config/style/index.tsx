@@ -11,15 +11,13 @@ import {
   EuiColorPicker,
   EuiPanel,
   EuiFormRow,
-  EuiRadioGroup,
+  EuiFlexGroup,
   EuiColorPalettePicker,
   EuiForm,
   EuiTitle,
-  euiPaletteColorBlind,
-  euiPaletteForTemperature,
   EuiDualRange,
-  euiPaletteForStatus,
-  EuiColorPalettePickerPaletteProps,
+  EuiSelect,
+  EuiFlexItem,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { ClusterLayerSpecification } from '../../../../model/mapLayerType';
@@ -28,6 +26,8 @@ import {
   CLUSTER_MIN_DEFAULT_RADIUS_SIZE,
   CLUSTER_MAX_DEFAULT_RADIUS_SIZE,
 } from '../../../../../common';
+import { Palettes } from '../config';
+
 interface Props {
   selectedLayerConfig: ClusterLayerSpecification;
   setSelectedLayerConfig: Function;
@@ -43,50 +43,10 @@ export const ClusterLayerStyle = ({
 
   const fillTypeOptions = [
     {
-      id: 'gradient',
-      label: 'ramp gradient',
+      value: 'gradient',
+      text: 'Gradient',
     },
-    { id: 'solid', label: 'solid color' },
-  ];
-  //TODO: wait designer provide palette props
-  const palettes: EuiColorPalettePickerPaletteProps[] = [
-    {
-      value: 'pallette_1',
-      palette: euiPaletteColorBlind(),
-      type: 'gradient',
-    },
-    {
-      value: 'pallette_2',
-      palette: euiPaletteForStatus(5),
-      type: 'gradient',
-    },
-    {
-      value: 'pallette_3',
-      palette: euiPaletteForTemperature(5),
-      type: 'gradient',
-    },
-    {
-      value: 'pallette_4',
-      palette: [
-        {
-          stop: 100,
-          color: 'white',
-        },
-        {
-          stop: 250,
-          color: 'lightgray',
-        },
-        {
-          stop: 320,
-          color: 'gray',
-        },
-        {
-          stop: 470,
-          color: 'black',
-        },
-      ],
-      type: 'gradient',
-    },
+    { value: 'solid', text: 'Solid' },
   ];
 
   const onPaletteChange = (palette: string) => {
@@ -121,12 +81,12 @@ export const ClusterLayerStyle = ({
     setIsUpdateDisabled(disableUpdate);
   }, [hasInvalidBorderThickness]);
 
-  const onFillTypeChange = (fillType: string) => {
+  const onFillTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedLayerConfig({
       ...selectedLayerConfig,
       style: {
         ...selectedLayerConfig.style,
-        fillType,
+        fillType: e.target.value,
       },
     });
   };
@@ -176,33 +136,42 @@ export const ClusterLayerStyle = ({
         </EuiTitle>
         <EuiSpacer size="s" />
         <EuiForm>
-          <EuiRadioGroup
-            options={fillTypeOptions}
-            idSelected={selectedLayerConfig.style.fillType}
-            onChange={onFillTypeChange}
-            name="fill type radio group"
-            legend={{
-              children: <span>Fill type</span>,
-            }}
-          />
-          <EuiSpacer size="m" />
-          {selectedLayerConfig.style.fillType === 'gradient' ? (
-            <EuiFormRow label="Ramp fill">
-              <EuiColorPalettePicker
-                palettes={palettes}
-                onChange={onPaletteChange}
-                valueOfSelected={selectedLayerConfig.style.palette}
-                selectionDisplay={'palette'}
-              />
-            </EuiFormRow>
-          ) : (
-            <EuiFormRow label="Color fill">
-              <EuiColorPicker
-                onChange={onColorPickerChange}
-                color={selectedLayerConfig.style.fillColor}
-              />
-            </EuiFormRow>
-          )}
+          <EuiFormRow
+            label={i18n.translate('maps.cluster.fillColor', {
+              defaultMessage: 'Fill color',
+            })}
+          >
+            <>
+              <EuiFlexGroup>
+                <EuiFlexItem grow={false}>
+                  <EuiSelect
+                    id="selectDocExample"
+                    options={fillTypeOptions}
+                    value={selectedLayerConfig.style.fillType}
+                    onChange={onFillTypeChange}
+                    aria-label="Use aria labels when no actual label is in use"
+                    fullWidth={false}
+                  />
+                </EuiFlexItem>
+
+                <EuiFlexItem>
+                  {selectedLayerConfig.style.fillType === 'gradient' ? (
+                    <EuiColorPalettePicker
+                      palettes={Palettes}
+                      onChange={onPaletteChange}
+                      valueOfSelected={selectedLayerConfig.style.palette}
+                      selectionDisplay={'palette'}
+                    />
+                  ) : (
+                    <EuiColorPicker
+                      onChange={onColorPickerChange}
+                      color={selectedLayerConfig.style.fillColor}
+                    />
+                  )}
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </>
+          </EuiFormRow>
 
           <EuiFormRow label="Radius Size" fullWidth={true}>
             <EuiDualRange

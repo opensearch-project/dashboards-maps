@@ -31,6 +31,9 @@ import {
   CLUSTER_MIN_DEFAULT_RADIUS_SIZE,
   CLUSTER_MAX_DEFAULT_RADIUS_SIZE,
   CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
+  CLUSTER_DEFAULT_PRECISION,
+  CLUSTER_DEFAULT_METRIC_AGG,
+  CLUSTER_DEFAULT_CLUSTER_AGG,
 } from '../../common';
 import { MapState } from '../model/mapState';
 import { ConfigSchema } from '../../common/config';
@@ -115,15 +118,16 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
     source: {
       indexPatternRefName: undefined,
       metric: {
-        agg: 'count',
+        agg: CLUSTER_DEFAULT_METRIC_AGG,
         field: '',
         json: '',
         custom_label: '',
       },
       cluster: {
-        agg: 'geohash',
+        agg: CLUSTER_DEFAULT_CLUSTER_AGG,
         field: '',
         json: '',
+        precision: CLUSTER_DEFAULT_PRECISION,
         custom_label: '',
         useCentroid: true,
         changePrecision: true,

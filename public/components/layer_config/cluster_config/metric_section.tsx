@@ -70,31 +70,40 @@ export const MetricSection = ({
     }));
   }, [isJsonValid, isFieldValid, selectedLayerConfig]);
 
-  const handleAggChange = (selectedOptions: EuiComboBoxOptionOption<string>[]) => {
+  const onAggTypeChange = (selectedOptions: EuiComboBoxOptionOption<string>[]) => {
     const value = selectedOptions[0].value;
-    handleMetricAggChange('agg', value!);
+    handleMetricAggChange({ agg: value! });
   };
 
   useEffect(() => {
     //if index is changed, reset field
-    handleMetricAggChange('field', '');
+    handleMetricAggChange({ field: '' });
   }, [indexPattern]);
 
   const handleMetricAggChange = useCallback(
-    (key: string, value: string | boolean) => {
+    (object: Record<string, string | boolean>) => {
       setSelectedLayerConfig({
         ...selectedLayerConfig,
         source: {
           ...selectedLayerConfig.source,
           metric: {
             ...selectedLayerConfig.source.metric,
-            [key]: value,
+            ...object,
           },
         },
       });
     },
     [selectedLayerConfig]
   );
+
+  const docLinkInfo = useMemo(() => {
+    const aggValue = selectedLayerConfig.source.metric.agg;
+    const agg = MetricAggregations.find((agg) => agg.value === aggValue);
+    return {
+      label: agg!.label,
+      link: MetricDocLink,
+    };
+  }, [selectedLayerConfig]);
 
   return (
     <EuiPanel paddingSize="s">
@@ -107,20 +116,19 @@ export const MetricSection = ({
           label="Aggregated by"
           labelAppend={
             <EuiText size="xs">
-              <EuiLink href={MetricDocLink} target="_blank">
-                {selectedLayerConfig.source.metric.agg} help
+              <EuiLink href={docLinkInfo.link} target="_blank">
+                {docLinkInfo.label} help
               </EuiLink>
             </EuiText>
           }
         >
           <EuiComboBox
-            placeholder="Select a single option"
             singleSelection={{ asPlainText: true }}
             options={aggOptions}
             selectedOptions={aggOptions.filter(
               (agg) => agg.value === selectedLayerConfig.source.metric.agg
             )}
-            onChange={handleAggChange}
+            onChange={onAggTypeChange}
             isClearable={false}
             compressed
           />
@@ -131,18 +139,20 @@ export const MetricSection = ({
             isInvalid={!isFieldValid}
             data-test-subj={'metricFieldSelect'}
             fullWidth={true}
+            error={'Required'}
           >
             <EuiComboBox
               options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
               selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
               singleSelection={true}
+              isInvalid={!isFieldValid}
               onChange={(option) => {
                 const field = indexPattern?.getFieldByName(option[0]?.label);
-                handleMetricAggChange('field', field?.displayName ?? '');
+                handleMetricAggChange({ field: field?.displayName ?? '' });
               }}
               sortMatchesBy="startsWith"
-              placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
-                defaultMessage: 'Select data field',
+              placeholder={i18n.translate('metricSection.selectDataFieldPlaceholder', {
+                defaultMessage: 'Select field',
               })}
               data-test-subj={'metricFieldSelect'}
               fullWidth={true}
@@ -155,8 +165,9 @@ export const MetricSection = ({
         <EuiFormRow label="Custom label" isInvalid={false} fullWidth={true}>
           <EuiFieldText
             value={selectedLayerConfig.source.metric.custom_label}
-            onChange={(e) => handleMetricAggChange('custom_label', e.target.value)}
+            onChange={(e) => handleMetricAggChange({ custom_label: e.target.value })}
             compressed
+            placeholder="Add a custom label"
           />
         </EuiFormRow>
         <EuiSpacer size="s" />
@@ -165,7 +176,7 @@ export const MetricSection = ({
             <EuiFormRow isInvalid={false} fullWidth={true}>
               <JsonEditor
                 value={selectedLayerConfig.source.metric.json}
-                setValue={(value) => handleMetricAggChange('json', value)}
+                setValue={(value) => handleMetricAggChange({ json: value })}
                 setValidity={setJsonValid}
               />
             </EuiFormRow>

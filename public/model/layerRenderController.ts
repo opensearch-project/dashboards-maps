@@ -28,8 +28,9 @@ import { getBaseLayers, getDataLayers, layersFunctionMap, MaplibreRef } from './
 import { MapServices } from '../types';
 import { MapState } from './mapState';
 import { GeoBounds, getBounds } from './map/boundary';
-import { buildBBoxFilter, buildGeoShapeFilter, buildBoundingBox } from './geo/filter';
+import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
 import { DashboardProps } from '../components/map_page/map_page';
+import { buildAgg } from './agg/build_agg';
 
 interface MapGlobalStates {
   timeRange: TimeRange;
@@ -109,10 +110,58 @@ export const prepareDataLayerSource = (
         },
       });
     }
+    if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER) {
+      const sourceConfig = layer.source;
+      const zoom = maplibreRef.current?.getZoom() ?? 1;
+
+      const indexPattern = await data.indexPatterns.get(sourceConfig.indexPatternId);
+      const indexPatternRefName = sourceConfig?.indexPatternRefName;
+      const aggs = buildAgg(sourceConfig, zoom);
+      let mergedQuery;
+      if (indexPattern) {
+        const { timeRange: selectedTimeRange, query: selectedSearchQuery } = getGlobalStates(
+          mapState,
+          dashboardProps
+        );
+        const timeFilters = getTime(indexPattern, selectedTimeRange);
+        const mergedFilters = getMergedFilters(layer, mapState, maplibreRef, dashboardProps);
+        mergedQuery = buildOpenSearchQuery(indexPattern, selectedSearchQuery, [
+          ...mergedFilters,
+          ...(timeFilters ? [timeFilters] : []),
+        ]);
+      }
+      const request = {
+        params: {
+          index: indexPatternRefName,
+          body: {
+            aggs,
+            _source: { excludes: [] },
+            query: mergedQuery,
+          },
+        },
+      };
+
+      const search$ = data.search.search(request).subscribe({
+        next: (response: IOpenSearchDashboardsSearchResponse) => {
+          if (isCompleteResponse(response)) {
+            const dataSource: object = response.rawResponse.aggregations;
+            search$.unsubscribe();
+            resolve({ dataSource, layer });
+          } else {
+            toastNotifications.addWarning('An error has occurred when query dataSource');
+            search$.unsubscribe();
+            reject();
+          }
+        },
+        error: (e: Error) => {
+          data.search.showError(e);
+        },
+      });
+    }
   });
 };
 
-const handleDataLayerRender = (
+export const handleDataLayerRender = (
   mapLayer: DataLayerSpecification,
   mapState: MapState,
   services: MapServices,
@@ -122,9 +171,7 @@ const handleDataLayerRender = (
   return prepareDataLayerSource(mapLayer, mapState, services, maplibreRef, dashboardProps).then(
     (result) => {
       const { layer, dataSource } = result;
-      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
-      }
+      layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
     }
   );
 };
@@ -151,8 +198,14 @@ const getMergedFilters = (
   if (mapLayer.source?.applyGlobalFilters ?? true) {
     // add spatial filters from map state if applicable
     if (mapState?.spatialMetaFilters) {
-      const geoField = mapLayer.source.geoFieldName;
-      const geoFieldType = mapLayer.source.geoFieldType;
+      const geoField =
+        mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS
+          ? mapLayer.source.geoFieldName
+          : mapLayer.source.cluster.field;
+      const geoFieldType =
+        mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS
+          ? mapLayer.source.geoFieldType
+          : mapLayer.source.cluster.fieldType;
       mapState?.spatialMetaFilters?.map((value) => {
         if (getSupportedOperations(geoFieldType).includes(value.params.relation)) {
           mergedFilters.push(buildGeoShapeFilter(geoField, value));
@@ -171,14 +224,22 @@ const getGeoBoundingBoxFilter = (
   mapLayer: DataLayerSpecification,
   maplibreRef: MaplibreRef
 ): GeoBoundingBoxFilter => {
-  const geoField = mapLayer.source.geoFieldName;
-  const geoFieldType = mapLayer.source.geoFieldType;
+  const geoField =
+    mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS
+      ? mapLayer.source.geoFieldName
+      : mapLayer.source.cluster.field;
+  const geoFieldType =
+    mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS
+      ? mapLayer.source.geoFieldType
+      : mapLayer.source.cluster.fieldType;
 
   // geo bounding box query supports geo_point fields
   const mapBounds: GeoBounds = getBounds(maplibreRef.current!);
   const meta: FilterMeta = {
     alias: null,
-    disabled: !mapLayer.source.useGeoBoundingBoxFilter || geoFieldType !== 'geo_point',
+    disabled:
+      !mapLayer.source.useGeoBoundingBoxFilter ||
+      (mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && geoFieldType !== 'geo_point'),
     negate: false,
     type: FILTERS.GEO_BOUNDING_BOX,
   };

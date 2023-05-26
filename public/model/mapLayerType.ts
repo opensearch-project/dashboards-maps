@@ -73,6 +73,41 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
   };
 };
 
+export type ClusterLayerSpecification = AbstractLayerSpecification & {
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER;
+  source: {
+    indexPatternRefName: string;
+    indexPatternId: string;
+    useGeoBoundingBoxFilter: boolean;
+    filters: Filter[];
+    applyGlobalFilters?: boolean;
+    metric: {
+      agg: (typeof MetricAggregations)[number]['value'];
+      field: string;
+      custom_label: string;
+      json: string;
+    };
+    cluster: {
+      agg: (typeof ClusterAggregations)[number]['value'];
+      field: string;
+      fieldType: string;
+      precision: number;
+      json: string;
+      custom_label: string;
+      useCentroid: boolean;
+      changePrecision: boolean;
+    };
+  };
+  style: {
+    fillType: 'gradient' | 'solid';
+    palette: string;
+    fillColor: string;
+    borderColor: string;
+    borderThickness: number;
+    radiusRange: [number, number];
+  };
+};
+
 export type CustomLayerSpecification = CustomTMSLayerSpecification | CustomWMSLayerSpecification;
 
 export type CustomTMSLayerSpecification = AbstractLayerSpecification & {
@@ -96,38 +131,5 @@ export type CustomWMSLayerSpecification = AbstractLayerSpecification & {
     format: string;
     crs: string;
     bbox: string;
-  };
-};
-
-export type ClusterLayerSpecification = AbstractLayerSpecification & {
-  type: DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER;
-  source: {
-    indexPatternRefName: string;
-    indexPatternId: string;
-    useGeoBoundingBoxFilter: boolean;
-    filters: Filter[];
-    applyGlobalFilters?: boolean;
-    metric: {
-      agg: (typeof MetricAggregations)[number]['value'];
-      field: string;
-      custom_label: string;
-      json: string;
-    };
-    cluster: {
-      agg: (typeof ClusterAggregations)[number]['value'];
-      field: string;
-      json: string;
-      custom_label: string;
-      useCentroid: boolean;
-      changePrecision: boolean;
-    };
-  };
-  style: {
-    fillType: 'gradient' | 'solid';
-    palette: string;
-    fillColor: string;
-    borderColor: string;
-    borderThickness: number;
-    radiusRange: [number, number];
   };
 };

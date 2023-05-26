@@ -18,7 +18,7 @@ import {
   updatePolygonLayer,
   updateSymbolLayer,
   removeSymbolLayer,
-  createSymbolLayerSpecification,
+  createDocumentSymbolLayerSpecification,
 } from './map/layer_operations';
 import { getMaplibreAboveLayerId, MaplibreRef } from './layersFunctions';
 
@@ -52,7 +52,9 @@ const getGeoFieldName = (layerConfig: DocumentLayerSpecification) => {
 };
 
 const buildGeometry = (fieldType: string, location: any) => {
+  console.log('location', location);
   if (isGeoJSON(location)) {
+    console.log('isGeoJSON location', location);
     return {
       type: openSearchGeoJSONMap.get(location.type?.toLowerCase()),
       coordinates: location.coordinates,
@@ -111,6 +113,7 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
       featureList.push(feature);
     }
   });
+  console.log('getLayerSource', data, featureList);
   return {
     type: 'FeatureCollection',
     features: featureList,
@@ -128,7 +131,6 @@ const addNewLayer = (
     return;
   }
   const source = getLayerSource(data, layerConfig);
-  console.log('doc add new layer', data, source);
   maplibreInstance.addSource(layerConfig.id, {
     type: 'geojson',
     data: source,
@@ -221,7 +223,7 @@ const renderLabelLayer = (layerConfig: DocumentLayerSpecification, maplibreRef: 
   const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
   // If the label set to enabled, add the label layer
   if (layerConfig.style?.label?.enabled) {
-    const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
+    const symbolLayerSpec = createDocumentSymbolLayerSpecification(layerConfig);
     if (hasLabelLayer) {
       updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
     } else {
@@ -257,7 +259,6 @@ export const DocumentLayerFunctions = {
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    console.log('data', data);
     renderMarkerLayer(maplibreRef, layerConfig, data, beforeLayerId);
     renderLabelLayer(layerConfig, maplibreRef);
   },

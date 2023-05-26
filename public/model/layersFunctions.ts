@@ -11,6 +11,7 @@ import {
 } from '../../common';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
+import { ClusterLayerFunctions } from './clusterLayerFunctions';
 import {
   BaseLayerSpecification,
   DataLayerSpecification,
@@ -18,7 +19,6 @@ import {
 } from './mapLayerType';
 import { CustomLayerFunctions } from './customLayerFunctions';
 import { getLayers } from './map/layer_operations';
-import { ClusterLayerFunctions } from './clusterLayerFunctions';
 
 export interface MaplibreRef {
   current: Maplibre | null;

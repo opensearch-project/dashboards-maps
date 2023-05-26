@@ -27,6 +27,7 @@
     "@types/wellknown": "^0.5.4",
     "cypress-file-upload": "^5.0.8",
     "geojson": "^0.5.0",
+    "h3-js": "^4.1.0",
     "install": "^0.13.0",
     "maplibre-gl": "^2.4.0",
     "prettier": "^2.1.1",

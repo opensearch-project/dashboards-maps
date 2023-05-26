@@ -72,6 +72,7 @@ export const DataSourceSection = ({ indexPattern, setIndexPattern, setCanUpdateM
               isClearable={false}
               data-test-subj={'indexPatternSelect'}
               fullWidth={true}
+              isInvalid={!indexPattern}
             />
           </EuiFormRow>
         </EuiFlexItem>

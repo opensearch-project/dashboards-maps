@@ -71,12 +71,15 @@ export const MAP_SAVED_OBJECT_TYPE = 'map';
 export const MAPS_APP_ICON = 'gisApp';
 export const MAPS_VISUALIZATION_DESCRIPTION = 'Create map visualization with multiple layers';
 export const CLUSTER_DEFAULT_FILL_TYPE = 'gradient';
-export const CLUSTER_DEFAULT_PALETTE = 'pallette_1';
+export const CLUSTER_DEFAULT_PALETTE = 'blue';
 export const CLUSTER_MIN_DEFAULT_RADIUS_SIZE = 50;
 export const CLUSTER_MAX_DEFAULT_RADIUS_SIZE = 200;
 export const CLUSTER_MIN_BORDER_THICKNESS = 0;
 export const CLUSTER_MAX_BORDER_THICKNESS = 100;
 export const CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS = 1;
+export const CLUSTER_DEFAULT_PRECISION = 2;
+export const CLUSTER_DEFAULT_METRIC_AGG = 'count';
+export const CLUSTER_DEFAULT_CLUSTER_AGG = 'geohash_grid';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {

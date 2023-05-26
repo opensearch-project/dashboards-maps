@@ -3,110 +3,78 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { parse } from 'wellknown';
-import { DocumentLayerSpecification } from './mapLayerType';
-import { convertGeoPointToGeoJSON, isGeoJSON } from '../utils/geo_formater';
+import { ClusterLayerSpecification } from './mapLayerType';
+import { convertGeoPointToGeoJSON } from '../utils/geo_formater';
+import { Map as Maplibre } from 'maplibre-gl';
 import {
   addCircleLayer,
-  addLineLayer,
-  addPolygonLayer,
-  addSymbolLayer,
   hasLayer,
-  hasSymbolLayer,
   updateCircleLayer,
-  updateLineLayer,
-  updatePolygonLayer,
+  hasSymbolLayer,
+  createClusterLayerSymbolSpecification,
   updateSymbolLayer,
-  removeSymbolLayer,
-  createSymbolLayerSpecification,
+  addSymbolLayer,
 } from './map/layer_operations';
-import { getMaplibreAboveLayerId, MaplibreRef } from './layersFunctions';
+import { MaplibreRef, getMaplibreAboveLayerId } from './layersFunctions';
+import { decodeGeoHash, decodeGeoTile, decodeGeoHex } from '../utils/decode';
 
-// https://opensearch.org/docs/1.3/opensearch/supported-field-types/geo-shape
-const openSearchGeoJSONMap = new Map<string, string>([
-  ['point', 'Point'],
-  ['linestring', 'LineString'],
-  ['polygon', 'Polygon'],
-  ['multipoint', 'MultiPoint'],
-  ['multilinestring', 'MultiLineString'],
-  ['multipolygon', 'MultiPolygon'],
-  ['geometrycollection', 'GeometryCollection'],
-]);
+const getScaleRadius = (
+  value: number,
+  maxValue: number,
+  zoom: number,
+  layerConfig: ClusterLayerSpecification
+) => {
+  const precisionBiasBase = 4;
+  const precisionBiasNumerator = 200;
 
-const getFieldValue = (data: any, name: string) => {
-  if (!name) {
-    return undefined;
-  }
-  const keys = name.split('.');
-  return keys.reduce((pre, cur) => {
-    return pre?.[cur];
-  }, data);
+  const precision = layerConfig.source.cluster.precision;
+
+  const pct = Math.abs(value) / Math.abs(maxValue);
+  const zoomRadius = 0.5 * Math.pow(2, zoom);
+  const precisionScale = precisionBiasNumerator / Math.pow(precisionBiasBase, precision);
+
+  // square root value percentage
+  const radius = Math.pow(pct, 0.5) * zoomRadius * precisionScale;
+  return radius;
 };
 
-const getGeoFieldType = (layerConfig: DocumentLayerSpecification) => {
-  return layerConfig?.source?.geoFieldType;
-};
+const getCircleColor = () => {};
 
-const getGeoFieldName = (layerConfig: DocumentLayerSpecification) => {
-  return layerConfig?.source?.geoFieldName;
-};
-
-const buildGeometry = (fieldType: string, location: any) => {
-  if (isGeoJSON(location)) {
-    return {
-      type: openSearchGeoJSONMap.get(location.type?.toLowerCase()),
-      coordinates: location.coordinates,
-    };
-  }
-
-  if (typeof location === 'string') {
-    // Check if location is WKT format
-    const geometry = parse(location);
-    if (geometry) {
-      return geometry;
-    }
-  }
-  // Geopoint supports other format like object, string, array,
-  if (fieldType === 'geo_point') {
-    // convert other supported formats to GeoJSON
-    return convertGeoPointToGeoJSON(location);
-  }
-  // We don't support any other format
-  return undefined;
-};
-
-const buildProperties = (document: any, fields: string[]) => {
-  const property: { [name: string]: any } = {};
-  if (!fields) {
-    return property;
-  }
-  fields.forEach((field) => {
-    const fieldValue: string | undefined = getFieldValue(document._source, field);
-    if (fieldValue !== undefined) {
-      property[field] = fieldValue;
-    }
-  });
-  return property;
-};
-
-const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
-  const geoFieldName = getGeoFieldName(layerConfig);
-  const geoFieldType = getGeoFieldType(layerConfig);
+const getLayerSource = (
+  data: any,
+  layerConfig: ClusterLayerSpecification,
+  maplibreInstance: Maplibre
+) => {
+  const { useCentroid, agg } = layerConfig.source.cluster;
+  const buckets = data[2].buckets;
+  const bucketsValueArr = buckets.map((item: any) => item?.[1]?.value ?? item.doc_count);
+  const maxBucketValue = Math.max.apply(null, bucketsValueArr);
+  const zoom = maplibreInstance.getZoom();
   const featureList: any = [];
-  data.forEach((item: any) => {
-    const geoFieldValue = getFieldValue(item._source, geoFieldName);
-    const geometry = buildGeometry(geoFieldType, geoFieldValue);
-    const fields: string[] = [];
-    if (layerConfig.source.tooltipFields) {
-      fields.push(...layerConfig.source.tooltipFields);
+  buckets.forEach((item: any) => {
+    const { doc_count, key } = item;
+    let location;
+    const value = item?.[1]?.value;
+    if (useCentroid) {
+      location = item[3].location;
+    } else if (agg === 'geohash_grid') {
+      location = decodeGeoHash(key);
+    } else if (agg === 'geotile_grid') {
+      location = decodeGeoTile(key);
+    } else if (agg === 'geohex_grid') {
+      location = decodeGeoHex(key);
     }
-    if (layerConfig.style.label?.textByField) {
-      fields.push(layerConfig.style.label.textByField);
-    }
+    const geometry = convertGeoPointToGeoJSON(location);
     if (geometry) {
+      //If there is not value, that means the metric agg type is count, use doc_count
+      const radius = getScaleRadius(value ?? doc_count, maxBucketValue, zoom, layerConfig);
+      let color;
+      if (layerConfig.style.fillType === 'gradient') {
+        color = getCircleColor();
+      }
       const feature = {
         geometry,
-        properties: buildProperties(item, fields),
+        properties: { count: doc_count, value, key, radius, color },
       };
       featureList.push(feature);
     }
@@ -118,7 +86,7 @@ const getLayerSource = (data: any, layerConfig: DocumentLayerSpecification) => {
 };
 
 const addNewLayer = (
-  layerConfig: DocumentLayerSpecification,
+  layerConfig: ClusterLayerSpecification,
   maplibreRef: MaplibreRef,
   data: any,
   beforeLayerId: string | undefined
@@ -127,49 +95,26 @@ const addNewLayer = (
   if (!maplibreInstance) {
     return;
   }
-  const source = getLayerSource(data, layerConfig);
-  console.log('doc add new layer', data, source);
+  const source = getLayerSource(data, layerConfig, maplibreInstance);
   maplibreInstance.addSource(layerConfig.id, {
     type: 'geojson',
     data: source,
   });
   addCircleLayer(maplibreInstance, {
-    fillColor: layerConfig.style?.fillColor,
+    fillColor: layerConfig.style.fillColor,
     maxZoom: layerConfig.zoomRange[1],
     minZoom: layerConfig.zoomRange[0],
     opacity: layerConfig.opacity,
-    outlineColor: layerConfig.style?.borderColor,
-    radius: layerConfig.style?.markerSize,
+    outlineColor: layerConfig.style.borderColor,
+    radius: ['get', 'radius'],
     sourceId: layerConfig.id,
     visibility: layerConfig.visibility,
-    width: layerConfig.style?.borderThickness,
+    width: layerConfig.style.borderThickness,
   });
-  const geoFieldType = getGeoFieldType(layerConfig);
-  if (geoFieldType === 'geo_shape') {
-    addLineLayer(maplibreInstance, {
-      width: layerConfig.style?.borderThickness,
-      color: layerConfig.style?.fillColor,
-      maxZoom: layerConfig.zoomRange[1],
-      minZoom: layerConfig.zoomRange[0],
-      opacity: layerConfig.opacity,
-      sourceId: layerConfig.id,
-      visibility: layerConfig.visibility,
-    });
-    addPolygonLayer(maplibreInstance, {
-      width: layerConfig.style?.borderThickness,
-      fillColor: layerConfig.style?.fillColor,
-      maxZoom: layerConfig.zoomRange[1],
-      minZoom: layerConfig.zoomRange[0],
-      opacity: layerConfig.opacity,
-      sourceId: layerConfig.id,
-      outlineColor: layerConfig.style?.borderColor,
-      visibility: layerConfig.visibility,
-    });
-  }
 };
 
 const updateLayer = (
-  layerConfig: DocumentLayerSpecification,
+  layerConfig: ClusterLayerSpecification,
   maplibreRef: MaplibreRef,
   data: any
 ) => {
@@ -178,7 +123,7 @@ const updateLayer = (
     const dataSource = maplibreInstance?.getSource(layerConfig.id);
     if (dataSource) {
       // @ts-ignore
-      dataSource.setData(getLayerSource(data, layerConfig));
+      dataSource.setData(getLayerSource(data, layerConfig, maplibreInstance));
     }
     updateCircleLayer(maplibreInstance, {
       fillColor: layerConfig.style.fillColor,
@@ -186,60 +131,17 @@ const updateLayer = (
       minZoom: layerConfig.zoomRange[0],
       opacity: layerConfig.opacity,
       outlineColor: layerConfig.style.borderColor,
-      radius: layerConfig.style?.markerSize,
+      radius: ['get', 'radius'],
       sourceId: layerConfig.id,
       visibility: layerConfig.visibility,
       width: layerConfig.style.borderThickness,
     });
-    const geoFieldType = getGeoFieldType(layerConfig);
-    if (geoFieldType === 'geo_shape') {
-      updateLineLayer(maplibreInstance, {
-        width: layerConfig.style.borderThickness,
-        color: layerConfig.style.fillColor,
-        maxZoom: layerConfig.zoomRange[1],
-        minZoom: layerConfig.zoomRange[0],
-        opacity: layerConfig.opacity,
-        sourceId: layerConfig.id,
-        visibility: layerConfig.visibility,
-      });
-      updatePolygonLayer(maplibreInstance, {
-        width: layerConfig.style.borderThickness,
-        fillColor: layerConfig.style.fillColor,
-        maxZoom: layerConfig.zoomRange[1],
-        minZoom: layerConfig.zoomRange[0],
-        opacity: layerConfig.opacity,
-        sourceId: layerConfig.id,
-        outlineColor: layerConfig.style.borderColor,
-        visibility: layerConfig.visibility,
-      });
-    }
   }
 };
 
-// The function to render label for document layer
-const renderLabelLayer = (layerConfig: DocumentLayerSpecification, maplibreRef: MaplibreRef) => {
-  const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
-  // If the label set to enabled, add the label layer
-  if (layerConfig.style?.label?.enabled) {
-    const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
-    if (hasLabelLayer) {
-      updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
-    } else {
-      const beforeLayerId = getMaplibreAboveLayerId(layerConfig.id, maplibreRef.current!);
-      addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
-    }
-  } else {
-    // If the label set to disabled, remove the label layer if it exists
-    if (hasLabelLayer) {
-      removeSymbolLayer(maplibreRef.current!, layerConfig.id);
-    }
-  }
-};
-
-// The function to render point, line and shape layer for document layer
 const renderMarkerLayer = (
   maplibreRef: MaplibreRef,
-  layerConfig: DocumentLayerSpecification,
+  layerConfig: ClusterLayerSpecification,
   data: any,
   beforeLayerId: string | undefined
 ) => {
@@ -250,14 +152,26 @@ const renderMarkerLayer = (
   }
 };
 
+// The function to render label for document layer
+const renderLabelLayer = (layerConfig: ClusterLayerSpecification, maplibreRef: MaplibreRef) => {
+  const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
+  // If the label set to enabled, add the label layer
+  const symbolLayerSpec = createClusterLayerSymbolSpecification(layerConfig);
+  if (hasLabelLayer) {
+    updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
+  } else {
+    const beforeLayerId = getMaplibreAboveLayerId(layerConfig.id, maplibreRef.current!);
+    addSymbolLayer(maplibreRef.current!, symbolLayerSpec, beforeLayerId);
+  }
+};
+
 export const ClusterLayerFunctions = {
   render: (
     maplibreRef: MaplibreRef,
-    layerConfig: DocumentLayerSpecification,
+    layerConfig: ClusterLayerSpecification,
     data: any,
     beforeLayerId: string | undefined
   ) => {
-    console.log('data', data);
     renderMarkerLayer(maplibreRef, layerConfig, data, beforeLayerId);
     renderLabelLayer(layerConfig, maplibreRef);
   },
