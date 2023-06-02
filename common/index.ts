@@ -126,8 +126,7 @@ export enum DASHBOARDS_MAPS_LAYER_DESCRIPTION {
   OPENSEARCH_MAP = 'Use default OpenSearch basemaps.',
   DOCUMENTS = 'View points, lines, and polygons on the map.',
   CUSTOM_MAP = 'Configure maps to use a custom map source.',
-  //TODO: wait ux and writer for content
-  CLUSTER = 'cluster layer',
+  CLUSTER = 'Geospatial data grouped to show density.',
 }
 
 export const DOCUMENTS = {
