@@ -113,12 +113,18 @@ export const MetricSection = ({
   return (
     <EuiPanel paddingSize="s">
       <EuiTitle size="xs">
-        <h3>Metrics</h3>
+        <h3>
+          {i18n.translate('metricSection.title', {
+            defaultMessage: 'Metrics',
+          })}
+        </h3>
       </EuiTitle>
       <EuiSpacer size="s" />
       <EuiForm style={{ padding: '0px 12px' }}>
         <EuiFormRow
-          label="Aggregated by"
+          label={i18n.translate('metricSection.aggretedBy', {
+            defaultMessage: 'Aggregated by',
+          })}
           labelAppend={
             <EuiText size="xs">
               <EuiLink href={docLinkInfo.link} target="_blank">
@@ -169,7 +175,9 @@ export const MetricSection = ({
             value={selectedLayerConfig.source.metric.custom_label}
             onChange={(e) => handleMetricAggChange({ custom_label: e.target.value })}
             compressed
-            placeholder="Add a custom label"
+            placeholder={i18n.translate('metricSection.addCustomLabel', {
+              defaultMessage: 'Add a custom label',
+            })}
           />
         </EuiFormRow>
         <EuiSpacer size="s" />

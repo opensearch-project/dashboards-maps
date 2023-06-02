@@ -136,12 +136,18 @@ export const ClusterSection = ({
   return (
     <EuiPanel paddingSize="s">
       <EuiTitle size="xs">
-        <h3>Cluster</h3>
+        <h3>
+          {i18n.translate('clusterSection.title', {
+            defaultMessage: 'Cluster',
+          })}
+        </h3>
       </EuiTitle>
       <EuiSpacer size="s" />
       <EuiForm style={{ padding: '0px 12px' }}>
         <EuiFormRow
-          label="Geoaggregation type"
+          label={i18n.translate('clusterSection.geoAggType', {
+            defaultMessage: 'Geoaggregation type',
+          })}
           labelAppend={
             <EuiText size="xs">
               <EuiLink href={docLinkInfo.link} target="_blank">
@@ -162,7 +168,9 @@ export const ClusterSection = ({
           />
         </EuiFormRow>
         <EuiFormRow
-          label="Geospatial field"
+          label={i18n.translate('clusterSection.geoField', {
+            defaultMessage: 'Geospatial field',
+          })}
           isInvalid={!isFieldValid}
           data-test-subj={'clusterFieldSelect'}
           fullWidth={true}
@@ -196,7 +204,12 @@ export const ClusterSection = ({
           />
         </EuiFormRow>
         {!selectedLayerConfig.source.cluster.changePrecision ? (
-          <EuiFormRow label="Precision" display={'rowCompressed'}>
+          <EuiFormRow
+            label={i18n.translate('clusterSection.precision', {
+              defaultMessage: 'Precision',
+            })}
+            display={'rowCompressed'}
+          >
             <EuiRange
               min={selectedAggConfig.precisionRange[0]}
               max={selectedAggConfig.precisionRange[1]}

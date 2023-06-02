@@ -86,7 +86,7 @@ export const FilterSection = ({
         <EuiFormRow>
           <EuiCheckbox
             id={`${selectedLayerConfig.id}-apply-global-filter`}
-            label={i18n.translate('documentLayer.applyGlobalFilters', {
+            label={i18n.translate('clusterLayer.applyGlobalFilters', {
               defaultMessage: 'Apply global filters',
             })}
             checked={selectedLayerConfig.source?.applyGlobalFilters ?? true}
