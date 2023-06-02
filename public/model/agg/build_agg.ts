@@ -22,7 +22,7 @@ export const buildAgg = (source: ClusterLayerSpecification['source'], zoom: numb
   //   3: {},
   //   },
   // },
-  let agg: Record<'2', any> = {
+  let agg: Record<'2', Record<string, string | number | Record<string, string | number> | any>> = {
     2: {},
   };
 

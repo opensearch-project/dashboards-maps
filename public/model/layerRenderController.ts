@@ -143,7 +143,7 @@ export const handleDataLayerRender = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
-  legendRef: React.RefObject<MapsLegendHandle>,
+  legendRef: React.RefObject<Partial<MapsLegendHandle>>,
   dashboardProps?: DashboardProps
 ) => {
   return prepareDataLayerSource(mapLayer, mapState, services, maplibreRef, dashboardProps).then(

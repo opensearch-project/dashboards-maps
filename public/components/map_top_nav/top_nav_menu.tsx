@@ -15,6 +15,7 @@ import { getSavedMapBreadcrumbs } from '../../utils/breadcrumbs';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { MapState } from '../../model/mapState';
+import { MapsContainerHandle } from '../map_container';
 
 interface MapTopNavMenuProps {
   mapIdFromUrl: string;
@@ -26,6 +27,7 @@ interface MapTopNavMenuProps {
   setMapState: (mapState: MapState) => void;
   originatingApp?: string;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  mapContainerRef: React.RefObject<MapsContainerHandle>;
 }
 
 export const MapTopNavMenu = ({
@@ -37,6 +39,7 @@ export const MapTopNavMenu = ({
   mapState,
   setMapState,
   setIsUpdatingLayerRender,
+  mapContainerRef,
 }: MapTopNavMenuProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -88,7 +91,7 @@ export const MapTopNavMenu = ({
   const refreshDataLayerRender = () => {
     layers.forEach((layer: MapLayerSpecification) => {
       if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
-        handleDataLayerRender(layer, mapState, services, maplibreRef);
+        handleDataLayerRender(layer, mapState, services, maplibreRef, mapContainerRef!);
       }
     });
   };
