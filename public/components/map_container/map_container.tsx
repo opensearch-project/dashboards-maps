@@ -237,24 +237,26 @@ export const MapContainer = forwardRef<MapsContainerHandle, MapContainerProps>(
       setTooltipState(currentTooltipState);
     }, [filterProperties]);
 
-    const updateIndexPatterns = async () => {
-      if (!selectedLayerConfig) {
-        return;
-      }
-      if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-        return;
-      }
-      const findIndexPattern = layersIndexPatterns.find(
+  const updateIndexPatterns = async () => {
+    if (!selectedLayerConfig) {
+      return;
+    }
+    if (baseLayerTypeLookup[selectedLayerConfig.type]) {
+      return;
+    }
+    const findIndexPattern = layersIndexPatterns.find(
+      // @ts-ignore
+      (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
+    );
+    if (!findIndexPattern) {
+      const newIndexPattern = await services.data.indexPatterns.get(
         // @ts-ignore
-        (indexPattern) => indexPattern.id === selectedLayerConfig.source.indexPatternId
+        selectedLayerConfig.source.indexPatternId
       );
-      if (!findIndexPattern) {
-        // @ts-ignore
-        const newIndexPattern = await indexPatterns.get(selectedLayerConfig.source.indexPatternId);
-        const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
-        setLayersIndexPatterns(cloneLayersIndexPatterns);
-      }
-    };
+      const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
+      setLayersIndexPatterns(cloneLayersIndexPatterns);
+    }
+  };
 
     useImperativeHandle(
       ref,
