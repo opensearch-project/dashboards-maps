@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiColorPalettePickerPaletteProps } from '@elastic/eui';
-
 export const MetricAggregations = [
   {
     label: 'Count',
@@ -14,12 +12,12 @@ export const MetricAggregations = [
   {
     label: 'Average',
     value: 'avg',
-    acceptedFieldTypes: ['number', 'histogram'],
+    acceptedFieldTypes: ['number'],
   },
   {
     label: 'Sum',
     value: 'sum',
-    acceptedFieldTypes: ['number', 'histogram'],
+    acceptedFieldTypes: ['number'],
   },
   {
     label: 'Max',
@@ -38,16 +36,19 @@ export const ClusterAggregations = [
     label: 'Geohash',
     value: 'geohash_grid',
     acceptedFieldTypes: ['geo_point', 'geo_shape'],
+    precisionRange: [1, 12],
   },
   {
     label: 'Geotile',
     value: 'geotile_grid',
     acceptedFieldTypes: ['geo_point', 'geo_shape'],
+    precisionRange: [0, 29],
   },
   {
     label: 'Geohex',
     value: 'geohex_grid',
     acceptedFieldTypes: ['geo_point'],
+    precisionRange: [0, 15],
   },
 ] as const;
 
@@ -55,7 +56,7 @@ export const MetricDocLink = 'https://opensearch.org/docs/latest/aggregations/me
 export const ClusterDocLink = 'https://opensearch.org/docs/latest/aggregations/bucket-agg/';
 export const GeoHexDocLink = 'https://opensearch.org/docs/latest/aggregations/geohexgrid/';
 
-export const Palettes: EuiColorPalettePickerPaletteProps[] = [
+export const Palettes = [
   {
     value: 'blue',
     palette: [

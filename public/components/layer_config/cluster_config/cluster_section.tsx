@@ -22,6 +22,7 @@ import { ClusterAggregations, ClusterDocLink, GeoHexDocLink } from './config';
 import { ClusterLayerSpecification } from 'public/model/mapLayerType';
 import { CanUpdateMapType } from './cluster_layer_source';
 import _ from 'lodash';
+import { CLUSTER_DEFAULT_PRECISION } from '../../../../common';
 
 interface Props {
   indexPattern: IndexPattern | null | undefined;
@@ -41,11 +42,15 @@ export const ClusterSection = ({
     value,
   }));
   const [isJsonValid, setJsonValid] = useState(true);
-  const acceptedFieldTypes = useMemo(() => {
+  const selectedAggConfig = useMemo(() => {
     const aggValue = selectedLayerConfig.source.cluster.agg;
-    const agg = ClusterAggregations.find((agg) => agg.value === aggValue);
-    return agg!.acceptedFieldTypes as unknown as string[];
-  }, [selectedLayerConfig]);
+    const aggConfig = ClusterAggregations.find((agg) => agg.value === aggValue);
+    return aggConfig!;
+  }, [selectedLayerConfig.source.cluster.agg]);
+
+  const acceptedFieldTypes = useMemo(() => {
+    return selectedAggConfig.acceptedFieldTypes as unknown as string[];
+  }, [selectedAggConfig]);
 
   const geoFields = useMemo(() => {
     return indexPattern?.fields.filter((field) => acceptedFieldTypes.indexOf(field.type) !== -1);
@@ -57,12 +62,27 @@ export const ClusterSection = ({
 
   const isFieldValid = useMemo(() => {
     return !!selectedLayerConfig.source.cluster.field;
-  }, [selectedLayerConfig]);
+  }, [selectedLayerConfig.source.cluster.field]);
 
-  const onAggTypeChange = (selectedOptions: EuiComboBoxOptionOption<string>[]) => {
-    const value = selectedOptions[0].value;
-    handleClusterAggChange({ agg: value! });
-  };
+  const onAggTypeChange = useCallback(
+    (selectedOptions: EuiComboBoxOptionOption<string>[]) => {
+      const newAgg = selectedOptions[0].value;
+      const newAggPrecisionRange = ClusterAggregations.find(
+        (agg) => agg.value === newAgg
+      )?.precisionRange;
+      let newObj: Record<string, string | number> = { agg: newAgg! };
+      const currentPrecision = selectedLayerConfig.source.cluster.precision;
+      //If agg changed, will check if precision value is valid in new aggregation
+      if (
+        currentPrecision < newAggPrecisionRange![0] ||
+        currentPrecision > newAggPrecisionRange![1]
+      ) {
+        newObj = { ...newObj, precision: CLUSTER_DEFAULT_PRECISION };
+      }
+      handleClusterAggChange(newObj);
+    },
+    [selectedLayerConfig.source.cluster.precision]
+  );
 
   useEffect(() => {
     //if index is changed, reset field
@@ -89,7 +109,7 @@ export const ClusterSection = ({
     );
   };
   const handleClusterAggChange = useCallback(
-    (object: Record<string, string | boolean>) => {
+    (object: Record<string, string | boolean | number>) => {
       setSelectedLayerConfig({
         ...selectedLayerConfig,
         source: {
@@ -164,33 +184,28 @@ export const ClusterSection = ({
             compressed
           />
         </EuiFormRow>
-        {selectedLayerConfig.source.cluster.agg === 'geohash_grid' ||
-        selectedLayerConfig.source.cluster.agg === 'geohex_grid' ? (
-          <>
-            <EuiFormRow fullWidth={true}>
-              <EuiCheckbox
-                id="changePrecision"
-                label={i18n.translate('clusterSection.changePrecision', {
-                  defaultMessage: 'Change precision on map zoom',
-                })}
-                onChange={(e) => handleClusterAggChange({ changePrecision: e.target.checked })}
-                checked={selectedLayerConfig.source.cluster.changePrecision}
-                compressed
-              />
-            </EuiFormRow>
-            {!selectedLayerConfig.source.cluster.changePrecision ? (
-              <EuiFormRow label="Precision" display={'rowCompressed'}>
-                <EuiRange
-                  min={1}
-                  max={7}
-                  value={selectedLayerConfig.source.cluster.precision}
-                  onChange={(e) => handleClusterAggChange({ precision: e.currentTarget.value })}
-                  showValue
-                  compressed
-                />
-              </EuiFormRow>
-            ) : null}
-          </>
+        <EuiFormRow fullWidth={true}>
+          <EuiCheckbox
+            id="changePrecision"
+            label={i18n.translate('clusterSection.changePrecision', {
+              defaultMessage: 'Change precision on map zoom',
+            })}
+            onChange={(e) => handleClusterAggChange({ changePrecision: e.target.checked })}
+            checked={selectedLayerConfig.source.cluster.changePrecision}
+            compressed
+          />
+        </EuiFormRow>
+        {!selectedLayerConfig.source.cluster.changePrecision ? (
+          <EuiFormRow label="Precision" display={'rowCompressed'}>
+            <EuiRange
+              min={selectedAggConfig.precisionRange[0]}
+              max={selectedAggConfig.precisionRange[1]}
+              value={selectedLayerConfig.source.cluster.precision}
+              onChange={(e) => handleClusterAggChange({ precision: e.currentTarget.value })}
+              showValue
+              compressed
+            />
+          </EuiFormRow>
         ) : null}
         <EuiFormRow fullWidth={true}>
           <EuiCheckbox

@@ -5,12 +5,7 @@
 
 import { Map as Maplibre } from 'maplibre-gl';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
-import {
-  MapLayerSpecification,
-  DocumentLayerSpecification,
-  ClusterLayerSpecification,
-  DataLayerSpecification,
-} from './mapLayerType';
+import { MapLayerSpecification, DataLayerSpecification } from './mapLayerType';
 import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
 import {
   buildOpenSearchQuery,
@@ -31,6 +26,7 @@ import { GeoBounds, getBounds } from './map/boundary';
 import { buildBBoxFilter, buildGeoShapeFilter } from './geo/filter';
 import { DashboardProps } from '../components/map_page/map_page';
 import { buildAgg } from './agg/build_agg';
+import { MapsLegendHandle } from '../components/map_container/legend';
 
 interface MapGlobalStates {
   timeRange: TimeRange;
@@ -49,26 +45,20 @@ const getSupportedOperations = (field: string): GeoShapeRelation[] => {
 };
 
 export const prepareDataLayerSource = (
-  layer: MapLayerSpecification,
+  layer: DataLayerSpecification,
   mapState: MapState,
   { data, toastNotifications }: MapServices,
   maplibreRef: MaplibreRef,
   dashboardProps?: DashboardProps
 ): Promise<any> => {
   return new Promise(async (resolve, reject) => {
-    if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+    if (
+      layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS ||
+      layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER
+    ) {
       const sourceConfig = layer.source;
       const indexPattern = await data.indexPatterns.get(sourceConfig.indexPatternId);
       const indexPatternRefName = sourceConfig?.indexPatternRefName;
-      const geoField = sourceConfig.geoFieldName;
-      const sourceFields: string[] = [geoField];
-      if (sourceConfig.showTooltips && sourceConfig.tooltipFields.length > 0) {
-        sourceFields.push(...sourceConfig.tooltipFields);
-      }
-      const label = layer.style.label;
-      if (label && label.enabled && label.textType === 'by_field' && label.textByField.length > 0) {
-        sourceFields.push(label.textByField);
-      }
       let mergedQuery;
       if (indexPattern) {
         const { timeRange: selectedTimeRange, query: selectedSearchQuery } = getGlobalStates(
@@ -82,69 +72,56 @@ export const prepareDataLayerSource = (
           ...(timeFilters ? [timeFilters] : []),
         ]);
       }
-      const request = {
-        params: {
-          index: indexPatternRefName,
-          size: layer.source.documentRequestNumber,
-          body: {
-            _source: sourceFields,
-            query: mergedQuery,
+      let request = {};
+      if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+        const geoField = layer.source.geoFieldName;
+        const sourceFields: string[] = [geoField];
+        if (layer.source.showTooltips && layer.source.tooltipFields.length > 0) {
+          sourceFields.push(...layer.source.tooltipFields);
+        }
+        const label = layer.style.label;
+        if (
+          label &&
+          label.enabled &&
+          label.textType === 'by_field' &&
+          label.textByField.length > 0
+        ) {
+          sourceFields.push(label.textByField);
+        }
+        request = {
+          params: {
+            index: indexPatternRefName,
+            size: layer.source.documentRequestNumber,
+            body: {
+              _source: sourceFields,
+              query: mergedQuery,
+            },
           },
-        },
-      };
-
-      const search$ = data.search.search(request).subscribe({
-        next: (response: IOpenSearchDashboardsSearchResponse) => {
-          if (isCompleteResponse(response)) {
-            const dataSource: object = response.rawResponse.hits.hits;
-            search$.unsubscribe();
-            resolve({ dataSource, layer });
-          } else {
-            toastNotifications.addWarning('An error has occurred when query dataSource');
-            search$.unsubscribe();
-            reject();
-          }
-        },
-        error: (e: Error) => {
-          data.search.showError(e);
-        },
-      });
-    }
-    if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER) {
-      const sourceConfig = layer.source;
-      const zoom = maplibreRef.current?.getZoom() ?? 1;
-
-      const indexPattern = await data.indexPatterns.get(sourceConfig.indexPatternId);
-      const indexPatternRefName = sourceConfig?.indexPatternRefName;
-      const aggs = buildAgg(sourceConfig, zoom);
-      let mergedQuery;
-      if (indexPattern) {
-        const { timeRange: selectedTimeRange, query: selectedSearchQuery } = getGlobalStates(
-          mapState,
-          dashboardProps
-        );
-        const timeFilters = getTime(indexPattern, selectedTimeRange);
-        const mergedFilters = getMergedFilters(layer, mapState, maplibreRef, dashboardProps);
-        mergedQuery = buildOpenSearchQuery(indexPattern, selectedSearchQuery, [
-          ...mergedFilters,
-          ...(timeFilters ? [timeFilters] : []),
-        ]);
+        };
+      } else if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER) {
+        const zoom = maplibreRef.current?.getZoom() ?? 1;
+        const aggs = buildAgg(layer.source, zoom);
+        request = {
+          params: {
+            index: indexPatternRefName,
+            body: {
+              aggs,
+              _source: { excludes: [] },
+              query: mergedQuery,
+            },
+          },
+        };
       }
-      const request = {
-        params: {
-          index: indexPatternRefName,
-          body: {
-            aggs,
-            _source: { excludes: [] },
-            query: mergedQuery,
-          },
-        },
-      };
 
       const search$ = data.search.search(request).subscribe({
         next: (response: IOpenSearchDashboardsSearchResponse) => {
           if (isCompleteResponse(response)) {
-            const dataSource: object = response.rawResponse.aggregations;
+            let dataSource: object;
+            if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+              dataSource = response.rawResponse.hits.hits;
+            } else {
+              dataSource = response.rawResponse.aggregations;
+            }
             search$.unsubscribe();
             resolve({ dataSource, layer });
           } else {
@@ -166,12 +143,13 @@ export const handleDataLayerRender = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
+  legendRef: React.RefObject<MapsLegendHandle>,
   dashboardProps?: DashboardProps
 ) => {
   return prepareDataLayerSource(mapLayer, mapState, services, maplibreRef, dashboardProps).then(
     (result) => {
       const { layer, dataSource } = result;
-      layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource);
+      layersFunctionMap[layer.type].render(maplibreRef, layer, dataSource, legendRef);
     }
   );
 };
@@ -279,10 +257,11 @@ export const renderDataLayers = (
   mapState: MapState,
   services: MapServices,
   maplibreRef: MaplibreRef,
+  legendRef: React.RefObject<MapsLegendHandle>,
   dashboardProps?: DashboardProps
 ): void => {
   getDataLayers(layers).forEach((layer) => {
-    handleDataLayerRender(layer, mapState, services, maplibreRef, dashboardProps);
+    handleDataLayerRender(layer, mapState, services, maplibreRef, legendRef, dashboardProps);
   });
 };
 

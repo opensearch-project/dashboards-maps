@@ -15,29 +15,18 @@ function parseJson(jsonStr: string) {
 }
 
 export const buildAgg = (source: ClusterLayerSpecification['source'], zoom: number) => {
-  //   let agg: Record<'filter_agg', any> = {
-  //     filter_agg: {
-  //       aggs: {
-  //         2: {
-  //           aggs: {
-  //             // 1:{},
-  //             // 3: {},
-  //           },
-  //         },
-  //       },
-  //       filter: {},
-  //     },
-  //   };
+  //regular body:
+  // 2: {
+  //  aggs: {
+  //   1:{},
+  //   3: {},
+  //   },
+  // },
   let agg: Record<'2', any> = {
-    2: {
-      //   aggs: {
-      //     // 1:{},
-      //     // 3: {},
-      //   },
-    },
+    2: {},
   };
 
-  function generateAggIfEmpty() {
+  function generateAggObjectIfEmpty() {
     if (!agg[2].aggs) {
       agg[2].aggs = {};
     }
@@ -46,7 +35,7 @@ export const buildAgg = (source: ClusterLayerSpecification['source'], zoom: numb
   const metricAgg = source.metric,
     clusterAgg = source.cluster;
   if (metricAgg.agg !== 'count') {
-    generateAggIfEmpty();
+    generateAggObjectIfEmpty();
     let obj = {
       [metricAgg.agg]: { field: metricAgg.field },
     };
@@ -59,7 +48,7 @@ export const buildAgg = (source: ClusterLayerSpecification['source'], zoom: numb
   }
 
   if (clusterAgg.useCentroid) {
-    generateAggIfEmpty();
+    generateAggObjectIfEmpty();
     agg[2].aggs[3] = {
       geo_centroid: { field: clusterAgg.field },
     };
@@ -72,21 +61,21 @@ export const buildAgg = (source: ClusterLayerSpecification['source'], zoom: numb
     const json = parseJson(clusterAgg.json);
     clusterAggObj = { ...clusterAggObj, ...json };
   }
-  if (clusterAgg.agg === 'geohash_grid' || clusterAgg.agg === 'geohex_grid') {
-    if (!clusterAgg.changePrecision) {
-      clusterAggObj.precision = Number(source.cluster.precision);
-    } else {
-      const zoomPrecision = getZoomPrecision();
-      //zoom in maplibre is float, parse it to int
-      let integerZoom = Math.trunc(zoom);
+  if (!clusterAgg.changePrecision) {
+    clusterAggObj.precision = Number(source.cluster.precision);
+  } else {
+    //zoom in maplibre is float, parse it to int
+    let integerZoom = Math.trunc(zoom);
 
-      //limit zoom in range
-      integerZoom < MAP_DEFAULT_MIN_ZOOM && (integerZoom = MAP_DEFAULT_MIN_ZOOM);
-      integerZoom > MAP_DEFAULT_MAX_ZOOM && (integerZoom = MAP_DEFAULT_MAX_ZOOM);
+    //limit zoom in range
+    integerZoom < MAP_DEFAULT_MIN_ZOOM && (integerZoom = MAP_DEFAULT_MIN_ZOOM);
+    integerZoom > MAP_DEFAULT_MAX_ZOOM && (integerZoom = MAP_DEFAULT_MAX_ZOOM);
 
-      clusterAggObj.precision = zoomPrecision[integerZoom];
-    }
+    const zoomPrecision = getZoomPrecision(integerZoom, source.cluster.agg);
+
+    clusterAggObj.precision = zoomPrecision;
   }
+
   agg[2][clusterAgg.agg] = clusterAggObj;
 
   return agg;

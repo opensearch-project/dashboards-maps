@@ -32,7 +32,7 @@ function JsonEditor({
     () =>
       i18n.translate('maps.controls.jsonInputTooltip', {
         defaultMessage:
-          "Any JSON formatted properties you add here will be merged with the opensearch aggregation definition for this section. For example 'shard_size' on a terms aggregation.",
+          "Any JSON formatted properties you add will be merged with the OpenSearch aggregation definition for this section. For example, 'shard_size' on a terms aggregation.",
       }),
     []
   );

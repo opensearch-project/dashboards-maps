@@ -6,7 +6,6 @@ import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
 import {
   DocumentLayerSpecification,
   OSMLayerSpecification,
-  DataLayerSpecification,
   ClusterLayerSpecification,
 } from '../mapLayerType';
 
@@ -103,7 +102,7 @@ export const updateLineLayer = (
 
 export interface CircleLayerSpecification extends Layer {
   visibility: string;
-  fillColor: string;
+  fillColor: string | string[];
   outlineColor: string;
   radius: number | string[];
   width: number;

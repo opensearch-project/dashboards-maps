@@ -3,10 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-@import "maplibre-gl/dist/maplibre-gl.css";
-@import "../../variables";
+@import 'maplibre-gl/dist/maplibre-gl.css';
+@import '../../variables';
 
-.mapAppContainer, .map-page, .map-container, .map-main{
+.mapAppContainer,
+.map-page,
+.map-container,
+.map-main {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -35,7 +38,7 @@
 .SpatialFilterToolbar-container {
   z-index: 1;
   position: absolute;
-  top:  (2 * $euiSizeS) + ($euiSizeXL * 4);
+  top: (2 * $euiSizeS) + ($euiSizeXL * 4);
   right: $euiSizeS;
 }
 

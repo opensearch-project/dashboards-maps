@@ -34,6 +34,7 @@ import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_he
 import { ShapeFilter } from '../../../../../src/plugins/data/common';
 import { DashboardProps } from '../map_page/map_page';
 import { MapsServiceErrorMsg } from './maps_messages';
+import { MapsLegend, MapsLegendHandle } from './legend';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -90,6 +91,7 @@ export const MapContainer = ({
   const [filterProperties, setFilterProperties] = useState<DrawFilterProperties>({
     mode: FILTER_DRAW_MODE.NONE,
   });
+  const legendRef = useRef<MapsLegendHandle>(null);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -144,7 +146,7 @@ export const MapContainer = ({
     // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
     // resizing the window, the "moveend" event could be fired constantly
     const debouncedRenderLayers = debounce(() => {
-      renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+      renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
     }, 200);
 
     if (maplibreRef.current) {
@@ -164,7 +166,7 @@ export const MapContainer = ({
     if (dashboardProps && dashboardProps.refreshConfig && !dashboardProps.refreshConfig.pause) {
       const { refreshConfig } = dashboardProps;
       intervalId = setInterval(() => {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+        renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
       }, refreshConfig.value);
     }
     return () => clearInterval(intervalId);
@@ -175,7 +177,7 @@ export const MapContainer = ({
     if (!mapState?.spatialMetaFilters) {
       return;
     }
-    renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+    renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
   }, [mapState.spatialMetaFilters]);
 
   useEffect(() => {
@@ -195,12 +197,13 @@ export const MapContainer = ({
             selectedLayerConfig as DataLayerSpecification,
             mapState,
             services,
-            maplibreRef
+            maplibreRef,
+            legendRef
           );
         }
         setSelectedLayerConfig(undefined);
       } else {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+        renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
         renderBaseLayers(layers, maplibreRef, onError);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
@@ -251,6 +254,7 @@ export const MapContainer = ({
   return (
     <div className="map-main">
       {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
+      {mounted && maplibreRef.current && <MapsLegend ref={legendRef} />}
       {mounted && maplibreRef.current && (
         <DrawFilterShapeHelper
           map={maplibreRef.current}
@@ -273,6 +277,7 @@ export const MapContainer = ({
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
           timeRange={dashboardProps?.timeRange}
+          legendRef={legendRef}
         />
       )}
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (

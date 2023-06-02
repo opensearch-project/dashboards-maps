@@ -15,17 +15,13 @@ import {
   EuiColorPalettePicker,
   EuiForm,
   EuiTitle,
-  EuiDualRange,
   EuiSelect,
   EuiFlexItem,
+  EuiColorPalettePickerPaletteProps,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { ClusterLayerSpecification } from '../../../../model/mapLayerType';
 import { CLUSTER_MIN_BORDER_THICKNESS, CLUSTER_MAX_BORDER_THICKNESS } from '../../../../../common';
-import {
-  CLUSTER_MIN_DEFAULT_RADIUS_SIZE,
-  CLUSTER_MAX_DEFAULT_RADIUS_SIZE,
-} from '../../../../../common';
 import { Palettes } from '../config';
 
 interface Props {
@@ -91,24 +87,6 @@ export const ClusterLayerStyle = ({
     });
   };
 
-  const onRadiusRangeChange = (radiusRange: [string | number, string | number]) => {
-    const [min, max] = radiusRange;
-    const isValueInValid = (value: string | number) =>
-      Number(value) < CLUSTER_MIN_DEFAULT_RADIUS_SIZE ||
-      Number(value) > CLUSTER_MAX_DEFAULT_RADIUS_SIZE;
-    const validRange = [
-      isValueInValid(min) ? CLUSTER_MIN_DEFAULT_RADIUS_SIZE : Number(min),
-      isValueInValid(max) ? CLUSTER_MAX_DEFAULT_RADIUS_SIZE : Number(max),
-    ];
-    setSelectedLayerConfig({
-      ...selectedLayerConfig,
-      style: {
-        ...selectedLayerConfig.style,
-        radiusRange: validRange,
-      },
-    });
-  };
-
   const onBorderColorChange = (borderColor: string) => {
     setSelectedLayerConfig({
       ...selectedLayerConfig,
@@ -157,7 +135,7 @@ export const ClusterLayerStyle = ({
                 <EuiFlexItem>
                   {selectedLayerConfig.style.fillType === 'gradient' ? (
                     <EuiColorPalettePicker
-                      palettes={Palettes}
+                      palettes={Palettes as EuiColorPalettePickerPaletteProps[]}
                       onChange={onPaletteChange}
                       valueOfSelected={selectedLayerConfig.style.palette}
                       selectionDisplay={'palette'}
@@ -171,20 +149,6 @@ export const ClusterLayerStyle = ({
                 </EuiFlexItem>
               </EuiFlexGroup>
             </>
-          </EuiFormRow>
-
-          <EuiFormRow label="Radius Size" fullWidth={true}>
-            <EuiDualRange
-              min={CLUSTER_MIN_DEFAULT_RADIUS_SIZE}
-              max={CLUSTER_MAX_DEFAULT_RADIUS_SIZE}
-              value={selectedLayerConfig.style.radiusRange}
-              showInput
-              minInputProps={{ 'aria-label': 'Min value' }}
-              maxInputProps={{ 'aria-label': 'Max value' }}
-              onChange={onRadiusRangeChange}
-              aria-label="DualRange with inputs for radius size"
-              fullWidth={true}
-            />
           </EuiFormRow>
           <EuiFormRow
             label={i18n.translate('maps.cluster.symbolBorderColor', {

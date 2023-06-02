@@ -33,5 +33,5 @@ export const getIndex = async (indexName: string, http: CoreStart['http']) => {
 
 export const [getTimeFilter, setTimeFilter] = createGetterSetter<TimefilterContract>('TimeFilter');
 
-export const [getAggs, setAggs] =
-  createGetterSetter<DataPublicPluginStart['search']['aggs']>('AggConfigs');
+export const [getFormatService, setFormatService] =
+  createGetterSetter<DataPublicPluginStart['fieldFormats']>('data.fieldFormats');

@@ -77,8 +77,13 @@ export const MetricSection = ({
 
   useEffect(() => {
     //if index is changed, reset field
-    handleMetricAggChange({ field: '' });
+    handleMetricAggChange({ field: '', fieldType: '' });
   }, [indexPattern]);
+
+  const onFieldChange = (option: EuiComboBoxOptionOption<string>[]) => {
+    const field = indexPattern?.getFieldByName(option[0]?.label);
+    handleMetricAggChange({ field: field?.displayName ?? '', fieldType: field?.type ?? '' });
+  };
 
   const handleMetricAggChange = useCallback(
     (object: Record<string, string | boolean>) => {
@@ -146,10 +151,7 @@ export const MetricSection = ({
               selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
               singleSelection={true}
               isInvalid={!isFieldValid}
-              onChange={(option) => {
-                const field = indexPattern?.getFieldByName(option[0]?.label);
-                handleMetricAggChange({ field: field?.displayName ?? '' });
-              }}
+              onChange={onFieldChange}
               sortMatchesBy="startsWith"
               placeholder={i18n.translate('metricSection.selectDataFieldPlaceholder', {
                 defaultMessage: 'Select field',

@@ -84,6 +84,7 @@ export type ClusterLayerSpecification = AbstractLayerSpecification & {
     metric: {
       agg: (typeof MetricAggregations)[number]['value'];
       field: string;
+      fieldType: string;
       custom_label: string;
       json: string;
     };
@@ -104,7 +105,6 @@ export type ClusterLayerSpecification = AbstractLayerSpecification & {
     fillColor: string;
     borderColor: string;
     borderThickness: number;
-    radiusRange: [number, number];
   };
 };
 

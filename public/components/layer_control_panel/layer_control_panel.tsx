@@ -37,6 +37,7 @@ import { ConfigSchema } from '../../../common/config';
 import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
 import { HideLayer } from './hide_layer_button';
+import { MapsLegendHandle } from '../map_container/legend';
 
 interface Props {
   maplibreRef: MaplibreRef;
@@ -52,6 +53,7 @@ interface Props {
   setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
   timeRange?: TimeRange;
+  legendRef: React.RefObject<MapsLegendHandle>;
 }
 
 export const LayerControlPanel = memo(
@@ -66,6 +68,7 @@ export const LayerControlPanel = memo(
     setSelectedLayerConfig,
     setIsUpdatingLayerRender,
     timeRange,
+    legendRef,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
 
@@ -214,6 +217,7 @@ export const LayerControlPanel = memo(
       if (selectedDeleteLayer) {
         removeLayers(maplibreRef.current!, selectedDeleteLayer.id, true);
         removeLayer(selectedDeleteLayer.id);
+        legendRef?.current?.deleteLegend(selectedDeleteLayer.id);
         setIsDeleteLayerModalVisible(false);
         setSelectedDeleteLayer(undefined);
       }

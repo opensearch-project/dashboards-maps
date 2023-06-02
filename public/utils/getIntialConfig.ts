@@ -28,8 +28,6 @@ import {
   CLUSTER,
   CLUSTER_DEFAULT_FILL_TYPE,
   CLUSTER_DEFAULT_PALETTE,
-  CLUSTER_MIN_DEFAULT_RADIUS_SIZE,
-  CLUSTER_MAX_DEFAULT_RADIUS_SIZE,
   CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
   CLUSTER_DEFAULT_PRECISION,
   CLUSTER_DEFAULT_METRIC_AGG,
@@ -120,12 +118,14 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       metric: {
         agg: CLUSTER_DEFAULT_METRIC_AGG,
         field: '',
+        fieldType: '',
         json: '',
         custom_label: '',
       },
       cluster: {
         agg: CLUSTER_DEFAULT_CLUSTER_AGG,
         field: '',
+        fieldType: '',
         json: '',
         precision: CLUSTER_DEFAULT_PRECISION,
         custom_label: '',
@@ -138,7 +138,6 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
       borderThickness: CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
       fillType: CLUSTER_DEFAULT_FILL_TYPE,
       palette: CLUSTER_DEFAULT_PALETTE,
-      radiusRange: [CLUSTER_MIN_DEFAULT_RADIUS_SIZE, CLUSTER_MAX_DEFAULT_RADIUS_SIZE],
     },
   },
 });

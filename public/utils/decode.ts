@@ -86,14 +86,46 @@ export const decodeGeoTile = (key: string) => {
   return {
     lat: lat,
     lon: lon,
+    z: z,
   };
 };
 
 export const decodeGeoHex = (h3Index: string) => {
   const [lat, lon] = cellToLatLng(h3Index);
-  console.log('decodeGeoHex', h3Index, lat, lon);
   return {
     lat,
     lon,
   };
 };
+
+const EARTH_CIR_METERS = 40075016.686;
+const degreesPerMeter = 360 / EARTH_CIR_METERS;
+
+function toRadians(degrees: number) {
+  return (degrees * Math.PI) / 180;
+}
+
+export function latLngToBoundsToRadius(
+  lat: number,
+  lng: number,
+  zoom: number,
+  width: number,
+  height: number
+) {
+  // width and height must correspond to the iframe width/height
+  const metersPerPixelEW = EARTH_CIR_METERS / Math.pow(2, zoom + 8);
+  const metersPerPixelNS = (EARTH_CIR_METERS / Math.pow(2, zoom + 8)) * Math.cos(toRadians(lat));
+
+  const shiftMetersEW = (width / 2) * metersPerPixelEW;
+  const shiftMetersNS = (height / 2) * metersPerPixelNS;
+
+  const shiftDegreesEW = shiftMetersEW * degreesPerMeter;
+  const shiftDegreesNS = shiftMetersNS * degreesPerMeter;
+  return (shiftDegreesEW + shiftDegreesNS) / 2;
+}
+
+export function metersToPixel(zoom: number, meters: number) {
+  // width and height must correspond to the iframe width/height
+  const metersPerPixelEW = EARTH_CIR_METERS / Math.pow(2, zoom + 8);
+  return meters / metersPerPixelEW;
+}
