@@ -30,6 +30,8 @@ import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap, layersTypeNameMap } from '../../model/layersFunctions';
 import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
+import { ClusterLayerConfigPanel } from './cluster_config/cluster_layer_config_panel';
+import { TimeRange } from '../../../../../src/plugins/data/public';
 
 interface Props {
   closeLayerConfigPanel: Function;
@@ -43,6 +45,7 @@ interface Props {
   originLayerConfig: MapLayerSpecification | null;
   setOriginLayerConfig: Function;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  timeRange?: TimeRange;
 }
 
 export const LayerConfigPanel = ({
@@ -57,6 +60,7 @@ export const LayerConfigPanel = ({
   originLayerConfig,
   setOriginLayerConfig,
   setIsUpdatingLayerRender,
+  timeRange,
 }: Props) => {
   const [isUpdateDisabled, setIsUpdateDisabled] = useState(false);
   const [unsavedModalVisible, setUnsavedModalVisible] = useState(false);
@@ -148,6 +152,15 @@ export const LayerConfigPanel = ({
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}
                 isLayerExists={isLayerExists}
+              />
+            )}
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER && (
+              <ClusterLayerConfigPanel
+                selectedLayerConfig={selectedLayerConfig}
+                setSelectedLayerConfig={setSelectedLayerConfig}
+                setIsUpdateDisabled={setIsUpdateDisabled}
+                isLayerExists={isLayerExists}
+                timeRange={timeRange}
               />
             )}
           </EuiFlexItem>

@@ -5,14 +5,19 @@
 
 import { Filter } from '../../../../src/plugins/data/public';
 import { DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE, DASHBOARDS_MAPS_LAYER_TYPE } from '../../common';
+import {
+  MetricAggregations,
+  ClusterAggregations,
+} from '../components/layer_config/cluster_config/config';
 
 /* eslint @typescript-eslint/consistent-type-definitions: ["error", "type"] */
 export type MapLayerSpecification =
   | OSMLayerSpecification
   | DocumentLayerSpecification
-  | CustomLayerSpecification;
+  | CustomLayerSpecification
+  | ClusterLayerSpecification;
 
-export type DataLayerSpecification = DocumentLayerSpecification;
+export type DataLayerSpecification = DocumentLayerSpecification | ClusterLayerSpecification;
 
 export type BaseLayerSpecification = OSMLayerSpecification | CustomLayerSpecification;
 
@@ -65,6 +70,41 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
       borderColor: string;
       borderWidth: number;
     };
+  };
+};
+
+export type ClusterLayerSpecification = AbstractLayerSpecification & {
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER;
+  source: {
+    indexPatternRefName: string;
+    indexPatternId: string;
+    useGeoBoundingBoxFilter: boolean;
+    filters: Filter[];
+    applyGlobalFilters?: boolean;
+    metric: {
+      agg: (typeof MetricAggregations)[number]['value'];
+      field: string;
+      fieldType: string;
+      custom_label: string;
+      json: string;
+    };
+    cluster: {
+      agg: (typeof ClusterAggregations)[number]['value'];
+      field: string;
+      fieldType: string;
+      precision: number;
+      json: string;
+      custom_label: string;
+      useCentroid: boolean;
+      changePrecision: boolean;
+    };
+  };
+  style: {
+    fillType: 'gradient' | 'solid';
+    palette: string;
+    fillColor: string;
+    borderColor: string;
+    borderThickness: number;
   };
 };
 

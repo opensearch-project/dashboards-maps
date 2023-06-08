@@ -9,7 +9,7 @@ import { Map as Maplibre } from 'maplibre-gl';
 import classNames from 'classnames';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { SimpleSavedObject } from '../../../../../src/core/public';
-import { MapContainer } from '../map_container';
+import { MapContainer, MapsContainerHandle } from '../map_container';
 import { MapTopNavMenu } from '../map_top_nav';
 import { MapServices } from '../../types';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
@@ -68,6 +68,7 @@ export const MapComponent = ({
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
   const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(true);
   const isReadOnlyMode = !!dashboardProps;
+  const mapContainerRef = useRef<MapsContainerHandle>(null);
 
   useEffect(() => {
     if (mapIdFromSavedObject) {
@@ -134,6 +135,7 @@ export const MapComponent = ({
           mapState={mapState}
           setMapState={setMapState}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+          mapContainerRef={mapContainerRef}
         />
       )}
       {!isReadOnlyMode && !!mapState.spatialMetaFilters?.length && (
@@ -160,6 +162,7 @@ export const MapComponent = ({
         isUpdatingLayerRender={isUpdatingLayerRender}
         setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         addSpatialFilter={addSpatialFilter}
+        ref={mapContainerRef}
       />
     </div>
   );

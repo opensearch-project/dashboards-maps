@@ -18,7 +18,7 @@ import {
   updatePolygonLayer,
   updateSymbolLayer,
   removeSymbolLayer,
-  createSymbolLayerSpecification,
+  createDocumentSymbolLayerSpecification,
 } from './map/layer_operations';
 import { getMaplibreAboveLayerId, MaplibreRef } from './layersFunctions';
 
@@ -220,7 +220,7 @@ const renderLabelLayer = (layerConfig: DocumentLayerSpecification, maplibreRef: 
   const hasLabelLayer = hasSymbolLayer(maplibreRef.current!, layerConfig.id);
   // If the label set to enabled, add the label layer
   if (layerConfig.style?.label?.enabled) {
-    const symbolLayerSpec = createSymbolLayerSpecification(layerConfig);
+    const symbolLayerSpec = createDocumentSymbolLayerSpecification(layerConfig);
     if (hasLabelLayer) {
       updateSymbolLayer(maplibreRef.current!, symbolLayerSpec);
     } else {

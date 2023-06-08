@@ -1,0 +1,23 @@
+.maps-legends {
+  z-index: 1;
+  position: absolute;
+  bottom: 48px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px -1px rgba(65, 78, 101, 0.1), 0 4px 4px -1px rgba(65, 78, 101, 0.1),
+    0 2px 2px 0 rgba(65, 78, 101, 0.1);
+  padding: 8px;
+  .legend-item {
+    display: flex;
+    align-items: center;
+  }
+  .legend-title {
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .legend-label {
+    font-weight: 400;
+    font-size: 14px;
+  }
+}

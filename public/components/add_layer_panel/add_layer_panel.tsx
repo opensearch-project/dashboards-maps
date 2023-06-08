@@ -29,6 +29,7 @@ import {
   Layer,
   NEW_MAP_LAYER_DEFAULT_PREFIX,
   MAX_LAYER_LIMIT,
+  CLUSTER,
 } from '../../../common';
 import { getLayerConfigMap } from '../../utils/getIntialConfig';
 import { ConfigSchema } from '../../../common/config';
@@ -67,7 +68,7 @@ export const AddLayerPanel = ({
     addLayer(initLayerConfig);
   }
 
-  const dataLayers = [DOCUMENTS];
+  const dataLayers = [CLUSTER, DOCUMENTS];
   const dataLayerItems = Object.values(dataLayers).map((layerItem, index) => {
     return (
       <EuiKeyPadMenuItem

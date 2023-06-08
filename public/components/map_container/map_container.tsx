@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
@@ -34,6 +34,7 @@ import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_he
 import { ShapeFilter } from '../../../../../src/plugins/data/common';
 import { DashboardProps } from '../map_page/map_page';
 import { MapsServiceErrorMsg } from './maps_messages';
+import { MapsLegend, MapsLegendHandle } from './legend';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -56,178 +57,185 @@ export class MapsServiceError extends Error {
     this.name = 'MapsServiceError';
   }
 }
+export interface MapsContainerHandle extends Partial<MapsLegendHandle> {}
 
-export const MapContainer = ({
-  setLayers,
-  layers,
-  layersIndexPatterns,
-  setLayersIndexPatterns,
-  maplibreRef,
-  mapState,
-  mapConfig,
-  isReadOnlyMode,
-  dashboardProps,
-  isUpdatingLayerRender,
-  setIsUpdatingLayerRender,
-  addSpatialFilter,
-}: MapContainerProps) => {
-  const { services } = useOpenSearchDashboards<MapServices>();
+export const MapContainer = forwardRef<MapsContainerHandle, MapContainerProps>(
+  (
+    {
+      setLayers,
+      layers,
+      layersIndexPatterns,
+      setLayersIndexPatterns,
+      maplibreRef,
+      mapState,
+      mapConfig,
+      isReadOnlyMode,
+      dashboardProps,
+      isUpdatingLayerRender,
+      setIsUpdatingLayerRender,
+      addSpatialFilter,
+    },
+    ref
+  ) => {
+    const { services } = useOpenSearchDashboards<MapServices>();
 
-  function onError(e: unknown) {
-    if (e instanceof MapsServiceError) {
-      services.toastNotifications.addWarning(MapsServiceErrorMsg);
-    }
-  }
-
-  const mapContainer = useRef(null);
-  const [mounted, setMounted] = useState(false);
-  const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
-  const [selectedLayerConfig, setSelectedLayerConfig] = useState<
-    MapLayerSpecification | undefined
-  >();
-  // start with display feature
-  const [tooltipState, setTooltipState] = useState<TOOLTIP_STATE>(TOOLTIP_STATE.DISPLAY_FEATURES);
-  const [filterProperties, setFilterProperties] = useState<DrawFilterProperties>({
-    mode: FILTER_DRAW_MODE.NONE,
-  });
-
-  useEffect(() => {
-    if (!mapContainer.current) return;
-    const mbStyle = {
-      version: 8 as 8,
-      sources: {},
-      layers: [],
-      glyphs: mapConfig.opensearchVectorTileGlyphsUrl,
-    };
-
-    maplibreRef.current = new Maplibre({
-      container: mapContainer.current!,
-      center: [MAP_INITIAL_STATE.lng, MAP_INITIAL_STATE.lat],
-      zoom,
-      style: mbStyle,
-    });
-
-    const maplibreInstance = maplibreRef.current!;
-    maplibreInstance.addControl(new NavigationControl({ showCompass: true }), 'top-right');
-    maplibreInstance.on('style.load', function () {
-      setMounted(true);
-    });
-    maplibreInstance.on('move', () => {
-      return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
-    });
-
-    // By default, Maplibre only auto resize map window when browser size changes, but in dashboard mode, we need
-    // manually resize map window size when map panel size changes
-    const mapContainerElement: HTMLElement | null = document.querySelector('.map-page');
-    let resizeChecker: ResizeChecker;
-    if (mapContainerElement) {
-      resizeChecker = new ResizeChecker(mapContainerElement);
-      if (isReadOnlyMode) {
-        resizeChecker.on(
-          'resize',
-          throttle(() => {
-            maplibreInstance?.resize();
-          }, 300)
-        );
+    function onError(e: unknown) {
+      if (e instanceof MapsServiceError) {
+        services.toastNotifications.addWarning(MapsServiceErrorMsg);
       }
     }
-    return () => {
-      maplibreInstance.remove();
-      if (resizeChecker) {
-        resizeChecker.destroy();
-      }
-    };
-  }, []);
 
-  // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
-  useEffect(() => {
-    // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
-    // resizing the window, the "moveend" event could be fired constantly
-    const debouncedRenderLayers = debounce(() => {
-      renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-    }, 200);
+    const mapContainer = useRef(null);
+    const [mounted, setMounted] = useState(false);
+    const [zoom, setZoom] = useState<number>(MAP_INITIAL_STATE.zoom);
+    const [selectedLayerConfig, setSelectedLayerConfig] = useState<
+      MapLayerSpecification | undefined
+    >();
+    // start with display feature
+    const [tooltipState, setTooltipState] = useState<TOOLTIP_STATE>(TOOLTIP_STATE.DISPLAY_FEATURES);
+    const [filterProperties, setFilterProperties] = useState<DrawFilterProperties>({
+      mode: FILTER_DRAW_MODE.NONE,
+    });
+    const legendRef = useRef<MapsLegendHandle>(null);
 
-    if (maplibreRef.current) {
-      maplibreRef.current.on('moveend', debouncedRenderLayers);
-    }
+    useEffect(() => {
+      if (!mapContainer.current) return;
+      const mbStyle = {
+        version: 8 as 8,
+        sources: {},
+        layers: [],
+        glyphs: mapConfig.opensearchVectorTileGlyphsUrl,
+      };
 
-    return () => {
-      if (maplibreRef.current) {
-        maplibreRef.current.off('moveend', debouncedRenderLayers);
-      }
-    };
-  }, [layers, mapState, services]);
+      maplibreRef.current = new Maplibre({
+        container: mapContainer.current!,
+        center: [MAP_INITIAL_STATE.lng, MAP_INITIAL_STATE.lat],
+        zoom,
+        style: mbStyle,
+      });
 
-  // Update data layers when state bar enable auto refresh
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout | undefined;
-    if (dashboardProps && dashboardProps.refreshConfig && !dashboardProps.refreshConfig.pause) {
-      const { refreshConfig } = dashboardProps;
-      intervalId = setInterval(() => {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-      }, refreshConfig.value);
-    }
-    return () => clearInterval(intervalId);
-  }, [dashboardProps?.refreshConfig]);
+      const maplibreInstance = maplibreRef.current!;
+      maplibreInstance.addControl(new NavigationControl({ showCompass: true }), 'top-right');
+      maplibreInstance.on('style.load', function () {
+        setMounted(true);
+      });
+      maplibreInstance.on('move', () => {
+        return setZoom(Number(maplibreInstance.getZoom().toFixed(2)));
+      });
 
-  // Update data layers when global filter is updated
-  useEffect(() => {
-    if (!mapState?.spatialMetaFilters) {
-      return;
-    }
-    renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-  }, [mapState.spatialMetaFilters]);
-
-  useEffect(() => {
-    if (!mounted || layers.length <= 0) {
-      return;
-    }
-
-    const orderLayersAfterRenderLoaded = () => orderLayers(layers, maplibreRef.current!);
-
-    if (isUpdatingLayerRender || isReadOnlyMode) {
-      if (selectedLayerConfig) {
-        if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-          handleBaseLayerRender(selectedLayerConfig, maplibreRef, onError);
-        } else {
-          updateIndexPatterns();
-          handleDataLayerRender(
-            selectedLayerConfig as DataLayerSpecification,
-            mapState,
-            services,
-            maplibreRef
+      // By default, Maplibre only auto resize map window when browser size changes, but in dashboard mode, we need
+      // manually resize map window size when map panel size changes
+      const mapContainerElement: HTMLElement | null = document.querySelector('.map-page');
+      let resizeChecker: ResizeChecker;
+      if (mapContainerElement) {
+        resizeChecker = new ResizeChecker(mapContainerElement);
+        if (isReadOnlyMode) {
+          resizeChecker.on(
+            'resize',
+            throttle(() => {
+              maplibreInstance?.resize();
+            }, 300)
           );
         }
-        setSelectedLayerConfig(undefined);
-      } else {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-        renderBaseLayers(layers, maplibreRef, onError);
-        // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
-        // after all layers are rendered.
-        maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
       }
-      setIsUpdatingLayerRender(false);
-    }
-    return () => {
-      maplibreRef.current!.off('idle', orderLayersAfterRenderLoaded);
-    };
-  }, [
-    layers,
-    mounted,
-    dashboardProps?.query,
-    dashboardProps?.timeRange,
-    dashboardProps?.filters,
-    mapState,
-    isReadOnlyMode,
-  ]);
+      return () => {
+        maplibreInstance.remove();
+        if (resizeChecker) {
+          resizeChecker.destroy();
+        }
+      };
+    }, []);
 
-  useEffect(() => {
-    const currentTooltipState: TOOLTIP_STATE =
-      filterProperties?.mode === FILTER_DRAW_MODE.NONE
-        ? TOOLTIP_STATE.DISPLAY_FEATURES
-        : TOOLTIP_STATE.FILTER_DRAW_SHAPE;
-    setTooltipState(currentTooltipState);
-  }, [filterProperties]);
+    // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
+    useEffect(() => {
+      // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
+      // resizing the window, the "moveend" event could be fired constantly
+      const debouncedRenderLayers = debounce(() => {
+        renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+      }, 200);
+
+      if (maplibreRef.current) {
+        maplibreRef.current.on('moveend', debouncedRenderLayers);
+      }
+
+      return () => {
+        if (maplibreRef.current) {
+          maplibreRef.current.off('moveend', debouncedRenderLayers);
+        }
+      };
+    }, [layers, mapState, services]);
+
+    // Update data layers when state bar enable auto refresh
+    useEffect(() => {
+      let intervalId: NodeJS.Timeout | undefined;
+      if (dashboardProps && dashboardProps.refreshConfig && !dashboardProps.refreshConfig.pause) {
+        const { refreshConfig } = dashboardProps;
+        intervalId = setInterval(() => {
+          renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+        }, refreshConfig.value);
+      }
+      return () => clearInterval(intervalId);
+    }, [dashboardProps?.refreshConfig]);
+
+    // Update data layers when global filter is updated
+    useEffect(() => {
+      if (!mapState?.spatialMetaFilters) {
+        return;
+      }
+      renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+    }, [mapState.spatialMetaFilters]);
+
+    useEffect(() => {
+      if (!mounted || layers.length <= 0) {
+        return;
+      }
+
+      const orderLayersAfterRenderLoaded = () => orderLayers(layers, maplibreRef.current!);
+
+      if (isUpdatingLayerRender || isReadOnlyMode) {
+        if (selectedLayerConfig) {
+          if (baseLayerTypeLookup[selectedLayerConfig.type]) {
+            handleBaseLayerRender(selectedLayerConfig, maplibreRef, onError);
+          } else {
+            updateIndexPatterns();
+            handleDataLayerRender(
+              selectedLayerConfig as DataLayerSpecification,
+              mapState,
+              services,
+              maplibreRef,
+              legendRef
+            );
+          }
+          setSelectedLayerConfig(undefined);
+        } else {
+          renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+          renderBaseLayers(layers, maplibreRef, onError);
+          // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
+          // after all layers are rendered.
+          maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
+        }
+        setIsUpdatingLayerRender(false);
+      }
+      return () => {
+        maplibreRef.current!.off('idle', orderLayersAfterRenderLoaded);
+      };
+    }, [
+      layers,
+      mounted,
+      dashboardProps?.query,
+      dashboardProps?.timeRange,
+      dashboardProps?.filters,
+      mapState,
+      isReadOnlyMode,
+    ]);
+
+    useEffect(() => {
+      const currentTooltipState: TOOLTIP_STATE =
+        filterProperties?.mode === FILTER_DRAW_MODE.NONE
+          ? TOOLTIP_STATE.DISPLAY_FEATURES
+          : TOOLTIP_STATE.FILTER_DRAW_SHAPE;
+      setTooltipState(currentTooltipState);
+    }, [filterProperties]);
 
   const updateIndexPatterns = async () => {
     if (!selectedLayerConfig) {
@@ -250,52 +258,66 @@ export const MapContainer = ({
     }
   };
 
-  return (
-    <div className="map-main">
-      {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
-      {mounted && maplibreRef.current && (
-        <DrawFilterShapeHelper
-          map={maplibreRef.current}
-          mode={filterProperties.mode}
-          onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
-        />
-      )}
-      {mounted && (
-        <LayerControlPanel
-          maplibreRef={maplibreRef}
-          layers={layers}
-          setLayers={setLayers}
-          layersIndexPatterns={layersIndexPatterns}
-          setLayersIndexPatterns={setLayersIndexPatterns}
-          mapState={mapState}
-          zoom={zoom}
-          mapConfig={mapConfig}
-          isReadOnlyMode={isReadOnlyMode}
-          selectedLayerConfig={selectedLayerConfig}
-          setSelectedLayerConfig={setSelectedLayerConfig}
-          setIsUpdatingLayerRender={setIsUpdatingLayerRender}
-        />
-      )}
-      {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
-        <DisplayFeatures map={maplibreRef.current} layers={layers} />
-      )}
-      {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
-        <DrawFilterShape
-          map={maplibreRef.current}
-          filterProperties={filterProperties}
-          updateFilterProperties={setFilterProperties}
-          addSpatialFilter={addSpatialFilter}
-        />
-      )}
-      <div className="SpatialFilterToolbar-container">
-        {!isReadOnlyMode && mounted && (
-          <SpatialFilterToolbar
-            setFilterProperties={setFilterProperties}
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          updateLegends: legendRef?.current?.updateLegends,
+          deleteLegend: legendRef?.current?.deleteLegend,
+        };
+      },
+      [legendRef]
+    );
+    return (
+      <div className="map-main">
+        {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
+        {mounted && maplibreRef.current && <MapsLegend ref={legendRef} />}
+        {mounted && maplibreRef.current && (
+          <DrawFilterShapeHelper
+            map={maplibreRef.current}
             mode={filterProperties.mode}
+            onCancel={() => setFilterProperties({ mode: FILTER_DRAW_MODE.NONE })}
           />
         )}
+        {mounted && (
+          <LayerControlPanel
+            maplibreRef={maplibreRef}
+            layers={layers}
+            setLayers={setLayers}
+            layersIndexPatterns={layersIndexPatterns}
+            setLayersIndexPatterns={setLayersIndexPatterns}
+            mapState={mapState}
+            zoom={zoom}
+            mapConfig={mapConfig}
+            isReadOnlyMode={isReadOnlyMode}
+            selectedLayerConfig={selectedLayerConfig}
+            setSelectedLayerConfig={setSelectedLayerConfig}
+            setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+            timeRange={dashboardProps?.timeRange}
+            legendRef={legendRef}
+          />
+        )}
+        {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
+          <DisplayFeatures map={maplibreRef.current} layers={layers} />
+        )}
+        {mounted && maplibreRef.current && tooltipState === TOOLTIP_STATE.FILTER_DRAW_SHAPE && (
+          <DrawFilterShape
+            map={maplibreRef.current}
+            filterProperties={filterProperties}
+            updateFilterProperties={setFilterProperties}
+            addSpatialFilter={addSpatialFilter}
+          />
+        )}
+        <div className="SpatialFilterToolbar-container">
+          {!isReadOnlyMode && mounted && (
+            <SpatialFilterToolbar
+              setFilterProperties={setFilterProperties}
+              mode={filterProperties.mode}
+            />
+          )}
+        </div>
+        <div className="map-container" ref={mapContainer} />
       </div>
-      <div className="map-container" ref={mapContainer} />
-    </div>
-  );
-};
+    );
+  }
+);
