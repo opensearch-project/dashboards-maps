@@ -167,13 +167,12 @@ const getGeoBoundingBoxFilter = (
   maplibreRef: MaplibreRef
 ): GeoBoundingBoxFilter => {
   const geoField = mapLayer.source.geoFieldName;
-  const geoFieldType = mapLayer.source.geoFieldType;
 
   // geo bounding box query supports geo_point fields
   const mapBounds: GeoBounds = getBounds(maplibreRef.current!);
   const meta: FilterMeta = {
     alias: null,
-    disabled: !mapLayer.source.useGeoBoundingBoxFilter || geoFieldType !== 'geo_point',
+    disabled: !mapLayer.source.useGeoBoundingBoxFilter,
     negate: false,
     type: FILTERS.GEO_BOUNDING_BOX,
   };

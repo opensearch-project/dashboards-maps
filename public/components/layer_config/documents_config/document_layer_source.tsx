@@ -355,7 +355,6 @@ export const DocumentLayerSource = ({
           <EuiFormRow>
             <EuiCheckbox
               id={`${selectedLayerConfig.id}-bounding-box-filter`}
-              disabled={selectedLayerConfig.source.geoFieldType !== 'geo_point'}
               label={'Only request data around map extent'}
               checked={selectedLayerConfig.source.useGeoBoundingBoxFilter ? true : false}
               onChange={onToggleGeoBoundingBox}
