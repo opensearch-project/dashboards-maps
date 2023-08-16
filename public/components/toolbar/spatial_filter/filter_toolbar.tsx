@@ -14,7 +14,10 @@ import {
   FILTER_DRAW_MODE,
 } from '../../../../common';
 import { FilterByShape } from './filter_by_shape';
-import polygon from '../../../images/polygon.svg';
+import polygonLight from '../../../images/polygon-light.svg';
+import polygonDark from '../../../images/polygon-dark.svg';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { MapServices } from '../../../types';
 
 interface SpatialFilterToolBarProps {
   setFilterProperties: (properties: DrawFilterProperties) => void;
@@ -22,6 +25,9 @@ interface SpatialFilterToolBarProps {
 }
 
 export const SpatialFilterToolbar = ({ setFilterProperties, mode }: SpatialFilterToolBarProps) => {
+  const { services } = useOpenSearchDashboards<MapServices>();
+  const isDarkMode = services.uiSettings.get('theme:darkMode');
+  const polygonIcon = isDarkMode ? polygonDark : polygonLight;
   return (
     <EuiFlexGroup responsive={false} direction="column" alignItems="center" gutterSize="none">
       <EuiFlexItem>
@@ -32,6 +38,7 @@ export const SpatialFilterToolbar = ({ setFilterProperties, mode }: SpatialFilte
           shapeLabel={DRAW_FILTER_RECTANGLE}
           defaultLabel={DRAW_FILTER_RECTANGLE_DEFAULT_LABEL}
           iconType={'vector'}
+          isDarkMode={isDarkMode}
         />
       </EuiFlexItem>
       <EuiFlexItem>
@@ -41,7 +48,8 @@ export const SpatialFilterToolbar = ({ setFilterProperties, mode }: SpatialFilte
           shapeMode={FILTER_DRAW_MODE.POLYGON}
           shapeLabel={DRAW_FILTER_POLYGON}
           defaultLabel={DRAW_FILTER_POLYGON_DEFAULT_LABEL}
-          iconType={polygon}
+          iconType={polygonIcon}
+          isDarkMode={isDarkMode}
         />
       </EuiFlexItem>
     </EuiFlexGroup>

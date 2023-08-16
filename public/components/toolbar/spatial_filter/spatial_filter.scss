@@ -17,4 +17,9 @@
   border: hidden;
 }
 
-
+.spatialFilterToolbar__shapeButton {
+  background-image: lightOrDarkTheme(
+      url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E%3Cpath d='m10.5 14 4-8 4 8h-8z'/%3E%3Cpath d='m10.5 16 4 8 4-8h-8z' fill='%23ccc'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='rgb(223, 229, 239)'%3E%3Cpath d='m10.5 14 4-8 4 8h-8z'/%3E%3Cpath d='m10.5 16 4 8 4-8h-8z' fill='%23ccc'/%3E%3C/svg%3E"))
+  !important;
+};

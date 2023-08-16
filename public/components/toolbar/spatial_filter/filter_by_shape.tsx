@@ -21,6 +21,7 @@ interface FilterByShapeProps {
   shapeLabel: string;
   defaultLabel: string;
   iconType: any;
+  isDarkMode: boolean;
 }
 
 export const FilterByShape = ({
@@ -30,6 +31,7 @@ export const FilterByShape = ({
   defaultLabel,
   iconType,
   shapeLabel,
+  isDarkMode,
 }: FilterByShapeProps) => {
   const [isPopoverOpen, setPopover] = useState(false);
   const isFilterActive: boolean = mode === shapeMode;
@@ -79,12 +81,13 @@ export const FilterByShape = ({
         isSelected={isFilterActive}
         display={isFilterActive ? 'fill' : 'empty'}
         aria-pressed={isFilterActive}
-        color="primary"
+        color={isDarkMode ? 'ghost' : 'primary'}
         size={'s'}
         iconType={iconType}
         onClick={onClick}
         aria-label={'draw_filter_shape'}
         title={isFilterActive ? DRAW_FILTER_CANCEL : shapeLabel}
+        className={'spatialFilterToolbar__shapeButton'}
       />
     </EuiPanel>
   );

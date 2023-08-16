@@ -29,14 +29,9 @@ import {
   Query,
 } from '../../../../../src/plugins/data/public';
 import { MapState } from '../../model/mapState';
-import { ConfigSchema } from '../../../common/config';
 import { GeoShapeFilterMeta, ShapeFilter } from '../../../../../src/plugins/data/common';
 import { buildGeoShapeFilterMeta } from '../../model/geo/filter';
 import { FilterBar } from '../filter_bar/filter_bar';
-
-interface MapPageProps {
-  mapConfig: ConfigSchema;
-}
 
 export interface DashboardProps {
   timeRange?: TimeRange;
@@ -46,16 +41,11 @@ export interface DashboardProps {
 }
 
 interface MapComponentProps {
-  mapConfig: ConfigSchema;
   mapIdFromSavedObject: string;
   dashboardProps?: DashboardProps;
 }
 
-export const MapComponent = ({
-  mapIdFromSavedObject,
-  mapConfig,
-  dashboardProps,
-}: MapComponentProps) => {
+export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapComponentProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
     savedObjects: { client: savedObjectsClient },
@@ -88,7 +78,7 @@ export const MapComponent = ({
         setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
-      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap(mapConfig)[
+      const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap()[
         OPENSEARCH_MAP_LAYER.type
       ] as MapLayerSpecification;
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
@@ -154,7 +144,6 @@ export const MapComponent = ({
         setLayersIndexPatterns={setLayersIndexPatterns}
         maplibreRef={maplibreRef}
         mapState={mapState}
-        mapConfig={mapConfig}
         isReadOnlyMode={isReadOnlyMode}
         dashboardProps={dashboardProps}
         isUpdatingLayerRender={isUpdatingLayerRender}
@@ -165,7 +154,7 @@ export const MapComponent = ({
   );
 };
 
-export const MapPage = ({ mapConfig }: MapPageProps) => {
+export const MapPage = () => {
   const { id: mapId } = useParams<{ id: string }>();
-  return <MapComponent mapIdFromSavedObject={mapId} mapConfig={mapConfig} />;
+  return <MapComponent mapIdFromSavedObject={mapId} />;
 };

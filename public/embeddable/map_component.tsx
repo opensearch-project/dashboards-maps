@@ -45,11 +45,7 @@ export function MapEmbeddableComponentInner({ embeddable, input }: Props) {
 
   return (
     <OpenSearchDashboardsContextProvider services={services}>
-      <MapComponent
-        mapConfig={embeddable.getMapConfig()}
-        mapIdFromSavedObject={input.savedObjectId}
-        dashboardProps={dashboardProps}
-      />
+      <MapComponent mapIdFromSavedObject={input.savedObjectId} dashboardProps={dashboardProps} />
     </OpenSearchDashboardsContextProvider>
   );
 }
