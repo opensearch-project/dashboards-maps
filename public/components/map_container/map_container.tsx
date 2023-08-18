@@ -24,7 +24,6 @@ import {
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { ResizeChecker } from '../../../../../src/plugins/opensearch_dashboards_utils/public';
 import { MapServices } from '../../types';
-import { ConfigSchema } from '../../../common/config';
 import { baseLayerTypeLookup } from '../../model/layersFunctions';
 import { MapsFooter } from './maps_footer';
 import { DisplayFeatures } from '../tooltip/display_features';
@@ -42,7 +41,6 @@ interface MapContainerProps {
   setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
   maplibreRef: React.MutableRefObject<Maplibre | null>;
   mapState: MapState;
-  mapConfig: ConfigSchema;
   isReadOnlyMode: boolean;
   dashboardProps?: DashboardProps;
   isUpdatingLayerRender: boolean;
@@ -64,7 +62,6 @@ export const MapContainer = ({
   setLayersIndexPatterns,
   maplibreRef,
   mapState,
-  mapConfig,
   isReadOnlyMode,
   dashboardProps,
   isUpdatingLayerRender,
@@ -93,11 +90,12 @@ export const MapContainer = ({
 
   useEffect(() => {
     if (!mapContainer.current) return;
+    const vectorTileFontURL = services.mapConfig.opensearchVectorTileGlyphsUrl;
     const mbStyle = {
       version: 8 as 8,
       sources: {},
       layers: [],
-      glyphs: mapConfig.opensearchVectorTileGlyphsUrl,
+      glyphs: vectorTileFontURL,
     };
 
     maplibreRef.current = new Maplibre({
@@ -188,7 +186,7 @@ export const MapContainer = ({
     if (isUpdatingLayerRender || isReadOnlyMode) {
       if (selectedLayerConfig) {
         if (baseLayerTypeLookup[selectedLayerConfig.type]) {
-          handleBaseLayerRender(selectedLayerConfig, maplibreRef, onError);
+          handleBaseLayerRender(selectedLayerConfig, maplibreRef, services, onError);
         } else {
           updateIndexPatterns();
           handleDataLayerRender(
@@ -201,7 +199,7 @@ export const MapContainer = ({
         setSelectedLayerConfig(undefined);
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-        renderBaseLayers(layers, maplibreRef, onError);
+        renderBaseLayers(layers, maplibreRef, services, onError);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
         maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
@@ -269,7 +267,6 @@ export const MapContainer = ({
           setLayersIndexPatterns={setLayersIndexPatterns}
           mapState={mapState}
           zoom={zoom}
-          mapConfig={mapConfig}
           isReadOnlyMode={isReadOnlyMode}
           selectedLayerConfig={selectedLayerConfig}
           setSelectedLayerConfig={setSelectedLayerConfig}

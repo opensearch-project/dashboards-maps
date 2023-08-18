@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders spatial filter before drawing 1`] = `
+exports[`SpatialFilterToolbar tests renders spatial filter before drawing 1`] = `
 <EuiFlexGroup
   alignItems="center"
   direction="column"
@@ -11,6 +11,8 @@ exports[`renders spatial filter before drawing 1`] = `
     <FilterByShape
       defaultLabel="rectangle"
       iconType="vector"
+      isDarkMode={false}
+      mode="rectangle"
       setDrawFilterProperties={[MockFunction]}
       shapeLabel="Draw Rectangle"
       shapeMode="rectangle"
@@ -20,6 +22,8 @@ exports[`renders spatial filter before drawing 1`] = `
     <FilterByShape
       defaultLabel="polygon"
       iconType={Object {}}
+      isDarkMode={false}
+      mode="rectangle"
       setDrawFilterProperties={[MockFunction]}
       shapeLabel="Draw Polygon"
       shapeMode="polygon"
@@ -28,7 +32,7 @@ exports[`renders spatial filter before drawing 1`] = `
 </EuiFlexGroup>
 `;
 
-exports[`renders spatial filter while drawing 1`] = `
+exports[`SpatialFilterToolbar tests renders spatial filter while drawing 1`] = `
 <EuiFlexGroup
   alignItems="center"
   direction="column"
@@ -39,6 +43,8 @@ exports[`renders spatial filter while drawing 1`] = `
     <FilterByShape
       defaultLabel="rectangle"
       iconType="vector"
+      isDarkMode={false}
+      mode="polygon"
       setDrawFilterProperties={[MockFunction]}
       shapeLabel="Draw Rectangle"
       shapeMode="rectangle"
@@ -48,6 +54,8 @@ exports[`renders spatial filter while drawing 1`] = `
     <FilterByShape
       defaultLabel="polygon"
       iconType={Object {}}
+      isDarkMode={false}
+      mode="polygon"
       setDrawFilterProperties={[MockFunction]}
       shapeLabel="Draw Polygon"
       shapeMode="polygon"

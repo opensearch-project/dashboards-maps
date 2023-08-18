@@ -31,7 +31,6 @@ import {
   MAX_LAYER_LIMIT,
 } from '../../../common';
 import { getLayerConfigMap } from '../../utils/getIntialConfig';
-import { ConfigSchema } from '../../../common/config';
 
 interface Props {
   setIsLayerConfigVisible: Function;
@@ -40,7 +39,6 @@ interface Props {
   addLayer: Function;
   setIsNewLayer: Function;
   newLayerIndex: number;
-  mapConfig: ConfigSchema;
   layerCount: number;
 }
 
@@ -51,14 +49,13 @@ export const AddLayerPanel = ({
   addLayer,
   setIsNewLayer,
   newLayerIndex,
-  mapConfig,
   layerCount,
 }: Props) => {
   const [isAddNewLayerModalVisible, setIsAddNewLayerModalVisible] = useState(false);
   const [highlightItem, setHighlightItem] = useState<Layer | null>(null);
 
   function onClickAddNewLayer(layerType: string) {
-    const initLayerConfig = getLayerConfigMap(mapConfig)[layerType];
+    const initLayerConfig = getLayerConfigMap()[layerType];
     initLayerConfig.name = NEW_MAP_LAYER_DEFAULT_PREFIX + ' ' + newLayerIndex;
     setSelectedLayerConfig(initLayerConfig);
     setIsAddNewLayerModalVisible(false);

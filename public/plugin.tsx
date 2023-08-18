@@ -89,10 +89,12 @@ export class CustomImportMapPlugin
           data,
           embeddable: useEmbeddable,
           scopedHistory: params.history,
+          uiSettings: coreStart.uiSettings,
+          mapConfig,
         };
         params.element.classList.add('mapAppContainer');
         // Render the application
-        return renderApp(params, services, mapConfig);
+        return renderApp(params, services);
       },
     });
 
@@ -100,12 +102,12 @@ export class CustomImportMapPlugin
       const [coreStart, depsStart] = await core.getStartServices();
       const { navigation, data: useData } = depsStart as AppPluginStartDependencies;
       return {
-        mapConfig,
         services: {
           ...coreStart,
           navigation,
           data: useData,
           toastNotifications: coreStart.notifications.toasts,
+          mapConfig,
         },
       };
     });
