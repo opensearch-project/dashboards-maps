@@ -15,7 +15,7 @@ exports[`render polygon renders filter by polygon in middle of drawing 1`] = `
       <button
         aria-label="draw_filter_shape"
         aria-pressed={true}
-        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--fill euiButtonIcon--small"
+        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--fill euiButtonIcon--small spatialFilterToolbar__shapeButton"
         disabled={false}
         onClick={[Function]}
         title="Cancel"
@@ -57,7 +57,7 @@ exports[`render polygon renders filter by polygon option 1`] = `
       <button
         aria-label="draw_filter_shape"
         aria-pressed={false}
-        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--small"
+        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--small spatialFilterToolbar__shapeButton"
         disabled={false}
         onClick={[Function]}
         title="Draw Polygon"
@@ -95,7 +95,7 @@ exports[`render rectangle renders filter by rectangle in middle of drawing 1`] =
       <button
         aria-label="draw_filter_shape"
         aria-pressed={true}
-        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--fill euiButtonIcon--small"
+        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--fill euiButtonIcon--small spatialFilterToolbar__shapeButton"
         disabled={false}
         onClick={[Function]}
         title="Cancel"
@@ -137,7 +137,7 @@ exports[`render rectangle renders filter by rectangle option 1`] = `
       <button
         aria-label="draw_filter_shape"
         aria-pressed={false}
-        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--small"
+        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--small spatialFilterToolbar__shapeButton"
         disabled={false}
         onClick={[Function]}
         title="Draw Rectangle"

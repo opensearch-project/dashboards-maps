@@ -12,7 +12,6 @@ import {
 } from '../../../../src/plugins/embeddable/public';
 import { MAP_EMBEDDABLE, MapInput, MapOutput, MapEmbeddable } from './map_embeddable';
 import { DASHBOARDS_MAPS_LAYER_TYPE, MAPS_APP_ICON, MAPS_APP_ID } from '../../common';
-import { ConfigSchema } from '../../common/config';
 import { MapSavedObjectAttributes } from '../../common/map_saved_object_attributes';
 import { MAPS_APP_DISPLAY_NAME } from '../../common/constants/shared';
 import { MapLayerSpecification } from '../model/mapLayerType';
@@ -35,7 +34,6 @@ interface StartServices {
       };
     };
   };
-  mapConfig: ConfigSchema;
 }
 
 export class MapEmbeddableFactoryDefinition
@@ -66,7 +64,7 @@ export class MapEmbeddableFactoryDefinition
     parent?: IContainer
   ): Promise<MapEmbeddable | ErrorEmbeddable> => {
     try {
-      const { services, mapConfig } = await this.getStartServices();
+      const { services } = await this.getStartServices();
       const url = services.application.getUrlForApp(MAPS_APP_ID, {
         path: savedObjectId,
       });
@@ -91,7 +89,6 @@ export class MapEmbeddableFactoryDefinition
           indexPatterns,
           parent,
           services,
-          mapConfig,
           editUrl: url,
           savedMapAttributes,
         }

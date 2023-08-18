@@ -18,6 +18,33 @@
   top: $euiSizeS;
 }
 
+.maplibregl-ctrl-zoom-in {
+  background: lightOrDarkTheme($ouiColorEmptyShade, $ouiColorLightestShade) !important;
+  .maplibregl-ctrl-icon {
+    background-image: lightOrDarkTheme(
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%0A%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='rgb(223, 229, 239)'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h3v3c0 .75.75 1.5 1.5 1.5S16 19.75 16 19v-3h3c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-3v-3c0-.75-.75-1.5-1.5-1.5z'/%3E%3C/svg%3E"))
+    !important;
+  }
+}
+
+.maplibregl-ctrl-zoom-out {
+  background: lightOrDarkTheme($euiColorEmptyShade, $ouiColorLightestShade) !important;
+  .maplibregl-ctrl-icon {
+    background-image: lightOrDarkTheme(
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='rgb(223, 229, 239)'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h9c.75 0 1.5-.75 1.5-1.5S19.75 13 19 13h-9z'/%3E%3C/svg%3E"))
+    !important;
+  }
+}
+
+.maplibregl-ctrl-compass {
+  background: lightOrDarkTheme($euiColorEmptyShade, $ouiColorLightestShade) !important;
+  background-image: lightOrDarkTheme(
+      url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E%3Cpath d='m10.5 14 4-8 4 8h-8z'/%3E%3Cpath d='m10.5 16 4 8 4-8h-8z' fill='%23ccc'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml;charset=utf-8,%3Csvg width='29' height='29' viewBox='0 0 29 29' xmlns='http://www.w3.org/2000/svg' fill='rgb(223, 229, 239)'%3E%3Cpath d='m10.5 14 4-8 4 8h-8z'/%3E%3Cpath d='m10.5 16 4 8 4-8h-8z' fill='%23ccc'/%3E%3C/svg%3E")) !important;
+}
+
 .layerControlPanel-container {
   z-index: 1;
   position: absolute;

@@ -28,9 +28,8 @@ import {
   DOCUMENTS_DEFAULT_APPLY_GLOBAL_FILTERS,
 } from '../../common';
 import { MapState } from '../model/mapState';
-import { ConfigSchema } from '../../common/config';
 
-export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
+export const getLayerConfigMap = () => ({
   [OPENSEARCH_MAP_LAYER.type]: {
     name: '',
     description: '',
@@ -39,12 +38,6 @@ export const getLayerConfigMap = (mapConfig: ConfigSchema) => ({
     zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
     opacity: MAP_REFERENCE_LAYER_DEFAULT_OPACITY,
     visibility: LAYER_VISIBILITY.VISIBLE,
-    source: {
-      dataURL: mapConfig.opensearchVectorTileDataUrl,
-    },
-    style: {
-      styleURL: mapConfig.opensearchVectorTileStyleUrl,
-    },
   },
   [DOCUMENTS.type]: {
     name: '',

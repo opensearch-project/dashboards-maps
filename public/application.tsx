@@ -9,16 +9,11 @@ import { AppMountParameters } from '../../../src/core/public';
 import { MapServices } from './types';
 import { MapsDashboardsApp } from './components/app';
 import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opensearch_dashboards_react/public';
-import { ConfigSchema } from '../common/config';
 
-export const renderApp = (
-  { element }: AppMountParameters,
-  services: MapServices,
-  mapConfig: ConfigSchema
-) => {
+export const renderApp = ({ element }: AppMountParameters, services: MapServices) => {
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={services}>
-      <MapsDashboardsApp mapConfig={mapConfig} />
+      <MapsDashboardsApp />
     </OpenSearchDashboardsContextProvider>,
     element
   );

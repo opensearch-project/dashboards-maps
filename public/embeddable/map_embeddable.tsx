@@ -14,7 +14,6 @@ import {
   IContainer,
 } from '../../../../src/plugins/embeddable/public';
 import { MapEmbeddableComponent } from './map_component';
-import { ConfigSchema } from '../../common/config';
 import { MapSavedObjectAttributes } from '../../common/map_saved_object_attributes';
 import { IndexPattern, RefreshInterval } from '../../../../src/plugins/data/public';
 
@@ -54,21 +53,18 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
   public readonly type = MAP_EMBEDDABLE;
   private subscription: Subscription;
   private node?: HTMLElement;
-  private readonly mapConfig: ConfigSchema;
   private readonly services: any;
   constructor(
     initialInput: MapInput,
     {
       parent,
       services,
-      mapConfig,
       editUrl,
       savedMapAttributes,
       indexPatterns,
     }: {
       parent?: IContainer;
       services: any;
-      mapConfig: ConfigSchema;
       editUrl: string;
       savedMapAttributes: MapSavedObjectAttributes;
       indexPatterns: IndexPattern[];
@@ -79,7 +75,6 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
       getOutput(initialInput, editUrl, savedMapAttributes.title, indexPatterns),
       parent
     );
-    this.mapConfig = mapConfig;
     this.services = services;
     this.subscription = this.getInput$().subscribe(() => {
       this.updateOutput(getOutput(this.input, editUrl, savedMapAttributes.title, indexPatterns));
@@ -109,8 +104,5 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
   }
   public getServiceSettings() {
     return this.services;
-  }
-  public getMapConfig() {
-    return this.mapConfig;
   }
 }
