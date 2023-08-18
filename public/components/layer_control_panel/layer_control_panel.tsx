@@ -33,7 +33,6 @@ import { LAYER_ICON_TYPE_MAP } from '../../../common';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { MapServices } from '../../types';
 import { MapState } from '../../model/mapState';
-import { ConfigSchema } from '../../../common/config';
 import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
 import { HideLayer } from './hide_layer_button';
@@ -46,7 +45,6 @@ interface Props {
   setLayersIndexPatterns: (indexPatterns: IndexPattern[]) => void;
   mapState: MapState;
   zoom: number;
-  mapConfig: ConfigSchema;
   isReadOnlyMode: boolean;
   selectedLayerConfig: MapLayerSpecification | undefined;
   setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
@@ -59,7 +57,6 @@ export const LayerControlPanel = memo(
     setLayers,
     layers,
     zoom,
-    mapConfig,
     isReadOnlyMode,
     selectedLayerConfig,
     setSelectedLayerConfig,
@@ -393,7 +390,6 @@ export const LayerControlPanel = memo(
                 addLayer={addLayer}
                 newLayerIndex={newLayerIndex()}
                 setIsNewLayer={setIsNewLayer}
-                mapConfig={mapConfig}
                 layerCount={layers.length}
               />
               {isDeleteLayerModalVisible && (

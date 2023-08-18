@@ -15,6 +15,7 @@ import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugi
 import { RegionMapPluginSetup } from '../../../src/plugins/region_map/public';
 import { EmbeddableSetup, EmbeddableStart } from '../../../src/plugins/embeddable/public';
 import { VisualizationsSetup } from '../../../src/plugins/visualizations/public';
+import { ConfigSchema } from '../common/config';
 
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
@@ -38,6 +39,8 @@ export interface MapServices extends CoreStart {
   embeddable: EmbeddableStart;
   scopedHistory: ScopedHistory;
   chrome: CoreStart['chrome'];
+  uiSettings: CoreStart['uiSettings'];
+  mapConfig: ConfigSchema;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

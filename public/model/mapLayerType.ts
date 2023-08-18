@@ -27,12 +27,6 @@ export type AbstractLayerSpecification = {
 
 export type OSMLayerSpecification = AbstractLayerSpecification & {
   type: DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP;
-  source: {
-    dataURL: string;
-  };
-  style: {
-    styleURL: string;
-  };
 };
 
 export type DocumentLayerSpecification = AbstractLayerSpecification & {

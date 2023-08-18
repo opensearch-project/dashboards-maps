@@ -193,3 +193,8 @@ export const DRAW_FILTER_RECTANGLE = 'Draw Rectangle';
 export const DRAW_FILTER_SPATIAL_RELATIONS = ['intersects', 'disjoint', 'within'];
 
 export const PER_PAGE_REQUEST_NUMBER = 50;
+
+export const DEFAULT_VECTOR_TILE_STYLES = {
+  BASIC: 'basic',
+  DARK: 'dark',
+};
