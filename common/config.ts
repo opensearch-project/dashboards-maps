@@ -10,8 +10,7 @@ export const configSchema = schema.object({
     defaultValue: 'https://tiles.maps.opensearch.org/data/v1.json',
   }),
   opensearchVectorTileStyleUrl: schema.string({
-    // TODO: Change this to the production URL once it is available
-    defaultValue: 'https://staging.tiles.maps.opensearch.org/styles/manifest.json',
+    defaultValue: 'https://tiles.maps.opensearch.org/v3/manifest.json',
   }),
   opensearchVectorTileGlyphsUrl: schema.string({
     defaultValue: 'https://tiles.maps.opensearch.org/fonts/{fontstack}/{range}.pbf',
