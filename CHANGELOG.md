@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.9...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.10...2.x)
 ### Features
 * Allow filtering geo_shape fields around map extent ([#452](https://github.com/opensearch-project/dashboards-maps/pull/452))
 * Support dark mode in maps-dashboards([#455](https://github.com/opensearch-project/dashboards-maps/pull/455))
