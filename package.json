@@ -35,11 +35,8 @@
   },
   "devDependencies": {
     "@types/react-test-renderer": "^18.0.0",
-    "cypress": "9.5.4",
+    "cypress": "^13.1.0",
     "cypress-multi-reporters": "^1.5.0",
     "prettier": "^2.1.1"
-  },
-  "resolutions": {
-    "tough-cookie": "^4.1.3"
   }
 }
