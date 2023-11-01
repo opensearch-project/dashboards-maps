@@ -13,10 +13,46 @@ on:
 env:
   OPENSEARCH_DASHBOARDS_BRANCH: 'main'
 jobs:
-  tests:
+  Get-CI-Image-Tag:
+    uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@main
+    with:
+      product: opensearch-dashboards
+
+  tests-linux:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    needs: Get-CI-Image-Tag
+    steps:
+      - name: Checkout Plugin
+        uses: actions/checkout@v3
+        with:
+          path: dashboards-maps
+
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@v3
+        with:
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_BRANCH }}
+          path: OpenSearch-Dashboards
+
+      - name: Move plugin to OpenSearch-Dashboard Plugins Directory
+        run: mv dashboards-maps OpenSearch-Dashboards/plugins/dashboards-maps
+
+      - name: Bootstrap plugin
+        run: |
+          chown -R 1000:1000 `pwd`
+          cd ./OpenSearch-Dashboards/
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
+                               cd ./plugins/dashboards-maps &&
+                               whoami && yarn osd bootstrap && yarn run test:jest --coverage"
+
+      - name: Uploads coverage
+        uses: codecov/codecov-action@v1
+
+  tests-windows-macos:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        os: [ windows-latest, macos-latest ]
 
     name: Run unit tests
     runs-on: ${{ matrix.os }}
@@ -70,5 +106,3 @@ jobs:
 
       - name: Uploads coverage
         uses: codecov/codecov-action@v1
-
-
