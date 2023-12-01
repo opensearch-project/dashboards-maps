@@ -15,13 +15,16 @@ import {
 } from '@elastic/eui';
 import React, { useState, Fragment, useCallback, useEffect, useMemo } from 'react';
 
-export type RowData = {
+export interface RowData {
   key: string;
   value: string;
-};
+}
 export type PageData = RowData[];
 export type TableData = PageData[];
-type Table = { table: TableData; layer: string };
+interface Table {
+  table: TableData;
+  layer: string;
+}
 
 export const ALL_LAYERS = -1;
 
@@ -66,7 +69,7 @@ const TooltipTable = ({
   showPagination = true,
   showLayerSelection = true,
 }: Props) => {
-  const [selectedLayers, setSelectedLayers] = useState<EuiComboBoxOptionOption<number>[]>([
+  const [selectedLayers, setSelectedLayers] = useState<Array<EuiComboBoxOptionOption<number>>>([
     {
       label: tables[0]?.layer ?? '',
       value: 0,
@@ -103,7 +106,7 @@ const TooltipTable = ({
   };
 
   const handleLayerChange = useCallback(
-    (layerSelections: EuiComboBoxOptionOption<number>[]) => {
+    (layerSelections: Array<EuiComboBoxOptionOption<number>>) => {
       if (tables.length === 0) {
         return;
       }
@@ -152,7 +155,7 @@ const TooltipTable = ({
   return (
     <Fragment>
       <EuiFlexGroup responsive={false}>
-        <EuiFlexItem style={{ overflow: 'scroll', maxHeight: 300 }}>
+        <EuiFlexItem style={{ overflow: 'auto', maxHeight: 300 }}>
           <EuiBasicTable
             isSelectable={false}
             items={pageItems}
