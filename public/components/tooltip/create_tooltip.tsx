@@ -5,6 +5,7 @@ import { Popup, MapGeoJSONFeature, LngLat } from 'maplibre-gl';
 import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
 import { FeatureGroupItem, TooltipContainer } from './tooltipContainer';
 import { MAX_LONGITUDE } from '../../../common';
+import './create_tooltip.scss';
 
 interface Options {
   features: MapGeoJSONFeature[];
@@ -76,6 +77,7 @@ export function createPopup({
     closeButton: false,
     closeOnClick: false,
     maxWidth: 'max-content',
+    className: 'mapTooltip',
   });
 
   const featureGroup = groupFeaturesByLayers(features, layers);
