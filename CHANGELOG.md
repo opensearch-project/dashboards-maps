@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 ### Enhancements
 ### Bug Fixes
+* Fixed maps tooltip display at dark mode[#564](https://github.com/opensearch-project/dashboards-maps/pull/564)
 ### Infrastructure
 ### Documentation
 ### Maintenance
