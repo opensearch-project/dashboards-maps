@@ -373,7 +373,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <EuiText size="xs" color="subdued" aria-label="map-name-guidelines-text">
           Map name guidleines:
           <ul>
-            <li> Map name prefix must contain 1-250 characters. </li>
+            <li> Map name prefix must contain 1-250 characters.</li>
             <li> Map name prefix must start with a-z.</li>
             <li> Valid characters are a-z, 0-9, - and _ .</li>
             <li>

@@ -36,9 +36,9 @@ describe('Documents layer', () => {
     cy.get(`button[testSubj="styleTab"]`).click();
     cy.contains('Fill color').click();
     cy.get(`button[aria-label="Select #E7664C as the color"]`).click();
-    cy.contains('Border color').click();
+    cy.wait(1000).contains('Border color').click();
     cy.get(`button[aria-label="Select #DA8B45 as the color"]`).click();
-    cy.get(`button[testSubj="settingsTab"]`).click();
+    cy.wait(1000).get(`button[testSubj="settingsTab"]`).click();
     cy.get('[name="layerName"]').clear().type('Documents layer 1');
     cy.get(`button[data-test-subj="updateButton"]`).click();
     cy.get('[data-test-subj="layerControlPanel"]').should('contain', 'Documents layer 1');
