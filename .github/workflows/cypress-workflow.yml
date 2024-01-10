@@ -111,6 +111,7 @@ jobs:
       - name: Run OpenSearch Dashboards server
         run: |
           cd OpenSearch-Dashboards
+          yarn osd bootstrap
           yarn start --no-base-path --no-watch &
         shell: bash
 
