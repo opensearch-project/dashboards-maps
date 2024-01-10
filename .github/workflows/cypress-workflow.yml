@@ -117,16 +117,7 @@ jobs:
         run: |
           cd OpenSearch-Dashboards
           yarn start --no-base-path --no-watch &
-        shell: bash
-
-      - name: Sleep until OSD server starts - windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: Start-Sleep -s 600
-        shell: powershell
-
-      - name: Sleep until OSD server starts - non-windows
-        if: ${{ matrix.os != 'windows-latest' }}
-        run: sleep 600
+          timeout 600 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:5601)" != "200" ]]; do sleep 5; done'
         shell: bash
 
       - name: Install Cypress
