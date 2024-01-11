@@ -108,16 +108,20 @@ jobs:
           cd OpenSearch-Dashboards/plugins/dashboards-maps
           yarn osd bootstrap
 
-      - name: Bootstrap OpenSearch Dashboards
-        run: |
-          cd OpenSearch-Dashboards
-          yarn osd bootstrap
-
       - name: Run OpenSearch Dashboards server
         run: |
           cd OpenSearch-Dashboards
           yarn start --no-base-path --no-watch &
-          timeout 1800 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:5601)" != "200" ]]; do sleep 5; done'
+        shell: bash
+
+      - name: Sleep until OSD server starts - windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: Start-Sleep -s 600
+        shell: powershell
+
+      - name: Sleep until OSD server starts - non-windows
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: sleep 600
         shell: bash
 
       - name: Install Cypress
@@ -152,7 +156,7 @@ jobs:
         with:
           working-directory: OpenSearch-Dashboards/plugins/dashboards-maps
           command: yarn run cypress run --browser chrome
-          wait-on: 'http://localhost:5601'
+          wait-on: 'http://localhost:5601/api/status'
         env:
           CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
 
