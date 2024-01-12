@@ -111,7 +111,7 @@ jobs:
       - name: Run OpenSearch Dashboards server
         run: |
           cd OpenSearch-Dashboards
-          yarn start --no-base-path --no-watch &
+          yarn start --no-base-path --no-watch --server.host="0.0.0.0" &
         shell: bash
 
       - name: Sleep until OSD server starts - windows
@@ -156,7 +156,6 @@ jobs:
         with:
           working-directory: OpenSearch-Dashboards/plugins/dashboards-maps
           command: yarn run cypress run --browser chrome
-          wait-on: 'http://localhost:5601/api/status'
         env:
           CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
 
