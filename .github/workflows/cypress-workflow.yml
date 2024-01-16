@@ -155,7 +155,7 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           working-directory: OpenSearch-Dashboards/plugins/dashboards-maps
-          command: yarn run cypress run --browser chrome
+          command: yarn run cypress run --headless --browser chrome
         env:
           CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
 
