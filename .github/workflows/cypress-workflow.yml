@@ -116,7 +116,7 @@ jobs:
 
       - name: Sleep until OSD server starts - windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: Start-Sleep -s 600
+        run: Start-Sleep -s 1800
         shell: powershell
 
       - name: Sleep until OSD server starts - non-windows
