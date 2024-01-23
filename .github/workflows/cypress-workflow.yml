@@ -93,6 +93,12 @@ jobs:
       - run: node -v
       - run: yarn -v
 
+      - name: Set npm to use bash for shell
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          # Sets Windows to use bash for npm shell so the script commands work as intended
+          npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
+
       - name: Move plugin to OpenSearch-Dashboards Plugins Directory
         run: |
           mv dashboards-maps OpenSearch-Dashboards/plugins/dashboards-maps
@@ -139,11 +145,19 @@ jobs:
           path: ${{ matrix.cypress_cache_folder }}
           key: cypress-cache-v2-${{ runner.os }}-${{ hashFiles('**/package.json') }}
 
+      - name: Reset npm's script shell
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          # Resetting npm's script shell for Windows so `yarn run cypress` doesn't have conflicts
+          npm config delete script-shell
+
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
         with:
           working-directory: OpenSearch-Dashboards/plugins/dashboards-maps
           command: yarn run cypress run --browser electron
+          wait-on: 'http://localhost:5601'
+          wait-on-timeout: 300
         env:
           CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
 
