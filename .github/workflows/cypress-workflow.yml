@@ -93,12 +93,6 @@ jobs:
       - run: node -v
       - run: yarn -v
 
-      - name: Set npm to use bash for shell
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          # Sets Windows to use bash for npm shell so the script commands work as intended
-          npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
-
       - name: Move plugin to OpenSearch-Dashboards Plugins Directory
         run: |
           mv dashboards-maps OpenSearch-Dashboards/plugins/dashboards-maps
