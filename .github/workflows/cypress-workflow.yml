@@ -116,7 +116,7 @@ jobs:
 
       - name: Sleep until OSD server starts - windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: Start-Sleep -s 1800
+        run: Start-Sleep -s 600
         shell: powershell
 
       - name: Sleep until OSD server starts - non-windows
@@ -144,12 +144,6 @@ jobs:
         with:
           path: ${{ matrix.cypress_cache_folder }}
           key: cypress-cache-v2-${{ runner.os }}-${{ hashFiles('**/package.json') }}
-
-      - name: Reset npm's script shell
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          # Resetting npm's script shell for Windows so `yarn run cypress` doesn't have conflicts
-          npm config delete script-shell
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v5
