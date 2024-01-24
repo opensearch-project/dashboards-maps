@@ -34,9 +34,9 @@ describe('Documents layer', () => {
     );
     cy.get('[data-test-subj="geoFieldSelect"]').should('contain', 'DestLocation');
     cy.get(`button[testSubj="styleTab"]`).click();
-    cy.contains('Fill color').click();
+    cy.wait(1000).contains('Fill color').click();
     cy.get(`button[aria-label="Select #E7664C as the color"]`).click();
-    cy.contains('Border color').click();
+    cy.wait(1000).contains('Border color').click();
     cy.get(`button[aria-label="Select #DA8B45 as the color"]`).click();
     cy.get(`button[testSubj="settingsTab"]`).click();
     cy.get('[name="layerName"]').clear().type('Documents layer 1');
