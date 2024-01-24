@@ -1,6 +1,7 @@
 const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
+  video: true,
   defaultCommandTimeout: 120000,
   env: {
     opensearch_url: 'localhost:9200',
