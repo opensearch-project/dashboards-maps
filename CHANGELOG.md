@@ -12,14 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.11...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.12...2.x)
 ### Features
 ### Enhancements
 ### Bug Fixes
-* Fixed maps tooltip display at dark mode[#564](https://github.com/opensearch-project/dashboards-maps/pull/564)
 ### Infrastructure
 ### Documentation
 ### Maintenance
-* Fix broken build and failing tests [#572](https://github.com/opensearch-project/dashboards-maps/pull/572)
-* Update dependencies to align with other plugins [#575](https://github.com/opensearch-project/dashboards-maps/pull/575)
 ### Refactoring
