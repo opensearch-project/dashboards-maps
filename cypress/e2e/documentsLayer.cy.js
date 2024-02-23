@@ -24,7 +24,7 @@ describe('Documents layer', () => {
     cy.contains('Create map').click();
     cy.get("button[data-test-subj='addLayerButton']").click();
     cy.contains('Documents').click();
-    cy.contains('Select data source', { timeout: 60000 }).click({ force: true });
+    cy.contains('Select index pattern', { timeout: 60000 }).click({ force: true });
     cy.contains('opensearch_dashboards_sample_data_flights').click();
     cy.contains('Select data field', { timeout: 60000 }).click({ force: true });
     cy.contains('DestLocation').click();
