@@ -44,7 +44,7 @@ Ultimately, your directory structure should look like this:
 From OpenSearch-Dashboards repo (root folder), the following commands start OpenSearch Dashboards and includes this plugin.
 
 ```
-yarn osd bootstrap
+yarn osd bootstrap --single-version=loose
 yarn start --no-base-path
 ```
 

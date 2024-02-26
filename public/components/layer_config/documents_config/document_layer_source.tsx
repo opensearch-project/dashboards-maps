@@ -264,7 +264,7 @@ export const DocumentLayerSource = ({
             <EuiFlexGrid columns={1}>
               <EuiFlexItem>
                 <EuiFormRow
-                  label="Data source"
+                  label="Index pattern"
                   isInvalid={!indexPattern}
                   error={errorsMap.datasource}
                   data-test-subj={'indexPatternSelect'}
@@ -273,7 +273,7 @@ export const DocumentLayerSource = ({
                   <IndexPatternSelect
                     savedObjectsClient={savedObjectsClient}
                     placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
-                      defaultMessage: 'Select data source',
+                      defaultMessage: 'Select index pattern',
                     })}
                     indexPatternId={indexPattern?.id || ''}
                     onChange={async (newIndexPatternId: any) => {
