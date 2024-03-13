@@ -46,6 +46,8 @@ interface MapContainerProps {
   isUpdatingLayerRender: boolean;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
   addSpatialFilter: (shape: ShapeFilter, label: string | null, relation: GeoShapeRelation) => void;
+  dataSourceRefIds: string[];
+  setDataSourceRefIds: (refIds: string[]) => void;
 }
 
 export class MapsServiceError extends Error {
@@ -67,6 +69,7 @@ export const MapContainer = ({
   isUpdatingLayerRender,
   setIsUpdatingLayerRender,
   addSpatialFilter,
+  setDataSourceRefIds,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
 
@@ -245,6 +248,16 @@ export const MapContainer = ({
       );
       const cloneLayersIndexPatterns = [...layersIndexPatterns, newIndexPattern];
       setLayersIndexPatterns(cloneLayersIndexPatterns);
+      const updatedDataSourceRefIds: string[] = [];
+      cloneLayersIndexPatterns.forEach((ip) => {
+        if (ip.dataSourceRef && !updatedDataSourceRefIds.includes(ip.dataSourceRef.id)) {
+          updatedDataSourceRefIds.push(ip.dataSourceRef.id);
+        } else if (!ip.dataSourceRef && !updatedDataSourceRefIds.includes('')) {
+          // local cluster
+          updatedDataSourceRefIds.push('');
+        }
+      });
+      setDataSourceRefIds(updatedDataSourceRefIds);
     }
   };
 
@@ -271,6 +284,7 @@ export const MapContainer = ({
           selectedLayerConfig={selectedLayerConfig}
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+          setDataSourceRefIds={setDataSourceRefIds}
         />
       )}
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (

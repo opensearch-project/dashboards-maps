@@ -22,7 +22,11 @@ export const MapsDashboardsApp = () => {
       <I18nProvider>
         <Switch>
           <Route path={[APP_PATH.CREATE_MAP, APP_PATH.EDIT_MAP]} render={() => <MapPage />} />
-          <Route exact path={APP_PATH.LANDING_PAGE_PATH} render={() => <MapsList />} />
+          <Route
+            exact
+            path={APP_PATH.LANDING_PAGE_PATH}
+            render={() => <MapsList />}
+          />
         </Switch>
       </I18nProvider>
     </Router>
