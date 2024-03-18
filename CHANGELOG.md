@@ -18,6 +18,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bug Fixes
 ### Infrastructure
 ### Documentation
-* Update data layer source name [#588](https://github.com/opensearch-project/dashboards-maps/pull/588)
 ### Maintenance
 ### Refactoring
