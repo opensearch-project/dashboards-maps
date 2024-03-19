@@ -12,12 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.12...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.13...2.x)
 ### Features
 ### Enhancements
 ### Bug Fixes
 ### Infrastructure
 ### Documentation
-* Update data layer source name [#588](https://github.com/opensearch-project/dashboards-maps/pull/588)
 ### Maintenance
 ### Refactoring
