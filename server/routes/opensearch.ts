@@ -14,6 +14,7 @@ export default function (services, router) {
         body: schema.object({
           index: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
     services.getIndex
