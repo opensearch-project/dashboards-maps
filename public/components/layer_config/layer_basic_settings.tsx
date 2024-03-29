@@ -25,6 +25,7 @@ import {
   MAP_LAYER_DEFAULT_OPACITY_STEP,
   MAX_LAYER_NAME_LIMIT,
 } from '../../../common';
+import { ValueMember } from '../../../../../src/plugins/opensearch_dashboards_react/public/validated_range/validated_dual_range';
 
 interface Props {
   selectedLayerConfig: MapLayerSpecification;
@@ -73,8 +74,9 @@ export const LayerBasicSettings = ({
     const newLayerConfig = { ...selectedLayerConfig, [key]: value };
     setSelectedLayerConfig(newLayerConfig);
   };
-  const onZoomChange = (value: number[]) => {
-    commonUpdate('zoomRange', value);
+  const onZoomChange = (value: ValueMember[]) => {
+    const zoomNumberValue = value.map((v) => Number(v));
+    commonUpdate('zoomRange', zoomNumberValue);
   };
 
   const onOpacityChange = (e: any) => {
@@ -121,7 +123,7 @@ export const LayerBasicSettings = ({
           <EuiDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
-            value={selectedLayerConfig.zoomRange}
+            value={selectedLayerConfig.zoomRange as [ValueMember, ValueMember]}
             showInput
             minInputProps={{ 'aria-label': 'Min value' }}
             maxInputProps={{ 'aria-label': 'Max value' }}

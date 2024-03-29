@@ -51,6 +51,8 @@ const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: Maplibr
       tileSize: 256,
       attribution: layerSource?.attribution,
     });
+    // Convert zoomRange to number[] to avoid type error for backport versions
+    const zoomRange: number[] = layerConfig.zoomRange.map((zoom) => Number(zoom));
     maplibreInstance.addLayer({
       id: layerConfig.id,
       type: 'raster',
@@ -61,8 +63,8 @@ const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: Maplibr
       layout: {
         visibility: layerConfig.visibility === 'visible' ? 'visible' : 'none',
       },
-      minzoom: layerConfig.zoomRange[0],
-      maxzoom: layerConfig.zoomRange[1],
+      minzoom: zoomRange[0],
+      maxzoom: zoomRange[1],
     });
   }
 };
