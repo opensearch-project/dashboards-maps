@@ -52,7 +52,7 @@ const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: Maplibr
       attribution: layerSource?.attribution,
     });
     // Convert zoomRange to number[] to avoid type error for backport versions
-    const zoomRange: number[] = layerConfig.zoomRange.map((zoom) => Number(zoom));
+    const zoomRange: number[] = applyZoomRangeToLayer(layerConfig);
     maplibreInstance.addLayer({
       id: layerConfig.id,
       type: 'raster',
@@ -79,6 +79,11 @@ const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
   } else {
     return '';
   }
+};
+
+export const applyZoomRangeToLayer = (layerConfig: CustomLayerSpecification) => {
+  // Convert zoomRange to number[] to avoid type error for backport versions
+  return layerConfig.zoomRange.map((zoom) => Number(zoom));
 };
 
 export const CustomLayerFunctions = {
