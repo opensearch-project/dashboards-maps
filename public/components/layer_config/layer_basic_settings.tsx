@@ -42,6 +42,7 @@ export const LayerBasicSettings = ({
 }: Props) => {
   const [invalid, setInvalid] = useState<boolean>(selectedLayerConfig.name.length === 0);
   const [errors, setErrors] = useState<string[]>([]);
+  const [zoomLevel, setZoomLevel] = useState<[ValueMember, ValueMember]>(selectedLayerConfig.zoomRange as [ValueMember, ValueMember]);
 
   const validateName = (name: string) => {
     if (name?.length === 0) {
@@ -74,9 +75,14 @@ export const LayerBasicSettings = ({
     const newLayerConfig = { ...selectedLayerConfig, [key]: value };
     setSelectedLayerConfig(newLayerConfig);
   };
-  const onZoomChange = (value: ValueMember[]) => {
-    const zoomNumberValue = value.map((v) => Number(v));
-    commonUpdate('zoomRange', zoomNumberValue);
+
+  const onZoomChange = (value: [ValueMember, ValueMember]) => {
+    // if value is not empty string, then update the zoom level to layer config
+    if (value[0] !== '' && value[1] !== '') {
+      // change value to number type
+      commonUpdate('zoomRange', value.map((zoomLevel) => Number(zoomLevel)));
+    }
+    setZoomLevel(value);
   };
 
   const onOpacityChange = (e: any) => {
@@ -123,7 +129,7 @@ export const LayerBasicSettings = ({
           <EuiDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
-            value={selectedLayerConfig.zoomRange as [ValueMember, ValueMember]}
+            value={zoomLevel}
             showInput
             minInputProps={{ 'aria-label': 'Min value' }}
             maxInputProps={{ 'aria-label': 'Max value' }}
