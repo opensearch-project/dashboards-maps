@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 ### Enhancements
 ### Bug Fixes
+* Fix zoom level type error in custom layer ([#605](https://github.com/opensearch-project/dashboards-maps/pull/605))
 ### Infrastructure
 ### Documentation
 ### Maintenance
