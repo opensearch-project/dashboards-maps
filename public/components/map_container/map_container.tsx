@@ -253,7 +253,7 @@ export const MapContainer = ({
         if (ip.dataSourceRef && !updatedDataSourceRefIds.includes(ip.dataSourceRef.id)) {
           updatedDataSourceRefIds.push(ip.dataSourceRef.id);
         } else if (!ip.dataSourceRef && !updatedDataSourceRefIds.includes('')) {
-          // local cluster
+          // If index pattern of the layer doesn't have reference to a data source, it is using local cluster
           updatedDataSourceRefIds.push('');
         }
       });

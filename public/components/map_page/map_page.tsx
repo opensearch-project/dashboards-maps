@@ -84,7 +84,7 @@ export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapCompon
             if (response.dataSourceRef && !dataSourceRefIds.includes(response.dataSourceRef.id)) {
               remoteDataSourceIds.push(response.dataSourceRef.id);
             } else if (!response.dataSourceRef && !remoteDataSourceIds.includes('')) {
-              // local cluster
+              // If index pattern of the layer doesn't have reference to a data source, it is using local cluster
               remoteDataSourceIds.push('');
             }
           });
