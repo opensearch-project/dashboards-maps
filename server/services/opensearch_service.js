@@ -9,14 +9,23 @@ export default class OpensearchService {
   }
 
   getIndex = async (context, req, res) => {
+    const dataSourceRefId = req.query.dataSourceId;
     try {
-      const { index } = req.body;
-      const { callAsCurrentUser } = this.driver.asScoped(req);
-      const indices = await callAsCurrentUser('cat.indices', {
-        index,
-        format: 'json',
-        h: 'health,index,status',
-      });
+      if (dataSourceRefId) {
+        const remoteDataSourceClient = context.dataSource.opensearch.legacy.getClient(
+          dataSourceRefId
+        ).callAPI;
+        const { index } = req.body;
+        const indices = await remoteDataSourceClient('cat.indices', {
+          index,
+          format: 'json',
+          h: 'health,index,status',
+        });
+      } else {
+        const { callAsCurrentUser } = this.driver.asScoped(req);
+        const { index } = req.body;
+        const indices = await callAsCurrentUser;
+      }
       return res.ok({
         body: {
           ok: true,

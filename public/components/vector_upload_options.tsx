@@ -78,6 +78,8 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
     return document.getElementsByName(elementName)[0];
   };
 
+  const dataSourceRefId = props.vis.data.indexPattern?.dataSourceRef?.id || '';
+
   const validateIndexName = (typedIndexName: string, isIndexNameWithSuffix: boolean) => {
     const error = [];
     const errorIndexNameDiv = fetchElementByName('errorIndexName');
@@ -175,7 +177,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
 
   const checkIfIndexExists = async (indexName: string) => {
     try {
-      const result = await getIndex(indexName, http);
+      const result = await getIndex(indexName, http, dataSourceRefId);
       return result.ok;
     } catch (e) {
       return false;
@@ -280,7 +282,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
       type: GEO_SHAPE_TYPE,
       data: [JSON.parse(fileData || null)],
     };
-    const result = await postGeojson(JSON.stringify(bodyData), http);
+    const result = await postGeojson(JSON.stringify(bodyData), http, dataSourceRefId);
     // error handling logic that displays correct toasts for the end users
     if (result?.ok) {
       parsePostGeojsonResult(result, indexName);
