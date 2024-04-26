@@ -27,7 +27,17 @@ jest.mock('../../../../src/plugins/opensearch_dashboards_react/public', () => ({
 }));
 
 describe('vector_upload_options', () => {
-  const props = {};
+  const props = {
+    vis: {
+      data: {
+        indexPattern: {
+          dataSourceRef: {
+            id: 'mock-data-source-id',
+          },
+        },
+      },
+    },
+  };
 
   const getIndexResponseWhenIndexIsNotPresent = {
     ok: false,
