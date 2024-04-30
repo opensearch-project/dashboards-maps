@@ -12,13 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.13...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.14...2.x)
 ### Features
-Support multi data source display in Maps app([#611](https://github.com/opensearch-project/dashboards-maps/pull/611))
-Support multi data source in Region map ([#614](https://github.com/opensearch-project/dashboards-maps/pull/614))
 ### Enhancements
 ### Bug Fixes
-* Fix zoom level type error in custom layer ([#605](https://github.com/opensearch-project/dashboards-maps/pull/605))
 ### Infrastructure
 ### Documentation
 ### Maintenance
