@@ -13,6 +13,7 @@ export default function (services, router) {
       path: '/api/custom_import_map/_upload',
       validate: {
         body: schema.any(),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
       options: {
         body: {

@@ -26,10 +26,10 @@ import { geospatial, opensearch, statsRoute } from '../server/routes';
 import { mapSavedObjectsType } from './saved_objects';
 import { capabilitiesProvider } from './saved_objects/capabilities_provider';
 import { ConfigSchema } from '../common/config';
+import GeospatialPlugin from './clusters/geospatial_plugin';
 
 export class CustomImportMapPlugin
-  implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart>
-{
+  implements Plugin<CustomImportMapPluginSetup, CustomImportMapPluginStart> {
   private readonly logger: Logger;
   private readonly globalConfig$;
   private readonly config$;
@@ -58,7 +58,11 @@ export class CustomImportMapPlugin
     const opensearchService = new OpensearchService(geospatialClient);
 
     const router = core.http.createRouter();
-    const { home } = plugins;
+    const { home, dataSource } = plugins;
+
+    if (dataSource) {
+      dataSource.registerCustomApiSchema(GeospatialPlugin);
+    }
 
     // Register server side APIs
     geospatial(geospatialService, router);
