@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 ### Enhancements
 ### Bug Fixes
+* Add data source reference id in data layer search request ([#623](https://github.com/opensearch-project/dashboards-maps/pull/623))
 ### Infrastructure
 ### Documentation
 ### Maintenance
