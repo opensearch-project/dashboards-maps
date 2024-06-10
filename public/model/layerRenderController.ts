@@ -76,6 +76,7 @@ export const prepareDataLayerSource = (
           ...(timeFilters ? [timeFilters] : []),
         ]);
       }
+      const dataSourceId = indexPattern?.dataSourceRef?.id;
       const request = {
         params: {
           index: indexPatternRefName,
@@ -85,6 +86,7 @@ export const prepareDataLayerSource = (
             query: mergedQuery,
           },
         },
+        ...(!!dataSourceId && { dataSourceId }),
       };
 
       const search$ = data.search.search(request).subscribe({
