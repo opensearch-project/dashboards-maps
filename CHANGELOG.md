@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.14...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.15...2.x)
 ### Features
 ### Enhancements
 ### Bug Fixes
