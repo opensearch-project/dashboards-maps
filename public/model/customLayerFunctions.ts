@@ -2,52 +2,6 @@ import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType'
 import { hasLayer, removeLayers } from './map/layer_operations';
 import { MaplibreRef } from './layersFunctions';
 
-// const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
-//   const maplibreInstance = maplibreRef.current;
-//   if (maplibreInstance) {
-//     const customLayer = maplibreInstance.getLayer(layerConfig.id);
-//     if (customLayer) {
-//       maplibreInstance.setPaintProperty(
-//         layerConfig.id,
-//         'raster-opacity',
-//         layerConfig.opacity / 100
-//       );
-//       maplibreInstance.setLayerZoomRange(
-//         layerConfig.id,
-//         layerConfig.zoomRange[0],
-//         layerConfig.zoomRange[1]
-//       );
-//       const rasterLayerSource = maplibreInstance.getSource(
-//         layerConfig.id
-//       )! as RasterSourceSpecification;
-//       if (rasterLayerSource.attribution !== layerConfig.source?.attribution) {
-//         rasterLayerSource.attribution = layerConfig?.source?.attribution;
-//         maplibreInstance._controls.forEach((control) => {
-//           if (control instanceof AttributionControl) {
-//             control._updateAttributions();
-//           }
-//         });
-//       }
-//       const tilesURL = getCustomMapURL(layerConfig);
-//       console.log("here123");
-//       if (rasterLayerSource.tiles![0] !== tilesURL) {
-//         console.log("here124");
-//         rasterLayerSource.tiles = [layerConfig?.source?.url];
-//         console.log(maplibreInstance);
-//         maplibreInstance.style.sourceCaches[layerConfig.id].clearTiles();
-//         console.log("transform");
-//         console.log(maplibreInstance.transform);
-//         console.log("transform id");
-//         console.log(maplibreInstance.style.sourceCaches[layerConfig.id]);
-//         maplibreInstance.style.sourceCaches[layerConfig.id].update(maplibreInstance.transform); // error here
-//         maplibreInstance.triggerRepaint();
-//       }
-//       console.log("here1235");
-//       console.log(tilesURL);
-//     }
-//   }
-// };
-
 const refreshLayer = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
@@ -86,7 +40,6 @@ const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: Maplibr
   }
 };
 
-// not the issue
 const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
   const layerSource = layerConfig?.source;
   if (layerSource?.customType === 'tms') {
