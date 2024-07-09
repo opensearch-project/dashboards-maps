@@ -267,6 +267,8 @@ export const CustomMapSource = ({
                 value={WMSCoordinateSystem}
                 onChange={onChangeWMSCoordinateSystem}
                 fullWidth={true}
+                value="EPSG:3857"
+                disabled
               />
             </EuiFormRow>
             <EuiSpacer size="m" />
