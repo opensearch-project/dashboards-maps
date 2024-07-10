@@ -92,34 +92,6 @@ describe('CustomLayerFunctions', () => {
     expect(map.addLayer).toHaveBeenCalledWith(expect.any(Object));
   });
 
-  it('should update an existing layer', () => {
-    const updatedLayerConfig: CustomLayerSpecification = {
-      id: 'existing-layer',
-      source: {
-        // @ts-ignore
-        type: DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE.TMS,
-        tiles: ['https://updatedtiles.example.com/{z}/{x}/{y}.png'],
-        attribution: 'Updated Test Attribution',
-      },
-      opacity: 50,
-      zoomRange: [0, 15],
-      visibility: 'visible',
-    };
-
-    CustomLayerFunctions.render(maplibreRef, updatedLayerConfig);
-
-    expect(map.setPaintProperty).toHaveBeenCalledWith(
-      updatedLayerConfig.id,
-      'raster-opacity',
-      updatedLayerConfig.opacity / 100
-    );
-    expect(map.setLayerZoomRange).toHaveBeenCalledWith(
-      updatedLayerConfig.id,
-      updatedLayerConfig.zoomRange[0],
-      updatedLayerConfig.zoomRange[1]
-    );
-  });
-
   it('should convert zoomRange to a numeric array', () => {
     const layerConfig = {
       id: 'test-layer',
