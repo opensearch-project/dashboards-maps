@@ -5,7 +5,7 @@
 
 import React, { useEffect, useMemo, ChangeEventHandler, ChangeEvent } from 'react';
 import {
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiFieldText,
   EuiFlexItem,
   EuiCheckbox,
@@ -170,17 +170,17 @@ export const LabelConfig = ({
 
   return (
     <>
-      <EuiFormRow>
+      <EuiCompressedFormRow>
         <EuiCheckbox
           id="show-label"
           label="Add label"
           checked={label?.enabled ?? false}
           onChange={onChangeShowLabel}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
       {label?.enabled && (
         <>
-          <EuiFormRow
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelText', {
               defaultMessage: 'Label text',
             })}
@@ -225,8 +225,8 @@ export const LabelConfig = ({
                 )}
               </EuiFlexItem>
             </EuiFlexGroup>
-          </EuiFormRow>
-          <EuiFormRow
+          </EuiCompressedFormRow>
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelSize', {
               defaultMessage: 'Label size',
             })}
@@ -246,7 +246,7 @@ export const LabelConfig = ({
               min={DOCUMENTS_MIN_LABEL_SIZE}
               max={DOCUMENTS_MAX_LABEL_SIZE}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
           <ColorPicker
             originColor={label?.color ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
             label={i18n.translate('maps.documents.labelColor', {
@@ -263,7 +263,7 @@ export const LabelConfig = ({
             setIsUpdateDisabled={setIsUpdateDisabled}
             onColorChange={onChangeLabelBorderColor}
           />
-          <EuiFormRow
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelBorderWidth', {
               defaultMessage: 'Label border width',
             })}
@@ -274,7 +274,7 @@ export const LabelConfig = ({
               onChange={onChangeLabelBorderWidth}
               fullWidth={true}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </>
       )}
     </>

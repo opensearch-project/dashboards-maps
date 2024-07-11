@@ -8,7 +8,7 @@ import {
   EuiDualRange,
   EuiFieldText,
   EuiForm,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiTitle,
   EuiSpacer,
   EuiRange,
@@ -106,7 +106,7 @@ export const LayerBasicSettings = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiForm>
-        <EuiFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
+        <EuiCompressedFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
           <EuiFieldText
             name="layerName"
             value={selectedLayerConfig.name}
@@ -114,18 +114,18 @@ export const LayerBasicSettings = ({
             isInvalid={invalid}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
 
-        <EuiFormRow label="Description" fullWidth={true}>
+        <EuiCompressedFormRow label="Description" fullWidth={true}>
           <EuiTextArea
             placeholder="Enter description"
             value={selectedLayerConfig.description}
             onChange={onDescriptionChange}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
 
-        <EuiFormRow label="Zoom levels" fullWidth={true}>
+        <EuiCompressedFormRow label="Zoom levels" fullWidth={true}>
           <EuiDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
@@ -137,8 +137,8 @@ export const LayerBasicSettings = ({
             aria-label="DualRange with inputs for zoom level"
             fullWidth={true}
           />
-        </EuiFormRow>
-        <EuiFormRow label="Opacity" fullWidth={true}>
+        </EuiCompressedFormRow>
+        <EuiCompressedFormRow label="Opacity" fullWidth={true}>
           <EuiRange
             min={MAP_LAYER_DEFAULT_MIN_OPACITY}
             max={MAP_LAYER_DEFAULT_MAX_OPACITY}
@@ -150,7 +150,7 @@ export const LayerBasicSettings = ({
             append={<EuiFormLabel>%</EuiFormLabel>}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
       </EuiForm>
     </EuiPanel>
   );

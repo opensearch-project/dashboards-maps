@@ -17,7 +17,7 @@ import {
   EuiForm,
   EuiSwitch,
   EuiCheckbox,
-  EuiFormRow,
+  EuiCompressedFormRow,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -263,7 +263,7 @@ export const DocumentLayerSource = ({
           <EuiForm>
             <EuiFlexGrid columns={1}>
               <EuiFlexItem>
-                <EuiFormRow
+                <EuiCompressedFormRow
                   label="Index pattern"
                   isInvalid={!indexPattern}
                   error={errorsMap.datasource}
@@ -284,10 +284,10 @@ export const DocumentLayerSource = ({
                     data-test-subj={'indexPatternSelect'}
                     fullWidth={true}
                   />
-                </EuiFormRow>
+                </EuiCompressedFormRow>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiFormRow
+                <EuiCompressedFormRow
                   label="Geospatial field"
                   isInvalid={!selectedField}
                   error={errorsMap.geoFields}
@@ -310,7 +310,7 @@ export const DocumentLayerSource = ({
                     fullWidth={true}
                     isClearable={false}
                   />
-                </EuiFormRow>
+                </EuiCompressedFormRow>
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiFormLabel>Number of documents</EuiFormLabel>
@@ -352,7 +352,7 @@ export const DocumentLayerSource = ({
             onFiltersUpdated={onFiltersUpdated}
           />
           <EuiSpacer />
-          <EuiFormRow>
+          <EuiCompressedFormRow>
             <EuiCheckbox
               id={`${selectedLayerConfig.id}-bounding-box-filter`}
               label={'Only request data around map extent'}
@@ -360,8 +360,8 @@ export const DocumentLayerSource = ({
               onChange={onToggleGeoBoundingBox}
               compressed
             />
-          </EuiFormRow>
-          <EuiFormRow>
+          </EuiCompressedFormRow>
+          <EuiCompressedFormRow>
             <EuiCheckbox
               id={`${selectedLayerConfig.id}-apply-global-filter`}
               label={i18n.translate('documentLayer.applyGlobalFilters', {
@@ -371,7 +371,7 @@ export const DocumentLayerSource = ({
               onChange={onApplyGlobalFilters}
               compressed
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />

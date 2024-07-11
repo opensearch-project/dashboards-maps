@@ -11,7 +11,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiPopoverTitle,
   EuiSpacer,
 } from '@elastic/eui';
@@ -39,7 +39,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
 
   const renderEditor = () => {
     return (
-      <EuiFormRow
+      <EuiCompressedFormRow
         label={i18n.translate('maps.filter.filterEditor.parameters', {
           defaultMessage: 'Spatial filter parameters',
         })}
@@ -52,7 +52,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
           width="100%"
           height="250px"
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     );
   };
   return (
@@ -68,7 +68,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
           {renderEditor()}
           <div>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               fullWidth={true}
               label={i18n.translate('maps.filter.filterEditor.createCustomLabelInputLabel', {
                 defaultMessage: 'Custom label',
@@ -79,7 +79,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
                 value={filterLabel}
                 onChange={(event) => setFilterLabel(event.target.value)}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
           <EuiSpacer size="m" />
           <EuiFlexGroup direction="rowReverse" alignItems="center" responsive={false}>

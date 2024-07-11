@@ -10,7 +10,7 @@ import {
   EuiSpacer,
   EuiButtonGroup,
   EuiPanel,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiForm,
   EuiCollapsibleNavGroup,
 } from '@elastic/eui';
@@ -123,7 +123,7 @@ export const DocumentLayerStyle = ({
     max,
   }: WidthSelectorProps) => {
     return (
-      <EuiFormRow
+      <EuiCompressedFormRow
         label={label}
         fullWidth={true}
         isInvalid={hasInvalid}
@@ -141,7 +141,7 @@ export const DocumentLayerStyle = ({
           min={min}
           max={max}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     );
   };
 

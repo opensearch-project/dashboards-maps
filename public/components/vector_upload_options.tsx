@@ -16,7 +16,7 @@ import {
   EuiCard,
   EuiFieldText,
   EuiTextColor,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiCodeBlock,
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
@@ -323,7 +323,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
-        <EuiFormRow aria-label="form-row-for-file-picker">
+        <EuiCompressedFormRow aria-label="form-row-for-file-picker">
           <EuiFilePicker
             id="filePicker"
             data-testid="filePicker"
@@ -337,7 +337,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             required={true}
             aria-label="geojson-file-picker"
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <EuiText size="xs" color="subdued" aria-label="geojson-file-format-text">
