@@ -13,7 +13,7 @@ import {
   EuiFlexGroup,
   EuiCompressedFieldNumber,
   EuiFormLabel,
-  EuiComboBox,
+  EuiCompressedComboBox,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { EuiComboBoxOptionOption } from '@opensearch-project/oui/src/eui_components/combo_box/types';
@@ -209,7 +209,7 @@ export const LabelConfig = ({
                   />
                 )}
                 {(!label?.textType || label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD) && (
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern)}
                     selectedOptions={formatFieldStringToComboBox(label?.textByField)}
                     singleSelection={{ asPlainText: true }}

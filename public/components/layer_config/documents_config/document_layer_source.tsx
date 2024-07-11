@@ -5,7 +5,7 @@
 
 import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
-  EuiComboBox,
+  EuiCompressedComboBox,
   EuiFlexItem,
   EuiFormLabel,
   EuiFlexGrid,
@@ -295,7 +295,7 @@ export const DocumentLayerSource = ({
                   data-test-subj={'geoFieldSelect'}
                   fullWidth={true}
                 >
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
                     selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
                     singleSelection={true}
@@ -399,7 +399,7 @@ export const DocumentLayerSource = ({
                 <EuiFlexItem>
                   <EuiFormLabel>Tooltip fields</EuiFormLabel>
                   <EuiSpacer size="xs" />
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern)}
                     selectedOptions={formatFieldsStringToComboBox(
                       selectedLayerConfig.source.tooltipFields
