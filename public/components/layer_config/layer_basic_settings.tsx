@@ -14,7 +14,7 @@ import {
   EuiRange,
   EuiPanel,
   EuiFormLabel,
-  EuiTextArea,
+  EuiCompressedTextArea,
 } from '@elastic/eui';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
@@ -117,7 +117,7 @@ export const LayerBasicSettings = ({
         </EuiCompressedFormRow>
 
         <EuiCompressedFormRow label="Description" fullWidth={true}>
-          <EuiTextArea
+          <EuiCompressedTextArea
             placeholder="Enter description"
             value={selectedLayerConfig.description}
             onChange={onDescriptionChange}
