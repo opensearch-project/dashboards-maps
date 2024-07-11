@@ -8,7 +8,7 @@ import {
   EuiCompressedFormRow,
   EuiCompressedFieldText,
   EuiFlexItem,
-  EuiCheckbox,
+  EuiCompressedCheckbox,
   EuiCompressedSelect,
   EuiFlexGroup,
   EuiCompressedFieldNumber,
@@ -171,7 +171,7 @@ export const LabelConfig = ({
   return (
     <>
       <EuiCompressedFormRow>
-        <EuiCheckbox
+        <EuiCompressedCheckbox
           id="show-label"
           label="Add label"
           checked={label?.enabled ?? false}

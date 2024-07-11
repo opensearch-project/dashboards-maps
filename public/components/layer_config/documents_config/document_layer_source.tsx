@@ -16,6 +16,7 @@ import {
   EuiPanel,
   EuiForm,
   EuiSwitch,
+  EuiCompressedCheckbox,
   EuiCheckbox,
   EuiCompressedFormRow,
 } from '@elastic/eui';
@@ -384,7 +385,7 @@ export const DocumentLayerSource = ({
         >
           <EuiFlexGrid columns={1}>
             <EuiFlexItem>
-              <EuiCheckbox
+              <EuiCompressedCheckbox
                 id="enable-tooltip"
                 label={i18n.translate('documentLayer.enableTooltips', {
                   defaultMessage: 'Enable tooltips',
