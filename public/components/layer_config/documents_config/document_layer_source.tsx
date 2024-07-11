@@ -15,7 +15,7 @@ import {
   EuiSpacer,
   EuiPanel,
   EuiForm,
-  EuiSwitch,
+  EuiCompressedSwitch,
   EuiCompressedCheckbox,
   EuiCheckbox,
   EuiCompressedFormRow,
@@ -415,7 +415,7 @@ export const DocumentLayerSource = ({
                   />
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiSwitch
+                  <EuiCompressedSwitch
                     label={i18n.translate('documentLayer.displayTooltipsOnHover', {
                       defaultMessage: 'Display tooltips on hover',
                     })}
