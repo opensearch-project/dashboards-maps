@@ -14,7 +14,7 @@ import {
   EuiText,
   EuiSpacer,
   EuiCard,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiTextColor,
   EuiCompressedFormRow,
   EuiCodeBlock,
@@ -356,7 +356,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
-        <EuiFieldText
+        <EuiCompressedFieldText
           data-testid="customIndex"
           data-test-subj="customIndex"
           tabIndex="0"

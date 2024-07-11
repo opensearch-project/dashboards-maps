@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { EuiButton, EuiFieldText, EuiForm, EuiFormRow, EuiPanel, EuiSelect } from '@elastic/eui';
+import { EuiButton, EuiCompressedFieldText, EuiForm, EuiFormRow, EuiPanel, EuiSelect } from '@elastic/eui';
 import { FILTER_DRAW_MODE } from '../../../../common';
 
 const getSpatialRelationshipItems = (
@@ -56,7 +56,7 @@ export const FilterInputPanel = ({
     <EuiPanel className={'spatialFilterGroup__popoverPanel'}>
       <EuiForm>
         <EuiFormRow label="Filter label" display="rowCompressed">
-          <EuiFieldText
+          <EuiCompressedFieldText
             name="filterLabel"
             value={filterLabel}
             onChange={(event) => {

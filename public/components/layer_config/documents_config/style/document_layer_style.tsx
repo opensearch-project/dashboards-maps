@@ -5,7 +5,7 @@
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormLabel,
   EuiSpacer,
   EuiButtonGroup,
@@ -131,7 +131,7 @@ export const DocumentLayerStyle = ({
           defaultMessage: `must be between ${min} and ${max}`,
         })}
       >
-        <EuiFieldNumber
+        <EuiCompressedFieldNumber
           placeholder="Select thickness"
           value={size}
           onChange={onWidthChange}

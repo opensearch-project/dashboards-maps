@@ -7,7 +7,7 @@ import {
   EuiSmallButton,
   EuiSmallButtonEmpty,
   EuiCodeEditor,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
@@ -74,7 +74,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
                 defaultMessage: 'Custom label',
               })}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 fullWidth={true}
                 value={filterLabel}
                 onChange={(event) => setFilterLabel(event.target.value)}

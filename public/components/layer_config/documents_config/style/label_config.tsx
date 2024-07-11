@@ -6,12 +6,12 @@
 import React, { useEffect, useMemo, ChangeEventHandler, ChangeEvent } from 'react';
 import {
   EuiCompressedFormRow,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiFlexItem,
   EuiCheckbox,
   EuiSelect,
   EuiFlexGroup,
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormLabel,
   EuiComboBox,
 } from '@elastic/eui';
@@ -199,7 +199,7 @@ export const LabelConfig = ({
               </EuiFlexItem>
               <EuiFlexItem className={'documentsLabel__text'}>
                 {label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.FIXED && (
-                  <EuiFieldText
+                  <EuiCompressedFieldText
                     placeholder={i18n.translate('maps.documents.labelTextPlaceholder', {
                       defaultMessage: 'Enter label text',
                     })}
@@ -235,7 +235,7 @@ export const LabelConfig = ({
               defaultMessage: `Must be between ${DOCUMENTS_MIN_LABEL_SIZE} and ${DOCUMENTS_MAX_LABEL_SIZE}`,
             })}
           >
-            <EuiFieldNumber
+            <EuiCompressedFieldNumber
               placeholder={i18n.translate('maps.documents.labelSizePlaceholder', {
                 defaultMessage: 'Select size',
               })}

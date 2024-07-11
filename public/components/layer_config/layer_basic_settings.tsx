@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   EuiDualRange,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiForm,
   EuiCompressedFormRow,
   EuiTitle,
@@ -107,7 +107,7 @@ export const LayerBasicSettings = ({
       <EuiSpacer size="m" />
       <EuiForm>
         <EuiCompressedFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
-          <EuiFieldText
+          <EuiCompressedFieldText
             name="layerName"
             value={selectedLayerConfig.name}
             onChange={onNameChange}

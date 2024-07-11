@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiSpacer, EuiPanel, EuiForm, EuiFieldText, EuiSelect, EuiCompressedFormRow } from '@elastic/eui';
+import { EuiSpacer, EuiPanel, EuiForm, EuiCompressedFieldText, EuiSelect, EuiCompressedFormRow } from '@elastic/eui';
 import { CustomLayerSpecification } from '../../../model/mapLayerType';
 
 interface Props {
@@ -198,7 +198,7 @@ export const CustomMapSource = ({
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 placeholder="https://www.example.com/tiles/{z}/{x}/{y}.png"
                 value={customMapURL}
                 onChange={onChangeCustomMapURL}
@@ -212,7 +212,7 @@ export const CustomMapSource = ({
               helpText="The attribution for the TMS layer, displayed in the lower-right corner of the map."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={customMapAttribution}
                 onChange={onChangeCustomMapAttribution}
                 fullWidth={true}
@@ -229,7 +229,7 @@ export const CustomMapSource = ({
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 placeholder="https://www.example.com/wms/dataset"
                 value={customMapURL}
                 onChange={onChangeCustomMapURL}
@@ -243,11 +243,11 @@ export const CustomMapSource = ({
               helpText="The names of the layers to include in the map image. For more than one name, use a comma-separated list."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
+              <EuiCompressedFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
             </EuiCompressedFormRow>
             <EuiSpacer size="m" />
             <EuiCompressedFormRow label="WMS version*" fullWidth={true}>
-              <EuiFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
+              <EuiCompressedFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
             </EuiCompressedFormRow>
             <EuiSpacer size="m" />
             <EuiCompressedFormRow
@@ -255,7 +255,7 @@ export const CustomMapSource = ({
               helpText="The format of the map image to return. The most common formats are 'image/png' and 'image/jpeg'."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
+              <EuiCompressedFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
             </EuiCompressedFormRow>
             <EuiSpacer size="m" />
             <EuiCompressedFormRow
@@ -263,7 +263,7 @@ export const CustomMapSource = ({
               helpText="The coordinate reference system (CRS) to use for the map image."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={WMSCoordinateSystem}
                 onChange={onChangeWMSCoordinateSystem}
                 fullWidth={true}
@@ -275,7 +275,7 @@ export const CustomMapSource = ({
               helpText="The bounding box of the region to include in the map image."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
+              <EuiCompressedFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
             </EuiCompressedFormRow>
             <EuiSpacer size="m" />
             <EuiCompressedFormRow
@@ -283,7 +283,7 @@ export const CustomMapSource = ({
               helpText="The attribution for this WMS layer, displayed at right-bottom map."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={customMapAttribution}
                 onChange={onChangeCustomMapAttribution}
                 fullWidth={true}
@@ -295,7 +295,7 @@ export const CustomMapSource = ({
               helpText="The styles to be used for each of the layers in the map image."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSStyles} onChange={onChangeWMSStyles} fullWidth={true} />
+              <EuiCompressedFieldText value={WMSStyles} onChange={onChangeWMSStyles} fullWidth={true} />
             </EuiCompressedFormRow>
           </EuiForm>
         )}

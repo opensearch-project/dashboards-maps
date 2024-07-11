@@ -9,7 +9,7 @@ import {
   EuiFlexItem,
   EuiFormLabel,
   EuiFlexGrid,
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormErrorText,
   EuiCollapsibleNavGroup,
   EuiSpacer,
@@ -315,7 +315,7 @@ export const DocumentLayerSource = ({
               <EuiFlexItem>
                 <EuiFormLabel>Number of documents</EuiFormLabel>
                 <EuiSpacer size="xs" />
-                <EuiFieldNumber
+                <EuiCompressedFieldNumber
                   placeholder="Number of documents"
                   value={selectedLayerConfig.source.documentRequestNumber}
                   onChange={onDocumentRequestNumberChange}
