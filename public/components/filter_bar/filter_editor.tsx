@@ -5,7 +5,7 @@
 
 import {
   EuiSmallButton,
-  EuiButtonEmpty,
+  EuiSmallButtonEmpty,
   EuiCodeEditor,
   EuiFieldText,
   EuiFlexGroup,
@@ -94,9 +94,9 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
               </EuiSmallButton>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-              <EuiButtonEmpty flush="right" onClick={onCancel} data-test-subj="cancelSaveFilter">
+              <EuiSmallButtonEmpty flush="right" onClick={onCancel} data-test-subj="cancelSaveFilter">
                 {'Cancel'}
-              </EuiButtonEmpty>
+              </EuiSmallButtonEmpty>
             </EuiFlexItem>
             <EuiFlexItem />
           </EuiFlexGroup>

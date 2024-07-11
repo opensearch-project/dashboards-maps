@@ -13,7 +13,7 @@ import {
   EuiFlyoutFooter,
   EuiFlyoutHeader,
   EuiFlexItem,
-  EuiButtonEmpty,
+  EuiSmallButtonEmpty,
   EuiFlexGroup,
   EuiModal,
   EuiModalBody,
@@ -156,9 +156,9 @@ export const LayerConfigPanel = ({
       <EuiFlyoutFooter>
         <EuiFlexGroup justifyContent="spaceBetween">
           <EuiFlexItem grow={false}>
-            <EuiButtonEmpty iconType="cross" onClick={onClose} flush="left">
+            <EuiSmallButtonEmpty iconType="cross" onClick={onClose} flush="left">
               Discard
-            </EuiButtonEmpty>
+            </EuiSmallButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
             <EuiSmallButton
@@ -182,7 +182,7 @@ export const LayerConfigPanel = ({
             <p>Do you want to discard the changes?</p>
           </EuiModalBody>
           <EuiModalFooter>
-            <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
+            <EuiSmallButtonEmpty onClick={closeModal}>Cancel</EuiSmallButtonEmpty>
             <EuiSmallButton onClick={discardChanges} fill>
               Discard
             </EuiSmallButton>
