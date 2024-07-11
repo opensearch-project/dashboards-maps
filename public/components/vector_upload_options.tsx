@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import path from 'path';
 import {
   EuiSmallButton,
-  EuiFilePicker,
+  EuiCompressedFilePicker,
   EuiFlexItem,
   EuiFlexGroup,
   EuiText,
@@ -324,7 +324,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <EuiCompressedFormRow aria-label="form-row-for-file-picker">
-          <EuiFilePicker
+          <EuiCompressedFilePicker
             id="filePicker"
             data-testid="filePicker"
             data-test-subj="filePicker"
