@@ -4,7 +4,7 @@
  */
 
 import {
-  EuiButton,
+  EuiSmallButton,
   EuiButtonEmpty,
   EuiCodeEditor,
   EuiFieldText,
@@ -84,14 +84,14 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
           <EuiSpacer size="m" />
           <EuiFlexGroup direction="rowReverse" alignItems="center" responsive={false}>
             <EuiFlexItem grow={false}>
-              <EuiButton
+              <EuiSmallButton
                 fill
                 onClick={() => onSubmit(filterContent, filterLabel)}
                 isDisabled={!isFilterValid(filterContent)}
                 data-test-subj="saveFilter"
               >
                 {'Save'}
-              </EuiButton>
+              </EuiSmallButton>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
               <EuiButtonEmpty flush="right" onClick={onCancel} data-test-subj="cancelSaveFilter">

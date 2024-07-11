@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { cloneDeep, isEqual } from 'lodash';
 
 import {
-  EuiButton,
+  EuiSmallButton,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutFooter,
@@ -161,7 +161,7 @@ export const LayerConfigPanel = ({
             </EuiButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
+            <EuiSmallButton
               disabled={isUpdateDisabled}
               iconType="play"
               onClick={onUpdate}
@@ -169,7 +169,7 @@ export const LayerConfigPanel = ({
               data-test-subj="updateButton"
             >
               Update
-            </EuiButton>
+            </EuiSmallButton>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutFooter>
@@ -183,9 +183,9 @@ export const LayerConfigPanel = ({
           </EuiModalBody>
           <EuiModalFooter>
             <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
-            <EuiButton onClick={discardChanges} fill>
+            <EuiSmallButton onClick={discardChanges} fill>
               Discard
-            </EuiButton>
+            </EuiSmallButton>
           </EuiModalFooter>
         </EuiModal>
       )}

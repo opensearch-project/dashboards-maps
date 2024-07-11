@@ -11,7 +11,7 @@ import {
   EuiPageBody,
   EuiPageContentBody,
   EuiLink,
-  EuiButton,
+  EuiSmallButton,
   EuiPageHeader,
 } from '@elastic/eui';
 import {
@@ -110,9 +110,9 @@ export const MapsList = () => {
       pageTitle="Create your first map"
       description="There is no map to display, let's create your first map."
       rightSideItems={[
-        <EuiButton fill onClick={navigateToCreateMapPage}>
+        <EuiSmallButton fill onClick={navigateToCreateMapPage}>
           Create map
-        </EuiButton>,
+        </EuiSmallButton>,
       ]}
     />
   );

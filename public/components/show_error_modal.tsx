@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import {
+  EuiSmallButton,
   EuiButton,
   EuiModal,
   EuiModalBody,
@@ -42,7 +43,7 @@ const ShowErrorModal = (props: ShowErrorModalProps) => {
         </EuiModalBody>
 
         <EuiModalFooter>
-          <EuiButton
+          <EuiSmallButton
             id="closeModal"
             aria-label="closeModal"
             data-testid="closeModal"
@@ -50,7 +51,7 @@ const ShowErrorModal = (props: ShowErrorModalProps) => {
             fill
           >
             Close
-          </EuiButton>
+          </EuiSmallButton>
         </EuiModalFooter>
       </EuiModal>
     );

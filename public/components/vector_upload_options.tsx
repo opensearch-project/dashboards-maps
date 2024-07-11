@@ -7,7 +7,7 @@ import './vector_upload_options.scss';
 import React, { useState } from 'react';
 import path from 'path';
 import {
-  EuiButton,
+  EuiSmallButton,
   EuiFilePicker,
   EuiFlexItem,
   EuiFlexGroup,
@@ -391,7 +391,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <div className="importFileButton">
-          <EuiButton
+          <EuiSmallButton
             id="submitButton"
             type="button"
             fill
@@ -400,7 +400,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             aria-label="import-file-button"
           >
             Import file
-          </EuiButton>
+          </EuiSmallButton>
         </div>
       </EuiCard>
     </div>
