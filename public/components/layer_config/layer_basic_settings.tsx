@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  EuiDualRange,
+  EuiCompressedDualRange,
   EuiCompressedFieldText,
   EuiForm,
   EuiCompressedFormRow,
@@ -126,7 +126,7 @@ export const LayerBasicSettings = ({
         </EuiCompressedFormRow>
 
         <EuiCompressedFormRow label="Zoom levels" fullWidth={true}>
-          <EuiDualRange
+          <EuiCompressedDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
             value={zoomLevel}
