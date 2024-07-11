@@ -9,7 +9,7 @@ import {
   EuiCompressedFieldText,
   EuiFlexItem,
   EuiCheckbox,
-  EuiSelect,
+  EuiCompressedSelect,
   EuiFlexGroup,
   EuiCompressedFieldNumber,
   EuiFormLabel,
@@ -191,7 +191,7 @@ export const LabelConfig = ({
           >
             <EuiFlexGroup responsive={false} alignItems="center" gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiSelect
+                <EuiCompressedSelect
                   options={labelTextTypeOptions}
                   value={label?.textType ?? DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE}
                   onChange={onChangeLabelTextType}
@@ -268,7 +268,7 @@ export const LabelConfig = ({
               defaultMessage: 'Label border width',
             })}
           >
-            <EuiSelect
+            <EuiCompressedSelect
               options={labelBorderWidthOptions}
               value={label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH}
               onChange={onChangeLabelBorderWidth}

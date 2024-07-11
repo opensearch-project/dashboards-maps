@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiSpacer, EuiPanel, EuiForm, EuiCompressedFieldText, EuiSelect, EuiCompressedFormRow } from '@elastic/eui';
+import { EuiSpacer, EuiPanel, EuiForm, EuiCompressedFieldText, EuiCompressedSelect, EuiCompressedFormRow } from '@elastic/eui';
 import { CustomLayerSpecification } from '../../../model/mapLayerType';
 
 interface Props {
@@ -180,7 +180,7 @@ export const CustomMapSource = ({
       <EuiPanel paddingSize="s">
         <EuiForm>
           <EuiCompressedFormRow label="Custom type" helpText="Choose custom map type." fullWidth={true}>
-            <EuiSelect
+            <EuiCompressedSelect
               options={customMapTypeOptions}
               value={customType}
               onChange={onChangeCustomType}
