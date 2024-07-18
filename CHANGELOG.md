@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.15...2.x)
 ### Features
+* Add support new navigation for maps ([#635](https://github.com/opensearch-project/dashboards-maps/pull/635))
 ### Enhancements
 ### Bug Fixes
 * Fixed broken wms custom layer update ([#601](https://github.com/opensearch-project/dashboards-maps/pull/631))

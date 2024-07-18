@@ -8,6 +8,8 @@ import {
   AppMountParameters,
   CoreSetup,
   CoreStart,
+  DEFAULT_APP_CATEGORIES,
+  DEFAULT_NAV_GROUPS,
   Plugin,
   PluginInitializerContext,
 } from '../../../src/core/public';
@@ -99,6 +101,24 @@ export class CustomImportMapPlugin
         return renderApp(params, services, dataSourceManagentEnabled);
       },
     });
+
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.observability, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
+
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS['security-analytics'], [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
+
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.analyzeSearch,
+      order: 200,
+    }]);
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
       const [coreStart, depsStart] = await core.getStartServices();
