@@ -12,13 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.15...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.16...2.x)
 ### Features
-* Add support new navigation for maps ([#635](https://github.com/opensearch-project/dashboards-maps/pull/635))
 ### Enhancements
 ### Bug Fixes
-* Fixed broken wms custom layer update ([#601](https://github.com/opensearch-project/dashboards-maps/pull/631))
-* Add data source reference id in data layer search request ([#623](https://github.com/opensearch-project/dashboards-maps/pull/623))
 ### Infrastructure
 ### Documentation
 ### Maintenance
