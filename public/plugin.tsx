@@ -106,18 +106,7 @@ export class CustomImportMapPlugin
       id: MAPS_APP_ID,
       category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
       order: 200,
-    }]);
-
-    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS['security-analytics'], [{
-      id: MAPS_APP_ID,
-      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
-      order: 200,
-    }]);
-
-    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [{
-      id: MAPS_APP_ID,
-      category: DEFAULT_APP_CATEGORIES.analyzeSearch,
-      order: 200,
+      showInAllNavGroup: true,
     }]);
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
