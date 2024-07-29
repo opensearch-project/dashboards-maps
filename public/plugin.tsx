@@ -106,7 +106,6 @@ export class CustomImportMapPlugin
       id: MAPS_APP_ID,
       category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
       order: 200,
-      showInAllNavGroup: true,
     }]);
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
