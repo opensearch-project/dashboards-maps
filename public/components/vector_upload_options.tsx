@@ -7,6 +7,7 @@ import './vector_upload_options.scss';
 import React, { useState } from 'react';
 import path from 'path';
 import {
+  EuiButton,
   EuiSmallButton,
   EuiCompressedFilePicker,
   EuiFlexItem,
