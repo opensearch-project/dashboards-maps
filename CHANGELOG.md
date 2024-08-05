@@ -19,4 +19,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Infrastructure
 ### Documentation
 ### Maintenance
+* Deprecated maps multi data source display [#651](https://github.com/opensearch-project/dashboards-maps/pull/651)
 ### Refactoring

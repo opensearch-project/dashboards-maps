@@ -59,8 +59,6 @@ export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapCompon
   const [mapState, setMapState] = useState<MapState>(getInitialMapState());
   const [isUpdatingLayerRender, setIsUpdatingLayerRender] = useState(true);
   const isReadOnlyMode = !!dashboardProps;
-  const [dataSourceRefIds, setDataSourceRefIds] = useState<string[]>([]);
-  const [dataLoadReady, setDataLoadReady] = useState(false);
 
   useEffect(() => {
     if (mapIdFromSavedObject) {
@@ -71,39 +69,21 @@ export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapCompon
         setMapState(savedMapState);
         setLayers(layerList);
         const savedIndexPatterns: IndexPattern[] = [];
-        const remoteDataSourceIds: string[] = [];
-
-        const fetchDataLayer = async () => {
-          const requests = layerList
-            .filter((layer) => layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS)
-            .map((layer) => services.data.indexPatterns.get(layer.source.indexPatternId));
-
-          const resp = await Promise.all(requests);
-          resp.forEach((response: IndexPattern) => {
-            savedIndexPatterns.push(response);
-            if (response.dataSourceRef && !dataSourceRefIds.includes(response.dataSourceRef.id)) {
-              remoteDataSourceIds.push(response.dataSourceRef.id);
-            } else if (!response.dataSourceRef && !remoteDataSourceIds.includes('')) {
-              // If index pattern of the layer doesn't have reference to a data source, it is using local cluster
-              remoteDataSourceIds.push('');
-            }
-          });
-
-          setLayers(layerList);
-          setLayersIndexPatterns(savedIndexPatterns);
-          setDataSourceRefIds(remoteDataSourceIds);
-          setDataLoadReady(true);
-        };
-
-        fetchDataLayer();
+        layerList.forEach(async (layer: MapLayerSpecification) => {
+          if (layer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS) {
+            const indexPatternId = layer.source.indexPatternId;
+            const indexPattern = await services.data.indexPatterns.get(indexPatternId);
+            savedIndexPatterns.push(indexPattern);
+          }
+        });
+        setLayersIndexPatterns(savedIndexPatterns);
       });
     } else {
       const initialDefaultLayer: MapLayerSpecification = getLayerConfigMap()[
         OPENSEARCH_MAP_LAYER.type
-      ] as MapLayerSpecification;
+        ] as MapLayerSpecification;
       initialDefaultLayer.name = MAP_LAYER_DEFAULT_NAME;
       setLayers([initialDefaultLayer]);
-      setDataLoadReady(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -135,21 +115,18 @@ export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapCompon
 
   return (
     <div className="map-page">
-      {isReadOnlyMode
-        ? null
-        : dataLoadReady && (
-            <MapTopNavMenu
-              mapIdFromUrl={mapIdFromSavedObject}
-              savedMapObject={savedMapObject}
-              layers={layers}
-              layersIndexPatterns={layersIndexPatterns}
-              maplibreRef={maplibreRef}
-              mapState={mapState}
-              setMapState={setMapState}
-              setIsUpdatingLayerRender={setIsUpdatingLayerRender}
-              dataSourceRefIds={dataSourceRefIds}
-            />
-          )}
+      {isReadOnlyMode ? null : (
+        <MapTopNavMenu
+          mapIdFromUrl={mapIdFromSavedObject}
+          savedMapObject={savedMapObject}
+          layers={layers}
+          layersIndexPatterns={layersIndexPatterns}
+          maplibreRef={maplibreRef}
+          mapState={mapState}
+          setMapState={setMapState}
+          setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+        />
+      )}
       {!isReadOnlyMode && !!mapState.spatialMetaFilters?.length && (
         <div id="SpatiallFilterGroup" className="globalQueryBar">
           <div className={filterGroupClasses}>
@@ -173,8 +150,6 @@ export const MapComponent = ({ mapIdFromSavedObject, dashboardProps }: MapCompon
         isUpdatingLayerRender={isUpdatingLayerRender}
         setIsUpdatingLayerRender={setIsUpdatingLayerRender}
         addSpatialFilter={addSpatialFilter}
-        dataSourceRefIds={dataSourceRefIds}
-        setDataSourceRefIds={setDataSourceRefIds}
       />
     </div>
   );

@@ -15,8 +15,6 @@
     "visualizations"
   ],
   "optionalPlugins": [
-    "home",
-    "dataSource",
-    "dataSourceManagement"
+    "home"
   ]
 }
