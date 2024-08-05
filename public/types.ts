@@ -9,7 +9,6 @@ import {
   SavedObjectsClient,
   ToastsStart,
   ScopedHistory,
-  MountPoint,
 } from '../../../src/core/public';
 import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/public';
 import { DataPublicPluginSetup, DataPublicPluginStart } from '../../../src/plugins/data/public';
@@ -17,7 +16,6 @@ import { RegionMapPluginSetup } from '../../../src/plugins/region_map/public';
 import { EmbeddableSetup, EmbeddableStart } from '../../../src/plugins/embeddable/public';
 import { VisualizationsSetup } from '../../../src/plugins/visualizations/public';
 import { ConfigSchema } from '../common/config';
-import { DataSourceManagementPluginSetup } from '../../../src/plugins/data_source_management/public';
 
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
@@ -43,8 +41,6 @@ export interface MapServices extends CoreStart {
   chrome: CoreStart['chrome'];
   uiSettings: CoreStart['uiSettings'];
   mapConfig: ConfigSchema;
-  dataSourceManagement: DataSourceManagementPluginSetup;
-  setActionMenu: (menuMount: MountPoint | undefined) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -58,5 +54,4 @@ export interface AppPluginSetupDependencies {
   embeddable: EmbeddableSetup;
   visualizations: VisualizationsSetup;
   data: DataPublicPluginSetup;
-  dataSourceManagement: DataSourceManagementPluginSetup;
 }

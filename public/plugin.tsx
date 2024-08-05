@@ -47,12 +47,11 @@ export class CustomImportMapPlugin
   }
   public setup(
     core: CoreSetup,
-    { regionMap, embeddable, visualizations, dataSourceManagement }: AppPluginSetupDependencies
+    { regionMap, embeddable, visualizations }: AppPluginSetupDependencies
   ): CustomImportMapPluginSetup {
     const mapConfig: ConfigSchema = {
       ...this._initializerContext.config.get<ConfigSchema>(),
     };
-    const dataSourceManagentEnabled: boolean = !!dataSourceManagement;
     // Register an application into the side navigation menu
     core.application.register({
       id: MAPS_APP_ID,
@@ -93,12 +92,10 @@ export class CustomImportMapPlugin
           scopedHistory: params.history,
           uiSettings: coreStart.uiSettings,
           mapConfig,
-          dataSourceManagement,
-          setActionMenu: params.setHeaderActionMenu,
         };
         params.element.classList.add('mapAppContainer');
         // Render the application
-        return renderApp(params, services, dataSourceManagentEnabled);
+        return renderApp(params, services);
       },
     });
 
