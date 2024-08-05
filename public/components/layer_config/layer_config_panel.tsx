@@ -7,13 +7,13 @@ import React, { useEffect, useState } from 'react';
 import { cloneDeep, isEqual } from 'lodash';
 
 import {
-  EuiButton,
+  EuiSmallButton,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
   EuiFlexItem,
-  EuiButtonEmpty,
+  EuiSmallButtonEmpty,
   EuiFlexGroup,
   EuiModal,
   EuiModalBody,
@@ -156,12 +156,12 @@ export const LayerConfigPanel = ({
       <EuiFlyoutFooter>
         <EuiFlexGroup justifyContent="spaceBetween">
           <EuiFlexItem grow={false}>
-            <EuiButtonEmpty iconType="cross" onClick={onClose} flush="left">
+            <EuiSmallButtonEmpty iconType="cross" onClick={onClose} flush="left">
               Discard
-            </EuiButtonEmpty>
+            </EuiSmallButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
+            <EuiSmallButton
               disabled={isUpdateDisabled}
               iconType="play"
               onClick={onUpdate}
@@ -169,7 +169,7 @@ export const LayerConfigPanel = ({
               data-test-subj="updateButton"
             >
               Update
-            </EuiButton>
+            </EuiSmallButton>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutFooter>
@@ -182,10 +182,10 @@ export const LayerConfigPanel = ({
             <p>Do you want to discard the changes?</p>
           </EuiModalBody>
           <EuiModalFooter>
-            <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
-            <EuiButton onClick={discardChanges} fill>
+            <EuiSmallButtonEmpty onClick={closeModal}>Cancel</EuiSmallButtonEmpty>
+            <EuiSmallButton onClick={discardChanges} fill>
               Discard
-            </EuiButton>
+            </EuiSmallButton>
           </EuiModalFooter>
         </EuiModal>
       )}

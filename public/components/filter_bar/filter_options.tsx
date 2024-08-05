@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiButtonIcon, EuiContextMenu, EuiPopover, EuiPopoverTitle } from '@elastic/eui';
+import { EuiSmallButtonIcon, EuiContextMenu, EuiPopover, EuiPopoverTitle } from '@elastic/eui';
 import React, { useState } from 'react';
 import { i18n } from '@osd/i18n';
 
@@ -99,7 +99,7 @@ export const FilterOptions = ({
       isOpen={isPopoverOpen}
       closePopover={closePopover}
       button={
-        <EuiButtonIcon
+        <EuiSmallButtonIcon
           onClick={togglePopover}
           iconType="filter"
           aria-label={i18n.translate('maps.filter.options.changeAllFiltersButtonLabel', {

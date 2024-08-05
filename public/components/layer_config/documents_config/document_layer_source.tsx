@@ -5,19 +5,20 @@
 
 import React, { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
-  EuiComboBox,
+  EuiCompressedComboBox,
   EuiFlexItem,
   EuiFormLabel,
   EuiFlexGrid,
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormErrorText,
   EuiCollapsibleNavGroup,
   EuiSpacer,
   EuiPanel,
   EuiForm,
-  EuiSwitch,
+  EuiCompressedSwitch,
+  EuiCompressedCheckbox,
   EuiCheckbox,
-  EuiFormRow,
+  EuiCompressedFormRow,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -263,7 +264,7 @@ export const DocumentLayerSource = ({
           <EuiForm>
             <EuiFlexGrid columns={1}>
               <EuiFlexItem>
-                <EuiFormRow
+                <EuiCompressedFormRow
                   label="Index pattern"
                   isInvalid={!indexPattern}
                   error={errorsMap.datasource}
@@ -284,17 +285,17 @@ export const DocumentLayerSource = ({
                     data-test-subj={'indexPatternSelect'}
                     fullWidth={true}
                   />
-                </EuiFormRow>
+                </EuiCompressedFormRow>
               </EuiFlexItem>
               <EuiFlexItem>
-                <EuiFormRow
+                <EuiCompressedFormRow
                   label="Geospatial field"
                   isInvalid={!selectedField}
                   error={errorsMap.geoFields}
                   data-test-subj={'geoFieldSelect'}
                   fullWidth={true}
                 >
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
                     selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
                     singleSelection={true}
@@ -310,12 +311,12 @@ export const DocumentLayerSource = ({
                     fullWidth={true}
                     isClearable={false}
                   />
-                </EuiFormRow>
+                </EuiCompressedFormRow>
               </EuiFlexItem>
               <EuiFlexItem>
                 <EuiFormLabel>Number of documents</EuiFormLabel>
                 <EuiSpacer size="xs" />
-                <EuiFieldNumber
+                <EuiCompressedFieldNumber
                   placeholder="Number of documents"
                   value={selectedLayerConfig.source.documentRequestNumber}
                   onChange={onDocumentRequestNumberChange}
@@ -352,7 +353,7 @@ export const DocumentLayerSource = ({
             onFiltersUpdated={onFiltersUpdated}
           />
           <EuiSpacer />
-          <EuiFormRow>
+          <EuiCompressedFormRow>
             <EuiCheckbox
               id={`${selectedLayerConfig.id}-bounding-box-filter`}
               label={'Only request data around map extent'}
@@ -360,8 +361,8 @@ export const DocumentLayerSource = ({
               onChange={onToggleGeoBoundingBox}
               compressed
             />
-          </EuiFormRow>
-          <EuiFormRow>
+          </EuiCompressedFormRow>
+          <EuiCompressedFormRow>
             <EuiCheckbox
               id={`${selectedLayerConfig.id}-apply-global-filter`}
               label={i18n.translate('documentLayer.applyGlobalFilters', {
@@ -371,7 +372,7 @@ export const DocumentLayerSource = ({
               onChange={onApplyGlobalFilters}
               compressed
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />
@@ -384,7 +385,7 @@ export const DocumentLayerSource = ({
         >
           <EuiFlexGrid columns={1}>
             <EuiFlexItem>
-              <EuiCheckbox
+              <EuiCompressedCheckbox
                 id="enable-tooltip"
                 label={i18n.translate('documentLayer.enableTooltips', {
                   defaultMessage: 'Enable tooltips',
@@ -398,7 +399,7 @@ export const DocumentLayerSource = ({
                 <EuiFlexItem>
                   <EuiFormLabel>Tooltip fields</EuiFormLabel>
                   <EuiSpacer size="xs" />
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern)}
                     selectedOptions={formatFieldsStringToComboBox(
                       selectedLayerConfig.source.tooltipFields
@@ -414,7 +415,7 @@ export const DocumentLayerSource = ({
                   />
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <EuiSwitch
+                  <EuiCompressedSwitch
                     label={i18n.translate('documentLayer.displayTooltipsOnHover', {
                       defaultMessage: 'Display tooltips on hover',
                     })}
