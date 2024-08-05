@@ -1,8 +1,16 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
 import { LabelConfig } from './label_config';
-import { EuiCheckbox, EuiFormLabel } from '@elastic/eui';
 import {
+  EuiCompressedCheckbox,
+  EuiCompressedComboBox,
+  EuiCompressedFieldNumber,
+  EuiCompressedFieldText,
+  EuiCompressedSelect,
+  EuiFormLabel,
+} from '@elastic/eui';
+import {
+  DASHBOARDS_MAPS_LAYER_TYPE,
   DOCUMENTS_LARGE_LABEL_BORDER_WIDTH,
   DOCUMENTS_MEDIUM_LABEL_BORDER_WIDTH,
   DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
@@ -20,7 +28,7 @@ describe('LabelConfig', () => {
   const mockLayerConfig: DocumentLayerSpecification = {
     name: 'My Document Layer',
     id: 'document-layer-1',
-    type: 'documents',
+    type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS,
     description: 'A layer of documents',
     zoomRange: [5, 18],
     opacity: 0.8,
@@ -81,13 +89,13 @@ describe('LabelConfig', () => {
   });
 
   it('should render EuiCheckbox with correct props', () => {
-    const checkbox = wrapper.find(EuiCheckbox);
+    const checkbox = wrapper.find(EuiCompressedCheckbox);
     expect(checkbox.prop('label')).toEqual('Add label');
     expect(checkbox.prop('checked')).toEqual(true);
   });
 
   it('should call setSelectedLayerConfig with updated config when onChangeShowLabel is called', () => {
-    const checkbox = wrapper.find(EuiCheckbox);
+    const checkbox = wrapper.find(EuiCompressedCheckbox);
     checkbox.simulate('change', { target: { checked: false } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
       ...mockLayerConfig,
@@ -113,12 +121,12 @@ describe('LabelConfig', () => {
       },
     };
     wrapper.setProps({ selectedLayerConfig: newSelectedLayerConfig });
-    const checkbox = wrapper.find(EuiCheckbox);
+    const checkbox = wrapper.find(EuiCompressedCheckbox);
     expect(checkbox.prop('checked')).toEqual(false);
   });
 
   it('should call setSelectedLayerConfig with updated config when onChangeLabelTextType is called', () => {
-    const select = wrapper.find('EuiSelect').at(0);
+    const select = wrapper.find(EuiCompressedSelect).at(0);
     select.simulate('change', { target: { value: 'by_field' } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
       ...mockLayerConfig,
@@ -133,7 +141,7 @@ describe('LabelConfig', () => {
   });
 
   it('should render EuiFieldText with correct props when labelTextType is "fixed"', () => {
-    const fieldText = wrapper.find('EuiFieldText');
+    const fieldText = wrapper.find(EuiCompressedFieldText);
     expect(fieldText.prop('value')).toEqual('My Label');
   });
 
@@ -150,12 +158,12 @@ describe('LabelConfig', () => {
       },
     };
     wrapper.setProps({ selectedLayerConfig: newSelectedLayerConfig });
-    const fieldText = wrapper.find('EuiComboBox');
+    const fieldText = wrapper.find(EuiCompressedComboBox);
     expect(fieldText.prop('selectedOptions')).toEqual([{ label: 'Field 1' }]);
   });
 
   it('should call setSelectedLayerConfig with updated config when onStaticLabelChange is called', () => {
-    const fieldText = wrapper.find('EuiFieldText');
+    const fieldText = wrapper.find(EuiCompressedFieldText);
     fieldText.simulate('change', { target: { value: 'new label' } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
       ...mockLayerConfig,
@@ -170,14 +178,14 @@ describe('LabelConfig', () => {
   });
 
   it('should render EuiFieldNumber with correct props', () => {
-    const fieldNumber = wrapper.find('EuiFieldNumber');
+    const fieldNumber = wrapper.find(EuiCompressedFieldNumber);
     expect(fieldNumber.prop('value')).toEqual(12);
     expect(fieldNumber.prop('append')).toEqual(<EuiFormLabel>px</EuiFormLabel>);
     expect(fieldNumber.prop('fullWidth')).toEqual(true);
   });
 
   it('should call setSelectedLayerConfig with updated config when OnChangeLabelSize is called', () => {
-    const fieldNumber = wrapper.find('EuiFieldNumber');
+    const fieldNumber = wrapper.find(EuiCompressedFieldNumber);
     fieldNumber.simulate('change', { target: { value: 20 } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
       ...mockLayerConfig,
@@ -206,7 +214,7 @@ describe('LabelConfig', () => {
   });
 
   it('should render EuiSelect with correct props for label border width', () => {
-    const select = wrapper.find('EuiSelect').at(1);
+    const select = wrapper.find(EuiCompressedSelect).at(1);
     expect(select.prop('options')).toEqual([
       { value: DOCUMENTS_NONE_LABEL_BORDER_WIDTH, text: 'None' },
       { value: DOCUMENTS_SMALL_LABEL_BORDER_WIDTH, text: 'Small' },
@@ -218,7 +226,7 @@ describe('LabelConfig', () => {
   });
 
   it('should call setSelectedLayerConfig with updated config when onChangeLabelBorderWidth is called', () => {
-    const select = wrapper.find('EuiSelect').at(1);
+    const select = wrapper.find(EuiCompressedSelect).at(1);
     select.simulate('change', { target: { value: 3 } });
     expect(setSelectedLayerConfigMock).toHaveBeenCalledWith({
       ...mockLayerConfig,

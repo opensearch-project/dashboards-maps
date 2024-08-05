@@ -5,7 +5,7 @@
 
 import {
   EuiBasicTable,
-  EuiComboBox,
+  EuiCompressedComboBox,
   EuiComboBoxOptionOption,
   EuiFlexGroup,
   EuiFlexItem,
@@ -170,7 +170,7 @@ const TooltipTable = ({
       <EuiFlexGroup justifyContent="spaceAround" alignItems="center" gutterSize="none">
         {showLayerSelection && options?.length > 1 && (
           <EuiFlexItem>
-            <EuiComboBox<number>
+            <EuiCompressedComboBox<number>
               placeholder="Select a layer"
               selectedOptions={selectedLayers}
               singleSelection={{ asPlainText: true }}
