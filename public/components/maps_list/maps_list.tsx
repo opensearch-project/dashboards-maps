@@ -22,7 +22,6 @@ import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attri
 import { MapServices } from '../../types';
 import { getMapsLandingBreadcrumbs } from '../../utils/breadcrumbs';
 import { APP_PATH, MAPS_APP_ID } from '../../../common';
-import { DataSourceAggregatedViewConfig } from '../../../../../src/plugins/data_source_management/public';
 
 export const MapsList = () => {
   const {
@@ -31,8 +30,6 @@ export const MapsList = () => {
       savedObjects: { client: savedObjectsClient },
       application: { navigateToApp },
       chrome: { docTitle, setBreadcrumbs },
-      dataSourceManagement,
-      setActionMenu,
     },
   } = useOpenSearchDashboards<MapServices>();
 
@@ -116,7 +113,6 @@ export const MapsList = () => {
       ]}
     />
   );
-  const dataSourceManagementEnabled: boolean = !!dataSourceManagement;
 
   return (
     <I18nProvider>
@@ -124,21 +120,6 @@ export const MapsList = () => {
         <EuiPage restrictWidth="1000px">
           <EuiPageBody component="main" data-test-subj="mapListingPage">
             <EuiPageContentBody>
-              {dataSourceManagementEnabled && (() => {
-                const DataSourcesMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
-                return (
-                  <DataSourcesMenu
-                    setMenuMountPoint={setActionMenu}
-                    componentType={'DataSourceAggregatedView'}
-                    componentConfig={{
-                      savedObjects: savedObjectsClient,
-                      notifications,
-                      fullWidth: true,
-                      displayAllCompatibleDataSources: true,
-                    }}
-                  />
-                );
-              })()}
               <TableListView
                 headingId="mapsListingHeading"
                 createItem={navigateToCreateMapPage}

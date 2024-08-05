@@ -26,7 +26,6 @@ interface MapTopNavMenuProps {
   setMapState: (mapState: MapState) => void;
   originatingApp?: string;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
-  dataSourceRefIds: string[];
 }
 
 export const MapTopNavMenu = ({
@@ -38,7 +37,6 @@ export const MapTopNavMenu = ({
   mapState,
   setMapState,
   setIsUpdatingLayerRender,
-  dataSourceRefIds,
 }: MapTopNavMenuProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
   const {
@@ -50,9 +48,6 @@ export const MapTopNavMenu = ({
     application: { navigateToApp },
     embeddable,
     scopedHistory,
-    dataSourceManagement,
-    savedObjects: { client: savedObjectsClient },
-    notifications,
   } = services;
 
   const [title, setTitle] = useState<string>('');
@@ -137,42 +132,27 @@ export const MapTopNavMenu = ({
     });
   }, [services, mapIdFromUrl, layers, title, description, mapState, originatingApp]);
 
-  const dataSourceManagementEnabled: boolean = !!dataSourceManagement;
-
   return (
     // @ts-ignore
-    <>
-      <TopNavMenu
-        appName={MAPS_APP_ID}
-        config={config}
-        setMenuMountPoint={setHeaderActionMenu}
-        indexPatterns={layersIndexPatterns || []}
-        showSearchBar={true}
-        showFilterBar={false}
-        showDatePicker={true}
-        showQueryBar={true}
-        showSaveQuery={true}
-        showQueryInput={true}
-        onQuerySubmit={handleQuerySubmit}
-        dateRangeFrom={dateFrom}
-        dateRangeTo={dateTo}
-        query={queryConfig}
-        isRefreshPaused={isRefreshPaused}
-        refreshInterval={refreshIntervalValue}
-        onRefresh={refreshDataLayerRender}
-        onRefreshChange={onRefreshChange}
-        showDataSourceMenu={dataSourceManagementEnabled}
-        dataSourceMenuConfig={{
-          componentType: 'DataSourceAggregatedView',
-          componentConfig: {
-            activeDataSourceIds: dataSourceRefIds,
-            savedObjects: savedObjectsClient,
-            notifications,
-            fullWidth: true,
-            displayAllCompatibleDataSources: false,
-          },
-        }}
-      />
-    </>
+    <TopNavMenu
+      appName={MAPS_APP_ID}
+      config={config}
+      setMenuMountPoint={setHeaderActionMenu}
+      indexPatterns={layersIndexPatterns || []}
+      showSearchBar={true}
+      showFilterBar={false}
+      showDatePicker={true}
+      showQueryBar={true}
+      showSaveQuery={true}
+      showQueryInput={true}
+      onQuerySubmit={handleQuerySubmit}
+      dateRangeFrom={dateFrom}
+      dateRangeTo={dateTo}
+      query={queryConfig}
+      isRefreshPaused={isRefreshPaused}
+      refreshInterval={refreshIntervalValue}
+      onRefresh={refreshDataLayerRender}
+      onRefreshChange={onRefreshChange}
+    />
   );
 };
