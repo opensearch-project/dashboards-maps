@@ -5,16 +5,16 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  EuiDualRange,
-  EuiFieldText,
+  EuiCompressedDualRange,
+  EuiCompressedFieldText,
   EuiForm,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiTitle,
   EuiSpacer,
   EuiRange,
   EuiPanel,
   EuiFormLabel,
-  EuiTextArea,
+  EuiCompressedTextArea,
 } from '@elastic/eui';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import {
@@ -106,27 +106,27 @@ export const LayerBasicSettings = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiForm>
-        <EuiFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
-          <EuiFieldText
+        <EuiCompressedFormRow label="Name" error={errors} isInvalid={invalid} fullWidth={true}>
+          <EuiCompressedFieldText
             name="layerName"
             value={selectedLayerConfig.name}
             onChange={onNameChange}
             isInvalid={invalid}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
 
-        <EuiFormRow label="Description" fullWidth={true}>
-          <EuiTextArea
+        <EuiCompressedFormRow label="Description" fullWidth={true}>
+          <EuiCompressedTextArea
             placeholder="Enter description"
             value={selectedLayerConfig.description}
             onChange={onDescriptionChange}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
 
-        <EuiFormRow label="Zoom levels" fullWidth={true}>
-          <EuiDualRange
+        <EuiCompressedFormRow label="Zoom levels" fullWidth={true}>
+          <EuiCompressedDualRange
             min={MAP_DEFAULT_MIN_ZOOM}
             max={MAP_DEFAULT_MAX_ZOOM}
             value={zoomLevel}
@@ -137,8 +137,8 @@ export const LayerBasicSettings = ({
             aria-label="DualRange with inputs for zoom level"
             fullWidth={true}
           />
-        </EuiFormRow>
-        <EuiFormRow label="Opacity" fullWidth={true}>
+        </EuiCompressedFormRow>
+        <EuiCompressedFormRow label="Opacity" fullWidth={true}>
           <EuiRange
             min={MAP_LAYER_DEFAULT_MIN_OPACITY}
             max={MAP_LAYER_DEFAULT_MAX_OPACITY}
@@ -150,7 +150,7 @@ export const LayerBasicSettings = ({
             append={<EuiFormLabel>%</EuiFormLabel>}
             fullWidth={true}
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
       </EuiForm>
     </EuiPanel>
   );

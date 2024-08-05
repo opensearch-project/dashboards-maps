@@ -4,7 +4,7 @@
  */
 
 import React, { memo, useEffect } from 'react';
-import { EuiColorPicker, EuiFormRow, useColorPickerState } from '@elastic/eui';
+import { EuiColorPicker, EuiCompressedFormRow, useColorPickerState } from '@elastic/eui';
 
 export interface ColorPickerProps {
   originColor: string;
@@ -38,7 +38,7 @@ export const ColorPicker = memo(
     }, [selectedLayerConfigId]);
 
     return (
-      <EuiFormRow label={label} fullWidth={true} isInvalid={!!colorErrors} error={colorErrors}>
+      <EuiCompressedFormRow label={label} fullWidth={true} isInvalid={!!colorErrors} error={colorErrors}>
         <EuiColorPicker
           color={color}
           onChange={setColor}
@@ -46,7 +46,7 @@ export const ColorPicker = memo(
           fullWidth={true}
           data-test-subj={label}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     );
   }
 );

@@ -4,14 +4,14 @@
  */
 
 import {
-  EuiButton,
-  EuiButtonEmpty,
+  EuiSmallButton,
+  EuiSmallButtonEmpty,
   EuiCodeEditor,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiPopoverTitle,
   EuiSpacer,
 } from '@elastic/eui';
@@ -39,7 +39,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
 
   const renderEditor = () => {
     return (
-      <EuiFormRow
+      <EuiCompressedFormRow
         label={i18n.translate('maps.filter.filterEditor.parameters', {
           defaultMessage: 'Spatial filter parameters',
         })}
@@ -52,7 +52,7 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
           width="100%"
           height="250px"
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     );
   };
   return (
@@ -68,35 +68,35 @@ export const FilterEditor = ({ content, label, onSubmit, onCancel }: Props) => {
           {renderEditor()}
           <div>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               fullWidth={true}
               label={i18n.translate('maps.filter.filterEditor.createCustomLabelInputLabel', {
                 defaultMessage: 'Custom label',
               })}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 fullWidth={true}
                 value={filterLabel}
                 onChange={(event) => setFilterLabel(event.target.value)}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
           <EuiSpacer size="m" />
           <EuiFlexGroup direction="rowReverse" alignItems="center" responsive={false}>
             <EuiFlexItem grow={false}>
-              <EuiButton
+              <EuiSmallButton
                 fill
                 onClick={() => onSubmit(filterContent, filterLabel)}
                 isDisabled={!isFilterValid(filterContent)}
                 data-test-subj="saveFilter"
               >
                 {'Save'}
-              </EuiButton>
+              </EuiSmallButton>
             </EuiFlexItem>
             <EuiFlexItem grow={false}>
-              <EuiButtonEmpty flush="right" onClick={onCancel} data-test-subj="cancelSaveFilter">
+              <EuiSmallButtonEmpty flush="right" onClick={onCancel} data-test-subj="cancelSaveFilter">
                 {'Cancel'}
-              </EuiButtonEmpty>
+              </EuiSmallButtonEmpty>
             </EuiFlexItem>
             <EuiFlexItem />
           </EuiFlexGroup>
