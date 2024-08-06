@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.16...2.x)
 ### Features
+* Use new header to maps listing page [#653](https://github.com/opensearch-project/dashboards-maps/pull/653)
 ### Enhancements
 ### Bug Fixes
 ### Infrastructure
