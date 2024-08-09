@@ -164,9 +164,8 @@ export const MapsList = () => {
                 entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
                   defaultMessage: 'maps',
                 })}
-                tableListTitle={i18n.translate('maps.listing.table.listTitle', {
-                  defaultMessage: 'Maps',
-                })}
+                tableListTitle={showActionsInHeader ? '' : i18n.translate('maps.listing.table.listTitle', {
+                  defaultMessage: 'Maps'})}
                 toastNotifications={notifications.toasts}
               />
             </EuiPageContentBody>
