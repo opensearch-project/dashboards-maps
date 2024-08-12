@@ -30,10 +30,17 @@ export const MapsList = () => {
       savedObjects: { client: savedObjectsClient },
       application: { navigateToApp },
       chrome: { docTitle, setBreadcrumbs },
+      uiSettings,
+      navigation: {
+        ui: { HeaderControl },
+      },
+      application,
     },
   } = useOpenSearchDashboards<MapServices>();
 
-  useEffect(() => {
+  const showActionsInHeader = uiSettings.get('home:useNewHomePage');
+
+    useEffect(() => {
     setBreadcrumbs(getMapsLandingBreadcrumbs(navigateToApp));
     docTitle.change(i18n.translate('maps.listing.pageTitle', { defaultMessage: 'Maps' }));
   }, [docTitle, navigateToApp, setBreadcrumbs]);
@@ -106,11 +113,17 @@ export const MapsList = () => {
     <EuiPageHeader
       pageTitle="Create your first map"
       description="There is no map to display, let's create your first map."
-      rightSideItems={[
-        <EuiSmallButton fill onClick={navigateToCreateMapPage}>
-          Create map
-        </EuiSmallButton>,
-      ]}
+      rightSideItems={
+        showActionsInHeader ? [] : [
+          <EuiSmallButton
+            fill
+            onClick={navigateToCreateMapPage}
+            data-test-subj="createFirstMapButton"
+          >
+            Create map
+          </EuiSmallButton>
+        ]
+      }
     />
   );
 
@@ -120,9 +133,24 @@ export const MapsList = () => {
         <EuiPage restrictWidth="1000px">
           <EuiPageBody component="main" data-test-subj="mapListingPage">
             <EuiPageContentBody>
+              {showActionsInHeader &&
+                <HeaderControl
+                  setMountPoint={application.setAppRightControls}
+                  controls={[
+                    {
+                      id: 'Create map',
+                      label: 'Create map',
+                      iconType: 'plus',
+                      fill: true,
+                      href: `${MAPS_APP_ID}${APP_PATH.CREATE_MAP}`,
+                      testId: 'createButton',
+                      controlType: 'button',
+                    },
+                  ]}
+                />}
               <TableListView
                 headingId="mapsListingHeading"
-                createItem={navigateToCreateMapPage}
+                createItem= { showActionsInHeader ? undefined : navigateToCreateMapPage }
                 findItems={fetchMaps}
                 deleteItems={deleteMaps}
                 tableColumns={tableColumns}
@@ -136,9 +164,8 @@ export const MapsList = () => {
                 entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
                   defaultMessage: 'maps',
                 })}
-                tableListTitle={i18n.translate('maps.listing.table.listTitle', {
-                  defaultMessage: 'Maps',
-                })}
+                tableListTitle={showActionsInHeader ? '' : i18n.translate('maps.listing.table.listTitle', {
+                  defaultMessage: 'Maps'})}
                 toastNotifications={notifications.toasts}
               />
             </EuiPageContentBody>
