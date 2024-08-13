@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { i18n } from '@osd/i18n';
-import { TopNavMenuData } from '../../../../../src/plugins/navigation/public';
+import { TopNavMenuData, TopNavMenuIconData } from '../../../../../src/plugins/navigation/public';
 import {
   SavedObjectSaveModalOrigin,
   showSaveModal,
@@ -25,6 +25,7 @@ interface GetTopNavConfigParams {
   setDescription: (description: string) => void;
   mapState: MapState;
   originatingApp?: string;
+  showActionsInGroup: boolean;
 }
 
 export const getTopNavConfig = (
@@ -38,6 +39,7 @@ export const getTopNavConfig = (
     setDescription,
     mapState,
     originatingApp,
+    showActionsInGroup,
   }: GetTopNavConfigParams
 ) => {
   const {
@@ -46,6 +48,51 @@ export const getTopNavConfig = (
     scopedHistory,
   } = services;
   const stateTransfer = embeddable.getStateTransfer(scopedHistory);
+  const onSaveButtonClick = () => {
+    const documentInfo = {
+      title,
+      description,
+    };
+    const saveModal = (
+      <SavedObjectSaveModalOrigin
+        documentInfo={documentInfo}
+        onSave={onGetSave(
+          title,
+          originatingApp,
+          mapIdFromUrl,
+          services,
+          layers,
+          mapState,
+          setTitle,
+          setDescription
+        )}
+        objectType={'map'}
+        onClose={() => {}}
+        originatingApp={originatingApp}
+        getAppNameFromId={stateTransfer.getAppNameFromId}
+      />
+    );
+    showSaveModal(saveModal, I18nContext);
+  };
+
+  if (showActionsInGroup) {
+    const topNavConfig: TopNavMenuIconData[] = [
+      {
+        tooltip: i18n.translate('maps.topNav.saveMapButtonLabel', {
+          defaultMessage: `Save`,
+        }),
+        ariaLabel: i18n.translate('maps.topNav.saveButtonAriaLabel', {
+          defaultMessage: 'Save your map',
+        }),
+        testId: 'mapSaveButton',
+        run: onSaveButtonClick,
+        iconType: 'save',
+        controlType: 'icon',
+      },
+    ];
+    return topNavConfig;
+  }
+
   const topNavConfig: TopNavMenuData[] = [
     {
       iconType: 'save',
@@ -55,33 +102,7 @@ export const getTopNavConfig = (
         defaultMessage: `Save`,
       }),
       testId: 'mapSaveButton',
-      run: (_anchorElement: any) => {
-        const documentInfo = {
-          title,
-          description,
-        };
-
-        const saveModal = (
-          <SavedObjectSaveModalOrigin
-            documentInfo={documentInfo}
-            onSave={onGetSave(
-              title,
-              originatingApp,
-              mapIdFromUrl,
-              services,
-              layers,
-              mapState,
-              setTitle,
-              setDescription
-            )}
-            objectType={'map'}
-            onClose={() => {}}
-            originatingApp={originatingApp}
-            getAppNameFromId={stateTransfer.getAppNameFromId}
-          />
-        );
-        showSaveModal(saveModal, I18nContext);
-      },
+      run: onSaveButtonClick,
     },
   ];
   return topNavConfig;
