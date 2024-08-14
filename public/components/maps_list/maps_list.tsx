@@ -7,9 +7,6 @@ import { i18n } from '@osd/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import {
-  EuiPage,
-  EuiPageBody,
-  EuiPageContentBody,
   EuiLink,
   EuiSmallButton,
   EuiPageHeader,
@@ -38,7 +35,7 @@ export const MapsList = () => {
     },
   } = useOpenSearchDashboards<MapServices>();
 
-  const showActionsInHeader = uiSettings.get('home:useNewHomePage');
+  const newHomePageEnabled = uiSettings.get('home:useNewHomePage');
 
     useEffect(() => {
     setBreadcrumbs(getMapsLandingBreadcrumbs(navigateToApp));
@@ -114,7 +111,7 @@ export const MapsList = () => {
       pageTitle="Create your first map"
       description="There is no map to display, let's create your first map."
       rightSideItems={
-        showActionsInHeader ? [] : [
+        newHomePageEnabled ? [] : [
           <EuiSmallButton
             fill
             onClick={navigateToCreateMapPage}
@@ -128,49 +125,46 @@ export const MapsList = () => {
   );
 
   return (
+    // @ts-ignore
     <I18nProvider>
       <>
-        <EuiPage restrictWidth="1000px">
-          <EuiPageBody component="main" data-test-subj="mapListingPage">
-            <EuiPageContentBody>
-              {showActionsInHeader &&
-                <HeaderControl
-                  setMountPoint={application.setAppRightControls}
-                  controls={[
-                    {
-                      id: 'Create map',
-                      label: 'Create map',
-                      iconType: 'plus',
-                      fill: true,
-                      href: `${MAPS_APP_ID}${APP_PATH.CREATE_MAP}`,
-                      testId: 'createButton',
-                      controlType: 'button',
-                    },
-                  ]}
-                />}
-              <TableListView
-                headingId="mapsListingHeading"
-                createItem= { showActionsInHeader ? undefined : navigateToCreateMapPage }
-                findItems={fetchMaps}
-                deleteItems={deleteMaps}
-                tableColumns={tableColumns}
-                listingLimit={10}
-                initialPageSize={10}
-                initialFilter={''}
-                noItemsFragment={noMapItem}
-                entityName={i18n.translate('maps.listing.table.entityName', {
-                  defaultMessage: 'map',
-                })}
-                entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
-                  defaultMessage: 'maps',
-                })}
-                tableListTitle={showActionsInHeader ? '' : i18n.translate('maps.listing.table.listTitle', {
-                  defaultMessage: 'Maps'})}
-                toastNotifications={notifications.toasts}
-              />
-            </EuiPageContentBody>
-          </EuiPageBody>
-        </EuiPage>
+        {newHomePageEnabled &&
+          // @ts-ignore
+          <HeaderControl
+            setMountPoint={application.setAppRightControls}
+            controls={[
+              {
+                id: 'Create map',
+                label: 'Create map',
+                iconType: 'plus',
+                fill: true,
+                href: `${MAPS_APP_ID}${APP_PATH.CREATE_MAP}`,
+                testId: 'createButton',
+                controlType: 'button',
+              },
+            ]}
+          />}
+        <TableListView
+          headingId="mapsListingHeading"
+          createItem= { newHomePageEnabled ? undefined : navigateToCreateMapPage }
+          findItems={fetchMaps}
+          deleteItems={deleteMaps}
+          tableColumns={tableColumns}
+          listingLimit={10}
+          initialPageSize={10}
+          initialFilter={''}
+          noItemsFragment={noMapItem}
+          entityName={i18n.translate('maps.listing.table.entityName', {
+            defaultMessage: 'map',
+          })}
+          entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
+            defaultMessage: 'maps',
+          })}
+          tableListTitle={newHomePageEnabled ? '' : i18n.translate('maps.listing.table.listTitle', {
+            defaultMessage: 'Maps'})}
+          toastNotifications={notifications.toasts}
+          restrictWidth={newHomePageEnabled ? false : true}
+        />
       </>
     </I18nProvider>
   );
