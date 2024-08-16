@@ -22,6 +22,7 @@ import {
   EuiModalHeaderTitle,
   EuiIcon,
   EuiSpacer,
+  EuiText,
 } from '@elastic/eui';
 
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -163,7 +164,7 @@ export const LayerConfigPanel = ({
           <EuiFlexItem grow={false}>
             <EuiSmallButton
               disabled={isUpdateDisabled}
-              iconType="play"
+              iconType="refresh"
               onClick={onUpdate}
               fill
               data-test-subj="updateButton"
@@ -176,10 +177,14 @@ export const LayerConfigPanel = ({
       {unsavedModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
-            <EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle>
+            <EuiText size="s">
+              <h2><EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle></h2>
+            </EuiText>
           </EuiModalHeader>
           <EuiModalBody>
-            <p>Do you want to discard the changes?</p>
+            <EuiText size="s">
+              <p>Do you want to discard the changes?</p>
+            </EuiText>
           </EuiModalBody>
           <EuiModalFooter>
             <EuiSmallButtonEmpty onClick={closeModal}>Cancel</EuiSmallButtonEmpty>

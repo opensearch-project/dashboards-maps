@@ -395,7 +395,6 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
           <EuiSmallButton
             id="submitButton"
             type="button"
-            fill
             onClick={handleSubmit}
             isLoading={isLoading}
             aria-label="import-file-button"

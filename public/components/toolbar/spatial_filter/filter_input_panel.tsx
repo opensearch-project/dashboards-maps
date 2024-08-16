@@ -80,7 +80,6 @@ export const FilterInputPanel = ({
           <EuiButton
             fullWidth
             size="s"
-            fill
             aria-label={drawLabel}
             data-test-subj="add-draw-button"
             onClick={updateSpatialFilterProperties}

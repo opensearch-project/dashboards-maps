@@ -116,6 +116,7 @@ export const MapsList = () => {
             fill
             onClick={navigateToCreateMapPage}
             data-test-subj="createFirstMapButton"
+            iconType="plus"
           >
             Create map
           </EuiSmallButton>
