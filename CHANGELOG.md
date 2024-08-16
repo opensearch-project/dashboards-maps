@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 * Conditionally use the new Page Header variant on the Maps listing page [#653](https://github.com/opensearch-project/dashboards-maps/pull/653)
 * Conditionally use the new Application Header variant on the Maps visualization page [#654](https://github.com/opensearch-project/dashboards-maps/pull/654)
+* Conditionally use full width for Maps listing page table [#655](https://github.com/opensearch-project/dashboards-maps/pull/655)
 ### Enhancements
 ### Bug Fixes
 ### Infrastructure
