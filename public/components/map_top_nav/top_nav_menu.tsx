@@ -15,6 +15,8 @@ import { getSavedMapBreadcrumbs } from '../../utils/breadcrumbs';
 import { handleDataLayerRender } from '../../model/layerRenderController';
 import { MapLayerSpecification } from '../../model/mapLayerType';
 import { MapState } from '../../model/mapState';
+import { HeaderVariant } from '../../../../../src/core/public';
+import { TopNavMenuItemRenderType } from '../../../../../src/plugins/navigation/public';
 
 interface MapTopNavMenuProps {
   mapIdFromUrl: string;
@@ -48,6 +50,7 @@ export const MapTopNavMenu = ({
     application: { navigateToApp },
     embeddable,
     scopedHistory,
+    uiSettings,
   } = services;
 
   const [title, setTitle] = useState<string>('');
@@ -65,6 +68,17 @@ export const MapTopNavMenu = ({
     },
     [chrome, navigateToApp]
   );
+  const showActionsInGroup = uiSettings.get('home:useNewHomePage');
+
+  useEffect(() => {
+    if (showActionsInGroup) {
+      chrome.setHeaderVariant?.(HeaderVariant.APPLICATION);
+    }
+
+    return () => {
+      chrome.setHeaderVariant?.();
+    };
+  }, [chrome.setHeaderVariant, showActionsInGroup]);
 
   useEffect(() => {
     const { originatingApp: value } =
@@ -129,6 +143,7 @@ export const MapTopNavMenu = ({
       setDescription,
       mapState,
       originatingApp,
+      showActionsInGroup,
     });
   }, [services, mapIdFromUrl, layers, title, description, mapState, originatingApp]);
 
@@ -139,7 +154,7 @@ export const MapTopNavMenu = ({
       config={config}
       setMenuMountPoint={setHeaderActionMenu}
       indexPatterns={layersIndexPatterns || []}
-      showSearchBar={true}
+      showSearchBar={TopNavMenuItemRenderType.IN_PORTAL}
       showFilterBar={false}
       showDatePicker={true}
       showQueryBar={true}
@@ -153,6 +168,8 @@ export const MapTopNavMenu = ({
       refreshInterval={refreshIntervalValue}
       onRefresh={refreshDataLayerRender}
       onRefreshChange={onRefreshChange}
+      groupActions={showActionsInGroup}
+      screenTitle={title}
     />
   );
 };
