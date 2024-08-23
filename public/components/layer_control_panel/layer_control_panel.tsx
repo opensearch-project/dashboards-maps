@@ -316,6 +316,7 @@ export const LayerControlPanel = memo(
                               <EuiFlexItem>
                                 <EuiToolTip position="top" content={getLayerTooltipContent(layer)}>
                                   <EuiListGroupItem
+                                    size="s"
                                     key={layer.id}
                                     label={layer.name}
                                     color={layerIsVisible(layer) ? 'text' : 'subdued'}

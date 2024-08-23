@@ -13,6 +13,7 @@ import {
   EuiModalHeader,
   EuiModalHeaderTitle,
   EuiCodeBlock,
+  EuiText,
 } from '@elastic/eui';
 
 export interface ShowErrorModalProps {
@@ -34,7 +35,9 @@ const ShowErrorModal = (props: ShowErrorModalProps) => {
       <EuiModal onClose={closeModal}>
         <EuiModalHeader>
           <EuiModalHeaderTitle>
-            <h1>{props.modalTitle}</h1>
+            <EuiText size="s">
+              <h2>{props.modalTitle}</h2>
+            </EuiText>
           </EuiModalHeaderTitle>
         </EuiModalHeader>
 
@@ -48,7 +51,6 @@ const ShowErrorModal = (props: ShowErrorModalProps) => {
             aria-label="closeModal"
             data-testid="closeModal"
             onClick={closeModal}
-            fill
           >
             Close
           </EuiSmallButton>
