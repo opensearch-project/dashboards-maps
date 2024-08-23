@@ -124,11 +124,11 @@ export const AddLayerPanel = ({
           <EuiButton
             fullWidth
             size="s"
-            fill
             onClick={showModal}
             aria-label="Add layer"
             isDisabled={IsLayerConfigVisible || isMaxLayerLimitReached()}
             data-test-subj="addLayerButton"
+            iconType="plusInCircle"
           >
             Add layer
           </EuiButton>
@@ -138,7 +138,9 @@ export const AddLayerPanel = ({
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
             <EuiModalHeaderTitle>
-              <h2>Add layer</h2>
+              <EuiText size="s">
+                <h2>Add layer</h2>
+              </EuiText>
             </EuiModalHeaderTitle>
           </EuiModalHeader>
           <EuiModalBody className="addLayer__modalBody">
@@ -159,7 +161,7 @@ export const AddLayerPanel = ({
                 <EuiTitle size="s">
                   <h6>{highlightItem?.name ? highlightItem.name : 'Select a layer type'}</h6>
                 </EuiTitle>
-                <EuiText>
+                <EuiText size="s">
                   {highlightItem?.description
                     ? highlightItem.description
                     : 'Start creating your map by selecting a layer type.'}

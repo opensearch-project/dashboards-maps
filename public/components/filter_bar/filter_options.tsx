@@ -120,7 +120,7 @@ export const FilterOptions = ({
           defaultMessage: 'Change all filters',
         })}
       </EuiPopoverTitle>
-      <EuiContextMenu initialPanelId={0} panels={[panelTree]} />
+      <EuiContextMenu initialPanelId={0} panels={[panelTree]} size="s"/>
     </EuiPopover>
   );
 };

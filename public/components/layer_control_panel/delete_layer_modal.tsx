@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiConfirmModal } from '@elastic/eui';
+import { EuiConfirmModal, EuiText } from '@elastic/eui';
 import React from 'react';
 
 interface DeleteLayerModalProps {
@@ -14,7 +14,11 @@ interface DeleteLayerModalProps {
 export const DeleteLayerModal = ({ onCancel, onConfirm, layerName }: DeleteLayerModalProps) => {
   return (
     <EuiConfirmModal
-      title="Delete layer"
+      title={
+        <EuiText size="s">
+          <h2>Delete layer</h2>
+        </EuiText>
+      }
       onCancel={onCancel}
       onConfirm={onConfirm}
       cancelButtonText="Cancel"
@@ -22,9 +26,11 @@ export const DeleteLayerModal = ({ onCancel, onConfirm, layerName }: DeleteLayer
       buttonColor="danger"
       defaultFocusedButton="confirm"
     >
-      <p>
-        Do you want to delete layer <strong>{layerName}</strong>?
-      </p>
+      <EuiText size="s">
+        <p>
+          Do you want to delete layer <strong>{layerName}</strong>?
+        </p>
+      </EuiText>
     </EuiConfirmModal>
   );
 };

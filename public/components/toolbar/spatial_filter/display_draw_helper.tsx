@@ -52,7 +52,7 @@ export const DrawFilterShapeHelper = memo(({ map, mode, onCancel }: DrawFilterSh
           <small>{getHelpText(mode)}</small>
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiButton fill onClick={onCancel} size={'s'}>
+          <EuiButton onClick={onCancel} size={'s'}>
             {'Cancel'}
           </EuiButton>
         </EuiFlexItem>
