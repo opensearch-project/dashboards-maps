@@ -66,10 +66,8 @@ yarn test:jest
 ```
 
 #### Integration Tests
-Integration tests for this plugin are written using the Cypress test framework.
-```
-yarn run cypress run
-```
+All integration tests cases for maps-dashboards plugin are written in [opensearch-dashboards-functional-test](https://github.com/opensearch-project/opensearch-dashboards-functional-test/blob/main/DEVELOPER_GUIDE.md#run-tests) repository using the Cypress test framework. Please follow the [DEVELOPER_GUIDE.md](https://github.com/opensearch-project/opensearch-dashboards-functional-test/blob/main/DEVELOPER_GUIDE.md) to run the integration tests.
+The tests are located in the `cypress/fixtures/plugins/custom-import-map-dashboards` directory.
 
 ### Submitting Changes
 
