@@ -1,0 +1,184 @@
+name: FTR E2E Dashboards Maps Test
+
+on: [pull_request, push]
+
+env:
+  PLUGIN_NAME: dashboards-maps
+  OPENSEARCH_DASHBOARDS_VERSION: "main"
+  OPENSEARCH_VERSION: "3.0.0"
+  OPENSEARCH_PLUGIN_VERSION: "3.0.0.0"
+
+jobs:
+  tests:
+    name: Run FTR E2E Dashboards Maps Test
+    env:
+      # Prevents extra Cypress installation progress messages
+      CI: 1
+      # Avoid warnings like "tput: No value for $TERM and no -T specified"
+      TERM: xterm
+      WORKING_DIR: ${{ matrix.working_directory }}.
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        java: [21]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Set up Java 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: "corretto"
+          java-version: "21"
+
+      - name: Download Job Scheduler artifact
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-job-scheduler&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          target: plugin-artifacts/
+          filename: job-scheduler.zip
+
+      - name: Download Geospatial artifact
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=geospatial&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          target: plugin-artifacts/
+          filename: opensearch-geospatial.zip
+
+      - name: Download OpenSearch
+        uses: peternied/download-file@v2
+        with:
+          url: https://artifacts.opensearch.org/snapshots/core/opensearch/${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/opensearch-min-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT-linux-x64-latest.tar.gz
+
+      - name: Extract OpenSearch
+        run: |
+          tar -xzf opensearch-*.tar.gz
+          rm -f opensearch-*.tar.gz
+        shell: bash
+
+      - name: Install Job Scheduler
+        run: |
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/job-scheduler.zip"
+        shell: bash
+
+      - name: Install geospatial plugin
+        run: |
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-geospatial.zip"
+        shell: bash
+
+      - name: Run OpenSearch
+        run: |
+          /bin/bash -c "./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch &"
+          sleep 30
+        shell: bash
+
+      - name: Check OpenSearch Running
+        run: curl http://localhost:9200/
+        shell: bash
+
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@v2
+        with:
+          path: OpenSearch-Dashboards
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          fetch-depth: 0
+          filter: |
+            cypress
+            test
+
+      - name: Checkout Dashboards Maps Plugin in OpenSearch Dashboards Plugins Dir
+        uses: actions/checkout@v2
+        with:
+          path: OpenSearch-Dashboards/plugins/${{ env.PLUGIN_NAME }}
+
+      - id: tool-versions
+        run: |
+          echo "node_version=$(cat .node-version)" >> $GITHUB_OUTPUT
+          echo "yarn_version=$(jq -r '.engines.yarn' package.json)" >> $GITHUB_OUTPUT
+        working-directory: OpenSearch-Dashboards
+        shell: bash
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ steps.tool-versions.outputs.node_version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Opensearch Dashboards
+        run: |
+          npm uninstall -g yarn
+          echo "Installing yarn ${{ steps.tool-versions.outputs.yarn_version }}"
+          npm i -g yarn@${{ steps.tool-versions.outputs.yarn_version }}
+          yarn cache clean
+        working-directory: OpenSearch-Dashboards
+        shell: bash
+
+      - name: Boodstrap Opensearch Dashboards
+        run: |
+          yarn osd bootstrap --single-version=loose
+        working-directory: OpenSearch-Dashboards
+
+      - name: Run Opensearch Dashboards with Dashboards Maps Plugin Installed
+        run: |
+          nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
+        working-directory: OpenSearch-Dashboards
+
+      - name: Wait OpenSearch Dashboards Compiled Completed
+        run: |
+          if timeout 900 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
+            echo "OpenSearch Dashboards compiled successfully."
+          else
+            echo "Timeout for 900 seconds reached. OpenSearch Dashboards did not finish compiling."
+            exit 1
+          fi
+        working-directory: OpenSearch-Dashboards
+
+      - name: Show OpenSearch Dashboards Logs
+        if: always()
+        run: cat dashboard.log
+        working-directory: OpenSearch-Dashboards
+
+      - name: OpenSearch Dashboards Health check
+        run: |
+          timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
+        shell: bash
+
+      - name: Checkout Dashboards Functional Test Repo
+        uses: actions/checkout@v2
+        with:
+          path: opensearch-dashboards-functional-test
+          repository: opensearch-project/opensearch-dashboards-functional-test
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          fetch-depth: 0
+
+      - name: Install Cypress
+        run: |
+          npm install cypress --save-dev
+        shell: bash
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Get Cypress version
+        id: cypress_version
+        run: |
+          echo "::set-output name=cypress_version::$(cat ./package.json | jq '.dependencies.cypress' | tr -d '"')"
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Run Cypress tests
+        run: |
+          yarn cypress:run-without-security --browser electron --spec 'cypress/integration/plugins/custom-import-map-dashboards/*.js'
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Capture failure screenshots
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots-${{ matrix.os }}
+          path: opensearch-dashboards-functional-test/cypress/screenshots
+
+      - name: Capture test video
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-videos-${{ matrix.os }}
+          path: opensearch-dashboards-functional-test/cypress/videos
