@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.17...2.x)
 ### Features
+* [navigation]feat: update category to flatten menus in analytics(all) use case [#674](https://github.com/opensearch-project/dashboards-maps/pull/674)
 ### Enhancements
 ### Bug Fixes
 ### Infrastructure
