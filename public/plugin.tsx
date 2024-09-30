@@ -104,6 +104,16 @@ export class CustomImportMapPlugin
       category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
       order: 200,
     }]);
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.all, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
       const [coreStart, depsStart] = await core.getStartServices();
