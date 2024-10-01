@@ -107,6 +107,9 @@ export const LayerConfigPanel = ({
       onClose={onClose}
       hideCloseButton={true}
       className="layerConfigPanel"
+      // Flyout starts to overlap app header under this breakpoint, likely need
+      // to convert this to a panel considering the new layout.
+      pushMinBreakpoint={1576}
     >
       <EuiFlyoutHeader hasBorder={true}>
         <EuiFlexGroup gutterSize="s" alignItems="center">
