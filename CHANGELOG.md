@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 * [navigation]feat: update category to flatten menus in analytics(all) use case [#674](https://github.com/opensearch-project/dashboards-maps/pull/674)
 ### Enhancements
 ### Bug Fixes
+* fix: prevent overlay from overlapping new application header
 ### Infrastructure
 ### Documentation
 ### Maintenance
