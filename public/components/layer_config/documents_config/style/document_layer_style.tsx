@@ -128,7 +128,8 @@ export const DocumentLayerStyle = ({
         fullWidth={true}
         isInvalid={hasInvalid}
         error={i18n.translate('maps.documents.style.invalidWidth', {
-          defaultMessage: `must be between ${min} and ${max}`,
+          defaultMessage: 'must be between {min} and {max}',
+          values: { min, max },
         })}
       >
         <EuiCompressedFieldNumber

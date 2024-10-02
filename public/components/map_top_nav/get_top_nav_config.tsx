@@ -188,10 +188,8 @@ export const onGetSave = (
         }
         toastNotifications.addSuccess({
           title: i18n.translate('map.topNavMenu.saveMap.successNotificationText', {
-            defaultMessage: `Saved ${newTitle}`,
-            values: {
-              visTitle: newTitle,
-            },
+            defaultMessage: 'Saved {newTitle}',
+            values: { newTitle },
           }),
         });
         if (originatingApp && returnToOrigin) {
@@ -212,10 +210,8 @@ export const onGetSave = (
     } catch (error: any) {
       toastNotifications.addDanger({
         title: i18n.translate('maps.topNavMenu.saveVisualization.failureNotificationText', {
-          defaultMessage: `Error on saving ${newTitle}`,
-          values: {
-            visTitle: newTitle,
-          },
+          defaultMessage: 'Error on saving {newTitle}',
+          values: { newTitle },
         }),
         text: error.message,
         'data-test-subj': 'saveMapError',

@@ -228,7 +228,11 @@ export const LayerControlPanel = memo(
 
       if (zoom < layer.zoomRange[0] || zoom > layer.zoomRange[1]) {
         return i18n.translate('maps.layerControl.layerNotVisibleZoom', {
-          defaultMessage: `Layer is hidden outside of zoom range ${layer.zoomRange[0]}–${layer.zoomRange[1]}`,
+          defaultMessage: 'Layer is hidden outside of zoom range {min}–{max}',
+          values: {
+            min: layer.zoomRange[0],
+            max: layer.zoomRange[1],
+          },
         });
       }
       return '';
