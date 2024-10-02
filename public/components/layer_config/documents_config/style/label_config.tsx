@@ -232,7 +232,11 @@ export const LabelConfig = ({
             })}
             isInvalid={invalidLabelSize}
             error={i18n.translate('maps.documents.labelSizeError', {
-              defaultMessage: `Must be between ${DOCUMENTS_MIN_LABEL_SIZE} and ${DOCUMENTS_MAX_LABEL_SIZE}`,
+              defaultMessage: 'Must be between {min} and {max}',
+              values: {
+                min: DOCUMENTS_MIN_LABEL_SIZE,
+                max: DOCUMENTS_MAX_LABEL_SIZE
+              },
             })}
           >
             <EuiCompressedFieldNumber
