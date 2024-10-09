@@ -1,9 +1,22 @@
 {
-    "id": "customImportMapDashboards",
-    "version": "3.0.0.0",
-    "opensearchDashboardsVersion": "3.0.0",
-    "server": true,
-    "ui": true,
-    "requiredPlugins": ["regionMap", "opensearchDashboardsReact", "opensearchDashboardsUtils", "navigation", "savedObjects", "data", "embeddable", "visualizations"],
-    "optionalPlugins": ["home"]
-  }
+  "id": "customImportMapDashboards",
+  "version": "3.0.0.0",
+  "opensearchDashboardsVersion": "3.0.0",
+  "server": true,
+  "ui": true,
+  "requiredPlugins": [
+    "regionMap",
+    "opensearchDashboardsReact",
+    "opensearchDashboardsUtils",
+    "navigation",
+    "savedObjects",
+    "data",
+    "embeddable",
+    "visualizations"
+  ],
+  "optionalPlugins": [
+    "home",
+    "dataSource",
+    "dataSourceManagement"
+  ]
+}
