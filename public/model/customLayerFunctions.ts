@@ -46,6 +46,9 @@ const getCustomMapURL = (layerConfig: CustomLayerSpecification) => {
     return layerSource?.url;
   } else if (layerSource?.customType === 'wms') {
     const referenceSystemName = layerSource.version === '1.3.0' ? 'crs' : 'srs';
+    if (!layerSource.crs) {
+      layerSource.crs = "EPSG:3857"
+    }
     return `${layerSource?.url}?service=WMS&version=${layerSource.version}&request=GetMap&format=${layerSource.format}&transparent=true&layers=${layerSource?.layers}&styles=${layerSource.styles}&${referenceSystemName}=${layerSource.crs}&width=256&height=256&bbox={bbox-epsg-3857}`;
   } else {
     return '';
