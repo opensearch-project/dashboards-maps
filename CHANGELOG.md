@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 ### Enhancements
 ### Bug Fixes
+* Locked custom wms crs input to epsg-3857 ([#632](https://github.com/opensearch-project/dashboards-maps/pull/632))
 ### Infrastructure
 ### Documentation
 ### Maintenance
