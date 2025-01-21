@@ -14,7 +14,8 @@ describe('test delete layer modal', function () {
       <DeleteLayerModal layerName={'test-layer'} onCancel={() => {}} onConfirm={() => {}} />
     );
     const testInstance = deleteLayerModal.root;
-    expect(testInstance.findByType(EuiConfirmModal).props.title).toBe('Delete layer');
+    //expect(testInstance.findByType(EuiConfirmModal).props.title).toBe('Delete layer');
+    expect(testInstance.findByType(EuiConfirmModal).props.title.props.children.props.children).toBe('Delete layer');
     expect(testInstance.findByType(EuiConfirmModal).props.confirmButtonText).toBe('Delete');
     expect(testInstance.findByType(EuiConfirmModal).props.cancelButtonText).toBe('Cancel');
     expect(testInstance.findByType(EuiConfirmModal).props.buttonColor).toBe('danger');

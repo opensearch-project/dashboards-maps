@@ -101,7 +101,7 @@ export const FilterByShape = ({
       anchorPosition="leftUp"
       data-test-subj="drawShapePopOver"
     >
-      <EuiContextMenu initialPanelId={0} panels={panels} />
+      <EuiContextMenu initialPanelId={0} panels={panels} size="s" />
     </EuiPopover>
   );
 };

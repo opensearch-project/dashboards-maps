@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiSpacer, EuiPanel, EuiForm, EuiFieldText, EuiSelect, EuiFormRow } from '@elastic/eui';
+import { EuiSpacer, EuiPanel, EuiForm, EuiCompressedFieldText, EuiCompressedSelect, EuiCompressedFormRow } from '@elastic/eui';
 import { CustomLayerSpecification } from '../../../model/mapLayerType';
 
 interface Props {
@@ -179,126 +179,126 @@ export const CustomMapSource = ({
     <div>
       <EuiPanel paddingSize="s">
         <EuiForm>
-          <EuiFormRow label="Custom type" helpText="Choose custom map type." fullWidth={true}>
-            <EuiSelect
+          <EuiCompressedFormRow label="Custom type" helpText="Choose custom map type." fullWidth={true}>
+            <EuiCompressedSelect
               options={customMapTypeOptions}
               value={customType}
               onChange={onChangeCustomType}
               fullWidth={true}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiForm>
         <EuiSpacer size="m" />
         {selectedLayerConfig.source.customType === 'tms' && (
           <EuiForm>
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="TMS URL*"
               helpText="Raster tile map service URL."
               isInvalid={isInvalidURL(customMapURL)}
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 placeholder="https://www.example.com/tiles/{z}/{x}/{y}.png"
                 value={customMapURL}
                 onChange={onChangeCustomMapURL}
                 isInvalid={isInvalidURL(customMapURL)}
                 fullWidth={true}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="TMS attribution"
               helpText="The attribution for the TMS layer, displayed in the lower-right corner of the map."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={customMapAttribution}
                 onChange={onChangeCustomMapAttribution}
                 fullWidth={true}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </EuiForm>
         )}
         {selectedLayerConfig.source.customType === 'wms' && (
           <EuiForm>
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS URL*"
               helpText="Web map service URL"
               isInvalid={isInvalidURL(customMapURL)}
               error={isInvalidURL(customMapURL) ? 'Invalid URL' : undefined}
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 placeholder="https://www.example.com/wms/dataset"
                 value={customMapURL}
                 onChange={onChangeCustomMapURL}
                 isInvalid={isInvalidURL(customMapURL)}
                 fullWidth={true}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS layers*"
               helpText="The names of the layers to include in the map image. For more than one name, use a comma-separated list."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
-            </EuiFormRow>
+              <EuiCompressedFieldText value={WMSLayers} onChange={onChangeWMSLayers} fullWidth={true} />
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow label="WMS version*" fullWidth={true}>
-              <EuiFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
-            </EuiFormRow>
+            <EuiCompressedFormRow label="WMS version*" fullWidth={true}>
+              <EuiCompressedFieldText value={WMSVersion} onChange={onChangeWMSVersion} fullWidth={true} />
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS format*"
               helpText="The format of the map image to return. The most common formats are 'image/png' and 'image/jpeg'."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
-            </EuiFormRow>
+              <EuiCompressedFieldText value={WMSFormat} onChange={onChangeWMSFormat} fullWidth={true} />
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS CRS"
               helpText="The coordinate reference system (CRS) to use for the map image."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={WMSCoordinateSystem}
                 onChange={onChangeWMSCoordinateSystem}
                 fullWidth={true}
                 value="EPSG:3857"
                 disabled
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS bbox"
               helpText="The bounding box of the region to include in the map image."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
-            </EuiFormRow>
+              <EuiCompressedFieldText value={WMSBbox} onChange={onChangeWMSBbox} fullWidth={true} />
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS attribution"
               helpText="The attribution for this WMS layer, displayed at right-bottom map."
               fullWidth={true}
             >
-              <EuiFieldText
+              <EuiCompressedFieldText
                 value={customMapAttribution}
                 onChange={onChangeCustomMapAttribution}
                 fullWidth={true}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
             <EuiSpacer size="m" />
-            <EuiFormRow
+            <EuiCompressedFormRow
               label="WMS styles"
               helpText="The styles to be used for each of the layers in the map image."
               fullWidth={true}
             >
-              <EuiFieldText value={WMSStyles} onChange={onChangeWMSStyles} fullWidth={true} />
-            </EuiFormRow>
+              <EuiCompressedFieldText value={WMSStyles} onChange={onChangeWMSStyles} fullWidth={true} />
+            </EuiCompressedFormRow>
           </EuiForm>
         )}
         <EuiSpacer size="s" />

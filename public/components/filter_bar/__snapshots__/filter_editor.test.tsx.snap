@@ -16,9 +16,9 @@ exports[`renders one filter inside filter bar 1`] = `
     className="globalFilterItem__editorForm"
   >
     <EuiForm>
-      <EuiFormRow
+      <EuiCompressedFormRow
         describedByIds={Array []}
-        display="row"
+        display="rowCompressed"
         fullWidth={true}
         hasChildLabel={true}
         hasEmptyLabelSpace={false}
@@ -33,26 +33,26 @@ exports[`renders one filter inside filter bar 1`] = `
           value="\\"{}\\""
           width="100%"
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
       <div>
         <EuiSpacer
           size="m"
         />
-        <EuiFormRow
+        <EuiCompressedFormRow
           describedByIds={Array []}
-          display="row"
+          display="rowCompressed"
           fullWidth={true}
           hasChildLabel={true}
           hasEmptyLabelSpace={false}
           label="Custom label"
           labelType="label"
         >
-          <EuiFieldText
+          <EuiCompressedFieldText
             fullWidth={true}
             onChange={[Function]}
             value="mylabel"
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
       </div>
       <EuiSpacer
         size="m"
@@ -65,25 +65,25 @@ exports[`renders one filter inside filter bar 1`] = `
         <EuiFlexItem
           grow={false}
         >
-          <EuiButton
+          <EuiSmallButton
             data-test-subj="saveFilter"
             fill={true}
             isDisabled={false}
             onClick={[Function]}
           >
             Save
-          </EuiButton>
+          </EuiSmallButton>
         </EuiFlexItem>
         <EuiFlexItem
           grow={false}
         >
-          <EuiButtonEmpty
+          <EuiSmallButtonEmpty
             data-test-subj="cancelSaveFilter"
             flush="right"
             onClick={[MockFunction]}
           >
             Cancel
-          </EuiButtonEmpty>
+          </EuiSmallButtonEmpty>
         </EuiFlexItem>
         <EuiFlexItem />
       </EuiFlexGroup>

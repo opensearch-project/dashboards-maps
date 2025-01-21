@@ -8,15 +8,16 @@ import React, { useState } from 'react';
 import path from 'path';
 import {
   EuiButton,
-  EuiFilePicker,
+  EuiSmallButton,
+  EuiCompressedFilePicker,
   EuiFlexItem,
   EuiFlexGroup,
   EuiText,
   EuiSpacer,
   EuiCard,
-  EuiFieldText,
+  EuiCompressedFieldText,
   EuiTextColor,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiCodeBlock,
 } from '@elastic/eui';
 import { getIndex, postGeojson } from '../services';
@@ -323,8 +324,8 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
-        <EuiFormRow aria-label="form-row-for-file-picker">
-          <EuiFilePicker
+        <EuiCompressedFormRow aria-label="form-row-for-file-picker">
+          <EuiCompressedFilePicker
             id="filePicker"
             data-testid="filePicker"
             data-test-subj="filePicker"
@@ -337,7 +338,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
             required={true}
             aria-label="geojson-file-picker"
           />
-        </EuiFormRow>
+        </EuiCompressedFormRow>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <EuiText size="xs" color="subdued" aria-label="geojson-file-format-text">
@@ -356,7 +357,7 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         </EuiText>
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
-        <EuiFieldText
+        <EuiCompressedFieldText
           data-testid="customIndex"
           data-test-subj="customIndex"
           tabIndex="0"
@@ -391,16 +392,15 @@ const VectorUploadOptions = (props: RegionMapOptionsProps) => {
         <EuiSpacer size="m" aria-label="medium-spacer" />
 
         <div className="importFileButton">
-          <EuiButton
+          <EuiSmallButton
             id="submitButton"
             type="button"
-            fill
             onClick={handleSubmit}
             isLoading={isLoading}
             aria-label="import-file-button"
           >
             Import file
-          </EuiButton>
+          </EuiSmallButton>
         </div>
       </EuiCard>
     </div>

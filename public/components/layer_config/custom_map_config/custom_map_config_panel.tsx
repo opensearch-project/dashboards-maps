@@ -43,5 +43,5 @@ export const CustomMapConfigPanel = (props: Props) => {
       ),
     },
   ];
-  return <EuiTabbedContent tabs={tabs} initialSelectedTab={tabs[0]} />;
+  return <EuiTabbedContent tabs={tabs} size="s" initialSelectedTab={tabs[0]} />;
 };

@@ -12,12 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 ### Refactoring
 
-## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.15...2.x)
+## [Unreleased 2.x](https://github.com/opensearch-project/dashboards-maps/compare/2.18...2.x)
 ### Features
 ### Enhancements
 ### Bug Fixes
 * Locked custom wms crs input to epsg-3857 ([#632](https://github.com/opensearch-project/dashboards-maps/pull/632))
-* Add data source reference id in data layer search request ([#623](https://github.com/opensearch-project/dashboards-maps/pull/623))
 ### Infrastructure
 ### Documentation
 ### Maintenance

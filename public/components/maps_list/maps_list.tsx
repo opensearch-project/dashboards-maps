@@ -7,11 +7,8 @@ import { i18n } from '@osd/i18n';
 import React, { useCallback, useEffect } from 'react';
 import { I18nProvider } from '@osd/i18n/react';
 import {
-  EuiPage,
-  EuiPageBody,
-  EuiPageContentBody,
   EuiLink,
-  EuiButton,
+  EuiSmallButton,
   EuiPageHeader,
 } from '@elastic/eui';
 import {
@@ -22,7 +19,6 @@ import { MapSavedObjectAttributes } from '../../../common/map_saved_object_attri
 import { MapServices } from '../../types';
 import { getMapsLandingBreadcrumbs } from '../../utils/breadcrumbs';
 import { APP_PATH, MAPS_APP_ID } from '../../../common';
-import { DataSourceAggregatedViewConfig } from '../../../../../src/plugins/data_source_management/public';
 
 export const MapsList = () => {
   const {
@@ -31,12 +27,17 @@ export const MapsList = () => {
       savedObjects: { client: savedObjectsClient },
       application: { navigateToApp },
       chrome: { docTitle, setBreadcrumbs },
-      dataSourceManagement,
-      setActionMenu,
+      uiSettings,
+      navigation: {
+        ui: { HeaderControl },
+      },
+      application,
     },
   } = useOpenSearchDashboards<MapServices>();
 
-  useEffect(() => {
+  const newHomePageEnabled = uiSettings.get('home:useNewHomePage');
+
+    useEffect(() => {
     setBreadcrumbs(getMapsLandingBreadcrumbs(navigateToApp));
     docTitle.change(i18n.translate('maps.listing.pageTitle', { defaultMessage: 'Maps' }));
   }, [docTitle, navigateToApp, setBreadcrumbs]);
@@ -109,60 +110,62 @@ export const MapsList = () => {
     <EuiPageHeader
       pageTitle="Create your first map"
       description="There is no map to display, let's create your first map."
-      rightSideItems={[
-        <EuiButton fill onClick={navigateToCreateMapPage}>
-          Create map
-        </EuiButton>,
-      ]}
+      rightSideItems={
+        newHomePageEnabled ? [] : [
+          <EuiSmallButton
+            fill
+            onClick={navigateToCreateMapPage}
+            data-test-subj="createFirstMapButton"
+            iconType="plus"
+          >
+            Create map
+          </EuiSmallButton>
+        ]
+      }
     />
   );
-  const dataSourceManagementEnabled: boolean = !!dataSourceManagement;
 
   return (
+    // @ts-ignore
     <I18nProvider>
       <>
-        <EuiPage restrictWidth="1000px">
-          <EuiPageBody component="main" data-test-subj="mapListingPage">
-            <EuiPageContentBody>
-              {dataSourceManagementEnabled && (() => {
-                const DataSourcesMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
-                return (
-                  <DataSourcesMenu
-                    setMenuMountPoint={setActionMenu}
-                    componentType={'DataSourceAggregatedView'}
-                    componentConfig={{
-                      savedObjects: savedObjectsClient,
-                      notifications,
-                      fullWidth: true,
-                      displayAllCompatibleDataSources: true,
-                    }}
-                  />
-                );
-              })()}
-              <TableListView
-                headingId="mapsListingHeading"
-                createItem={navigateToCreateMapPage}
-                findItems={fetchMaps}
-                deleteItems={deleteMaps}
-                tableColumns={tableColumns}
-                listingLimit={10}
-                initialPageSize={10}
-                initialFilter={''}
-                noItemsFragment={noMapItem}
-                entityName={i18n.translate('maps.listing.table.entityName', {
-                  defaultMessage: 'map',
-                })}
-                entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
-                  defaultMessage: 'maps',
-                })}
-                tableListTitle={i18n.translate('maps.listing.table.listTitle', {
-                  defaultMessage: 'Maps',
-                })}
-                toastNotifications={notifications.toasts}
-              />
-            </EuiPageContentBody>
-          </EuiPageBody>
-        </EuiPage>
+        {newHomePageEnabled &&
+          // @ts-ignore
+          <HeaderControl
+            setMountPoint={application.setAppRightControls}
+            controls={[
+              {
+                id: 'Create map',
+                label: 'Create map',
+                iconType: 'plus',
+                fill: true,
+                href: `${MAPS_APP_ID}${APP_PATH.CREATE_MAP}`,
+                testId: 'createButton',
+                controlType: 'button',
+              },
+            ]}
+          />}
+        <TableListView
+          headingId="mapsListingHeading"
+          createItem= { newHomePageEnabled ? undefined : navigateToCreateMapPage }
+          findItems={fetchMaps}
+          deleteItems={deleteMaps}
+          tableColumns={tableColumns}
+          listingLimit={10}
+          initialPageSize={10}
+          initialFilter={''}
+          noItemsFragment={noMapItem}
+          entityName={i18n.translate('maps.listing.table.entityName', {
+            defaultMessage: 'map',
+          })}
+          entityNamePlural={i18n.translate('maps.listing.table.entityNamePlural', {
+            defaultMessage: 'maps',
+          })}
+          tableListTitle={newHomePageEnabled ? '' : i18n.translate('maps.listing.table.listTitle', {
+            defaultMessage: 'Maps'})}
+          toastNotifications={notifications.toasts}
+          restrictWidth={newHomePageEnabled ? false : true}
+        />
       </>
     </I18nProvider>
   );

@@ -1,42 +1,13 @@
-import { AttributionControl, RasterSourceSpecification } from 'maplibre-gl';
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
 import { hasLayer, removeLayers } from './map/layer_operations';
 import { MaplibreRef } from './layersFunctions';
 
-const updateLayerConfig = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
+const refreshLayer = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
-    const customLauer = maplibreInstance.getLayer(layerConfig.id);
-    if (customLauer) {
-      maplibreInstance.setPaintProperty(
-        layerConfig.id,
-        'raster-opacity',
-        layerConfig.opacity / 100
-      );
-      maplibreInstance.setLayerZoomRange(
-        layerConfig.id,
-        layerConfig.zoomRange[0],
-        layerConfig.zoomRange[1]
-      );
-      const rasterLayerSource = maplibreInstance.getSource(
-        layerConfig.id
-      )! as RasterSourceSpecification;
-      if (rasterLayerSource.attribution !== layerConfig.source?.attribution) {
-        rasterLayerSource.attribution = layerConfig?.source?.attribution;
-        maplibreInstance._controls.forEach((control) => {
-          if (control instanceof AttributionControl) {
-            control._updateAttributions();
-          }
-        });
-      }
-      const tilesURL = getCustomMapURL(layerConfig);
-      if (rasterLayerSource.tiles![0] !== tilesURL) {
-        rasterLayerSource.tiles = [layerConfig?.source?.url];
-        maplibreInstance.style.sourceCaches[layerConfig.id].clearTiles();
-        maplibreInstance.style.sourceCaches[layerConfig.id].update(maplibreInstance.transform);
-        maplibreInstance.triggerRepaint();
-      }
-    }
+    maplibreInstance.removeLayer(layerConfig.id);
+    maplibreInstance.removeSource(layerConfig.id);
+    addNewLayer(layerConfig, maplibreRef);
   }
 };
 
@@ -92,7 +63,7 @@ export const applyZoomRangeToLayer = (layerConfig: CustomLayerSpecification) => 
 export const CustomLayerFunctions = {
   render: (maplibreRef: MaplibreRef, layerConfig: CustomLayerSpecification) => {
     return hasLayer(maplibreRef.current!, layerConfig.id)
-      ? updateLayerConfig(layerConfig, maplibreRef)
+      ? refreshLayer(layerConfig, maplibreRef)
       : addNewLayer(layerConfig, maplibreRef);
   },
   remove: (maplibreRef: MaplibreRef, layerConfig: OSMLayerSpecification) => {

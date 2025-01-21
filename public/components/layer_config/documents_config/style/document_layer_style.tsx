@@ -5,12 +5,12 @@
 
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import {
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormLabel,
   EuiSpacer,
   EuiButtonGroup,
   EuiPanel,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiForm,
   EuiCollapsibleNavGroup,
 } from '@elastic/eui';
@@ -123,15 +123,16 @@ export const DocumentLayerStyle = ({
     max,
   }: WidthSelectorProps) => {
     return (
-      <EuiFormRow
+      <EuiCompressedFormRow
         label={label}
         fullWidth={true}
         isInvalid={hasInvalid}
         error={i18n.translate('maps.documents.style.invalidWidth', {
-          defaultMessage: `must be between ${min} and ${max}`,
+          defaultMessage: 'must be between {min} and {max}',
+          values: { min, max },
         })}
       >
-        <EuiFieldNumber
+        <EuiCompressedFieldNumber
           placeholder="Select thickness"
           value={size}
           onChange={onWidthChange}
@@ -141,7 +142,7 @@ export const DocumentLayerStyle = ({
           min={min}
           max={max}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     );
   };
 

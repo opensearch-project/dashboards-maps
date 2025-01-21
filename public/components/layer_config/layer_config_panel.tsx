@@ -7,13 +7,13 @@ import React, { useEffect, useState } from 'react';
 import { cloneDeep, isEqual } from 'lodash';
 
 import {
-  EuiButton,
+  EuiSmallButton,
   EuiFlyout,
   EuiFlyoutBody,
   EuiFlyoutFooter,
   EuiFlyoutHeader,
   EuiFlexItem,
-  EuiButtonEmpty,
+  EuiSmallButtonEmpty,
   EuiFlexGroup,
   EuiModal,
   EuiModalBody,
@@ -22,6 +22,7 @@ import {
   EuiModalHeaderTitle,
   EuiIcon,
   EuiSpacer,
+  EuiText,
 } from '@elastic/eui';
 
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -106,6 +107,9 @@ export const LayerConfigPanel = ({
       onClose={onClose}
       hideCloseButton={true}
       className="layerConfigPanel"
+      // Flyout starts to overlap app header under this breakpoint, likely need
+      // to convert this to a panel considering the new layout.
+      pushMinBreakpoint={1576}
     >
       <EuiFlyoutHeader hasBorder={true}>
         <EuiFlexGroup gutterSize="s" alignItems="center">
@@ -156,36 +160,40 @@ export const LayerConfigPanel = ({
       <EuiFlyoutFooter>
         <EuiFlexGroup justifyContent="spaceBetween">
           <EuiFlexItem grow={false}>
-            <EuiButtonEmpty iconType="cross" onClick={onClose} flush="left">
+            <EuiSmallButtonEmpty iconType="cross" onClick={onClose} flush="left">
               Discard
-            </EuiButtonEmpty>
+            </EuiSmallButtonEmpty>
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton
+            <EuiSmallButton
               disabled={isUpdateDisabled}
-              iconType="play"
+              iconType="refresh"
               onClick={onUpdate}
               fill
               data-test-subj="updateButton"
             >
               Update
-            </EuiButton>
+            </EuiSmallButton>
           </EuiFlexItem>
         </EuiFlexGroup>
       </EuiFlyoutFooter>
       {unsavedModalVisible && (
         <EuiModal onClose={closeModal}>
           <EuiModalHeader>
-            <EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle>
+            <EuiText size="s">
+              <h2><EuiModalHeaderTitle>Unsaved changes</EuiModalHeaderTitle></h2>
+            </EuiText>
           </EuiModalHeader>
           <EuiModalBody>
-            <p>Do you want to discard the changes?</p>
+            <EuiText size="s">
+              <p>Do you want to discard the changes?</p>
+            </EuiText>
           </EuiModalBody>
           <EuiModalFooter>
-            <EuiButtonEmpty onClick={closeModal}>Cancel</EuiButtonEmpty>
-            <EuiButton onClick={discardChanges} fill>
+            <EuiSmallButtonEmpty onClick={closeModal}>Cancel</EuiSmallButtonEmpty>
+            <EuiSmallButton onClick={discardChanges} fill>
               Discard
-            </EuiButton>
+            </EuiSmallButton>
           </EuiModalFooter>
         </EuiModal>
       )}

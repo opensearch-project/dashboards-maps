@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiButtonIcon, EuiFlexGroup, EuiFlexItem, EuiTextColor } from '@elastic/eui';
+import { EuiSmallButtonIcon, EuiFlexGroup, EuiFlexItem, EuiTextColor } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import React from 'react';
 
@@ -25,7 +25,7 @@ const TooltipHeaderContent = (props: Props) => {
       </EuiFlexItem>
       {props.showCloseButton && (
         <EuiFlexItem key="closeButton" grow={false}>
-          <EuiButtonIcon
+          <EuiSmallButtonIcon
             onClick={() => {
               return props.onClose();
             }}

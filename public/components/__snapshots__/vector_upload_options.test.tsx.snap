@@ -39,14 +39,14 @@ Object {
               />
               <div
                 aria-label="form-row-for-file-picker"
-                class="euiFormRow"
+                class="euiFormRow euiFormRow--compressed"
                 id="generated-id-row"
               >
                 <div
                   class="euiFormRow__fieldWrapper"
                 >
                   <div
-                    class="euiFilePicker euiFilePicker--large"
+                    class="euiFilePicker euiFilePicker--large euiFilePicker--compressed"
                   >
                     <div
                       class="euiFilePicker__wrap"
@@ -135,14 +135,14 @@ Object {
                 class="euiSpacer euiSpacer--m"
               />
               <div
-                class="euiFormControlLayout"
+                class="euiFormControlLayout euiFormControlLayout--compressed"
               >
                 <div
                   class="euiFormControlLayout__childrenWrapper"
                 >
                   <input
                     aria-label="map-name-text-field"
-                    class="euiFieldText"
+                    class="euiFieldText euiFieldText--compressed"
                     data-test-subj="customIndex"
                     data-testid="customIndex"
                     id="customIndex"
@@ -206,7 +206,7 @@ Object {
               >
                 <button
                   aria-label="import-file-button"
-                  class="euiButton euiButton--primary euiButton--fill"
+                  class="euiButton euiButton--primary euiButton--small"
                   id="submitButton"
                   type="button"
                 >
@@ -262,14 +262,14 @@ Object {
             />
             <div
               aria-label="form-row-for-file-picker"
-              class="euiFormRow"
+              class="euiFormRow euiFormRow--compressed"
               id="generated-id-row"
             >
               <div
                 class="euiFormRow__fieldWrapper"
               >
                 <div
-                  class="euiFilePicker euiFilePicker--large"
+                  class="euiFilePicker euiFilePicker--large euiFilePicker--compressed"
                 >
                   <div
                     class="euiFilePicker__wrap"
@@ -358,14 +358,14 @@ Object {
               class="euiSpacer euiSpacer--m"
             />
             <div
-              class="euiFormControlLayout"
+              class="euiFormControlLayout euiFormControlLayout--compressed"
             >
               <div
                 class="euiFormControlLayout__childrenWrapper"
               >
                 <input
                   aria-label="map-name-text-field"
-                  class="euiFieldText"
+                  class="euiFieldText euiFieldText--compressed"
                   data-test-subj="customIndex"
                   data-testid="customIndex"
                   id="customIndex"
@@ -429,7 +429,7 @@ Object {
             >
               <button
                 aria-label="import-file-button"
-                class="euiButton euiButton--primary euiButton--fill"
+                class="euiButton euiButton--primary euiButton--small"
                 id="submitButton"
                 type="button"
               >

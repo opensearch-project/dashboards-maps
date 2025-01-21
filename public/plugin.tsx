@@ -8,6 +8,8 @@ import {
   AppMountParameters,
   CoreSetup,
   CoreStart,
+  DEFAULT_APP_CATEGORIES,
+  DEFAULT_NAV_GROUPS,
   Plugin,
   PluginInitializerContext,
 } from '../../../src/core/public';
@@ -45,12 +47,11 @@ export class CustomImportMapPlugin
   }
   public setup(
     core: CoreSetup,
-    { regionMap, embeddable, visualizations, dataSourceManagement }: AppPluginSetupDependencies
+    { regionMap, embeddable, visualizations }: AppPluginSetupDependencies
   ): CustomImportMapPluginSetup {
     const mapConfig: ConfigSchema = {
       ...this._initializerContext.config.get<ConfigSchema>(),
     };
-    const dataSourceManagentEnabled: boolean = !!dataSourceManagement;
     // Register an application into the side navigation menu
     core.application.register({
       id: MAPS_APP_ID,
@@ -91,14 +92,28 @@ export class CustomImportMapPlugin
           scopedHistory: params.history,
           uiSettings: coreStart.uiSettings,
           mapConfig,
-          dataSourceManagement,
-          setActionMenu: params.setHeaderActionMenu,
         };
         params.element.classList.add('mapAppContainer');
         // Render the application
-        return renderApp(params, services, dataSourceManagentEnabled);
+        return renderApp(params, services);
       },
     });
+
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.observability, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
+    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.all, [{
+      id: MAPS_APP_ID,
+      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+      order: 200,
+    }]);
 
     const mapEmbeddableFactory = new MapEmbeddableFactoryDefinition(async () => {
       const [coreStart, depsStart] = await core.getStartServices();

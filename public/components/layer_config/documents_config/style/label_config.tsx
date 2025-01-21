@@ -5,15 +5,15 @@
 
 import React, { useEffect, useMemo, ChangeEventHandler, ChangeEvent } from 'react';
 import {
-  EuiFormRow,
-  EuiFieldText,
+  EuiCompressedFormRow,
+  EuiCompressedFieldText,
   EuiFlexItem,
-  EuiCheckbox,
-  EuiSelect,
+  EuiCompressedCheckbox,
+  EuiCompressedSelect,
   EuiFlexGroup,
-  EuiFieldNumber,
+  EuiCompressedFieldNumber,
   EuiFormLabel,
-  EuiComboBox,
+  EuiCompressedComboBox,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { EuiComboBoxOptionOption } from '@opensearch-project/oui/src/eui_components/combo_box/types';
@@ -170,17 +170,17 @@ export const LabelConfig = ({
 
   return (
     <>
-      <EuiFormRow>
-        <EuiCheckbox
+      <EuiCompressedFormRow>
+        <EuiCompressedCheckbox
           id="show-label"
           label="Add label"
           checked={label?.enabled ?? false}
           onChange={onChangeShowLabel}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
       {label?.enabled && (
         <>
-          <EuiFormRow
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelText', {
               defaultMessage: 'Label text',
             })}
@@ -191,7 +191,7 @@ export const LabelConfig = ({
           >
             <EuiFlexGroup responsive={false} alignItems="center" gutterSize="s">
               <EuiFlexItem grow={false}>
-                <EuiSelect
+                <EuiCompressedSelect
                   options={labelTextTypeOptions}
                   value={label?.textType ?? DOCUMENTS_DEFAULT_LABEL_TEXT_TYPE}
                   onChange={onChangeLabelTextType}
@@ -199,7 +199,7 @@ export const LabelConfig = ({
               </EuiFlexItem>
               <EuiFlexItem className={'documentsLabel__text'}>
                 {label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.FIXED && (
-                  <EuiFieldText
+                  <EuiCompressedFieldText
                     placeholder={i18n.translate('maps.documents.labelTextPlaceholder', {
                       defaultMessage: 'Enter label text',
                     })}
@@ -209,7 +209,7 @@ export const LabelConfig = ({
                   />
                 )}
                 {(!label?.textType || label?.textType === DOCUMENTS_LABEL_TEXT_TYPE.BY_FIELD) && (
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     options={getFieldsOptions(indexPattern)}
                     selectedOptions={formatFieldStringToComboBox(label?.textByField)}
                     singleSelection={{ asPlainText: true }}
@@ -225,17 +225,21 @@ export const LabelConfig = ({
                 )}
               </EuiFlexItem>
             </EuiFlexGroup>
-          </EuiFormRow>
-          <EuiFormRow
+          </EuiCompressedFormRow>
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelSize', {
               defaultMessage: 'Label size',
             })}
             isInvalid={invalidLabelSize}
             error={i18n.translate('maps.documents.labelSizeError', {
-              defaultMessage: `Must be between ${DOCUMENTS_MIN_LABEL_SIZE} and ${DOCUMENTS_MAX_LABEL_SIZE}`,
+              defaultMessage: 'Must be between {min} and {max}',
+              values: {
+                min: DOCUMENTS_MIN_LABEL_SIZE,
+                max: DOCUMENTS_MAX_LABEL_SIZE
+              },
             })}
           >
-            <EuiFieldNumber
+            <EuiCompressedFieldNumber
               placeholder={i18n.translate('maps.documents.labelSizePlaceholder', {
                 defaultMessage: 'Select size',
               })}
@@ -246,7 +250,7 @@ export const LabelConfig = ({
               min={DOCUMENTS_MIN_LABEL_SIZE}
               max={DOCUMENTS_MAX_LABEL_SIZE}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
           <ColorPicker
             originColor={label?.color ?? DOCUMENTS_DEFAULT_LABEL_COLOR}
             label={i18n.translate('maps.documents.labelColor', {
@@ -263,18 +267,18 @@ export const LabelConfig = ({
             setIsUpdateDisabled={setIsUpdateDisabled}
             onColorChange={onChangeLabelBorderColor}
           />
-          <EuiFormRow
+          <EuiCompressedFormRow
             label={i18n.translate('maps.documents.labelBorderWidth', {
               defaultMessage: 'Label border width',
             })}
           >
-            <EuiSelect
+            <EuiCompressedSelect
               options={labelBorderWidthOptions}
               value={label?.borderWidth ?? DOCUMENTS_NONE_LABEL_BORDER_WIDTH}
               onChange={onChangeLabelBorderWidth}
               fullWidth={true}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </>
       )}
     </>
