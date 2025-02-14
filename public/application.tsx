@@ -13,7 +13,6 @@ import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opense
 export const renderApp = (
   { element }: AppMountParameters,
   services: MapServices,
-  dataSourceManagementEnabled: boolean
 ) => {
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={services}>

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { LayerSpecification, Map as Maplibre } from 'maplibre-gl';
-import { DocumentLayerSpecification, OSMLayerSpecification } from '../mapLayerType';
+import { ClusterLayerSpecification, DocumentLayerSpecification, OSMLayerSpecification } from '../mapLayerType';
 
 export const getLayers = (map: Maplibre, dashboardMapsLayerId?: string): LayerSpecification[] => {
   const layers: LayerSpecification[] = map.getStyle().layers;
@@ -98,9 +98,9 @@ export const updateLineLayer = (
 
 export interface CircleLayerSpecification extends Layer {
   visibility: string;
-  fillColor: string;
+  fillColor: string | string[];
   outlineColor: string;
-  radius: number;
+  radius: number | string[];
   width: number;
 }
 
@@ -206,7 +206,7 @@ const updatePolygonFillLayer = (
 
 export interface SymbolLayerSpecification extends Layer {
   textType: 'fixed' | 'by_field';
-  textByFixed: string;
+  textByFixed?: string;
   textByField: string;
   textSize: number;
   textColor: string;
@@ -216,7 +216,7 @@ export interface SymbolLayerSpecification extends Layer {
   textFont: string[];
 }
 
-export const createSymbolLayerSpecification = (
+export const createDocumentSymbolLayerSpecification = (
   layerConfig: DocumentLayerSpecification
 ): SymbolLayerSpecification => {
   if (!layerConfig.style.label) {
@@ -236,6 +236,26 @@ export const createSymbolLayerSpecification = (
     opacity: layerConfig.opacity,
     symbolBorderWidth: layerConfig.style.label.borderWidth,
     symbolBorderColor: layerConfig.style.label.borderColor,
+  };
+};
+
+export const createClusterLayerSymbolSpecification = (
+  layerConfig: ClusterLayerSpecification
+): SymbolLayerSpecification => {
+  // In cluster layer, some symbol properties are fixed.
+  return {
+    sourceId: layerConfig.id,
+    visibility: layerConfig.visibility,
+    textFont: ['Noto Sans Regular'],
+    textType: 'by_field',
+    textByField: 'count',
+    textSize: 16,
+    textColor: '#000000',
+    minZoom: layerConfig.zoomRange[0],
+    maxZoom: layerConfig.zoomRange[1],
+    opacity: layerConfig.opacity,
+    symbolBorderColor: '#FFFFFF',
+    symbolBorderWidth: 1,
   };
 };
 
@@ -282,6 +302,7 @@ export const updateSymbolLayer = (
   map.setLayoutProperty(symbolLayerId, 'text-size', specification.textSize);
   map.setPaintProperty(symbolLayerId, 'text-halo-width', specification.symbolBorderWidth);
   map.setPaintProperty(symbolLayerId, 'text-halo-color', specification.symbolBorderColor);
+  map.setLayoutProperty(symbolLayerId, 'text-allow-overlap', true);
   return symbolLayerId;
 };
 
