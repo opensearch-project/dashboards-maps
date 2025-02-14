@@ -2,3 +2,20 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
+
+// Override EuiCollapsibleNavGroup background color
+.layerConfigPanel {
+  .euiCollapsibleNavGroup {
+    background: transparent;
+
+    // Remove any background color on hover if it exists
+    &:hover {
+      background: transparent;
+    }
+
+    // Ensure the content area is also transparent
+    .euiCollapsibleNavGroup__content {
+      background: transparent;
+    }
+  }
+}
