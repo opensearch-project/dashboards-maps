@@ -26,6 +26,13 @@ import {
   DOCUMENTS_DEFAULT_LABEL_BORDER_COLOR,
   DOCUMENTS_NONE_LABEL_BORDER_WIDTH,
   DOCUMENTS_DEFAULT_APPLY_GLOBAL_FILTERS,
+  CLUSTER_DEFAULT_CLUSTER_AGG,
+  CLUSTER_DEFAULT_METRIC_AGG,
+  CLUSTER_DEFAULT_PRECISION,
+  CLUSTER_DEFAULT_PALETTE,
+  CLUSTER,
+  CLUSTER_DEFAULT_FILL_TYPE,
+  CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
 } from '../../common';
 import { MapState } from '../model/mapState';
 
@@ -91,6 +98,41 @@ export const getLayerConfigMap = () => ({
       format: '',
       crs: '',
       bbox: '',
+    },
+  },
+  [CLUSTER.type]: {
+    name: '',
+    description: '',
+    type: CLUSTER.type,
+    id: uuidv4(),
+    zoomRange: [MAP_DEFAULT_MIN_ZOOM, MAP_DEFAULT_MAX_ZOOM],
+    opacity: MAP_DATA_LAYER_DEFAULT_OPACITY,
+    visibility: LAYER_VISIBILITY.VISIBLE,
+    source: {
+      indexPatternRefName: undefined,
+      metric: {
+        agg: CLUSTER_DEFAULT_METRIC_AGG,
+        field: '',
+        fieldType: '',
+        json: '',
+        custom_label: '',
+      },
+      cluster: {
+        agg: CLUSTER_DEFAULT_CLUSTER_AGG,
+        field: '',
+        fieldType: '',
+        json: '',
+        precision: CLUSTER_DEFAULT_PRECISION,
+        custom_label: '',
+        useCentroid: true,
+        changePrecision: true,
+      },
+    },
+    style: {
+      ...getStyleColor(),
+      borderThickness: CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS,
+      fillType: CLUSTER_DEFAULT_FILL_TYPE,
+      palette: CLUSTER_DEFAULT_PALETTE,
     },
   },
 });

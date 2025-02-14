@@ -16,11 +16,7 @@ import {
 } from '../../../../../src/plugins/data/common';
 import { GeoBounds } from '../map/boundary';
 
-export const buildBBoxFilter = (
-  fieldName: string,
-  mapBounds: GeoBounds,
-  filterMeta: FilterMeta
-): GeoBoundingBoxFilter => {
+export const buildBoundingBox = (mapBounds: GeoBounds) => {
   const bottomRight: LatLon = {
     lon: mapBounds.bottomRight.lng,
     lat: mapBounds.bottomRight.lat,
@@ -31,10 +27,18 @@ export const buildBBoxFilter = (
     lat: mapBounds.topLeft.lat,
   };
 
-  const boundingBox = {
+  return {
     bottom_right: bottomRight,
     top_left: topLeft,
   };
+};
+
+export const buildBBoxFilter = (
+  fieldName: string,
+  mapBounds: GeoBounds,
+  filterMeta: FilterMeta
+): GeoBoundingBoxFilter => {
+  const boundingBox = buildBoundingBox(mapBounds);
   return {
     meta: {
       ...filterMeta,
