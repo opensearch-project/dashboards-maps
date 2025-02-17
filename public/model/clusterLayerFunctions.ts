@@ -8,25 +8,19 @@ import { convertGeoPointToGeoJSON } from '../utils/geo_formater';
 import { Map as Maplibre } from 'maplibre-gl';
 import {
   addCircleLayer,
-  hasLayer,
-  updateCircleLayer,
-  hasSymbolLayer,
-  createClusterLayerSymbolSpecification,
-  updateSymbolLayer,
   addSymbolLayer,
+  createClusterLayerSymbolSpecification,
+  hasLayer,
+  hasSymbolLayer,
+  updateCircleLayer,
+  updateSymbolLayer,
 } from './map/layer_operations';
-import { MaplibreRef, getMaplibreAboveLayerId } from './layersFunctions';
-import {
-  decodeGeoHash,
-  decodeGeoTile,
-  decodeGeoHex,
-  latLngToBoundsToRadius,
-  metersToPixel,
-} from '../utils/decode';
-import { Palettes, MetricAggregations } from '../components/layer_config/cluster_config/config';
+import { getMaplibreAboveLayerId, MaplibreRef } from './layersFunctions';
+import { decodeGeoHash, decodeGeoHex, decodeGeoTile, latLngToBoundsToRadius, metersToPixel } from '../utils/decode';
+import { MetricAggregations, Palettes } from '../components/layer_config/cluster_config/config';
 import d3 from 'd3';
 import { getFormatService } from '../services';
-import { MapsLegendHandle } from '../components/map_container/legend';
+import { LegendOption, MapsLegendHandle } from '../components/map_container/legend';
 import { cellToBoundary, greatCircleDistance, UNITS } from 'h3-js';
 
 const getLayerSource = (
@@ -37,7 +31,7 @@ const getLayerSource = (
 ) => {
   const { useCentroid, agg } = layerConfig.source.cluster;
   const buckets = data[2].buckets;
-  //If there is not value, that means the metric agg type is count, use doc_count
+  //If there is no value, that means the metric agg type is count, use doc_count
   const bucketsValueArr = buckets.map((item: any) => item?.[1]?.value ?? item.doc_count);
   const maxBucketValue = Math.max.apply(null, bucketsValueArr);
   const minBucketValue = Math.min.apply(null, bucketsValueArr);
@@ -58,7 +52,7 @@ const getLayerSource = (
   buckets.forEach((item: any) => {
     const { doc_count, key } = item;
     let location;
-    //If there is not value, that means the metric agg type is count, use doc_count
+    //If there is no value, that means the metric agg type is count, use doc_count
     const value = item?.[1]?.value ?? doc_count;
     if (useCentroid) {
       location = item[3].location;
@@ -208,7 +202,7 @@ const buildLegendOption = (
   layerConfig: ClusterLayerSpecification,
   legendColors: string[],
   legendQuantizer: d3.scale.Quantize<unknown>
-) => {
+): LegendOption => {
   const { agg, fieldType, custom_label, field } = layerConfig.source.metric;
   const aggLabel = MetricAggregations.find((item) => item.value === agg)!.label;
   let title;
@@ -236,12 +230,11 @@ const buildLegendOption = (
       color,
     };
   });
-  const legendOption = {
+  return {
     id: layerConfig.id,
     title,
     list,
   };
-  return legendOption;
 };
 
 const getScaleRadius = (

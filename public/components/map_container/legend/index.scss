@@ -1,23 +1,71 @@
+@import '../../../_variables.scss';
+
 .maps-legends {
   z-index: 1;
   position: absolute;
-  bottom: 48px;
-  right: 8px;
-  background: rgba(255, 255, 255, 0.8);
+  right: calc(#{$euiSizeXXL} + #{$euiSizeM});
+  bottom: calc(#{$euiSizeXXL} + #{$euiSizeM});
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 4px;
   box-shadow: 0 6px 12px -1px rgba(65, 78, 101, 0.1), 0 4px 4px -1px rgba(65, 78, 101, 0.1),
   0 2px 2px 0 rgba(65, 78, 101, 0.1);
-  padding: 8px;
+  padding: $euiSizeS;
+  height: auto;
+  //min-height: 120px;
+  max-height: calc(100% - #{$euiSizeXXL} - #{$euiSizeXXL});
+  min-width: 180px;
+  max-width: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: auto;
+
+  /* Customize scrollbar for better visibility */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
   .legend-item {
     display: flex;
     align-items: center;
+    padding: 2px 0;
+    height: $euiSizeL;
   }
+
   .legend-title {
     font-weight: 700;
     font-size: 14px;
+    margin-bottom: $euiSizeS;
+    height: 20px;
   }
+
   .legend-label {
     font-weight: 400;
     font-size: 14px;
+    margin-left: $euiSizeXS;
+    word-break: break-word;
+    line-height: 20px;
   }
+}
+
+/* Handle embedded mode */
+:global(.embeddable-container) .maps-legends {
+  max-height: calc(100% - #{$euiSizeXXL} - #{$euiSizeXXL});
+  right: calc(#{$euiSizeXXL} + #{$euiSizeM});
+  bottom: calc(#{$euiSizeXXL} + #{$euiSizeM});
+  margin: 0;
+  z-index: 1000;
 }

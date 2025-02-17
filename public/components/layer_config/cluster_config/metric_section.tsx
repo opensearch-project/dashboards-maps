@@ -1,16 +1,15 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import {
-  EuiPanel,
-  EuiTitle,
-  EuiSpacer,
   EuiForm,
-  EuiComboBox,
-  EuiFormRow,
   EuiFieldText,
   EuiAccordion,
   EuiComboBoxOptionOption,
   EuiLink,
   EuiText,
+  EuiFlexGrid,
+  EuiFlexItem,
+  EuiCompressedFormRow,
+  EuiCompressedComboBox,
 } from '@elastic/eui';
 import { formatFieldStringToComboBox, getFieldsOptions } from '../../../utils/fields_options';
 import { IndexPattern } from '../../../../../../src/plugins/data/public';
@@ -111,88 +110,86 @@ export const MetricSection = ({
   }, [selectedLayerConfig]);
 
   return (
-    <EuiPanel paddingSize="s">
-      <EuiTitle size="xs">
-        <h3>
-          {i18n.translate('metricSection.title', {
-            defaultMessage: 'Metrics',
-          })}
-        </h3>
-      </EuiTitle>
-      <EuiSpacer size="s" />
-      <EuiForm style={{ padding: '0px 12px' }}>
-        <EuiFormRow
-          label={i18n.translate('metricSection.aggretedBy', {
-            defaultMessage: 'Aggregated by',
-          })}
-          labelAppend={
-            <EuiText size="xs">
-              <EuiLink href={docLinkInfo.link} target="_blank">
-                {docLinkInfo.label} help
-              </EuiLink>
-            </EuiText>
-          }
-        >
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            options={aggOptions}
-            selectedOptions={aggOptions.filter(
-              (agg) => agg.value === selectedLayerConfig.source.metric.agg
-            )}
-            onChange={onAggTypeChange}
-            isClearable={false}
-            compressed
-          />
-        </EuiFormRow>
-        {selectedLayerConfig.source.metric.agg !== 'count' ? (
-          <EuiFormRow
-            label="Field"
-            isInvalid={!isFieldValid}
-            data-test-subj={'metricFieldSelect'}
-            fullWidth={true}
-            error={'Required'}
+    <EuiForm>
+      <EuiFlexGrid columns={1}>
+        <EuiFlexItem>
+          <EuiCompressedFormRow
+            label={i18n.translate('metricSection.aggretedBy', {
+              defaultMessage: 'Aggregated by',
+            })}
+            labelAppend={
+              <EuiText size="xs">
+                <EuiLink href={docLinkInfo.link} target="_blank">
+                  {docLinkInfo.label} help
+                </EuiLink>
+              </EuiText>
+            }
           >
-            <EuiComboBox
-              options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
-              selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
-              singleSelection={true}
-              isInvalid={!isFieldValid}
-              onChange={onFieldChange}
-              sortMatchesBy="startsWith"
-              placeholder={i18n.translate('metricSection.selectDataFieldPlaceholder', {
-                defaultMessage: 'Select field',
-              })}
-              data-test-subj={'metricFieldSelect'}
-              fullWidth={true}
+            <EuiCompressedComboBox
+              singleSelection={{ asPlainText: true }}
+              options={aggOptions}
+              selectedOptions={aggOptions.filter(
+                (agg) => agg.value === selectedLayerConfig.source.metric.agg
+              )}
+              onChange={onAggTypeChange}
               isClearable={false}
               compressed
             />
-          </EuiFormRow>
-        ) : null}
-
-        <EuiFormRow label="Custom label" isInvalid={false} fullWidth={true}>
-          <EuiFieldText
-            value={selectedLayerConfig.source.metric.custom_label}
-            onChange={(e) => handleMetricAggChange({ custom_label: e.target.value })}
-            compressed
-            placeholder={i18n.translate('metricSection.addCustomLabel', {
-              defaultMessage: 'Add a custom label',
-            })}
-          />
-        </EuiFormRow>
-        <EuiSpacer size="s" />
-        {selectedLayerConfig.source.metric.agg !== 'count' ? (
-          <EuiAccordion id="advanced" buttonContent="Advanced" initialIsOpen={!isJsonValid}>
-            <EuiFormRow isInvalid={false} fullWidth={true}>
-              <JsonEditor
-                value={selectedLayerConfig.source.metric.json}
-                setValue={(value) => handleMetricAggChange({ json: value })}
-                setValidity={setJsonValid}
+          </EuiCompressedFormRow>
+        </EuiFlexItem>
+        {selectedLayerConfig.source.metric.agg !== 'count' && (
+          <EuiFlexItem>
+            <EuiCompressedFormRow
+              label="Field"
+              isInvalid={!isFieldValid}
+              data-test-subj={'metricFieldSelect'}
+              fullWidth={true}
+              error={'Required'}
+            >
+              <EuiCompressedComboBox
+                options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
+                selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
+                singleSelection={true}
+                isInvalid={!isFieldValid}
+                onChange={onFieldChange}
+                sortMatchesBy="startsWith"
+                placeholder={i18n.translate('metricSection.selectDataFieldPlaceholder', {
+                  defaultMessage: 'Select field',
+                })}
+                data-test-subj={'metricFieldSelect'}
+                fullWidth={true}
+                isClearable={false}
+                compressed
               />
-            </EuiFormRow>
-          </EuiAccordion>
-        ) : null}
-      </EuiForm>
-    </EuiPanel>
+            </EuiCompressedFormRow>
+          </EuiFlexItem>
+        )}
+        <EuiFlexItem>
+          <EuiCompressedFormRow label="Custom label" fullWidth={true}>
+            <EuiFieldText
+              value={selectedLayerConfig.source.metric.custom_label}
+              onChange={(e) => handleMetricAggChange({ custom_label: e.target.value })}
+              compressed
+              placeholder={i18n.translate('metricSection.addCustomLabel', {
+                defaultMessage: 'Add a custom label',
+              })}
+            />
+          </EuiCompressedFormRow>
+        </EuiFlexItem>
+        {selectedLayerConfig.source.metric.agg !== 'count' && (
+          <EuiFlexItem>
+            <EuiAccordion id="advanced" buttonContent="Advanced" initialIsOpen={!isJsonValid}>
+              <EuiCompressedFormRow fullWidth={true}>
+                <JsonEditor
+                  value={selectedLayerConfig.source.metric.json}
+                  setValue={(value) => handleMetricAggChange({ json: value })}
+                  setValidity={setJsonValid}
+                />
+              </EuiCompressedFormRow>
+            </EuiAccordion>
+          </EuiFlexItem>
+        )}
+      </EuiFlexGrid>
+    </EuiForm>
   );
 };

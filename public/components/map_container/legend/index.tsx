@@ -2,8 +2,13 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { cloneDeep } from 'lodash';
 import { LegendList } from './legend_list';
 import './index.scss';
+import { MapLayerSpecification } from '../../../model/mapLayerType';
+import { DASHBOARDS_MAPS_LAYER_TYPE, LAYER_VISIBILITY } from '../../../../common';
 
-interface Props {}
+interface Props {
+  layers: MapLayerSpecification[];
+  zoom: number;
+}
 
 export interface LegendOption {
   id: string;
@@ -19,7 +24,7 @@ export interface MapsLegendHandle {
   deleteLegend: (id: string) => void;
 }
 
-const MapsLegend = forwardRef<MapsLegendHandle, Props>(({}, ref) => {
+const MapsLegend = forwardRef<MapsLegendHandle, Props>(({layers, zoom}, ref) => {
   const [legends, setLegends] = useState<LegendOption[]>([]);
   useImperativeHandle(
     ref,
@@ -42,7 +47,6 @@ const MapsLegend = forwardRef<MapsLegendHandle, Props>(({}, ref) => {
           }
           setLegends(newLegends);
         },
-        //delete legend when deleting a cluster layer
         deleteLegend: (layerId: string) => {
           const newLegends = cloneDeep(legends);
           const index = newLegends.findIndex((item) => item.id === layerId);
@@ -56,13 +60,32 @@ const MapsLegend = forwardRef<MapsLegendHandle, Props>(({}, ref) => {
     [legends, setLegends]
   );
 
-  return legends.length > 0 ? (
+  const visibleLegends = legends.filter(item => {
+    const layer = layers.find(l => l.id === item.id);
+    return layer &&
+      layer.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER &&
+      layer.visibility === LAYER_VISIBILITY.VISIBLE &&
+      zoom >= layer.zoomRange[0] &&
+      zoom <= layer.zoomRange[1];
+  });
+
+  if (visibleLegends.length === 0) {
+    return null;
+  }
+
+  return (
     <div className="maps-legends">
-      {legends.map((item, index) => {
-        return <LegendList legend={item} key={index} isLastOne={index === legends.length - 1} />;
+      {visibleLegends.map((item, index) => {
+        const layer = layers.find(l => l.id === item.id);
+        return <LegendList
+          legend={item}
+          key={index}
+          isLastOne={index === visibleLegends.length - 1}
+          layer={layer!}
+        />;
       })}
     </div>
-  ) : null;
+  );
 });
 
 export { MapsLegend };

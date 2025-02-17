@@ -1,11 +1,14 @@
-
 /*
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect } from 'react';
-import { EuiSpacer } from '@elastic/eui';
+import {
+  EuiSpacer,
+  EuiPanel,
+  EuiCollapsibleNavGroup,
+} from '@elastic/eui';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { TimeRange, IndexPattern } from '../../../../../../src/plugins/data/public';
 import { ClusterLayerSpecification } from '../../../model/mapLayerType';
@@ -85,20 +88,59 @@ export const ClusterLayerSource = ({
     setCanUpdateMap,
   };
 
-  return (
-    <>
-      <DataSourceSection
-        indexPattern={indexPattern}
-        setIndexPattern={setIndexPattern}
-        setCanUpdateMap={setCanUpdateMap}
-      />
-      <EuiSpacer size="s" />
-      <ClusterSection {...commonProps} />
+  const filterPanelInitialIsOpen =
+    selectedLayerConfig.source.filters?.length > 0 ||
+    selectedLayerConfig.source.useGeoBoundingBoxFilter;
 
-      <EuiSpacer size="s" />
-      <MetricSection {...commonProps} />
-      <EuiSpacer size="s" />
-      <FilterSection {...commonProps} />
-    </>
+  return (
+    <div>
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Data Source"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={true}
+        >
+          <DataSourceSection
+            indexPattern={indexPattern}
+            setIndexPattern={setIndexPattern}
+            setCanUpdateMap={setCanUpdateMap}
+          />
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+      <EuiSpacer size="m" />
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Cluster"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={true}
+        >
+          <ClusterSection {...commonProps} />
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+      <EuiSpacer size="m" />
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Metrics"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={true}
+        >
+          <MetricSection {...commonProps} />
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+      <EuiSpacer size="m" />
+      <EuiPanel paddingSize="s">
+        <EuiCollapsibleNavGroup
+          title="Filters"
+          titleSize="xxs"
+          isCollapsible={true}
+          initialIsOpen={filterPanelInitialIsOpen}
+        >
+          <FilterSection {...commonProps} />
+        </EuiCollapsibleNavGroup>
+      </EuiPanel>
+    </div>
   );
 };

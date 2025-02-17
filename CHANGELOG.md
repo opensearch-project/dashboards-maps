@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased 3.0](https://github.com/opensearch-project/dashboards-maps/compare/2.x...HEAD)
 ### Features
+- Introduce cluster layer in maps-dashboards ([#703](https://github.com/opensearch-project/dashboards-maps/pull/703))
 ### Enhancements
 ### Bug Fixes
 - Fix layer config panel background color inconsistency ([#704](https://github.com/opensearch-project/dashboards-maps/pull/704))
