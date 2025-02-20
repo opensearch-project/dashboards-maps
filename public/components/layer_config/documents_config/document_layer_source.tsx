@@ -10,15 +10,14 @@ import {
   EuiFormLabel,
   EuiFlexGrid,
   EuiCompressedFieldNumber,
-  EuiFormErrorText,
   EuiCollapsibleNavGroup,
   EuiSpacer,
   EuiPanel,
-  EuiForm,
   EuiCompressedSwitch,
   EuiCompressedCheckbox,
   EuiCheckbox,
   EuiCompressedFormRow,
+  EuiFormRow,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -261,80 +260,82 @@ export const DocumentLayerSource = ({
           isCollapsible={true}
           initialIsOpen={true}
         >
-          <EuiForm>
-            <EuiFlexGrid columns={1}>
-              <EuiFlexItem>
-                <EuiCompressedFormRow
-                  label="Index pattern"
-                  isInvalid={!indexPattern}
-                  error={errorsMap.datasource}
-                  data-test-subj={'indexPatternSelect'}
-                  fullWidth={true}
-                >
-                  <IndexPatternSelect
-                    savedObjectsClient={savedObjectsClient}
-                    placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
-                      defaultMessage: 'Select index pattern',
-                    })}
-                    indexPatternId={indexPattern?.id || ''}
-                    onChange={async (newIndexPatternId: any) => {
-                      const newIndexPattern = await indexPatterns.get(newIndexPatternId);
-                      setIndexPattern(newIndexPattern);
-                    }}
-                    isClearable={false}
-                    data-test-subj={'indexPatternSelect'}
-                    fullWidth={true}
-                  />
-                </EuiCompressedFormRow>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiCompressedFormRow
-                  label="Geospatial field"
-                  isInvalid={!selectedField}
-                  error={errorsMap.geoFields}
-                  data-test-subj={'geoFieldSelect'}
-                  fullWidth={true}
-                >
-                  <EuiCompressedComboBox
-                    options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
-                    selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
-                    singleSelection={true}
-                    onChange={(option) => {
-                      const field = indexPattern?.getFieldByName(option[0]?.label);
-                      onGeoFieldChange(field || null);
-                    }}
-                    sortMatchesBy="startsWith"
-                    placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
-                      defaultMessage: 'Select data field',
-                    })}
-                    data-test-subj={'geoFieldSelect'}
-                    fullWidth={true}
-                    isClearable={false}
-                  />
-                </EuiCompressedFormRow>
-              </EuiFlexItem>
-              <EuiFlexItem>
-                <EuiFormLabel>Number of documents</EuiFormLabel>
-                <EuiSpacer size="xs" />
-                <EuiCompressedFieldNumber
-                  placeholder="Number of documents"
-                  value={selectedLayerConfig.source.documentRequestNumber}
-                  onChange={onDocumentRequestNumberChange}
-                  aria-label="Use aria labels when no actual label is in use"
-                  isInvalid={hasInvalidRequestNumber}
-                  fullWidth={true}
+          <EuiFormRow
+            label="Index pattern"
+            isInvalid={!indexPattern}
+            error={errorsMap.datasource}
+            fullWidth
+            data-test-subj={'indexPatternSelect'}
+          >
+            <IndexPatternSelect
+              savedObjectsClient={savedObjectsClient}
+              placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
+                defaultMessage: 'Select index pattern',
+              })}
+              indexPatternId={indexPattern?.id || ''}
+              onChange={async (newIndexPatternId: any) => {
+                const newIndexPattern = await indexPatterns.get(newIndexPatternId);
+                setIndexPattern(newIndexPattern);
+              }}
+              isClearable={false}
+              data-test-subj={'indexPatternSelect'}
+              fullWidth={true}
+              isInvalid={!indexPattern}
+            />
+          </EuiFormRow>
+
+          <EuiSpacer size="s" />
+
+          <EuiFormRow
+            label="Geospatial field"
+            isInvalid={!selectedField}
+            error={errorsMap.geoFields}
+            fullWidth
+            data-test-subj={'geoFieldSelect'}
+          >
+            <EuiCompressedComboBox
+              options={getFieldsOptions(indexPattern, acceptedFieldTypes)}
+              selectedOptions={formatFieldStringToComboBox(selectedField?.displayName)}
+              singleSelection={true}
+              onChange={(option) => {
+                const field = indexPattern?.getFieldByName(option[0]?.label);
+                onGeoFieldChange(field || null);
+              }}
+              sortMatchesBy="startsWith"
+              placeholder={i18n.translate('documentLayer.selectDataFieldPlaceholder', {
+                defaultMessage: 'Select data field',
+              })}
+              data-test-subj={'geoFieldSelect'}
+              fullWidth={true}
+              isClearable={false}
+              isInvalid={!selectedField}
+            />
+          </EuiFormRow>
+
+          <EuiSpacer size="s" />
+
+          <EuiFormRow
+            label="Number of documents"
+            isInvalid={hasInvalidRequestNumber}
+            error={
+              hasInvalidRequestNumber && (
+                <FormattedMessage
+                  id="maps.documents.dataSource.errorMessage"
+                  defaultMessage="Must between 1 and 10000"
                 />
-                {hasInvalidRequestNumber && (
-                  <EuiFormErrorText>
-                    <FormattedMessage
-                      id="maps.documents.dataSource.errorMessage"
-                      defaultMessage="Must between 1 and 10000"
-                    />
-                  </EuiFormErrorText>
-                )}
-              </EuiFlexItem>
-            </EuiFlexGrid>
-          </EuiForm>
+              )
+            }
+            fullWidth
+          >
+            <EuiCompressedFieldNumber
+              placeholder="Number of documents"
+              value={selectedLayerConfig.source.documentRequestNumber}
+              onChange={onDocumentRequestNumberChange}
+              aria-label="Use aria labels when no actual label is in use"
+              isInvalid={hasInvalidRequestNumber}
+              fullWidth={true}
+            />
+          </EuiFormRow>
         </EuiCollapsibleNavGroup>
       </EuiPanel>
       <EuiSpacer size="m" />
