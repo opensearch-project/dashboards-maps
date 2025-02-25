@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bug Fixes
 - Fix layer config panel background color inconsistency ([#704](https://github.com/opensearch-project/dashboards-maps/pull/704))
 ### Infrastructure
+-  Increment version to 3.0.0-alpha1 ([#708](https://github.com/opensearch-project/dashboards-maps/pull/708))
 ### Documentation
 ### Maintenance
 ### Refactoring
