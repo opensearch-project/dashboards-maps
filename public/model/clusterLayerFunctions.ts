@@ -245,34 +245,44 @@ const getScaleRadius = (
   maplibreInstance: Maplibre,
   key: string
 ) => {
+  // Define min and max radius constraints (in pixels)
+  const MIN_RADIUS = 5;
+  const MAX_RADIUS = 50;
+  
   const { agg } = layerConfig.source.cluster;
+  let calculatedRadius;
+  let baseRadius;
+  
+  // Calculate the value scaling factor (using square root for better visual scaling)
+  const valueFactor = maxValue === 0 ? 1 : Math.pow(Math.abs(value) / Math.abs(maxValue), 0.5);
+  
   if (agg === 'geohash_grid') {
     const precisionBiasBase = 4;
     const precisionBiasNumerator = 200;
-
     const precision = layerConfig.source.cluster.precision;
-
-    const pct = Math.abs(value) / Math.abs(maxValue);
+    
     const zoomRadius = 0.5 * Math.pow(2, zoom);
     const precisionScale = precisionBiasNumerator / Math.pow(precisionBiasBase, precision);
-
-    // square root value percentage
-    const radius = Math.pow(pct, 0.5) * zoomRadius * precisionScale;
-    return radius;
+    
+    baseRadius = zoomRadius * precisionScale;
+    calculatedRadius = baseRadius * valueFactor;
   } else if (agg === 'geotile_grid') {
-    const { width, height } = maplibreInstance.getCanvas().style;
-    const widthNum = Number(width.replace('px', '')),
-      heightNum = Number(height.replace('px', ''));
+    // Get canvas dimensions more efficiently
+    const canvas = maplibreInstance.getCanvas();
+    const widthNum = canvas.width;
+    const heightNum = canvas.height;
+    
     const { lat, lon, z } = decodeGeoTile(key);
-    const radius = latLngToBoundsToRadius(lat, lon, Number(z), widthNum, heightNum),
-      radiusFactor = Math.pow(2, zoom - 1);
-    return radius * radiusFactor;
+    baseRadius = latLngToBoundsToRadius(lat, lon, Number(z), widthNum, heightNum) * Math.pow(2, zoom - 1);
+    calculatedRadius = baseRadius * valueFactor;
   } else {
     const boundary = cellToBoundary(key, false);
     const center = decodeGeoHex(key);
     const distance = greatCircleDistance([center.lat, center.lon], boundary[0], UNITS.m);
-    const pixel = metersToPixel(maplibreInstance.getZoom(), distance),
-      radiusFactor = 4;
-    return pixel * radiusFactor;
+    baseRadius = metersToPixel(maplibreInstance.getZoom(), distance) * 4;
+    calculatedRadius = baseRadius * valueFactor;
   }
+  
+  // Apply min/max constraints
+  return Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, calculatedRadius));
 };
