@@ -10,6 +10,7 @@ import {
 import { MapLayerSpecification } from './mapLayerType';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
+import { ClusterLayerFunctions } from './clusterLayerFunctions';
 import { CustomLayerFunctions } from './customLayerFunctions';
 import { MockMaplibreMap } from './map/__mocks__/map';
 import { MockLayer } from './map/__mocks__/layer';
@@ -54,24 +55,28 @@ describe('Exported objects', () => {
       opensearch_vector_tile_map: OSMLayerFunctions,
       documents: DocumentLayerFunctions,
       custom_map: CustomLayerFunctions,
+      cluster: ClusterLayerFunctions,
     });
 
     expect(layersTypeNameMap).toEqual({
       opensearch_vector_tile_map: 'OpenSearch map',
       documents: 'Documents',
       custom_map: 'Custom map',
+      cluster: 'Cluster',
     });
 
     expect(layersTypeIconMap).toEqual({
       opensearch_vector_tile_map: 'globe',
       documents: 'document',
       custom_map: 'globe',
+      cluster: 'heatmap',
     });
 
     expect(baseLayerTypeLookup).toEqual({
       opensearch_vector_tile_map: true,
       custom_map: true,
       documents: false,
+      cluster: false,
     });
   });
 });

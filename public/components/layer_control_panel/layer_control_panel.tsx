@@ -25,7 +25,7 @@ import './layer_control_panel.scss';
 import { isEqual } from 'lodash';
 import { i18n } from '@osd/i18n';
 import { MaplibreRef } from 'public/model/layersFunctions';
-import { IndexPattern } from '../../../../../src/plugins/data/public';
+import { IndexPattern, TimeRange } from '../../../../../src/plugins/data/public';
 import { AddLayerPanel } from '../add_layer_panel';
 import { LayerConfigPanel } from '../layer_config';
 import { MapLayerSpecification } from '../../model/mapLayerType';
@@ -36,6 +36,7 @@ import { MapState } from '../../model/mapState';
 import { moveLayers, removeLayers } from '../../model/map/layer_operations';
 import { DeleteLayerModal } from './delete_layer_modal';
 import { HideLayer } from './hide_layer_button';
+import { MapsLegendHandle } from '../map_container/legend';
 
 interface Props {
   maplibreRef: MaplibreRef;
@@ -49,6 +50,8 @@ interface Props {
   selectedLayerConfig: MapLayerSpecification | undefined;
   setSelectedLayerConfig: (layerConfig: MapLayerSpecification | undefined) => void;
   setIsUpdatingLayerRender: (isUpdatingLayerRender: boolean) => void;
+  timeRange?: TimeRange;
+  legendRef: React.RefObject<MapsLegendHandle>;
 }
 
 export const LayerControlPanel = memo(
@@ -61,6 +64,8 @@ export const LayerControlPanel = memo(
     selectedLayerConfig,
     setSelectedLayerConfig,
     setIsUpdatingLayerRender,
+    timeRange,
+    legendRef,
   }: Props) => {
     const { services } = useOpenSearchDashboards<MapServices>();
 
@@ -209,6 +214,7 @@ export const LayerControlPanel = memo(
       if (selectedDeleteLayer) {
         removeLayers(maplibreRef.current!, selectedDeleteLayer.id, true);
         removeLayer(selectedDeleteLayer.id);
+        legendRef?.current?.deleteLegend(selectedDeleteLayer.id);
         setIsDeleteLayerModalVisible(false);
         setSelectedDeleteLayer(undefined);
       }
@@ -386,6 +392,7 @@ export const LayerControlPanel = memo(
                   originLayerConfig={originLayerConfig}
                   setOriginLayerConfig={setOriginLayerConfig}
                   setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+                  timeRange={timeRange}
                 />
               )}
               <AddLayerPanel
