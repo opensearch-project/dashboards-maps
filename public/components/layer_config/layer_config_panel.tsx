@@ -31,6 +31,7 @@ import { DASHBOARDS_MAPS_LAYER_TYPE } from '../../../common';
 import { DocumentLayerConfigPanel } from './documents_config/document_layer_config_panel';
 import { layersTypeIconMap, layersTypeNameMap } from '../../model/layersFunctions';
 import { CustomMapConfigPanel } from './custom_map_config/custom_map_config_panel';
+import { ClusterLayerConfigPanel } from './cluster_config/cluster_layer_config_panel';
 
 interface Props {
   closeLayerConfigPanel: Function;
@@ -148,6 +149,14 @@ export const LayerConfigPanel = ({
             )}
             {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP && (
               <CustomMapConfigPanel
+                selectedLayerConfig={selectedLayerConfig}
+                setSelectedLayerConfig={setSelectedLayerConfig}
+                setIsUpdateDisabled={setIsUpdateDisabled}
+                isLayerExists={isLayerExists}
+              />
+            )}
+            {selectedLayerConfig.type === DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER && (
+              <ClusterLayerConfigPanel
                 selectedLayerConfig={selectedLayerConfig}
                 setSelectedLayerConfig={setSelectedLayerConfig}
                 setIsUpdateDisabled={setIsUpdateDisabled}

@@ -11,6 +11,7 @@ import {
 } from '../../common';
 import { OSMLayerFunctions } from './OSMLayerFunctions';
 import { DocumentLayerFunctions } from './documentLayerFunctions';
+import { ClusterLayerFunctions } from './clusterLayerFunctions';
 import {
   BaseLayerSpecification,
   DataLayerSpecification,
@@ -27,24 +28,28 @@ export const layersFunctionMap: { [key: string]: any } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: OSMLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DocumentLayerFunctions,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: CustomLayerFunctions,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: ClusterLayerFunctions,
 };
 
 export const layersTypeNameMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_NAME.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_NAME.DOCUMENTS,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_NAME.CUSTOM_MAP,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: DASHBOARDS_MAPS_LAYER_NAME.CLUSTER,
 };
 
 export const layersTypeIconMap: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: DASHBOARDS_MAPS_LAYER_ICON.OPENSEARCH_MAP,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: DASHBOARDS_MAPS_LAYER_ICON.CUSTOM_MAP,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: DASHBOARDS_MAPS_LAYER_ICON.CLUSTER,
 };
 
 export const baseLayerTypeLookup = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: true,
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: true,
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: false,
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: false,
 };
 
 export const getDataLayers = (layers: MapLayerSpecification[]): DataLayerSpecification[] => {

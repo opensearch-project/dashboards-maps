@@ -33,6 +33,7 @@ import { DrawFilterShapeHelper } from '../toolbar/spatial_filter/display_draw_he
 import { ShapeFilter } from '../../../../../src/plugins/data/common';
 import { DashboardProps } from '../map_page/map_page';
 import { MapsServiceErrorMsg } from './maps_messages';
+import { MapsLegend, MapsLegendHandle } from './legend';
 
 interface MapContainerProps {
   setLayers: (layers: MapLayerSpecification[]) => void;
@@ -69,6 +70,7 @@ export const MapContainer = ({
   addSpatialFilter,
 }: MapContainerProps) => {
   const { services } = useOpenSearchDashboards<MapServices>();
+  const legendRef = useRef<MapsLegendHandle>(null);
 
   function onError(e: unknown) {
     if (e instanceof MapsServiceError) {
@@ -139,10 +141,10 @@ export const MapContainer = ({
 
   // Handle map bounding box change, it should update the search if "request data around map extent" was enabled
   useEffect(() => {
-    // Rerender layers with 200ms debounce to avoid calling the search API too frequently, especially when
-    // resizing the window, the "moveend" event could be fired constantly
     const debouncedRenderLayers = debounce(() => {
-      renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+      if (maplibreRef.current) {
+        renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+      }
     }, 200);
 
     if (maplibreRef.current) {
@@ -154,7 +156,7 @@ export const MapContainer = ({
         maplibreRef.current.off('moveend', debouncedRenderLayers);
       }
     };
-  }, [layers, mapState, services]);
+  }, [layers, mapState, services, dashboardProps]);
 
   // Update data layers when state bar enable auto refresh
   useEffect(() => {
@@ -162,19 +164,23 @@ export const MapContainer = ({
     if (dashboardProps && dashboardProps.refreshConfig && !dashboardProps.refreshConfig.pause) {
       const { refreshConfig } = dashboardProps;
       intervalId = setInterval(() => {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+        if (maplibreRef.current) {
+          renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+        }
       }, refreshConfig.value);
     }
     return () => clearInterval(intervalId);
-  }, [dashboardProps?.refreshConfig]);
+  }, [dashboardProps?.refreshConfig, layers, mapState, services]);
 
   // Update data layers when global filter is updated
   useEffect(() => {
     if (!mapState?.spatialMetaFilters) {
       return;
     }
-    renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
-  }, [mapState.spatialMetaFilters]);
+    if (maplibreRef.current) {
+      renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+    }
+  }, [mapState.spatialMetaFilters, layers, mapState, services]);
 
   useEffect(() => {
     if (!mounted || layers.length <= 0) {
@@ -193,12 +199,13 @@ export const MapContainer = ({
             selectedLayerConfig as DataLayerSpecification,
             mapState,
             services,
-            maplibreRef
+            maplibreRef,
+            legendRef
           );
         }
         setSelectedLayerConfig(undefined);
       } else {
-        renderDataLayers(layers, mapState, services, maplibreRef, dashboardProps);
+        renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
         renderBaseLayers(layers, maplibreRef, services, onError);
         // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
         // after all layers are rendered.
@@ -248,6 +255,14 @@ export const MapContainer = ({
     }
   };
 
+  // Initial render of layers when map is mounted
+  useEffect(() => {
+    if (mounted && layers.length > 0 && maplibreRef.current) {
+      renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
+      renderBaseLayers(layers, maplibreRef, services, onError);
+    }
+  }, [mounted, layers.length]);
+
   return (
     <div className="map-main">
       {mounted && maplibreRef.current && <MapsFooter map={maplibreRef.current} zoom={zoom} />}
@@ -271,6 +286,7 @@ export const MapContainer = ({
           selectedLayerConfig={selectedLayerConfig}
           setSelectedLayerConfig={setSelectedLayerConfig}
           setIsUpdatingLayerRender={setIsUpdatingLayerRender}
+          legendRef={legendRef}
         />
       )}
       {mounted && tooltipState === TOOLTIP_STATE.DISPLAY_FEATURES && maplibreRef.current && (
@@ -293,6 +309,7 @@ export const MapContainer = ({
         )}
       </div>
       <div className="map-container" ref={mapContainer} />
+      <MapsLegend ref={legendRef} layers={layers} zoom={zoom}/>
     </div>
   );
 };

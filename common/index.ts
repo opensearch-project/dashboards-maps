@@ -70,6 +70,15 @@ export const MAP_SAVED_OBJECT_TYPE = 'map';
 // TODO: Replace with actual app icon
 export const MAPS_APP_ICON = 'gisApp';
 export const MAPS_VISUALIZATION_DESCRIPTION = 'Create map visualization with multiple layers';
+export const CLUSTER_DEFAULT_FILL_TYPE = 'gradient';
+export const CLUSTER_DEFAULT_PALETTE = 'blue';
+export const CLUSTER_MIN_BORDER_THICKNESS = 0;
+export const CLUSTER_MAX_BORDER_THICKNESS = 100;
+export const CLUSTER_DEFAULT_MARKER_BORDER_THICKNESS = 1;
+//This is a valid value in geohex,geotile and geohash aggregation.
+export const CLUSTER_DEFAULT_PRECISION = 2;
+export const CLUSTER_DEFAULT_METRIC_AGG = 'count';
+export const CLUSTER_DEFAULT_CLUSTER_AGG = 'geohash_grid';
 
 // Starting position [lng, lat] and zoom
 export const MAP_INITIAL_STATE = {
@@ -91,12 +100,14 @@ export enum DASHBOARDS_MAPS_LAYER_NAME {
   OPENSEARCH_MAP = 'OpenSearch map',
   DOCUMENTS = 'Documents',
   CUSTOM_MAP = 'Custom map',
+  CLUSTER = 'Cluster',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_TYPE {
   OPENSEARCH_MAP = 'opensearch_vector_tile_map',
   DOCUMENTS = 'documents',
   CUSTOM_MAP = 'custom_map',
+  CLUSTER = 'cluster',
 }
 
 export enum DASHBOARDS_CUSTOM_MAPS_LAYER_TYPE {
@@ -108,12 +119,14 @@ export enum DASHBOARDS_MAPS_LAYER_ICON {
   OPENSEARCH_MAP = 'globe',
   DOCUMENTS = 'document',
   CUSTOM_MAP = 'globe',
+  CLUSTER = 'heatmap',
 }
 
 export enum DASHBOARDS_MAPS_LAYER_DESCRIPTION {
   OPENSEARCH_MAP = 'Use default OpenSearch basemaps.',
   DOCUMENTS = 'View points, lines, and polygons on the map.',
   CUSTOM_MAP = 'Configure maps to use a custom map source.',
+  CLUSTER = 'Geospatial data grouped to show density.',
 }
 
 export const DOCUMENTS = {
@@ -121,6 +134,13 @@ export const DOCUMENTS = {
   type: DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS,
   icon: DASHBOARDS_MAPS_LAYER_ICON.DOCUMENTS,
   description: DASHBOARDS_MAPS_LAYER_DESCRIPTION.DOCUMENTS,
+};
+
+export const CLUSTER = {
+  name: DASHBOARDS_MAPS_LAYER_NAME.CLUSTER,
+  type: DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER,
+  icon: DASHBOARDS_MAPS_LAYER_ICON.CLUSTER,
+  description: DASHBOARDS_MAPS_LAYER_DESCRIPTION.CLUSTER,
 };
 
 export const OPENSEARCH_MAP_LAYER = {
@@ -153,6 +173,7 @@ export const LAYER_ICON_TYPE_MAP: { [key: string]: string } = {
   [DASHBOARDS_MAPS_LAYER_TYPE.OPENSEARCH_MAP]: 'globe',
   [DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS]: 'document',
   [DASHBOARDS_MAPS_LAYER_TYPE.CUSTOM_MAP]: 'globe',
+  [DASHBOARDS_MAPS_LAYER_TYPE.CLUSTER]: 'heatmap',
 };
 
 // refer https://github.com/opensearch-project/i18n-plugin/blob/main/DEVELOPER_GUIDE.md#new-locale for OSD supported languages
