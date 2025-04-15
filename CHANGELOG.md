@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 ### Enhancements
 ### Bug Fixes
+- Fix overlapping data labels on map layer ([#718](https://github.com/opensearch-project/dashboards-maps/pull/718))
 ### Infrastructure
 ### Documentation
 ### Maintenance

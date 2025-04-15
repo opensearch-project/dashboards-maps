@@ -302,7 +302,6 @@ export const updateSymbolLayer = (
   map.setLayoutProperty(symbolLayerId, 'text-size', specification.textSize);
   map.setPaintProperty(symbolLayerId, 'text-halo-width', specification.symbolBorderWidth);
   map.setPaintProperty(symbolLayerId, 'text-halo-color', specification.symbolBorderColor);
-  map.setLayoutProperty(symbolLayerId, 'text-allow-overlap', true);
   return symbolLayerId;
 };
 
