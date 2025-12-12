@@ -4,10 +4,12 @@ on:
     branches:
       - main
       - 2.*
+      - 3.*
   pull_request:
     branches:
       - main
       - 2.*
+      - 3.*
       - feature/**
 
 env:
