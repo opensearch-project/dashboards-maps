@@ -1,6 +1,6 @@
 {
   "name": "customImportMap",
-  "version": "3.4.0.0",
+  "version": "3.5.0.0",
   "license": "Apache-2.0",
   "config": {
     "id": "customImportMapDashboards"
