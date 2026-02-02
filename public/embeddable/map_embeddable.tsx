@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import { Subscription } from 'rxjs';
 import { MAP_SAVED_OBJECT_TYPE, MAPS_APP_ID } from '../../common';
 import {
@@ -53,6 +53,7 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
   public readonly type = MAP_EMBEDDABLE;
   private subscription: Subscription;
   private node?: HTMLElement;
+  private root?: Root;
   private readonly services: any;
   constructor(
     initialInput: MapInput,
@@ -83,10 +84,11 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
 
   public render(node: HTMLElement) {
     this.node = node;
-    if (this.node) {
-      ReactDOM.unmountComponentAtNode(this.node);
+    if (this.root) {
+      this.root.unmount();
     }
-    ReactDOM.render(<MapEmbeddableComponent embeddable={this} />, node);
+    this.root = createRoot(node);
+    this.root.render(<MapEmbeddableComponent embeddable={this} />);
   }
 
   public reload() {
@@ -98,8 +100,8 @@ export class MapEmbeddable extends Embeddable<MapInput, MapOutput> {
   public destroy() {
     super.destroy();
     this.subscription.unsubscribe();
-    if (this.node) {
-      ReactDOM.unmountComponentAtNode(this.node);
+    if (this.root) {
+      this.root.unmount();
     }
   }
   public getServiceSettings() {

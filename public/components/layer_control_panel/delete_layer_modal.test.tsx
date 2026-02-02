@@ -5,20 +5,19 @@
 
 import { DeleteLayerModal } from './delete_layer_modal';
 import React from 'react';
-import { EuiConfirmModal } from '@elastic/eui';
-import TestRenderer from 'react-test-renderer';
+import { render, screen } from '@testing-library/react';
 
 describe('test delete layer modal', function () {
-  it('should show modal', function () {
-    const deleteLayerModal = TestRenderer.create(
-      <DeleteLayerModal layerName={'test-layer'} onCancel={() => {}} onConfirm={() => {}} />
-    );
-    const testInstance = deleteLayerModal.root;
-    //expect(testInstance.findByType(EuiConfirmModal).props.title).toBe('Delete layer');
-    expect(testInstance.findByType(EuiConfirmModal).props.title.props.children.props.children).toBe('Delete layer');
-    expect(testInstance.findByType(EuiConfirmModal).props.confirmButtonText).toBe('Delete');
-    expect(testInstance.findByType(EuiConfirmModal).props.cancelButtonText).toBe('Cancel');
-    expect(testInstance.findByType(EuiConfirmModal).props.buttonColor).toBe('danger');
-    expect(testInstance.findByType(EuiConfirmModal).props.defaultFocusedButton).toBe('confirm');
+  it('should show modal', () => {
+    const onCancel = jest.fn();
+    const onConfirm = jest.fn();
+    
+    render(<DeleteLayerModal layerName={'test-layer'} onCancel={onCancel} onConfirm={onConfirm} />);
+    
+    expect(screen.getByText('Delete layer')).toBeTruthy();
+    expect(screen.getByText(/Do you want to delete layer/)).toBeTruthy();
+    expect(screen.getByText('test-layer')).toBeTruthy();
+    expect(screen.getByText('Delete')).toBeTruthy();
+    expect(screen.getByText('Cancel')).toBeTruthy();
   });
 });
