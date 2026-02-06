@@ -19,7 +19,6 @@ Object {
               class="euiTitle euiTitle--small euiCard__title"
               id="generated-idTitle"
             />
-            
             <div
               class="euiCard__children"
             >
@@ -242,7 +241,6 @@ Object {
             class="euiTitle euiTitle--small euiCard__title"
             id="generated-idTitle"
           />
-          
           <div
             class="euiCard__children"
           >

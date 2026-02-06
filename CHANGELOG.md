@@ -16,5 +16,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Documentation
 
 ### Maintenance
+* React 18 compatibility updates for dashboards-maps plugin [#789](https://github.com/opensearch-project/dashboards-maps/pull/789)
 
 ### Refactoring

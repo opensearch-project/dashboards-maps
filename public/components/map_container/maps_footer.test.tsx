@@ -4,19 +4,21 @@
  */
 
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { createRoot, Root } from 'react-dom/client';
+import { act } from '@testing-library/react';
 
 import { MapsFooter } from './maps_footer';
 import { Map as Maplibre } from 'maplibre-gl';
 
 let container: Element | null;
+let root: Root;
 let mockMap: Maplibre;
 const mockCallbackMap: Map<string, () => void> = new Map<string, () => void>();
 beforeEach(() => {
   // setup a DOM element as a render target
   container = document.createElement('div');
   document.body.appendChild(container);
+  root = createRoot(container);
   mockCallbackMap.clear();
   mockMap = ({
     on: (eventType: string, callback: () => void) => {
@@ -30,14 +32,16 @@ beforeEach(() => {
 
 afterEach(() => {
   // cleanup on exiting
-  unmountComponentAtNode(container!);
+  act(() => {
+    root.unmount();
+  });
   container?.remove();
   container = null;
 });
 
 it('renders map footer', () => {
   act(() => {
-    render(<MapsFooter map={mockMap} zoom={2} />, container);
+    root.render(<MapsFooter map={mockMap} zoom={2} />);
   });
   expect(container?.textContent).toBe('zoom: 2');
   expect(mockCallbackMap.size).toEqual(1);
@@ -45,8 +49,10 @@ it('renders map footer', () => {
 
 it('clean up is called', () => {
   act(() => {
-    render(<MapsFooter map={mockMap} zoom={4} />, container);
+    root.render(<MapsFooter map={mockMap} zoom={4} />);
   });
-  unmountComponentAtNode(container!);
+  act(() => {
+    root.unmount();
+  });
   expect(mockCallbackMap.size).toEqual(0);
 });
