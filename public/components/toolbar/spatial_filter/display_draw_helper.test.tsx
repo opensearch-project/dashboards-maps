@@ -20,22 +20,26 @@ jest.mock('maplibre-gl', () => ({
 import { DrawFilterShapeHelper } from './display_draw_helper';
 import React from 'react';
 import { FILTER_DRAW_MODE } from '../../../../common';
-import { act } from 'react-dom/test-utils';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { act } from '@testing-library/react';
+import { createRoot, Root } from 'react-dom/client';
 import TestRenderer from 'react-test-renderer';
 import { EuiButton } from '@elastic/eui';
 
 let container: Element | null;
+let root: Root;
 
 beforeEach(() => {
   // setup a DOM element as a render target
   container = document.createElement('div');
   document.body.appendChild(container);
+  root = createRoot(container);
 });
 
 afterEach(() => {
   // cleanup on exiting
-  unmountComponentAtNode(container!);
+  act(() => {
+    root.unmount();
+  });
   container?.remove();
   container = null;
 });
@@ -52,9 +56,8 @@ describe('test draw filter helper displays valid content', function () {
       },
     });
     act(() => {
-      render(
-        <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.POLYGON} onCancel={mockCallback} map={map} />,
-        container
+      root.render(
+        <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.POLYGON} onCancel={mockCallback} map={map} />
       );
     });
     expect(container?.textContent).toBe(
@@ -72,13 +75,12 @@ describe('test draw filter helper displays valid content', function () {
       },
     });
     act(() => {
-      render(
+      root.render(
         <DrawFilterShapeHelper
           mode={FILTER_DRAW_MODE.RECTANGLE}
           onCancel={mockCallback}
           map={map}
-        />,
-        container
+        />
       );
     });
     expect(container?.textContent).toBe(
@@ -96,14 +98,13 @@ describe('test draw filter helper displays valid content', function () {
       },
     });
     act(() => {
-      render(
-        <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.NONE} onCancel={mockCallback} map={map} />,
-        container
+      root.render(
+        <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.NONE} onCancel={mockCallback} map={map} />
       );
     });
     expect(container?.textContent).toBe('');
   });
-  it('check cancel is called', () => {
+  it('check cancel is called', async () => {
     const mockCallback = jest.fn();
     const map = new MapLibre({
       container: document.createElement('div'),
@@ -113,11 +114,18 @@ describe('test draw filter helper displays valid content', function () {
         sources: {},
       },
     });
-    const helper = TestRenderer.create(
-      <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.POLYGON} onCancel={mockCallback} map={map} />
-    );
+    let helper;
+    await act(async () => {
+      helper = TestRenderer.create(
+        <DrawFilterShapeHelper mode={FILTER_DRAW_MODE.POLYGON} onCancel={mockCallback} map={map} />
+      );
+    });
     const button = helper.root.findByType(EuiButton);
     button.props.onClick();
     expect(mockCallback).toBeCalledTimes(1);
+    
+    await act(async () => {
+      helper.unmount();
+    });
   });
 });

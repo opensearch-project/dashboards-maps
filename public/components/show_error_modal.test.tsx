@@ -25,11 +25,11 @@ describe('display error modal', () => {
     expect(tree.toJSON()).toMatchSnapshot();
   });
 
-  it('renders the error modal when showModal button is clicked', () => {
+  it('renders the error modal when showModal button is clicked', async () => {
     render(<ShowErrorModal {...props} />);
     const button = screen.getByRole('button');
     fireEvent.click(button);
-    const closeButton = screen.getByTestId('closeModal');
+    const closeButton = await screen.findByTestId('closeModal');
     fireEvent.click(closeButton);
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Popup, MapGeoJSONFeature, LngLat } from 'maplibre-gl';
 
 import { MapLayerSpecification, DocumentLayerSpecification } from '../../model/mapLayerType';
@@ -88,15 +88,15 @@ export function createPopup({
   }
 
   const div = document.createElement('div');
-  ReactDOM.render(
+  const root = createRoot(div);
+  root.render(
     <TooltipContainer
       featureGroup={featureGroup}
       onClose={popup.remove}
       showCloseButton={showCloseButton}
       showPagination={showPagination}
       showLayerSelection={showLayerSelection}
-    />,
-    div
+    />
   );
 
   return popup.setDOMContent(div);

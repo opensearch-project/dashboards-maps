@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AppMountParameters } from '../../../src/core/public';
 import { MapServices } from './types';
 import { MapsDashboardsApp } from './components/app';
@@ -14,12 +14,12 @@ export const renderApp = (
   { element }: AppMountParameters,
   services: MapServices,
 ) => {
-  ReactDOM.render(
+  const root = createRoot(element);
+  root.render(
     <OpenSearchDashboardsContextProvider services={services}>
       <MapsDashboardsApp />
-    </OpenSearchDashboardsContextProvider>,
-    element
+    </OpenSearchDashboardsContextProvider>
   );
 
-  return () => ReactDOM.unmountComponentAtNode(element);
+  return () => root.unmount();
 };
