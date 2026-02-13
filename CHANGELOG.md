@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Enhancements
 
 ### Bug Fixes
+* Fixed filter by map extent ignored for geo_shape fields [798](https://github.com/opensearch-project/dashboards-maps/pull/798)
 
 ### Infrastructure
 
