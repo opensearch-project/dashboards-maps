@@ -221,7 +221,7 @@ const getGeoBoundingBoxFilter = (
     alias: null,
     disabled:
       !mapLayer.source.useGeoBoundingBoxFilter ||
-      (mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && geoFieldType !== 'geo_point'),
+      (mapLayer.type === DASHBOARDS_MAPS_LAYER_TYPE.DOCUMENTS && !['geo_point', 'geo_shape'].includes(geoFieldType)),
     negate: false,
     type: FILTERS.GEO_BOUNDING_BOX,
   };
