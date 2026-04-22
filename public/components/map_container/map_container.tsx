@@ -4,7 +4,11 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
+// Use the CSP-safe build so workers are loaded from a served URL instead of a
+// `blob:` URL, keeping us compliant with strict CSPs that disallow
+// `worker-src blob:`. The worker URL is configured once in the plugin's
+// `start()` lifecycle via `setWorkerUrl(...)`.
+import { Map as Maplibre, NavigationControl } from 'maplibre-gl/dist/maplibre-gl-csp';
 import { debounce, throttle } from 'lodash';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
 import { LayerControlPanel } from '../layer_control_panel';

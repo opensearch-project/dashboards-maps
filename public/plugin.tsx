@@ -4,6 +4,7 @@
  */
 import { i18n } from '@osd/i18n';
 import React from 'react';
+import { setWorkerUrl } from 'maplibre-gl/dist/maplibre-gl-csp';
 import {
   AppMountParameters,
   CoreSetup,
@@ -189,6 +190,15 @@ export class CustomImportMapPlugin
   }
 
   public start(core: CoreStart, { data }: AppPluginStartDependencies): CustomImportMapPluginStart {
+    // Configure maplibre's CSP-safe build once, before any Map is constructed,
+    // so workers load from our shipped static asset (under `public/assets/`)
+    // instead of a `blob:` URL — required by strict CSPs that disallow
+    // `worker-src blob:`.
+    setWorkerUrl(
+      core.http.basePath.prepend(
+        '/plugins/customImportMapDashboards/assets/maplibre-gl-csp-worker.js'
+      )
+    );
     setTimeFilter(data.query.timefilter.timefilter);
     setFormatService(data.fieldFormats);
     return {};
