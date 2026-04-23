@@ -99,8 +99,7 @@ export class CustomImportMapPlugin
       },
     });
 
-    const enableIconSideNav = core.uiSettings.get('home:enableIconSideNav', false);
-    if (!enableIconSideNav) {
+    if (!core.chrome.getIsIconSideNavEnabled()) {
       core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.observability, [{
         id: MAPS_APP_ID,
         category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
