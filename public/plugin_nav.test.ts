@@ -45,6 +45,9 @@ describe('CustomImportMapPlugin nav registration', () => {
   beforeEach(() => {
     coreSetup = coreMock.createSetup();
     coreSetup.chrome.navGroup.getNavGroupEnabled.mockReturnValue(true);
+    if (!coreSetup.chrome.getIsIconSideNavEnabled) {
+      coreSetup.chrome.getIsIconSideNavEnabled = jest.fn();
+    }
     const initializerContext = coreMock.createPluginInitializerContext();
     plugin = new CustomImportMapPlugin(initializerContext);
   });
