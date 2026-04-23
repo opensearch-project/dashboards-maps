@@ -7,6 +7,18 @@ import { coreMock } from '../../../src/core/public/mocks';
 import { DEFAULT_APP_CATEGORIES, DEFAULT_NAV_GROUPS } from '../../../src/core/utils';
 import { CustomImportMapPlugin } from './plugin';
 
+jest.mock('@osd/monaco', () => ({
+  monaco: {
+    languages: {
+      CompletionItemKind: { Function: 1, Field: 4, Module: 6, Operator: 12, Keyword: 14 },
+      CompletionItemInsertTextRule: { InsertAsSnippet: 4 },
+      registerCompletionItemProvider: jest.fn(),
+    },
+    editor: { create: jest.fn(), defineTheme: jest.fn() },
+    Range: jest.fn(),
+  },
+}));
+
 // Mock dynamic imports and dependencies
 jest.mock('./application', () => ({
   renderApp: jest.fn(() => jest.fn()),
