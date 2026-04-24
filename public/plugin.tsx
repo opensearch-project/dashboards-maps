@@ -99,11 +99,13 @@ export class CustomImportMapPlugin
       },
     });
 
-    core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.observability, [{
-      id: MAPS_APP_ID,
-      category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
-      order: 200,
-    }]);
+    if (!core.chrome.getIsIconSideNavEnabled()) {
+      core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.observability, [{
+        id: MAPS_APP_ID,
+        category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
+        order: 200,
+      }]);
+    }
     core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [{
       id: MAPS_APP_ID,
       category: DEFAULT_APP_CATEGORIES.visualizeAndReport,
