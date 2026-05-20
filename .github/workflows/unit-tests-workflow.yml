@@ -2,116 +2,73 @@ name: Unit tests workflow
 on:
   push:
     branches:
-      - main
-      - 2.*
-      - 3.*
+      - "*"
   pull_request:
     branches:
-      - main
-      - 2.*
-      - 3.*
-      - feature/**
-
+      - "*"
 env:
-  OPENSEARCH_DASHBOARDS_BRANCH: ${{ github.base_ref || github.ref_name }}
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 jobs:
   Get-CI-Image-Tag:
     uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@main
     with:
       product: opensearch-dashboards
 
-  tests-linux:
-    needs: Get-CI-Image-Tag
+  build-and-test:
     name: Run unit tests
-    runs-on: ubuntu-latest
-    container:
-      # using the same image which is used by opensearch-build team to build the OpenSearch Distribution
-      # this image tag is subject to change as more dependencies and updates will arrive over time
-      image: ${{ needs.Get-CI-Image-Tag.outputs.ci-image-version-linux }}
-      # need to switch to root so that github actions can install runner binary on container without permission issues.
-      options: --user root
-
-    steps:
-      - name: Checkout Plugin
-        uses: actions/checkout@v3
-        with:
-          path: dashboards-maps
-
-      - name: Checkout OpenSearch Dashboards
-        uses: actions/checkout@v3
-        with:
-          repository: opensearch-project/OpenSearch-Dashboards
-          ref: ${{ env.OPENSEARCH_DASHBOARDS_BRANCH }}
-          path: OpenSearch-Dashboards
-
-      - name: Move plugin to OpenSearch-Dashboard Plugins Directory
-        run: mv dashboards-maps OpenSearch-Dashboards/plugins/dashboards-maps
-
-      - name: Bootstrap plugin
-        run: |
-          chown -R 1000:1000 `pwd`
-          cd ./OpenSearch-Dashboards/
-          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
-                               cd ./plugins/dashboards-maps &&
-                               whoami && yarn osd bootstrap --single-version=loose && yarn run test:jest --coverage"
-
-      - name: Uploads coverage
-        uses: codecov/codecov-action@v1
-
-  tests-windows-macos:
     strategy:
       matrix:
-        os: [ windows-latest, macos-latest ]
-
-    name: Run unit tests
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout Plugin
-        uses: actions/checkout@v3
-        with:
-          path: dashboards-maps
-
-      # Enable longer filenames for windows
+      - uses: actions/checkout@v4
+      - name: Set env
+        run: |
+          opensearch_version=$(node -p "require('./opensearch_dashboards.json').opensearchDashboardsVersion")
+          major_version=$(echo $opensearch_version | cut -d. -f1)
+          minor_version=$(echo $opensearch_version | cut -d. -f2)
+          branch_version=${major_version}.${minor_version}
+          opensearch_dashboards_branch=$branch_version
+          base_branch=${{ github.base_ref }}
+          if [ "$base_branch" = "main" ]; then
+            opensearch_dashboards_branch=main
+          fi
+          echo "OPENSEARCH_DASHBOARDS_BRANCH=$opensearch_dashboards_branch" >> $GITHUB_ENV
+        shell: bash
       - name: Enable longer filenames
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
-
-      - name: Checkout OpenSearch Dashboards
-        uses: actions/checkout@v3
+      - name: Checkout OpenSearch-Dashboards
+        uses: actions/checkout@v4
         with:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_BRANCH }}
           path: OpenSearch-Dashboards
-
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version-file: './OpenSearch-Dashboards/.nvmrc'
           registry-url: 'https://registry.npmjs.org'
-
       - name: Install Yarn
-        # Need to use bash to avoid having a windows/linux specific step
         shell: bash
         run: |
           YARN_VERSION=$(node -p "require('./OpenSearch-Dashboards/package.json').engines.yarn")
           echo "Installing yarn@$YARN_VERSION"
           npm i -g yarn@$YARN_VERSION
-
       - run: node -v
       - run: yarn -v
-
-      - name: Move plugin to OpenSearch-Dashboard Plugins Directory
-        run: mv dashboards-maps OpenSearch-Dashboards/plugins/dashboards-maps
-
-      - name: Bootstrap plugin
+      - name: Checkout dashboards-maps plugin
+        uses: actions/checkout@v4
+        with:
+          path: OpenSearch-Dashboards/plugins/dashboards-maps
+      - name: Bootstrap plugin/OpenSearch-Dashboards
         run: |
           cd OpenSearch-Dashboards/plugins/dashboards-maps
-          yarn osd bootstrap --single-version=loose
-
-      - name: Run tests with coverage
+          yarn osd bootstrap
+      - name: Run unit tests
         run: |
           cd OpenSearch-Dashboards/plugins/dashboards-maps
           yarn run test:jest --coverage
-
       - name: Uploads coverage
         uses: codecov/codecov-action@v1
