@@ -11,7 +11,7 @@ env:
 
 jobs:
   Get-CI-Image-Tag:
-    uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@main
+    uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@c2498b758c08fb7bc48476509a5fc1b8dd5f7493 # main
     with:
       product: opensearch-dashboards
 
@@ -22,7 +22,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Set env
         run: |
           opensearch_version=$(node -p "require('./opensearch_dashboards.json').opensearchDashboardsVersion")
@@ -40,13 +40,13 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
       - name: Checkout OpenSearch-Dashboards
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_BRANCH }}
           path: OpenSearch-Dashboards
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
         with:
           node-version-file: './OpenSearch-Dashboards/.nvmrc'
           registry-url: 'https://registry.npmjs.org'
@@ -59,7 +59,7 @@ jobs:
       - run: node -v
       - run: yarn -v
       - name: Checkout dashboards-maps plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           path: OpenSearch-Dashboards/plugins/dashboards-maps
       - name: Bootstrap plugin/OpenSearch-Dashboards
@@ -71,4 +71,4 @@ jobs:
           cd OpenSearch-Dashboards/plugins/dashboards-maps
           yarn run test:jest --coverage
       - name: Uploads coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@29386c70ef20e286228c72b668a06fd0e8399192 # v1
