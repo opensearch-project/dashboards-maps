@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Features
 
 ### Enhancements
-- Use `getIsIconSideNavEnabled` API for icon side nav registration gating ([#814](https://github.com/opensearch-project/dashboards-maps/pull/814))
 
 ### Bug Fixes
 
@@ -17,6 +16,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Documentation
 
 ### Maintenance
-- Fix linux workflow ([#818](https://github.com/opensearch-project/dashboards-maps/pull/818))
 
 ### Refactoring
