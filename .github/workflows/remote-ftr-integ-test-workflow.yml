@@ -5,8 +5,6 @@ on: [pull_request, push]
 env:
   PLUGIN_NAME: dashboards-maps
   OPENSEARCH_DASHBOARDS_VERSION: "main"
-  OPENSEARCH_VERSION: "3.1.0"
-  OPENSEARCH_PLUGIN_VERSION: "3.1.0.0"
 
 jobs:
   tests:
@@ -32,17 +30,53 @@ jobs:
           distribution: "corretto"
           java-version: "21"
 
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+        with:
+          path: OpenSearch-Dashboards
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          fetch-depth: 0
+          filter: |
+            cypress
+            test
+
+      - name: Get OpenSearch and plugin versions from package.json
+        id: versions
+        run: |
+          VERSION=$(node -p "require('./OpenSearch-Dashboards/package.json').version")
+          echo "OPENSEARCH_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "OPENSEARCH_PLUGIN_VERSION=${VERSION}.0-SNAPSHOT" >> $GITHUB_ENV
+          echo "OpenSearch version: $VERSION"
+          echo "Plugin version: ${VERSION}.0-SNAPSHOT"
+
+      - name: Get latest Job Scheduler snapshot version
+        id: job-scheduler-snapshot
+        run: |
+          METADATA_URL="https://ci.opensearch.org/ci/dbc/snapshots/maven/org/opensearch/plugin/opensearch-job-scheduler/${{ env.OPENSEARCH_PLUGIN_VERSION }}/maven-metadata.xml"
+          SNAPSHOT_VERSION=$(curl -s $METADATA_URL | grep '<value>' | head -1 | sed 's/.*<value>\(.*\)<\/value>.*/\1/')
+          echo "version=$SNAPSHOT_VERSION" >> $GITHUB_OUTPUT
+          echo "Job Scheduler snapshot version: $SNAPSHOT_VERSION"
+
       - name: Download Job Scheduler artifact
         uses: suisei-cn/actions-download-file@15306412d2c75df56b46844362b86b65235b7db1 # v1.4.0
         with:
-          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-job-scheduler&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          url: https://ci.opensearch.org/ci/dbc/snapshots/maven/org/opensearch/plugin/opensearch-job-scheduler/${{ env.OPENSEARCH_PLUGIN_VERSION }}/opensearch-job-scheduler-${{ steps.job-scheduler-snapshot.outputs.version }}.zip
           target: plugin-artifacts/
-          filename: job-scheduler.zip
+          filename: opensearch-job-scheduler.zip
+
+      - name: Get latest Geospatial snapshot version
+        id: geospatial-snapshot
+        run: |
+          METADATA_URL="https://ci.opensearch.org/ci/dbc/snapshots/maven/org/opensearch/plugin/geospatial/${{ env.OPENSEARCH_PLUGIN_VERSION }}/maven-metadata.xml"
+          SNAPSHOT_VERSION=$(curl -s $METADATA_URL | grep '<value>' | head -1 | sed 's/.*<value>\(.*\)<\/value>.*/\1/')
+          echo "version=$SNAPSHOT_VERSION" >> $GITHUB_OUTPUT
+          echo "Geospatial snapshot version: $SNAPSHOT_VERSION"
 
       - name: Download Geospatial artifact
         uses: suisei-cn/actions-download-file@15306412d2c75df56b46844362b86b65235b7db1 # v1.4.0
         with:
-          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=geospatial&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          url: https://ci.opensearch.org/ci/dbc/snapshots/maven/org/opensearch/plugin/geospatial/${{ env.OPENSEARCH_PLUGIN_VERSION }}/geospatial-${{ steps.geospatial-snapshot.outputs.version }}.zip
           target: plugin-artifacts/
           filename: opensearch-geospatial.zip
 
@@ -59,7 +93,7 @@ jobs:
 
       - name: Install Job Scheduler
         run: |
-          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/job-scheduler.zip"
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-job-scheduler.zip"
         shell: bash
 
       - name: Install geospatial plugin
@@ -76,17 +110,6 @@ jobs:
       - name: Check OpenSearch Running
         run: curl http://localhost:9200/
         shell: bash
-
-      - name: Checkout OpenSearch Dashboards
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
-        with:
-          path: OpenSearch-Dashboards
-          repository: opensearch-project/OpenSearch-Dashboards
-          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
-          fetch-depth: 0
-          filter: |
-            cypress
-            test
 
       - name: Checkout Dashboards Maps Plugin in OpenSearch Dashboards Plugins Dir
         uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
@@ -110,26 +133,48 @@ jobs:
           npm uninstall -g yarn
           echo "Installing yarn ${{ steps.tool-versions.outputs.yarn_version }}"
           npm i -g yarn@${{ steps.tool-versions.outputs.yarn_version }}
-          yarn cache clean
-        working-directory: OpenSearch-Dashboards
         shell: bash
 
-      - name: Boodstrap Opensearch Dashboards
+      - name: Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            OpenSearch-Dashboards/**/target
+            OpenSearch-Dashboards/**/node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('OpenSearch-Dashboards/**/yarn.lock') }}
+
+      - name: Configure OpenSearch Dashboards
+        run: |
+          rm -rf ./config/opensearch_dashboards.yml
+          cat << 'EOT' > ./config/opensearch_dashboards.yml
+          server.host: "0.0.0.0"
+          home.disableWelcomeScreen: true
+          home.disableExperienceModal: true
+          EOT
+        working-directory: OpenSearch-Dashboards
+
+      - name: Bootstrap Opensearch Dashboards
         run: |
           yarn osd bootstrap --single-version=loose
         working-directory: OpenSearch-Dashboards
 
-      - name: Run Opensearch Dashboards with Dashboards Maps Plugin Installed
+      - name: Compile OpenSearch Dashboards
         run: |
-          nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
+          node scripts/build_opensearch_dashboards_platform_plugins --no-examples --workers=10 --verbose
         working-directory: OpenSearch-Dashboards
 
-      - name: Wait OpenSearch Dashboards Compiled Completed
+      - name: Run Opensearch Dashboards with Dashboards Maps Plugin Installed
         run: |
-          if timeout 900 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
-            echo "OpenSearch Dashboards compiled successfully."
+          nohup yarn start --no-base-path --no-watch | tee dashboard.log &
+        working-directory: OpenSearch-Dashboards
+
+      - name: Check If OpenSearch Dashboards Is Ready
+        run: |
+          if timeout 1200 grep -q "http server running" <(tail -n +1 -f dashboard.log); then
+            echo "OpenSearch Dashboards started successfully."
           else
-            echo "Timeout for 900 seconds reached. OpenSearch Dashboards did not finish compiling."
+            echo "Timeout of 1200 seconds reached. OpenSearch Dashboards did not start successfully."
+            tail -100 dashboard.log
             exit 1
           fi
         working-directory: OpenSearch-Dashboards
