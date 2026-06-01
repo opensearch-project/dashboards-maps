@@ -39,7 +39,10 @@ describe('useIndexPatternFilter', () => {
 
   it('filters out index patterns linked to blocked data sources', async () => {
     const client = createMockSavedObjectsClient([
-      { id: 'ds-blocked', attributes: { dataSourceEngineType: 'OpenSearch' } },
+  const client = createMockSavedObjectsClient([
+    { id: 'ds-blocked', attributes: { dataSourceEngineType: 'AnalyticEngine' } },
+    { id: 'ds-allowed', attributes: { dataSourceEngineType: 'OpenSearch' } },
+  ]) as any;
       { id: 'ds-allowed', attributes: { dataSourceEngineType: 'AnalyticEngine' } },
     ]) as any;
 
