@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Enhancements
 
 ### Bug Fixes
+- Hide AnalyticEngine data source index patterns from layer config dropdowns ([#825](https://github.com/opensearch-project/dashboards-maps/pull/825))
 
 ### Infrastructure
 

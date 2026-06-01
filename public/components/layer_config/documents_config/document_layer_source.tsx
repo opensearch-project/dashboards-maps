@@ -18,6 +18,7 @@ import {
   EuiCheckbox,
   EuiCompressedFormRow,
   EuiFormRow,
+  EuiLoadingSpinner,
 } from '@elastic/eui';
 import { i18n } from '@osd/i18n';
 import { FormattedMessage } from '@osd/i18n/react';
@@ -30,6 +31,7 @@ import {
   formatFieldsStringToComboBox,
   getFieldsOptions,
 } from '../../../utils/fields_options';
+import { useIndexPatternFilter } from '../../../utils/use_index_pattern_filter';
 
 interface Props {
   setSelectedLayerConfig: Function;
@@ -64,6 +66,7 @@ export const DocumentLayerSource = ({
       },
     },
   } = useOpenSearchDashboards<MapServices>();
+  const { filter: indexPatternFilter, loading: indexPatternFilterLoading } = useIndexPatternFilter(savedObjectsClient);
   const [hasInvalidRequestNumber, setHasInvalidRequestNumber] = useState<boolean>(false);
   const [enableTooltips, setEnableTooltips] = useState<boolean>(
     selectedLayerConfig.source.showTooltips
@@ -267,21 +270,26 @@ export const DocumentLayerSource = ({
             fullWidth
             data-test-subj={'indexPatternSelect'}
           >
-            <IndexPatternSelect
-              savedObjectsClient={savedObjectsClient}
-              placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
-                defaultMessage: 'Select index pattern',
-              })}
-              indexPatternId={indexPattern?.id || ''}
-              onChange={async (newIndexPatternId: any) => {
-                const newIndexPattern = await indexPatterns.get(newIndexPatternId);
-                setIndexPattern(newIndexPattern);
-              }}
-              isClearable={false}
-              data-test-subj={'indexPatternSelect'}
-              fullWidth={true}
-              isInvalid={!indexPattern}
-            />
+            {indexPatternFilterLoading ? (
+              <EuiLoadingSpinner size="m" />
+            ) : (
+              <IndexPatternSelect
+                savedObjectsClient={savedObjectsClient}
+                placeholder={i18n.translate('documentLayer.selectDataSourcePlaceholder', {
+                  defaultMessage: 'Select index pattern',
+                })}
+                indexPatternId={indexPattern?.id || ''}
+                onChange={async (newIndexPatternId: any) => {
+                  const newIndexPattern = await indexPatterns.get(newIndexPatternId);
+                  setIndexPattern(newIndexPattern);
+                }}
+                isClearable={false}
+                data-test-subj={'indexPatternSelect'}
+                fullWidth={true}
+                isInvalid={!indexPattern}
+                indexPatternFilter={indexPatternFilter}
+              />
+            )}
           </EuiFormRow>
 
           <EuiSpacer size="s" />
