@@ -2,6 +2,31 @@ import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType'
 import { hasLayer, removeLayers } from './map/layer_operations';
 import { MaplibreRef } from './layersFunctions';
 
+/**
+ * Sanitizes attribution text by stripping all HTML tags except safe inline
+ * elements (a, b, i, em, strong, span) and removing event handler attributes.
+ */
+const sanitizeAttribution = (attribution: string | undefined): string => {
+  if (!attribution) return '';
+  // Strip all tags except basic safe inline elements
+  const allowedTags = /<\/?(a|b|i|em|strong|span)(\s[^>]*)?>/gi;
+  const allTags = /<\/?[^>]+(>|$)/g;
+  // First, remove event handlers from allowed tags
+  const cleaned = attribution.replace(/\s+on\w+\s*=\s*(['"])[^'"]*\1/gi, '');
+  // Remove all tags that aren't in allowlist
+  const parts: string[] = [];
+  let lastIndex = 0;
+  let match;
+  const tempCleaned = cleaned;
+  // Replace allowed tags with placeholders, strip the rest
+  const result = tempCleaned.replace(allTags, (tag) => {
+    return allowedTags.test(tag) ? tag.replace(/\s+on\w+\s*=\s*[^\s>]*/gi, '') : '';
+  });
+  // Reset regex lastIndex
+  allowedTags.lastIndex = 0;
+  return result;
+};
+
 const refreshLayer = (layerConfig: CustomLayerSpecification, maplibreRef: MaplibreRef) => {
   const maplibreInstance = maplibreRef.current;
   if (maplibreInstance) {
@@ -20,7 +45,7 @@ const addNewLayer = (layerConfig: CustomLayerSpecification, maplibreRef: Maplibr
       type: 'raster',
       tiles: [tilesURL],
       tileSize: 256,
-      attribution: layerSource?.attribution,
+      attribution: sanitizeAttribution(layerSource?.attribution),
     });
     // Convert zoomRange to number[] to avoid type error for backport versions
     const zoomRange: number[] = applyZoomRangeToLayer(layerConfig);
