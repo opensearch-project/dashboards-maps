@@ -20,7 +20,7 @@ jobs:
 
   tests-linux:
     needs: Get-CI-Image-Tag
-    name: Run unit tests
+    name: Run unit tests (ubuntu-latest)
     runs-on: ubuntu-latest
     container:
       # using the same image which is used by opensearch-build team to build the OpenSearch Distribution
