@@ -35,7 +35,7 @@ jobs:
           java-version: '21'
           
       - name: Run Opensearch
-        uses: opensearch-project/opensearch-build/.github/actions/start-opensearch@643b632712710159088d5f0798de7e91c1f2b8f7
+        uses: opensearch-project/opensearch-build/.github/actions/start-opensearch@3d9a524bbfc8128d96113cc578b462153f2ea8d4
         with:
           opensearch-version: ${{ env.OPENSEARCH_VERSION }}
           security-enabled: false
@@ -43,7 +43,7 @@ jobs:
 
       - name: Run Dashboards
         id: setup-dashboards
-        uses: opensearch-project/opensearch-build/.github/actions/setup-opensearch-dashboards@643b632712710159088d5f0798de7e91c1f2b8f7
+        uses: opensearch-project/opensearch-build/.github/actions/setup-opensearch-dashboards@3d9a524bbfc8128d96113cc578b462153f2ea8d4
         with:
           plugin_name: dashboards-maps
           built_plugin_name: customImportMapDashboards
