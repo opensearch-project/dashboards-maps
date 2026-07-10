@@ -27,7 +27,6 @@
     "h3-js": "^4.1.0",
     "install": "^0.13.0",
     "maplibre-gl": "5.2.0",
-    "uuid": "3.3.2",
     "wellknown": "^0.5.0"
   },
   "devDependencies": {}
