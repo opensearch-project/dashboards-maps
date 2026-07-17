@@ -80,6 +80,6 @@ describe('HideLayerButton', () => {
 
     expect(button.props.title).toBe('Show layer');
     expect(button.props.iconType).toBe('eye');
-    expect(updateLayerVisibility).toBeCalledTimes(1);
+    expect(updateLayerVisibility).toHaveBeenCalledTimes(1);
   });
 });

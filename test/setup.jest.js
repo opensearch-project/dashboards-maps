@@ -35,3 +35,21 @@ afterEach(() => {
   console.error.mockRestore();
 });
 window.URL.createObjectURL = function () {};
+
+// jest-location-mock uses process.env.HOST as the base URL for its window.location mock.
+// Set it to match testEnvironmentOptions.url so window.location.origin is 'http://localhost:5601'.
+process.env.HOST = 'http://localhost:5601';
+
+// jsdom 26 marks window.localStorage and window.sessionStorage as non-configurable.
+// Re-declare them as configurable once here so individual tests can override them
+// with Object.defineProperty without hitting "Cannot redefine property" errors.
+['localStorage', 'sessionStorage'].forEach((key) => {
+  const descriptor = Object.getOwnPropertyDescriptor(window, key);
+  if (descriptor && !descriptor.configurable) {
+    Object.defineProperty(window, key, {
+      configurable: true,
+      writable: true,
+      value: descriptor.value,
+    });
+  }
+});
