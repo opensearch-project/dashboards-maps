@@ -20,5 +20,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Maintenance
 - Adopt ESLint 10 / flat config ([#847](https://github.com/opensearch-project/dashboards-maps/pull/847))
 - Resolve transitive proprietary mapbox-gl dependency to maplibre-gl ([#849](https://github.com/opensearch-project/dashboards-maps/pull/849))
+- Migrate Jest test suite to Jest 30 + jsdom 26 ([#852](https://github.com/opensearch-project/dashboards-maps/pull/852))
 
 ### Refactoring
