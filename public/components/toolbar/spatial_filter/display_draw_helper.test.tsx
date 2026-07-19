@@ -122,7 +122,7 @@ describe('test draw filter helper displays valid content', function () {
     });
     const button = helper.root.findByType(EuiButton);
     button.props.onClick();
-    expect(mockCallback).toBeCalledTimes(1);
+    expect(mockCallback).toHaveBeenCalledTimes(1);
     
     await act(async () => {
       helper.unmount();
