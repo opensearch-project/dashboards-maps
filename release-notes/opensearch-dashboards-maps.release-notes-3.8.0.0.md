@@ -5,7 +5,8 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.8.0
 ### Bug Fixes
 
 * Use CSP-safe MapLibre build and expose worker as a static asset to fix maps in strict Content Security Policy environments ([#842](https://github.com/opensearch-project/dashboards-maps/pull/842))
-
+* Hide AnalyticEngine data source index patterns from layer config dropdowns ([#825](https://github.com/opensearch-project/dashboards-maps/pull/825))
+  
 ### Infrastructure
 
 * Adopt ESLint 10 flat config to align with OpenSearch Dashboards core linting setup ([#847](https://github.com/opensearch-project/dashboards-maps/pull/847))
