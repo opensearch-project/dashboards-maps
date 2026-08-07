@@ -68,6 +68,7 @@ export const getLayerConfigMap = () => ({
       ...getStyleColor(),
       borderThickness: DOCUMENTS_DEFAULT_MARKER_BORDER_THICKNESS,
       markerSize: DOCUMENTS_DEFAULT_MARKER_SIZE,
+      markerType: 'marker',
       label: {
         enabled: DOCUMENTS_DEFAULT_LABEL_ENABLES,
         textByFixed: '',

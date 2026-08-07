@@ -53,6 +53,15 @@ export type DocumentLayerSpecification = AbstractLayerSpecification & {
     borderColor: string;
     borderThickness: number;
     markerSize: number;
+    markerType?: 'marker' | 'icon';
+    iconConfig?: {
+      iconId: string;
+      iconSize?: number;
+      iconStyle?: 'filled' | 'outline';
+      fillColor?: string;
+      strokeColor?: string;
+      svg?: string;
+    };
     label?: {
       enabled: boolean;
       textByFixed: string;

@@ -6,5 +6,6 @@
 import geospatial from './geospatial';
 import opensearch from './opensearch';
 import { statsRoute } from './stats_router';
+import { iconRoute } from './icon_router';
 
-export { geospatial, opensearch, statsRoute };
+export { geospatial, opensearch, statsRoute, iconRoute };
