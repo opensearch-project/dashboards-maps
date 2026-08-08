@@ -211,9 +211,12 @@ export const MapContainer = ({
       } else {
         renderDataLayers(layers, mapState, services, maplibreRef, legendRef, dashboardProps);
         renderBaseLayers(layers, maplibreRef, services, onError);
-        // Because of async layer rendering, layers order is not guaranteed, so we need to order layers
-        // after all layers are rendered.
-        maplibreRef.current!.once('idle', orderLayersAfterRenderLoaded);
+        // Because of async layer rendering (e.g. raster basemap tiles loading after document
+        // layers), layer order is not guaranteed. Use on('idle') instead of once('idle') so
+        // that ordering is re-enforced each time the map settles, including after late tile
+        // loads. The orderLayers function skips reordering when the order is already correct,
+        // preventing infinite repaint loops.
+        maplibreRef.current!.on('idle', orderLayersAfterRenderLoaded);
       }
       setIsUpdatingLayerRender(false);
     }
