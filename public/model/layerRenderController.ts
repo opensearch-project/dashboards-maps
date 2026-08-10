@@ -281,15 +281,38 @@ export const renderBaseLayers = (
   });
 };
 
-// Order maplibre layers based on the order of dashboard-maps layers
+// Order maplibre layers based on the order of dashboard-maps layers.
+// Skips reordering if the layers are already in the correct order to avoid
+// triggering unnecessary repaints (which could cause infinite idle event loops).
 export const orderLayers = (mapLayers: MapLayerSpecification[], maplibre: Maplibre): void => {
   const maplibreLayers = maplibre.getStyle().layers;
   if (!maplibreLayers) return;
+
+  // Build the expected order of managed layer IDs
+  const expectedOrder: string[] = [];
   mapLayers.forEach((layer) => {
     const layerId = layer.id;
     const mbLayers = maplibreLayers.filter((mbLayer) => mbLayer.id.includes(layerId));
-    mbLayers.forEach((mbLayer, index) => {
-      maplibre.moveLayer(mbLayer.id);
+    mbLayers.forEach((mbLayer) => {
+      expectedOrder.push(mbLayer.id);
     });
+  });
+
+  // Get the current order of only the managed layers (preserving relative order)
+  const currentOrder = maplibreLayers
+    .filter((mbLayer) => expectedOrder.includes(mbLayer.id))
+    .map((mbLayer) => mbLayer.id);
+
+  // If the order is already correct, do nothing to avoid triggering a repaint
+  if (
+    currentOrder.length === expectedOrder.length &&
+    currentOrder.every((id, index) => id === expectedOrder[index])
+  ) {
+    return;
+  }
+
+  // Reorder by moving each layer to the top in the expected sequence
+  expectedOrder.forEach((mbLayerId) => {
+    maplibre.moveLayer(mbLayerId);
   });
 };
