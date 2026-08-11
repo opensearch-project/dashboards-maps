@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Enhancements
 
 ### Bug Fixes
+* fix: enforce layer order after late tile loads ([#860](https://github.com/opensearch-project/dashboards-maps/pull/860))
 
 ### Infrastructure
 
