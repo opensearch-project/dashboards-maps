@@ -71,4 +71,8 @@ jobs:
           cd OpenSearch-Dashboards/plugins/dashboards-maps
           yarn run test:jest --coverage
       - name: Uploads coverage
-        uses: codecov/codecov-action@29386c70ef20e286228c72b668a06fd0e8399192 # v1
+        if: ${{ !cancelled() && github.repository == 'opensearch-project/dashboards-maps' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          directory: OpenSearch-Dashboards/plugins/dashboards-maps/coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
