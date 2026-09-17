@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { LayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import { OSMLayerSpecification } from './mapLayerType';
 import {
