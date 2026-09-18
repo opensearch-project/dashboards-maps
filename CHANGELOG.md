@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased 3.x](https://github.com/opensearch-project/dashboards-maps/compare/main...HEAD)
 
 ### Features
+* feat: Add custom icon support for document layer markers ([#859](https://github.com/opensearch-project/dashboards-maps/pull/859))
 
 ### Enhancements
 

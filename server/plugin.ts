@@ -22,8 +22,8 @@ import {
 } from './types';
 import { createGeospatialCluster } from './clusters';
 import { GeospatialService, OpensearchService } from './services';
-import { geospatial, opensearch, statsRoute } from '../server/routes';
-import { mapSavedObjectsType } from './saved_objects';
+import { geospatial, opensearch, statsRoute, iconRoute } from '../server/routes';
+import { mapSavedObjectsType, mapIconSavedObjectsType } from './saved_objects';
 import { capabilitiesProvider } from './saved_objects/capabilities_provider';
 import { ConfigSchema } from '../common/config';
 import GeospatialPlugin from './clusters/geospatial_plugin';
@@ -68,9 +68,11 @@ export class CustomImportMapPlugin
     geospatial(geospatialService, router);
     opensearch(opensearchService, router);
     statsRoute(router, this.logger);
+    iconRoute(router);
 
     // Register saved object types
     core.savedObjects.registerType(mapSavedObjectsType);
+    core.savedObjects.registerType(mapIconSavedObjectsType);
 
     // Register capabilities
     core.capabilities.registerProvider(capabilitiesProvider);

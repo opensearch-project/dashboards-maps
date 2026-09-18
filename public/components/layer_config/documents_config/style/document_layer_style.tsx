@@ -24,6 +24,7 @@ import {
 } from '../../../../../common';
 import { LabelConfig } from './label_config';
 import { ColorPicker } from './color_picker';
+import { IconConfig } from './icon_config';
 import { IndexPattern } from '../../../../../../../src/plugins/data/common';
 
 interface Props {
@@ -44,6 +45,12 @@ export const DocumentLayerStyle = ({
   const geoTypeToggleButtonGroupPrefix = 'geoTypeToggleButtonGroup';
   const [toggleGeoTypeIdSelected, setToggleGeoTypeIdSelected] = useState(
     `${geoTypeToggleButtonGroupPrefix}__Point`
+  );
+
+  const markerTypeTogglePrefix = 'markerTypeToggle';
+  const currentMarkerType = selectedLayerConfig?.style?.markerType || 'marker';
+  const [toggleMarkerTypeIdSelected, setToggleMarkerTypeIdSelected] = useState(
+    `${markerTypeTogglePrefix}__${currentMarkerType === 'icon' ? 'Icon' : 'Marker'}`
   );
 
   useEffect(() => {
@@ -103,6 +110,38 @@ export const DocumentLayerStyle = ({
 
   const onChangeGeoTypeSelected = (optionId: string) => {
     setToggleGeoTypeIdSelected(optionId);
+  };
+
+  const toggleButtonsMarkerType = [
+    {
+      id: `${markerTypeTogglePrefix}__Marker`,
+      label: i18n.translate('maps.documents.markerType', { defaultMessage: 'Marker' }),
+    },
+    {
+      id: `${markerTypeTogglePrefix}__Icon`,
+      label: i18n.translate('maps.documents.iconType', { defaultMessage: 'Icon' }),
+    },
+  ];
+
+  const onChangeMarkerTypeSelected = (optionId: string) => {
+    setToggleMarkerTypeIdSelected(optionId);
+    const newMarkerType = optionId === `${markerTypeTogglePrefix}__Icon` ? 'icon' : 'marker';
+    setSelectedLayerConfig({
+      ...selectedLayerConfig,
+      style: {
+        ...selectedLayerConfig?.style,
+        markerType: newMarkerType,
+        // Initialize iconConfig with defaults when switching to icon mode
+        ...(newMarkerType === 'icon' && !selectedLayerConfig?.style?.iconConfig
+          ? {
+              iconConfig: {
+                iconId: 'pin',
+                iconSize: 24,
+              },
+            }
+          : {}),
+      },
+    });
   };
 
   interface WidthSelectorProps {
@@ -187,44 +226,65 @@ export const DocumentLayerStyle = ({
           <EuiForm>
             {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Point` && (
               <EuiForm>
-                <ColorPicker
-                  originColor={selectedLayerConfig?.style?.fillColor}
-                  label={i18n.translate('maps.documents.symbolFillColor', {
-                    defaultMessage: 'Fill color',
-                  })}
-                  selectedLayerConfigId={selectedLayerConfig.id}
-                  setIsUpdateDisabled={setIsUpdateDisabled}
-                  onColorChange={onFillColorChange}
+                <EuiButtonGroup
+                  name="MarkerTypeToggleButtonGroup"
+                  legend="Toggle between marker and icon style"
+                  options={toggleButtonsMarkerType}
+                  idSelected={toggleMarkerTypeIdSelected}
+                  onChange={(id) => onChangeMarkerTypeSelected(id)}
+                  buttonSize="compressed"
                 />
-                <ColorPicker
-                  originColor={selectedLayerConfig?.style?.borderColor}
-                  label={i18n.translate('maps.documents.symbolBorderColor', {
-                    defaultMessage: 'Border color',
-                  })}
-                  selectedLayerConfigId={selectedLayerConfig.id}
-                  setIsUpdateDisabled={setIsUpdateDisabled}
-                  onColorChange={onBorderColorChange}
-                />
-                <WidthSelector
-                  label={i18n.translate('maps.documents.symbolBorderThickness', {
-                    defaultMessage: 'Border thickness',
-                  })}
-                  size={selectedLayerConfig?.style?.borderThickness}
-                  onWidthChange={onBorderThicknessChange}
-                  hasInvalid={hasInvalidThickness}
-                  min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
-                  max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
-                />
-                <WidthSelector
-                  label={i18n.translate('maps.documents.symbolMarkerSize', {
-                    defaultMessage: 'Marker size',
-                  })}
-                  size={selectedLayerConfig?.style?.markerSize}
-                  onWidthChange={onMarkerSizeChange}
-                  hasInvalid={hasInvalidSize}
-                  min={DOCUMENTS_MIN_MARKER_SIZE}
-                  max={DOCUMENTS_MAX_MARKER_SIZE}
-                />
+                <EuiSpacer size="s" />
+                {toggleMarkerTypeIdSelected === `${markerTypeTogglePrefix}__Marker` && (
+                  <>
+                    <ColorPicker
+                      originColor={selectedLayerConfig?.style?.fillColor}
+                      label={i18n.translate('maps.documents.symbolFillColor', {
+                        defaultMessage: 'Fill color',
+                      })}
+                      selectedLayerConfigId={selectedLayerConfig.id}
+                      setIsUpdateDisabled={setIsUpdateDisabled}
+                      onColorChange={onFillColorChange}
+                    />
+                    <ColorPicker
+                      originColor={selectedLayerConfig?.style?.borderColor}
+                      label={i18n.translate('maps.documents.symbolBorderColor', {
+                        defaultMessage: 'Border color',
+                      })}
+                      selectedLayerConfigId={selectedLayerConfig.id}
+                      setIsUpdateDisabled={setIsUpdateDisabled}
+                      onColorChange={onBorderColorChange}
+                    />
+                    <WidthSelector
+                      label={i18n.translate('maps.documents.symbolBorderThickness', {
+                        defaultMessage: 'Border thickness',
+                      })}
+                      size={selectedLayerConfig?.style?.borderThickness}
+                      onWidthChange={onBorderThicknessChange}
+                      hasInvalid={hasInvalidThickness}
+                      min={DOCUMENTS_MIN_MARKER_BORDER_THICKNESS}
+                      max={DOCUMENTS_MAX_MARKER_BORDER_THICKNESS}
+                    />
+                    <WidthSelector
+                      label={i18n.translate('maps.documents.symbolMarkerSize', {
+                        defaultMessage: 'Marker size',
+                      })}
+                      size={selectedLayerConfig?.style?.markerSize}
+                      onWidthChange={onMarkerSizeChange}
+                      hasInvalid={hasInvalidSize}
+                      min={DOCUMENTS_MIN_MARKER_SIZE}
+                      max={DOCUMENTS_MAX_MARKER_SIZE}
+                    />
+                  </>
+                )}
+                {toggleMarkerTypeIdSelected === `${markerTypeTogglePrefix}__Icon` && (
+                  <IconConfig
+                    selectedLayerConfig={selectedLayerConfig}
+                    setSelectedLayerConfig={setSelectedLayerConfig}
+                    setIsUpdateDisabled={setIsUpdateDisabled}
+                    indexPattern={indexPattern}
+                  />
+                )}
               </EuiForm>
             )}
             {toggleGeoTypeIdSelected === `${geoTypeToggleButtonGroupPrefix}__Line` && (
