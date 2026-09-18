@@ -4,6 +4,7 @@
  */
 import { i18n } from '@osd/i18n';
 import React from 'react';
+import { setWorkerUrl } from 'maplibre-gl';
 import {
   AppMountParameters,
   CoreSetup,
@@ -187,6 +188,17 @@ export class CustomImportMapPlugin
   }
 
   public start(core: CoreStart, { data }: AppPluginStartDependencies): CustomImportMapPluginStart {
+    // Point MapLibre at the worker we ship as a static asset (under
+    // `public/assets/`), before any Map is constructed. The asset is served
+    // same-origin, so MapLibre creates a module `Worker` from this URL directly
+    // instead of a `blob:` URL — required by strict CSPs that disallow
+    // `worker-src blob:`. The worker is an ES module that relative-imports
+    // `maplibre-gl-shared.mjs`, which is shipped alongside it in the same dir.
+    setWorkerUrl(
+      core.http.basePath.prepend(
+        '/plugins/customImportMapDashboards/assets/maplibre-gl-worker.mjs'
+      )
+    );
     setTimeFilter(data.query.timefilter.timefilter);
     return {};
   }

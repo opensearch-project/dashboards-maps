@@ -4,6 +4,11 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
+// MapLibre 6.x loads its worker as a same-origin ES module. The worker URL is
+// configured once in the plugin's `start()` lifecycle via `setWorkerUrl(...)`,
+// pointing at the worker asset we ship under `public/assets/`, so workers load
+// from a served URL instead of a `blob:` URL — keeping us compliant with strict
+// CSPs that disallow `worker-src blob:`.
 import { Map as Maplibre, NavigationControl } from 'maplibre-gl';
 import { debounce, throttle } from 'lodash';
 import { GeoShapeRelation } from '@opensearch-project/opensearch/api/types';
