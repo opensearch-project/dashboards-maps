@@ -18,6 +18,10 @@ module.exports = {
       '<rootDir>/test/mocks/styleMock.js',
     '\\.(css|less|scss)$': '<rootDir>/test/mocks/styleMock.js',
     '^ui/(.*)': '<rootDir>/../../src/legacy/ui/public/$1/',
+    // maplibre-gl 6.x is ESM-only and unresolvable by Jest's CJS resolver, so
+    // resolve it to the same prebuilt CJS bundle the webpack build uses (kept in
+    // sync via the `browser` field in package.json). See the //maplibre-gl note.
+    '^maplibre-gl$': '<rootDir>/public/vendor/maplibre-gl.bundle.js',
   },
   snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
   coverageReporters: ['lcov', 'text', 'cobertura'],

@@ -2,6 +2,9 @@
   "name": "customImportMap",
   "version": "2.19.6.0",
   "license": "Apache-2.0",
+  "opensearchDashboards": {
+    "version": "2.19.6"
+  },
   "config": {
     "id": "customImportMapDashboards"
   },
@@ -19,6 +22,10 @@
       "pre-commit": "lint-staged"
     }
   },
+  "//maplibre-gl": "maplibre-gl is PINNED (no caret) ON PURPOSE. maplibre-gl 6.x is ESM-only and OSD 2.19's build toolchain (webpack 4) cannot resolve/parse it, so we ship two hand-generated, version-locked artifacts that MUST be regenerated on any maplibre bump: (A) public/vendor/maplibre-gl.bundle.js — a CJS bundle for the webpack-4 build, remapped in via the `browser` field below and Jest's moduleNameMapper. Regenerate with: npx esbuild node_modules/maplibre-gl/dist/maplibre-gl.mjs --bundle --format=cjs --platform=browser --target=es2018 --supported:bigint=true --minify --legal-comments=none --outfile=public/vendor/maplibre-gl.bundle.js. (B) public/assets/maplibre-gl-worker.mjs + maplibre-gl-shared.mjs — the strict-CSP worker, copied verbatim from node_modules/maplibre-gl/dist/ and served same-origin via setWorkerUrl (public/plugin.tsx). All three files MUST match this exact library version. DO NOT accept a bot/dependabot bump on its own: an upgrade must change both maplibre-gl versions here, regenerate (A), recopy (B), and re-test the OSD 2.19 build + strict-CSP runtime.",
+  "browser": {
+    "maplibre-gl": "./public/vendor/maplibre-gl.bundle.js"
+  },
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.4.0",
     "@opensearch-dashboards-test/opensearch-dashboards-test-library": "https://github.com/opensearch-project/opensearch-dashboards-test-library/archive/refs/tags/1.0.6.tar.gz",
@@ -26,13 +33,15 @@
     "@types/wellknown": "^0.5.4",
     "geojson": "^0.5.0",
     "install": "^0.13.0",
-    "maplibre-gl": "^2.4.0",
+    "maplibre-gl": "6.4.1",
     "prettier": "^2.1.1",
-    "uuid": "3.3.2",
     "wellknown": "^0.5.0"
   },
   "devDependencies": {
     "@types/react-test-renderer": "^18.0.7",
     "prettier": "^2.1.1"
+  },
+  "resolutions": {
+    "@types/mapbox__mapbox-gl-draw/mapbox-gl": "npm:maplibre-gl@6.4.1"
   }
 }
