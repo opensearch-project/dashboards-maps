@@ -19,6 +19,7 @@
       "pre-commit": "lint-staged"
     }
   },
+  "//maplibre-gl": "maplibre-gl is PINNED (no caret) ON PURPOSE, in both `dependencies` and `resolutions` below. For strict-CSP support we ship MapLibre's worker as same-origin static assets, hand-copied from node_modules/maplibre-gl/dist/ into public/assets/: BOTH maplibre-gl-worker.mjs AND its relative import maplibre-gl-shared.mjs. These MUST match this exact library version. DO NOT accept a bot/dependabot version bump on its own: any upgrade must (1) change both maplibre-gl versions below, (2) recopy BOTH .mjs files from node_modules/maplibre-gl/dist/ into public/assets/ (filenames may change across majors — verify what dist/ ships), (3) verify the assets' license-header version, and (4) re-test under strict CSP (worker must load same-origin, not via blob:). See public/plugin.tsx (setWorkerUrl) and public/components/map_container/map_container.tsx.",
   "dependencies": {
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@types/mapbox__mapbox-gl-draw": "^1.4.8",
@@ -26,11 +27,11 @@
     "geojson": "^0.5.0",
     "h3-js": "^4.1.0",
     "install": "^0.13.0",
-    "maplibre-gl": "5.2.0",
+    "maplibre-gl": "6.4.1",
     "wellknown": "^0.5.0"
   },
   "devDependencies": {},
   "resolutions": {
-    "@types/mapbox__mapbox-gl-draw/mapbox-gl": "npm:maplibre-gl@5.2.0"
+    "@types/mapbox__mapbox-gl-draw/mapbox-gl": "npm:maplibre-gl@6.4.1"
   }
 }
