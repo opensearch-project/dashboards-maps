@@ -27,6 +27,16 @@ module.exports = {
     // bundle, which is CJS-compatible and loads without ESM transformation.
     '^@mapbox/mapbox-gl-draw$':
       '<rootDir>/node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js',
+    // maplibre-gl 6.x is ESM-only; its package `exports` declares no `require`
+    // condition, so Jest's CJS resolver can't find it. Point directly at the
+    // ESM bundle and let the maplibre transform compile it (see `transform`).
+    '^maplibre-gl$': '<rootDir>/node_modules/maplibre-gl/dist/maplibre-gl.mjs',
+  },
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    // maplibre-gl 6.x ships only ESM `.mjs`; compile it to CJS (and neutralize
+    // `import.meta`) so Jest can load it. See test/maplibreEsmTransform.js.
+    '^.+\\.mjs$': '<rootDir>/test/maplibreEsmTransform.js',
   },
   snapshotSerializers: ['../../node_modules/enzyme-to-json/serializer'],
   coverageReporters: ['lcov', 'text', 'cobertura'],
