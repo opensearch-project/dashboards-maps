@@ -3,7 +3,8 @@
   "version": "2.19.7.0",
   "license": "Apache-2.0",
   "opensearchDashboards": {
-    "version": "2.19.6"
+    "version": "2.19.7",
+    "templateVersion": "2.19.7"
   },
   "config": {
     "id": "customImportMapDashboards"
