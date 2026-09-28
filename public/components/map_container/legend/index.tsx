@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { cloneDeep } from 'lodash';
 import { LegendList } from './legend_list';

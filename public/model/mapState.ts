@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { GeoShapeFilterMeta, Query, TimeRange } from '../../../../src/plugins/data/common';
 
 export interface MapState {
