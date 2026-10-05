@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import { LegendItem } from './legend_item';
 import { LegendOption } from './index';
