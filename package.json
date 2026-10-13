@@ -43,6 +43,7 @@
     "prettier": "^2.1.1"
   },
   "resolutions": {
-    "@types/mapbox__mapbox-gl-draw/mapbox-gl": "npm:maplibre-gl@6.4.1"
+    "@types/mapbox__mapbox-gl-draw/mapbox-gl": "npm:maplibre-gl@6.4.1",
+    "@mapbox/jsonlint-lines-primitives": "2.0.2"
   }
 }
