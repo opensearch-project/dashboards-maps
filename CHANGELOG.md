@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bug Fixes
 
 ### Infrastructure
+- Add SPDX license header checker and missing headers ([#864](https://github.com/opensearch-project/dashboards-maps/pull/864))
 
 - Install the functional test repository's pinned Cypress in the FTR E2E workflow ([#876](https://github.com/opensearch-project/dashboards-maps/pull/876))
 

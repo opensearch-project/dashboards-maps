@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { CustomLayerSpecification, OSMLayerSpecification } from './mapLayerType';
 import { hasLayer, removeLayers } from './map/layer_operations';
 import { MaplibreRef } from './layersFunctions';
