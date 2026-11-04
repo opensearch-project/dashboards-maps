@@ -11,7 +11,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Martin Gaievski         | [martin-gaievski](https://github.com/martin-gaievski) | Amazon      |
 | Naveen Tatikonda        | [naveentatikonda](https://github.com/naveentatikonda) | Amazon      |
 | Navneet Verma           | [navneet1v](https://github.com/navneet1v)             | Amazon      |
-| Vamshi Vijay Nakkirtha  | [vamshin](https://github.com/vamshin)                 | Amazon      |
 | Vijayan Balasubramanian | [VijayanB](https://github.com/VijayanB)               | Amazon      |
 
 ## Emeritus
@@ -19,3 +18,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Maintainer              | GitHub ID                                   | Affiliation |
 |-------------------------|---------------------------------------------| ----------- |
 | Shivam Dhar             | [Shivamdhar](https://github.com/Shivamdhar) | Amazon      |
+| Vamshi Vijay Nakkirtha  | [vamshin](https://github.com/vamshin)       | Amazon      |
