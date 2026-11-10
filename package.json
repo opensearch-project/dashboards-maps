@@ -1,10 +1,10 @@
 {
   "name": "customImportMap",
-  "version": "2.19.7.0",
+  "version": "2.19.8.0",
   "license": "Apache-2.0",
   "opensearchDashboards": {
-    "version": "2.19.7",
-    "templateVersion": "2.19.7"
+    "version": "2.19.8",
+    "templateVersion": "2.19.8"
   },
   "config": {
     "id": "customImportMapDashboards"
